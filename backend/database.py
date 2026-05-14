@@ -3,10 +3,15 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from config import settings
 
-# Handle PostgreSQL URLs for Render (replace postgres:// with postgresql:// if needed)
+# Handle PostgreSQL URLs for Render and Supabase
 db_url = settings.DATABASE_URL
 if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+# Enforce SSL for Supabase (required for external connections from Vercel)
+if "supabase" in db_url and "sslmode=require" not in db_url:
+    separator = "&" if "?" in db_url else "?"
+    db_url += f"{separator}sslmode=require"
 
 # SQLite handles threads differently than PostgreSQL
 connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
