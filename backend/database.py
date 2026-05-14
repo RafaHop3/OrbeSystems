@@ -28,14 +28,25 @@ if db_url.startswith("sqlite"):
         os.makedirs(db_dir, exist_ok=True)
         print(f"[Database] Created directory: {db_dir}")
 
+from sqlalchemy.pool import NullPool
+
 # Use pool_pre_ping to check connection liveness (critical for Render's idle spin-downs)
 # Use pool_recycle to proactively recycle connections before Render closes them
-engine = create_engine(
-    db_url, 
-    connect_args=connect_args,
-    pool_pre_ping=True,
-    pool_recycle=3600
-)
+# For Vercel/Supabase pooler (port 6543), we MUST use NullPool because PgBouncer in transaction mode breaks SQLAlchemy pooling.
+if "pooler.supabase.com" in db_url:
+    engine = create_engine(
+        db_url, 
+        connect_args=connect_args,
+        poolclass=NullPool
+    )
+else:
+    engine = create_engine(
+        db_url, 
+        connect_args=connect_args,
+        pool_pre_ping=True,
+        pool_recycle=3600
+    )
+    
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Base(DeclarativeBase):
