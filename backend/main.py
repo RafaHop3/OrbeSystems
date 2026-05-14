@@ -92,10 +92,15 @@ async def lifespan(app: FastAPI):
         print(" Configuration validated")
     except ValueError as e:
         print(f" Configuration error: {e}")
-        raise
+        # Vercel: We do not raise here so the function can still boot and return meaningful errors.
     
-    # Run migrations
-    run_migrations()
+    # Run migrations safely
+    try:
+        print(f"INFO: [Database] Initializing tables...")
+        Base.metadata.create_all(bind=engine)
+        run_migrations()
+    except Exception as e:
+        print(f"ERROR: [Database] Failed to init DB: {e}")
     
     yield
     
@@ -126,13 +131,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Init Database Tables & Run Migrations
-print(f"INFO: [Database] Using: {settings.DATABASE_URL[:30]}...")
-Base.metadata.create_all(bind=engine)
-print("INFO: [Database] Tables created successfully.")
-run_migrations()
-
 
 # ── Rate Limiting (SlowAPI) ───────────────────────────────────────────────────
 app.state.limiter = auth_limiter
