@@ -21,6 +21,12 @@ _cache_timestamps = {}
 CACHE_TTL = timedelta(minutes=5)
 MAX_CACHE_SIZE = 100  # Limit cache to 100 entries
 
+def clear_projects_cache():
+    """Clear the projects cache manually (used by admin routes)."""
+    _projects_cache.clear()
+    _cache_timestamps.clear()
+    project_logger.info("Projects cache manually cleared.")
+
 
 @router.get("/projects", response_model=list[Repository])
 async def get_projects(current_user: User | None = Depends(get_current_user_optional)):

@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from security.auth import get_current_admin_user
 from services.github_service import fetch_repositories, fetch_single_repo
 from services.metadata_service import get_all_metadata, save_project_metadata
-from routes.projects import get_projects  # Import to clear cache
+from routes.projects import clear_projects_cache  # Import cache clearer
 from database import get_db
 from pydantic import BaseModel
 from typing import Optional
@@ -81,7 +81,7 @@ async def update_project_metadata(
             if v is not None
         }
         save_project_metadata(repo_id, update_data, db)
-        get_projects.cache_clear()
+        clear_projects_cache()
         return {"status": "success", "message": f"Metadata for {repo_id} updated.", "fields_updated": list(update_data.keys())}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -163,7 +163,7 @@ async def add_repo(body: RepoAddRequest, db: Session = Depends(get_db)):
             },
             db,
         )
-        get_projects.cache_clear()
+        clear_projects_cache()
         return {"status": "success", "message": f"Repo '{body.repo_name}' injected as featured."}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
