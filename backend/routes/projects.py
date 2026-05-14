@@ -118,10 +118,13 @@ async def get_projects(current_user: User | None = Depends(get_current_user_opti
         project_logger.info(f"Cache updated for user {user_id} (size: {len(_projects_cache)})")
 
         return repos
+    except HTTPException as http_exc:
+        raise http_exc
     except Exception as exc:
+        project_logger.error(f"Internal error in get_projects: {exc}")
         raise HTTPException(
-            status_code=502,
-            detail=f"Failed to fetch repositories from GitHub: {str(exc)}",
+            status_code=500,
+            detail=f"Internal Server Error: {str(exc)}",
         )
     finally:
         db.close()
