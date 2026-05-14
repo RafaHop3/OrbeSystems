@@ -1,0 +1,53 @@
+# Render deployment — backend
+# ════════════════════════════════════════════════════════
+# DATABASE: PostgreSQL (Render free tier — 256MB)
+#   1. Create a PostgreSQL instance on Render dashboard
+#   2. Copy the "Internal Database URL" and set it as DATABASE_URL below
+#   3. The internal URL format: postgresql://user:pass@host/dbname
+# ════════════════════════════════════════════════════════
+# All env vars marked sync:false MUST be set manually in the Render Dashboard
+
+services:
+  - type: web
+    name: orbe-systems-api
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: ALLOWED_ORIGINS
+        value: "https://orbesystems.com.br,https://www.orbesystems.com.br,https://orbe-systems.vercel.app,http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000"
+      # ── Database (REQUIRED — set to PostgreSQL Internal URL from Render) ───
+      - key: DATABASE_URL
+        sync: false   # postgresql://user:pass@host/dbname (Render internal URL)
+      # ── GitHub ─────────────────────────────────────────────────────────────
+      - key: GITHUB_TOKEN
+        sync: false   # set manually in Render dashboard
+      # ── Admin Auth (REQUIRED — set in Render dashboard) ────────────────────
+      - key: ADMIN_USERNAME
+        sync: false   # e.g. "rafael_admin"
+      - key: ADMIN_PASSWORD_HASH
+        sync: false   # generate with: python generate_hash.py
+      - key: SECRET_KEY
+        sync: false   # generate with: python -c "import secrets; print(secrets.token_hex(32))"
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"
+      # ── Cloudinary (REQUIRED for image/video uploads) ──────────────────────
+      - key: CLOUDINARY_URL
+        sync: false   # format: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+      - key: CLOUDINARY_CLOUD_NAME
+        value: "doxx9wyvw"
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      # ── Stripe Payment Gateway (REQUIRED for Premium subscriptions) ─────────
+      - key: STRIPE_SECRET_KEY
+        sync: false   # sk_test_... (test) or sk_live_... (production)
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false   # whsec_... from Stripe Dashboard > Webhooks
+      - key: STRIPE_PREMIUM_PRICE_ID
+        sync: false   # price_... from Stripe Dashboard > Products
+      # ── Frontend URL (used in Stripe redirect URLs) ─────────────────────────
+      - key: FRONTEND_URL
+        value: "https://orbesystems.com.br"
+

@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Google Fonts ── */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── Base ── */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #040608;
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #040608;
+}
+::-webkit-scrollbar-thumb {
+  background: #00fff540;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00fff5;
+}
+
+/* ── Neon Text Utilities ── */
+@layer utilities {
+  .text-neon-green {
+    color: #39ff14;
+    text-shadow: 0 0 8px #39ff1480;
+  }
+  .text-neon-cyan {
+    color: #00fff5;
+    text-shadow: 0 0 10px #00fff580;
+  }
+  .text-neon-purple {
+    color: #bd00ff;
+    text-shadow: 0 0 10px #bd00ff80;
+  }
+
+  /* Scanline overlay effect */
+  .scanlines::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.05) 2px,
+      rgba(0, 0, 0, 0.05) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Terminal window chrome */
+  .terminal-chrome {
+    background: #0d1117;
+    border: 1px solid #1e2d3d;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .terminal-chrome::before {
+    content: '';
+    display: block;
+    height: 32px;
+    background: linear-gradient(180deg, #161b22 0%, #0d1117 100%);
+    border-bottom: 1px solid #1e2d3d;
+  }
+
+  /* Glowing border */
+  .border-neon-cyan {
+    border-color: #00fff540;
+  }
+
+  .hover\:border-neon-glow:hover {
+    border-color: #00fff5;
+    box-shadow: 0 0 20px #00fff530, inset 0 0 20px #00fff508;
+  }
+}
