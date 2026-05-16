@@ -10,7 +10,7 @@ from typing import List
 from pydantic import BaseModel, EmailStr
 from security.auth import get_current_admin_user
 from database import get_db
-from models.user import User
+from models.users import User, UserRole
 from utils.logger import admin_logger
 from services.audit_service import log_audit
 from slowapi import Limiter
@@ -136,9 +136,9 @@ async def create_user(
     from security.auth import get_password_hash
     user = User(
         email=data.email,
-        hashed_password=get_password_hash(data.password),
-        role=data.role
+        password_hash=get_password_hash(data.password),
     )
+    user.role_info = UserRole(role_name=data.role)
     db.add(user)
     db.commit()
     db.refresh(user)
@@ -229,7 +229,10 @@ async def update_user_role(
         raise HTTPException(status_code=400, detail="Invalid role")
 
     old_role = user.role
-    user.role = role
+    if user.role_info:
+        user.role_info.role_name = role
+    else:
+        user.role_info = UserRole(role_name=role)
     db.commit()
 
     # Log audit

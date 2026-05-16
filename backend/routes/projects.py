@@ -4,7 +4,7 @@ from services.metadata_service import get_all_metadata
 from models.repository import Repository
 from database import SessionLocal
 from security.auth import get_current_user_optional
-from models.user import User
+from models.users import User
 from utils.logger import project_logger
 from datetime import datetime, timedelta, timezone
 import asyncio

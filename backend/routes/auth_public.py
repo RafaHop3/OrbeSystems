@@ -10,7 +10,7 @@ from typing import Optional
 
 from database import get_db
 from security.auth import get_current_user_optional
-from models.user import User
+from models.users import User
 
 router = APIRouter()
 

@@ -121,7 +121,7 @@ async def get_current_user(
     Validates a user JWT and returns the User ORM object from DB.
     Used as a FastAPI dependency on protected user endpoints.
     """
-    from models.user import User  # Late import to avoid circular dependency
+    from models.users import User  # Late import to avoid circular dependency
 
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -170,7 +170,7 @@ async def get_current_user_optional(
     Returns None if no token is provided or if token is invalid.
     Used for endpoints that work with or without authentication.
     """
-    from models.user import User  # Late import to avoid circular dependency
+    from models.users import User  # Late import to avoid circular dependency
 
     if not token:
         return None

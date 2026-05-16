@@ -22,7 +22,7 @@ from sqlalchemy.orm import Session
 
 from config import settings
 from database import get_db
-from models.user import User
+from models.users import User, UserSubscription
 from utils.logger import webhook_logger
 
 router = APIRouter()
@@ -77,38 +77,42 @@ async def stripe_webhook(
         if user_id:
             user = db.query(User).filter(User.id == user_id).first()
             if user:
-                user.role = "premium"
-                user.subscription_status = "active"
-                user.stripe_customer_id = customer_id
+                if user.role_info:
+                    user.role_info.role_name = "premium"
+                if user.subscription_info:
+                    user.subscription_info.subscription_status = "active"
+                    user.subscription_info.stripe_customer_id = customer_id
                 db.commit()
                 webhook_logger.info(f"PREMIUM granted → {user.email}")
 
     elif event_type in ("customer.subscription.deleted", "customer.subscription.paused"):
         # Subscription ended — downgrade to free user
         customer_id = data.get("customer")
-        user = db.query(User).filter(User.stripe_customer_id == customer_id).first()
-        if user:
-            user.role = "user"
-            user.subscription_status = "canceled"
+        subscription = db.query(UserSubscription).filter(UserSubscription.stripe_customer_id == customer_id).first()
+        if subscription and subscription.user:
+            user = subscription.user
+            if user.role_info:
+                user.role_info.role_name = "user"
+            subscription.subscription_status = "canceled"
             db.commit()
             webhook_logger.info(f"DOWNGRADED to user → {user.email}")
 
     elif event_type == "invoice.payment_failed":
         # Payment failed — mark as past_due (role unchanged, grace period)
         customer_id = data.get("customer")
-        user = db.query(User).filter(User.stripe_customer_id == customer_id).first()
-        if user:
-            user.subscription_status = "past_due"
+        subscription = db.query(UserSubscription).filter(UserSubscription.stripe_customer_id == customer_id).first()
+        if subscription:
+            subscription.subscription_status = "past_due"
             db.commit()
-            webhook_logger.warning(f"Payment failed → {user.email} | status=past_due")
+            webhook_logger.warning(f"Payment failed → customer={customer_id} | status=past_due")
 
     elif event_type == "invoice.payment_succeeded":
         # Renewal confirmed — ensure status is active
         customer_id = data.get("customer")
-        user = db.query(User).filter(User.stripe_customer_id == customer_id).first()
-        if user and user.subscription_status == "past_due":
-            user.subscription_status = "active"
+        subscription = db.query(UserSubscription).filter(UserSubscription.stripe_customer_id == customer_id).first()
+        if subscription and subscription.subscription_status == "past_due":
+            subscription.subscription_status = "active"
             db.commit()
-            webhook_logger.info(f"Payment recovered → {user.email} | status=active")
+            webhook_logger.info(f"Payment recovered → customer={customer_id} | status=active")
 
     return {"status": "ok", "event_type": event_type}

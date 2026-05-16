@@ -19,7 +19,7 @@ from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models.user import User
+from models.users import User, UserRole, UserSubscription
 from security.auth import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     create_user_access_token,
@@ -84,8 +84,10 @@ async def register(
     new_user = User(
         email=data.email,
         password_hash=get_password_hash(data.password),
-        role="user",
     )
+    new_user.role_info = UserRole(role_name="user")
+    new_user.subscription_info = UserSubscription(subscription_status="none")
+    
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

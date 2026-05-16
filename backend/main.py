@@ -24,7 +24,7 @@ from security.auth import verify_password
 from sqlalchemy import inspect, text
 from database import engine, Base
 import models.metadata  # Import to register models
-import models.user      # Import to register User table
+import models.users      # Import to register User tables
 import models.math_vectors  # Import to register math_vectors table
 import models.math_matrices  # Import to register math_matrices table
 import models.audit_log  # Import to register audit_log table
