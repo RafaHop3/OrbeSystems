@@ -6,7 +6,7 @@ import { Github, Mail, Server, Check } from 'lucide-react';
 export default function Footer() {
   const [showToast, setShowToast] = useState(false);
   const year = new Date().getFullYear();
-  const email = 'theorbesystems@gmail.com';
+  const email = 'contato@orbesystems.com.br';
 
   const handleCopyEmail = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -44,24 +44,32 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Social links */}
-          <div id="contact" className="flex items-center gap-4">
+          {/* Social links & Contact */}
+          <div id="contact" className="flex flex-col md:flex-row items-center gap-4">
             <a
-              href="https://github.com/theorbesystems-sketch"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub"
-              className="w-9 h-9 rounded border border-terminal-border text-terminal-muted flex items-center justify-center transition-all duration-300 hover:text-white hover:border-white/40"
+              href={`mailto:${email}`}
+              className="font-mono text-sm text-terminal-muted transition-colors hover:text-white hidden md:block"
             >
-              <Github size={15} />
+              {email}
             </a>
-            <button
-              onClick={handleCopyEmail}
-              aria-label="Copy Email"
-              className="w-9 h-9 rounded border border-terminal-border text-terminal-muted flex items-center justify-center transition-all duration-300 hover:text-neon-green hover:border-neon-green/40 hover:shadow-neon-green"
-            >
-              <Mail size={15} />
-            </button>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://github.com/theorbesystems-sketch"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="GitHub"
+                className="w-9 h-9 rounded border border-terminal-border text-terminal-muted flex items-center justify-center transition-all duration-300 hover:text-white hover:border-white/40"
+              >
+                <Github size={15} />
+              </a>
+              <button
+                onClick={handleCopyEmail}
+                aria-label="Copy Email"
+                className="w-9 h-9 rounded border border-terminal-border text-terminal-muted flex items-center justify-center transition-all duration-300 hover:text-neon-green hover:border-neon-green/40 hover:shadow-neon-green"
+              >
+                <Mail size={15} />
+              </button>
+            </div>
           </div>
         </div>
 
