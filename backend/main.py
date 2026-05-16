@@ -109,6 +109,9 @@ async def lifespan(app: FastAPI):
 
 
 # ── App ───────────────────────────────────────────────────────────────────────
+import traceback
+from fastapi.responses import JSONResponse
+
 app = FastAPI(
     title="Orbe Systems API",
     description="Secured API Gateway for Orbe Systems.",
@@ -117,6 +120,16 @@ app = FastAPI(
     redoc_url=None,
     lifespan=lifespan,
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    err_msg = traceback.format_exc()
+    print(f"CRITICAL UNHANDLED ERROR: {err_msg}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error", "error_type": str(type(exc)), "error_msg": str(exc), "traceback": err_msg}
+    )
 
 @app.get("/api/admin/migrate-db")
 async def force_migrate_db():
