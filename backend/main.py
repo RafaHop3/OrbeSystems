@@ -107,6 +107,17 @@ async def lifespan(app: FastAPI):
     # Shutdown
     print(" OrbeSystems API shutting down...")
 
+@app.get("/api/admin/migrate-db")
+async def force_migrate_db():
+    """Temporary endpoint to force database migration on serverless environments."""
+    try:
+        Base.metadata.create_all(bind=engine)
+        run_migrations()
+        return {"status": "success", "message": "Database tables created and migrated successfully on production!"}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
+
 # ── App ───────────────────────────────────────────────────────────────────────
 app = FastAPI(
     title="Orbe Systems API",
