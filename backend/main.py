@@ -121,28 +121,10 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-    import traceback
-    err_msg = traceback.format_exc()
-    print(f"CRITICAL UNHANDLED ERROR: {err_msg}")
-    return JSONResponse(
-        status_code=500,
-        content={"detail": "Internal Server Error", "error_type": str(type(exc)), "error_msg": str(exc), "traceback": err_msg}
-    )
-
-@app.get("/api/admin/migrate-db")
-async def force_migrate_db():
-    """Temporary endpoint to force database migration on serverless environments."""
-    try:
-        Base.metadata.create_all(bind=engine)
-        run_migrations()
-        return {"status": "success", "message": "Database tables created and migrated successfully on production!"}
-    except Exception as e:
-        import traceback
-        return {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
-
 # ── CORS Middleware ─────────────────────────────────────────────────────────────
+# IMPORTANT: Must be registered FIRST, before any exception handlers.
+# This ensures CORS headers are present even on 500 error responses.
+# Without this, the browser blocks the response before the JS can read the error.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -156,6 +138,27 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    err_msg = traceback.format_exc()
+    print(f"CRITICAL UNHANDLED ERROR: {err_msg}")
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal Server Error", "error_type": str(type(exc).__name__), "error_msg": str(exc), "traceback": err_msg}
+    )
+
+@app.get("/api/admin/migrate-db")
+async def force_migrate_db():
+    """Temporary endpoint to force database migration on serverless environments."""
+    try:
+        Base.metadata.create_all(bind=engine)
+        run_migrations()
+        return {"status": "success", "message": "Database tables created and migrated successfully on production!"}
+    except Exception as e:
+        import traceback
+        return {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
 
 # ── Rate Limiting (SlowAPI) ───────────────────────────────────────────────────
 app.state.limiter = auth_limiter
