@@ -134,14 +134,20 @@ async def create_user(
 
     # Create user
     from security.auth import get_password_hash
-    user = User(
-        email=data.email,
-        password_hash=get_password_hash(data.password),
-    )
-    user.role_info = UserRole(role_name=data.role)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
+    try:
+        user = User(
+            email=data.email,
+            password_hash=get_password_hash(data.password),
+            _role_legacy=data.role,  # satisfy NOT NULL on legacy 'role' column
+        )
+        user.role_info = UserRole(role_name=data.role)
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+    except Exception as e:
+        db.rollback()
+        admin_logger.error(f"Error creating user: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
     # Log audit
     log_audit(
