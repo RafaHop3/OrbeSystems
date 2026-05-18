@@ -10,10 +10,12 @@ class User(Base):
     id = Column(String, primary_key=True, default=lambda: str(uuid4()))
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
-    # Legacy column: kept for backward-compatibility with the existing Supabase table
-    # that has a NOT NULL constraint on `role`. The application uses `user_roles`
-    # relationship for role logic, but this field must be populated on INSERT.
+    # Legacy columns: kept for backward-compatibility with the existing Supabase table
+    # that has NOT NULL constraints on `role` and `subscription_status`.
+    # The application uses `user_roles` and `user_subscriptions` relationships for
+    # actual logic, but these fields must be populated on INSERT to avoid violations.
     _role_legacy = Column("role", String, nullable=True, default="user", server_default="user")
+    _subscription_status_legacy = Column("subscription_status", String, nullable=True, default="none", server_default="none")
     is_email_verified = Column(Boolean, default=False, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
