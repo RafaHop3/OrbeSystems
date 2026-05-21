@@ -141,24 +141,14 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    import traceback
+    """Global handler: logs full traceback server-side, returns a safe generic message to clients."""
     err_msg = traceback.format_exc()
     print(f"CRITICAL UNHANDLED ERROR: {err_msg}")
+    # SECURITY: Never expose internal error details (traceback, exception type) to clients.
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal Server Error", "error_type": str(type(exc).__name__), "error_msg": str(exc), "traceback": err_msg}
+        content={"detail": "Internal Server Error"}
     )
-
-@app.get("/api/admin/migrate-db")
-async def force_migrate_db():
-    """Temporary endpoint to force database migration on serverless environments."""
-    try:
-        Base.metadata.create_all(bind=engine)
-        run_migrations()
-        return {"status": "success", "message": "Database tables created and migrated successfully on production!"}
-    except Exception as e:
-        import traceback
-        return {"status": "error", "error": str(e), "traceback": traceback.format_exc()}
 
 # ── Rate Limiting (SlowAPI) ───────────────────────────────────────────────────
 app.state.limiter = auth_limiter
@@ -216,22 +206,5 @@ async def health_check():
     }
 
 
-@app.get("/debug/github-lookup", tags=["debug"])
-async def debug_github_lookup(repo_name: str = "PDF8EVER"):
-    """Debug endpoint to test GitHub repo lookup directly."""
-    from services.github_service import fetch_single_repo
-    try:
-        result = await fetch_single_repo(repo_name)
-        return {
-            "repo_name": repo_name,
-            "found": result is not None,
-            "data": result,
-            "github_token_configured": settings.GITHUB_TOKEN != "token_de_fallback_inseguro"
-        }
-    except Exception as e:
-        return {
-            "repo_name": repo_name,
-            "found": False,
-            "error": str(e),
-            "github_token_configured": settings.GITHUB_TOKEN != "token_de_fallback_inseguro"
-        }
+# SECURITY NOTE: The /debug/github-lookup endpoint has been removed.
+# Debug routes must never be public — use /docs (HTTP Basic protected) for manual testing.

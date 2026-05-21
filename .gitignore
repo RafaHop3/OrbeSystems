@@ -1,4 +1,18 @@
-# Node.js
+# ═══════════════════════════════════════════════════════════════════
+# ORBE SYSTEMS — Root .gitignore
+# Last reviewed: 2026-05-21
+# Policy: All secrets stay LOCAL. Nothing sensitive goes to GitHub.
+# ═══════════════════════════════════════════════════════════════════
+
+# ── Secrets & Environment Variables (CRITICAL) ─────────────────────
+# NEVER commit real .env files. Use .env.example as the committed template.
+.env
+.env.*
+*.env
+!*.env.example         # Allow .env.example files (they contain fake values only)
+!.env.example
+
+# ── Node.js / Next.js ──────────────────────────────────────────────
 node_modules/
 .next/
 out/
@@ -6,7 +20,7 @@ build/
 .pnp
 .pnp.js
 
-# Python
+# ── Python ─────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *$py.class
@@ -15,10 +29,19 @@ venv/
 env/
 ENV/
 
-# OS Files
+# ── Databases (local SQLite files) ─────────────────────────────────
+*.db
+*.sqlite
+*.sqlite3
+
+# ── OS / IDE Files ─────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# Env Vars
-.env
-.env*.local
+# ── Logs ───────────────────────────────────────────────────────────
+*.log
+logs/

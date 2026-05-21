@@ -21,15 +21,11 @@ class LoginSchema(BaseModel):
 @router.post("/login")
 @limiter.limit("5/minute")
 async def login_for_access_token(request: Request, data: LoginSchema):
-    """ Secure login endpoint. Only rafael_admin is allowed. (Max 5 attempts / min) """
-    print(f"[AUTH] Login attempt - Username: '{data.username}'")
-    print(f"[AUTH] Expected ADMIN_USERNAME: '{ADMIN_USERNAME}'")
-    print(f"[AUTH] Password length: {len(data.password)}")
-    print(f"[AUTH] ADMIN_PASSWORD_HASH configured: {bool(ADMIN_PASSWORD_HASH)}")
+    """ Secure login endpoint. Only the configured admin is allowed. (Max 5 attempts / min) """
+    print(f"[AUTH] Login attempt received.")
     
     # 1. First verify the username (prevents salt crashes on unknown users)
     if data.username != ADMIN_USERNAME:
-        print(f"[AUTH] Username mismatch - got '{data.username}' expected '{ADMIN_USERNAME}'")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="ACCESS DENIED: UNKNOWN IDENTITY.",
@@ -38,10 +34,7 @@ async def login_for_access_token(request: Request, data: LoginSchema):
     
     # 2. Verify password with safety wrap
     try:
-        print(f"[AUTH] Verifying password against hash...")
         is_valid = verify_password(data.password, ADMIN_PASSWORD_HASH)
-        print(f"[AUTH] Password verification result: {is_valid}")
-        
         if not is_valid:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -62,12 +55,3 @@ async def login_for_access_token(request: Request, data: LoginSchema):
         data={"sub": ADMIN_USERNAME}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
-
-@router.get("/debug-config")
-async def debug_config():
-    """Debug endpoint to check admin configuration"""
-    return {
-        "admin_username": ADMIN_USERNAME,
-        "password_hash_configured": bool(ADMIN_PASSWORD_HASH),
-        "password_hash_length": len(ADMIN_PASSWORD_HASH) if ADMIN_PASSWORD_HASH else 0
-    }

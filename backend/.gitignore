@@ -1,5 +1,32 @@
+# ── Python environment ──────────────────────────────────────────────
 .venv/
 __pycache__/
 *.pyc
+*.pyo
+
+# ── Secrets (NEVER commit these) ───────────────────────────────────
 .env
+.env.*
+*.env
+!.env.example
+
+# ── Local SQLite databases ──────────────────────────────────────────
+data/*.db
+data/*.sqlite
+*.db
+*.sqlite
+
+# ── Local test/utility scripts (not for production) ─────────────────
+test_*.py
+check_syntax.py
+create_hash.py
+generate_hash.py
+hash_gen.py
+migrate_db.py
+test_db_query.py
+test_upload.py
+test_vercel.py
+
+# ── OS ──────────────────────────────────────────────────────────────
 .DS_Store
+Thumbs.db

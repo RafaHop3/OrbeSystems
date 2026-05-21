@@ -1,14 +1,16 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    GITHUB_TOKEN: str = "token_de_fallback_inseguro"
+    # GitHub Token — REQUIRED. Set via .env or environment variable.
+    # Generate at: https://github.com/settings/tokens (classic, read:user + public_repo)
+    GITHUB_TOKEN: str
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:3002,https://orbesystems.com.br,https://www.orbesystems.com.br"
     
     # Critical credentials — NO defaults. Pydantic raises ValidationError on startup
     # if these are missing from .env / environment, preventing insecure boot.
     SECRET_KEY: str
     ADMIN_PASSWORD_HASH: str
-    ADMIN_USERNAME: str = "rafael_admin"
+    ADMIN_USERNAME: str  # Must be set in .env — no default exposed in source code
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
     # Cloudinary Uplink (Permanent Storage)
@@ -37,6 +39,10 @@ class Settings(BaseSettings):
             raise ValueError("SECRET_KEY é obrigatório")
         if not self.ADMIN_PASSWORD_HASH:
             raise ValueError("ADMIN_PASSWORD_HASH é obrigatório")
+        if not self.ADMIN_USERNAME:
+            raise ValueError("ADMIN_USERNAME é obrigatório")
+        if not self.GITHUB_TOKEN:
+            raise ValueError("GITHUB_TOKEN é obrigatório")
         
         # Validar Stripe se configurado
         if self.STRIPE_SECRET_KEY or self.STRIPE_WEBHOOK_SECRET or self.STRIPE_PREMIUM_PRICE_ID:
