@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     STRIPE_WEBHOOK_SECRET: str = ""       # whsec_...
     STRIPE_PREMIUM_PRICE_ID: str = ""     # price_... (ID do produto Premium)
 
+    # ── AnythingLLM Automation ────────────────────────────────────────────────
+    ANYTHINGLLM_API_URL: str = "http://localhost:3001/api/v1"
+    ANYTHINGLLM_API_KEY: str = ""
+
     # ── IMORTAL Configurations ────────────────────────────────────────────────
     GEMINI_API_KEY: str = ""              # Chave de API do Gemini para RAG e geração de código
     GEMINI_MODEL: str = "gemini-1.5-flash" # Modelo padrão do Gemini

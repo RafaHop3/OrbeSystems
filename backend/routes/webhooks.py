@@ -84,6 +84,14 @@ async def stripe_webhook(
                 db.commit()
                 webhook_logger.info(f"PREMIUM granted → {user.email}")
 
+                # Provisionar Workspace do AnythingLLM em background (evita lentidão no webhook)
+                try:
+                    from services import anythingllm_service
+                    import asyncio
+                    asyncio.create_task(anythingllm_service.provision_user_workspace(user.id, user.email))
+                except Exception as e:
+                    webhook_logger.error(f"Erro ao disparar provisionamento de workspace AnythingLLM para {user.email}: {e}")
+
     elif event_type in ("customer.subscription.deleted", "customer.subscription.paused"):
         # Subscription ended — downgrade to free user
         customer_id = data.get("customer")
