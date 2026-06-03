@@ -21,6 +21,7 @@ from routes.users import router as users_router
 from routes.checkout import router as checkout_router
 from routes.webhooks import router as webhooks_router
 from routes.imortal import router as imortal_router
+from routes.imobverse import router as imobverse_router
 from security.auth import verify_password
 from sqlalchemy import inspect, text
 from database import engine, Base
@@ -28,7 +29,8 @@ import models.metadata  # Import to register models
 import models.users      # Import to register User tables
 import models.math_vectors  # Import to register math_vectors table
 import models.math_matrices  # Import to register math_matrices table
-import models.audit_log  # Import to register audit_log table
+import models.audit_log    # Import to register audit_log table
+import models.imobverse   # Import to register imob_* tables
 
 def run_migrations():
     """ 
@@ -72,6 +74,15 @@ def run_migrations():
             conn.execute(text(
                 "INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only) "
                 "VALUES ('imortal', 'IMORTAL', 'AI-Powered Formal Verification Toolchain for Embedded Systems (Z3 Solver + Stochastic Fuzzing)', '/ferramentas-premium/imortal', 1, 1)"
+            ))
+
+        # Registrar o Imobverse na tabela de metadados
+        imobverse_exists = conn.execute(text("SELECT 1 FROM projects_metadata WHERE id = 'imobverse'")).fetchone()
+        if not imobverse_exists:
+            print("INFO: [Migration] Registering IMOBVERSE Premium Project...")
+            conn.execute(text(
+                "INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only) "
+                "VALUES ('imobverse', 'Imobverse', 'Plataforma Proptech com Motor de Reputacao, Vistoria Fotografica Inteligente e Geracao de Leads', '/ferramentas-premium/imobverse', 1, 1)"
             ))
 
     print("INFO: [Migration] Schema is up to date.")
@@ -203,6 +214,7 @@ app.include_router(users_router, prefix="/api/users", tags=["users"])
 app.include_router(checkout_router, prefix="/api/users", tags=["users-checkout"])
 app.include_router(webhooks_router, prefix="/api", tags=["webhooks"])
 app.include_router(imortal_router, prefix="/api", tags=["imortal"])
+app.include_router(imobverse_router, prefix="/api", tags=["imobverse"])
 
 
 @app.get("/health", tags=["health"])
