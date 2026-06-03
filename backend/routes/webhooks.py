@@ -77,10 +77,9 @@ async def stripe_webhook(
         if user_id:
             user = db.query(User).filter(User.id == user_id).first()
             if user:
-                if user.role_info:
-                    user.role_info.role_name = "premium"
+                user.role = "premium"
+                user.subscription_status = "active"
                 if user.subscription_info:
-                    user.subscription_info.subscription_status = "active"
                     user.subscription_info.stripe_customer_id = customer_id
                 db.commit()
                 webhook_logger.info(f"PREMIUM granted → {user.email}")
@@ -91,9 +90,8 @@ async def stripe_webhook(
         subscription = db.query(UserSubscription).filter(UserSubscription.stripe_customer_id == customer_id).first()
         if subscription and subscription.user:
             user = subscription.user
-            if user.role_info:
-                user.role_info.role_name = "user"
-            subscription.subscription_status = "canceled"
+            user.role = "user"
+            user.subscription_status = "canceled"
             db.commit()
             webhook_logger.info(f"DOWNGRADED to user → {user.email}")
 
@@ -102,7 +100,10 @@ async def stripe_webhook(
         customer_id = data.get("customer")
         subscription = db.query(UserSubscription).filter(UserSubscription.stripe_customer_id == customer_id).first()
         if subscription:
-            subscription.subscription_status = "past_due"
+            if subscription.user:
+                subscription.user.subscription_status = "past_due"
+            else:
+                subscription.subscription_status = "past_due"
             db.commit()
             webhook_logger.warning(f"Payment failed → customer={customer_id} | status=past_due")
 
@@ -111,7 +112,10 @@ async def stripe_webhook(
         customer_id = data.get("customer")
         subscription = db.query(UserSubscription).filter(UserSubscription.stripe_customer_id == customer_id).first()
         if subscription and subscription.subscription_status == "past_due":
-            subscription.subscription_status = "active"
+            if subscription.user:
+                subscription.user.subscription_status = "active"
+            else:
+                subscription.subscription_status = "active"
             db.commit()
             webhook_logger.info(f"Payment recovered → customer={customer_id} | status=active")
 

@@ -85,8 +85,8 @@ async def register(
         email=data.email,
         password_hash=get_password_hash(data.password),
     )
-    new_user.role_info = UserRole(role_name="user")
-    new_user.subscription_info = UserSubscription(subscription_status="none")
+    new_user.role = "user"
+    new_user.subscription_status = "none"
     
     db.add(new_user)
     db.commit()

@@ -20,6 +20,7 @@ from routes.upload import router as upload_router
 from routes.users import router as users_router
 from routes.checkout import router as checkout_router
 from routes.webhooks import router as webhooks_router
+from routes.imortal import router as imortal_router
 from security.auth import verify_password
 from sqlalchemy import inspect, text
 from database import engine, Base
@@ -63,6 +64,15 @@ def run_migrations():
         if 'ix_projects_metadata_is_premium_only' not in index_names:
             print("INFO: [Migration] Adding index for 'is_premium_only'...")
             conn.execute(text("CREATE INDEX ix_projects_metadata_is_premium_only ON projects_metadata (is_premium_only)"))
+
+        # Ensure IMORTAL project metadata exists for the premium portal
+        exists = conn.execute(text("SELECT 1 FROM projects_metadata WHERE id = 'imortal'")).fetchone()
+        if not exists:
+            print("INFO: [Migration] Registering IMORTAL Premium Project...")
+            conn.execute(text(
+                "INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only) "
+                "VALUES ('imortal', 'IMORTAL', 'AI-Powered Formal Verification Toolchain for Embedded Systems (Z3 Solver + Stochastic Fuzzing)', '/ferramentas-premium/imortal', 1, 1)"
+            ))
 
     print("INFO: [Migration] Schema is up to date.")
 
@@ -192,6 +202,7 @@ app.include_router(upload_router, prefix="/api/admin", tags=["admin-upload"])
 app.include_router(users_router, prefix="/api/users", tags=["users"])
 app.include_router(checkout_router, prefix="/api/users", tags=["users-checkout"])
 app.include_router(webhooks_router, prefix="/api", tags=["webhooks"])
+app.include_router(imortal_router, prefix="/api", tags=["imortal"])
 
 
 @app.get("/health", tags=["health"])

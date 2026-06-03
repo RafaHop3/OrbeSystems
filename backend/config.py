@@ -24,6 +24,15 @@ class Settings(BaseSettings):
     STRIPE_WEBHOOK_SECRET: str = ""       # whsec_...
     STRIPE_PREMIUM_PRICE_ID: str = ""     # price_... (ID do produto Premium)
 
+    # ── IMORTAL Configurations ────────────────────────────────────────────────
+    GEMINI_API_KEY: str = ""              # Chave de API do Gemini para RAG e geração de código
+    GEMINI_MODEL: str = "gemini-1.5-flash" # Modelo padrão do Gemini
+    OLLAMA_URL: str = "http://localhost:11434/api/generate"
+    IMORTAL_MODEL: str = "qwen2.5-coder:7b"
+    Z3_TIMEOUT_MS: int = 5000
+    FUZZ_RUNS: int = 150
+    FUZZ_LOOP_ITERATIONS: int = 12
+
     def validate_stripe_config(self) -> None:
         """Valida se as configurações do Stripe estão presentes."""
         if self.STRIPE_SECRET_KEY and not self.STRIPE_SECRET_KEY.startswith("sk_"):

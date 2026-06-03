@@ -24,15 +24,41 @@ class User(Base):
 
     @property
     def role(self):
-        return self.role_info.role_name if self.role_info else "user"
+        return self.role_info.role_name if self.role_info else (self._role_legacy or "user")
+
+    @role.setter
+    def role(self, value):
+        from models.users.roles import UserRole
+        self._role_legacy = value
+        if self.role_info:
+            self.role_info.role_name = value
+        else:
+            self.role_info = UserRole(role_name=value)
 
     @property
     def stripe_customer_id(self):
         return self.subscription_info.stripe_customer_id if self.subscription_info else None
 
+    @stripe_customer_id.setter
+    def stripe_customer_id(self, value):
+        from models.users.subscriptions import UserSubscription
+        if self.subscription_info:
+            self.subscription_info.stripe_customer_id = value
+        else:
+            self.subscription_info = UserSubscription(stripe_customer_id=value)
+
     @property
     def subscription_status(self):
-        return self.subscription_info.subscription_status if self.subscription_info else "none"
+        return self.subscription_info.subscription_status if self.subscription_info else (self._subscription_status_legacy or "none")
+
+    @subscription_status.setter
+    def subscription_status(self, value):
+        from models.users.subscriptions import UserSubscription
+        self._subscription_status_legacy = value
+        if self.subscription_info:
+            self.subscription_info.subscription_status = value
+        else:
+            self.subscription_info = UserSubscription(subscription_status=value)
 
     def to_dict(self) -> dict:
         return {
