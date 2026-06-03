@@ -5,7 +5,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { 
   Terminal, Shield, Zap, Globe, BarChart2, PieChart, Users, 
-  Sparkles, RefreshCw, Copy, Check, Play, AlertTriangle, ArrowRight, Lock
+  Sparkles, RefreshCw, Copy, Check, Play, AlertTriangle, ArrowRight, Lock,
+  Crown, Download
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -18,6 +19,7 @@ export default function ImortalPage() {
   const [loadingStep, setLoadingStep] = useState(0);
   const [isCopied, setIsCopied] = useState(false);
   const [hitlApproved, setHitlApproved] = useState(false);
+  const [downloadingSdk, setDownloadingSdk] = useState(false);
 
   // Inputs
   const [cyberInput, setCyberInput] = useState('');
@@ -211,6 +213,50 @@ export default function ImortalPage() {
     navigator.clipboard.writeText(text);
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  const handleDownloadFile = (filename: string, content: string) => {
+    if (!content) return;
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadSDK = async () => {
+    try {
+      setDownloadingSdk(true);
+      const res = await fetch(`${API_URL}/api/imortal/download-sdk`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!res.ok) {
+        if (res.status === 403) {
+          throw new Error('Acesso restrito. Assinatura Premium ativa necessária.');
+        }
+        throw new Error(`Erro ao baixar SDK (${res.status})`);
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'imortal-core-sdk.zip';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e: any) {
+      alert(e.message || 'Erro ao efetuar o download do SDK.');
+    } finally {
+      setDownloadingSdk(false);
+    }
   };
 
   // ── Render Radar Chart (SVG) ───────────────────────────────────────────────
@@ -446,6 +492,16 @@ export default function ImortalPage() {
               <span className="text-white">GEMINI 1.5 FLASH</span>
             </div>
           </div>
+
+          {/* Download Core SDK CTA */}
+          <button
+            onClick={handleDownloadSDK}
+            disabled={downloadingSdk}
+            className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-neon-purple/20 border border-neon-purple/50 rounded font-mono text-[10px] font-bold text-neon-purple hover:bg-neon-purple/35 hover:text-white uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(189,0,255,0.15)] disabled:opacity-50"
+          >
+            <Download size={12} className={downloadingSdk ? "animate-spin" : ""} />
+            <span>{downloadingSdk ? "Baixando..." : "Baixar Core SDK"}</span>
+          </button>
         </aside>
 
         {/* Dashboard Main Area */}
@@ -1114,13 +1170,22 @@ export default function ImortalPage() {
                           <Terminal size={14} className="text-yellow-500" />
                           <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">Código C++ Gerado</h3>
                         </div>
-                        <button 
-                          onClick={() => copyToClipboard(cppCode)}
-                          className="text-terminal-muted hover:text-white transition-colors p-1"
-                          title="Copiar código"
-                        >
-                          {isCopied ? <Check size={14} className="text-neon-green" /> : <Copy size={14} />}
-                        </button>
+                        <div className="flex items-center gap-1.5">
+                          <button 
+                            onClick={() => copyToClipboard(cppCode)}
+                            className="text-terminal-muted hover:text-white transition-colors p-1"
+                            title="Copiar código"
+                          >
+                            {isCopied ? <Check size={14} className="text-neon-green" /> : <Copy size={14} />}
+                          </button>
+                          <button 
+                            onClick={() => handleDownloadFile('firmware.cpp', cppCode)}
+                            className="text-terminal-muted hover:text-white transition-colors p-1"
+                            title="Baixar arquivo C++"
+                          >
+                            <Download size={14} />
+                          </button>
+                        </div>
                       </div>
                       <pre className="w-full bg-black/40 border border-terminal-border/30 rounded p-4 font-mono text-[11px] text-white/90 overflow-x-auto max-h-[300px]">
                         <code>{cppCode}</code>
@@ -1155,9 +1220,18 @@ export default function ImortalPage() {
 
                       {hitlApproved && (
                         <div className="flex flex-col gap-2.5 animate-fade-in-up">
-                          <div className="border-b border-terminal-border/40 pb-2 flex items-center gap-2 mt-2">
-                            <Lock size={12} className="text-neon-green" />
-                            <h4 className="font-mono text-[10px] font-bold text-white uppercase tracking-widest">Código Máquina (Intel HEX)</h4>
+                          <div className="border-b border-terminal-border/40 pb-2 flex items-center justify-between mt-2">
+                            <div className="flex items-center gap-2">
+                              <Lock size={12} className="text-neon-green" />
+                              <h4 className="font-mono text-[10px] font-bold text-white uppercase tracking-widest">Código Máquina (Intel HEX)</h4>
+                            </div>
+                            <button 
+                              onClick={() => handleDownloadFile('firmware.hex', hexCode)}
+                              className="text-terminal-muted hover:text-white transition-colors p-1"
+                              title="Baixar arquivo HEX"
+                            >
+                              <Download size={12} />
+                            </button>
                           </div>
                           <pre className="w-full bg-black/40 border border-terminal-border/30 rounded p-3 font-mono text-[9px] text-[#475569] overflow-x-auto max-h-[140px]">
                             <code>{hexCode}</code>

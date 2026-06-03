@@ -282,3 +282,47 @@ async def compile_ir(data: IRRequest, current_user: User = Depends(require_premi
     except Exception as e:
         logger.error(f"Erro na compilação do código: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Erro ao compilar o código fonte.")
+
+
+import io
+import zipfile
+import os
+from fastapi.responses import StreamingResponse
+
+@router.get("/download-sdk")
+async def download_sdk(current_user: User = Depends(require_premium)):
+    """
+    Compacta o diretório do core do IMORTAL (backend/imortal) em memória e serve como ZIP.
+    """
+    # Caminho absoluto da pasta imortal
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    imortal_dir = os.path.join(base_dir, "imortal")
+    
+    if not os.path.exists(imortal_dir):
+        logger.error(f"[IMORTAL SDK] Diretório não encontrado em {imortal_dir}")
+        raise HTTPException(status_code=404, detail="Diretório do Core SDK não encontrado no servidor.")
+
+    try:
+        memory_file = io.BytesIO()
+        with zipfile.ZipFile(memory_file, "w", zipfile.ZIP_DEFLATED) as zip_file:
+            for root, dirs, files in os.walk(imortal_dir):
+                for file in files:
+                    # Evitar incluir arquivos de cache python compilados
+                    if file.endswith(".pyc") or "__pycache__" in root:
+                        continue
+                    file_path = os.path.join(root, file)
+                    # Caminho relativo dentro do arquivo zip
+                    relative_path = os.path.relpath(file_path, base_dir)
+                    zip_file.write(file_path, relative_path)
+                    
+        memory_file.seek(0)
+        
+        return StreamingResponse(
+            memory_file,
+            media_type="application/zip",
+            headers={"Content-Disposition": "attachment; filename=imortal-core-sdk.zip"}
+        )
+    except Exception as e:
+        logger.error(f"Erro ao gerar ZIP do SDK: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Erro ao gerar arquivo do Core SDK.")
+
