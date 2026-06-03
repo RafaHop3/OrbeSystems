@@ -1,6 +1,7 @@
 'use client';
 
-import { Star, GitFork, ExternalLink, Shield, Zap, Globe } from 'lucide-react';
+import { Star, GitFork, ExternalLink, Shield, Zap, Globe, Lock } from 'lucide-react';
+import Link from 'next/link';
 import type { Repository } from '@/types/repository';
 
 const LANGUAGE_COLORS: Record<string, string> = {
@@ -150,22 +151,40 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
           {/* CTA buttons */}
           <div className="flex flex-col gap-2 mt-1">
             {repo.deploy_url && (
-              <a
-                href={repo.deploy_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group/btn flex items-center justify-center gap-2 w-full py-2.5 rounded
-                           font-mono text-xs font-bold tracking-[0.2em] uppercase
-                           border border-neon-purple/50 text-neon-purple
-                           bg-neon-purple/10
-                           hover:bg-neon-purple/20 hover:border-neon-purple hover:text-white
-                           hover:shadow-[0_0_20px_rgba(188,19,254,0.4)]
-                           transition-all duration-300 relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
-                <Globe size={14} className="group-hover/btn:scale-110 transition-transform duration-300" />
-                Ver Projeto Online
-              </a>
+              // Internal route (premium tools) → SPA Link
+              // External URL → new tab anchor
+              repo.deploy_url.startsWith('/') ? (
+                <Link
+                  href={repo.deploy_url}
+                  className="group/btn flex items-center justify-center gap-2 w-full py-2.5 rounded
+                             font-mono text-xs font-bold tracking-[0.2em] uppercase
+                             border border-neon-purple/50 text-neon-purple
+                             bg-neon-purple/10
+                             hover:bg-neon-purple/20 hover:border-neon-purple hover:text-white
+                             hover:shadow-[0_0_20px_rgba(188,19,254,0.4)]
+                             transition-all duration-300 relative overflow-hidden"
+                >
+                  <Lock size={14} className="group-hover/btn:scale-110 transition-transform duration-300" />
+                  Acessar Premium
+                </Link>
+              ) : (
+                <a
+                  href={repo.deploy_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group/btn flex items-center justify-center gap-2 w-full py-2.5 rounded
+                             font-mono text-xs font-bold tracking-[0.2em] uppercase
+                             border border-neon-purple/50 text-neon-purple
+                             bg-neon-purple/10
+                             hover:bg-neon-purple/20 hover:border-neon-purple hover:text-white
+                             hover:shadow-[0_0_20px_rgba(188,19,254,0.4)]
+                             transition-all duration-300 relative overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
+                  <Globe size={14} className="group-hover/btn:scale-110 transition-transform duration-300" />
+                  Ver Projeto Online
+                </a>
+              )
             )}
             
             <a

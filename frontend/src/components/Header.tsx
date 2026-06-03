@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, X, FileText, LayoutGrid, Mail, LogIn, LogOut, Crown } from 'lucide-react';
+import { Menu, X, FileText, LayoutGrid, Mail, LogIn, LogOut, Crown, Zap, Building2, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import OrbeLogo from './OrbeLogo';
 import { useAuth } from '@/hooks/useAuth';
@@ -15,6 +15,7 @@ const NAV_LINKS = [
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
   const { user, loading } = useAuth();
 
   return (
@@ -44,6 +45,50 @@ export default function Header() {
               <span>{label}</span>
             </Link>
           ))}
+
+          {/* Premium Tools dropdown — visible only to premium users */}
+          {user?.role === 'premium' && (
+            <div style={{ position: 'relative' }} onMouseEnter={() => setIsToolsOpen(true)} onMouseLeave={() => setIsToolsOpen(false)}>
+              <button
+                className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-neon-purple hover:text-white transition-all duration-200 group"
+              >
+                <Zap size={14} className="group-hover:scale-110 transition-transform" />
+                <span>Ferramentas</span>
+                <ChevronDown size={11} style={{ transition: 'transform 0.2s', transform: isToolsOpen ? 'rotate(180deg)' : 'none' }} />
+              </button>
+              {isToolsOpen && (
+                <div style={{
+                  position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
+                  marginTop: '8px', background: '#0d1117', border: '1px solid rgba(168,85,247,0.3)',
+                  borderRadius: '12px', padding: '8px', minWidth: '200px', zIndex: 100,
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+                }}>
+                  <Link
+                    href="/ferramentas-premium/imortal"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
+                    onClick={() => setIsToolsOpen(false)}
+                  >
+                    <Zap size={14} color="#a855f7" />
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#f1f5f9', fontFamily: 'monospace' }}>IMORTAL</div>
+                      <div style={{ fontSize: '10px', color: '#64748b' }}>Formal Verification + Z3</div>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/ferramentas-premium/imobverse"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
+                    onClick={() => setIsToolsOpen(false)}
+                  >
+                    <Building2 size={14} color="#a855f7" />
+                    <div>
+                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#f1f5f9', fontFamily: 'monospace' }}>Imobverse</div>
+                      <div style={{ fontSize: '10px', color: '#64748b' }}>Proptech + Motor de Reputação</div>
+                    </div>
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
         </nav>
 
         {/* Right side controls */}
@@ -118,6 +163,27 @@ export default function Header() {
           ))}
           {/* Mobile Auth Links */}
           <div className="flex flex-col gap-2 pt-2 border-t border-white/10">
+            {/* Premium tools links for mobile */}
+            {user?.role === 'premium' && (
+              <>
+                <Link
+                  href="/ferramentas-premium/imortal"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 font-mono text-xs text-neon-purple hover:text-white transition-colors duration-200 tracking-wider py-3"
+                >
+                  <Zap size={16} />
+                  <span>IMORTAL</span>
+                </Link>
+                <Link
+                  href="/ferramentas-premium/imobverse"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 font-mono text-xs text-neon-purple hover:text-white transition-colors duration-200 tracking-wider py-3"
+                >
+                  <Building2 size={16} />
+                  <span>Imobverse</span>
+                </Link>
+              </>
+            )}
             {!user && (
               <Link
                 href="/assinar"
