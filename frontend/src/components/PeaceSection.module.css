@@ -1,0 +1,257 @@
+.peaceSection {
+  position: relative;
+  width: 100%;
+  padding: 6rem 2rem;
+  background: linear-gradient(180deg, #040608 0%, #0a0e1a 50%, #040608 100%);
+  overflow: hidden;
+}
+
+.container {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.sectionTitle {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 0 0 1rem;
+  font-family: 'JetBrains Mono', monospace;
+  animation: fadeIn 0.8s ease-out;
+}
+
+.sectionTitle::before {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #00fff5, transparent);
+  margin: 0 auto 1rem;
+}
+
+.sectionSubtitle {
+  font-size: 1.125rem;
+  color: #64748b;
+  margin: 0;
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  animation: fadeIn 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.messagesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.messageCard {
+  position: relative;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(0, 255, 245, 0.05), rgba(57, 255, 20, 0.05));
+  border: 1px solid rgba(0, 255, 245, 0.2);
+  border-radius: 1rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 0.6s ease-out forwards;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.messageCard:nth-child(1) {
+  animation-delay: 0.2s;
+}
+
+.messageCard:nth-child(2) {
+  animation-delay: 0.4s;
+}
+
+.messageCard:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+.messageCard:nth-child(4) {
+  animation-delay: 0.8s;
+}
+
+.messageCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(0, 255, 245, 0.1), rgba(57, 255, 20, 0.1));
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+.messageCard:hover::before {
+  opacity: 1;
+}
+
+.messageCard:hover {
+  border-color: #00fff5;
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 255, 245, 0.1);
+}
+
+.cardIcon {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  display: inline-block;
+  animation: bounce 2s ease-in-out infinite;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #00fff5;
+  margin: 0 0 0.75rem;
+  font-family: 'JetBrains Mono', monospace;
+  position: relative;
+  z-index: 1;
+}
+
+.cardDescription {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.6;
+  position: relative;
+  z-index: 1;
+}
+
+.cardGlow {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, rgba(0, 255, 245, 0.2), transparent);
+  border-radius: 50%;
+  filter: blur(20px);
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+.messageCard:hover .cardGlow {
+  opacity: 1;
+}
+
+.backgroundOrbs {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.orbBg {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 255, 245, 0.1), transparent);
+  filter: blur(50px);
+  animation: drift 20s ease-in-out infinite;
+}
+
+.orbBg:nth-child(1) {
+  top: -50px;
+  right: -50px;
+  animation-delay: var(--delay);
+}
+
+.orbBg:nth-child(2) {
+  bottom: 100px;
+  left: 10%;
+  background: radial-gradient(circle, rgba(57, 255, 20, 0.1), transparent);
+  animation-delay: calc(var(--delay) + 1s);
+}
+
+.orbBg:nth-child(3) {
+  top: 50%;
+  right: 5%;
+  background: radial-gradient(circle, rgba(189, 0, 255, 0.1), transparent);
+  animation-delay: calc(var(--delay) + 2s);
+}
+
+@keyframes drift {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(20px, -30px);
+  }
+  50% {
+    transform: translate(-20px, 30px);
+  }
+  75% {
+    transform: translate(30px, 20px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .peaceSection {
+    padding: 3rem 1rem;
+  }
+
+  .header {
+    margin-bottom: 2.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 2rem;
+  }
+
+  .messagesGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .orbBg {
+    width: 200px;
+    height: 200px;
+    filter: blur(40px);
+  }
+}
