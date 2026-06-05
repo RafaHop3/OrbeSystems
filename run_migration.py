@@ -4,8 +4,11 @@ run_migration.py — Executor de migração no Supabase
 ═══════════════════════════════════════════════════════
 Uso:
   python run_migration.py "postgresql://postgres:SENHA@db.PROJECT.supabase.co:5432/postgres"
+  python run_migration.py "DATABASE_URL" --rls
 
-O script lê o arquivo supabase_migration.sql na mesma pasta e executa
+  --rls   Aplica supabase_rls_policies.sql (lockdown PostgREST) em vez do schema.
+
+O script lê o arquivo SQL correspondente na mesma pasta e executa
 cada statement individualmente, exibindo o resultado com cores no terminal.
 
 Requisitos:
@@ -15,6 +18,10 @@ Requisitos:
 import sys
 import os
 import re
+
+if sys.platform == "win32" and hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 # ── Verificar dependência ────────────────────────────────────────────────────
 try:
@@ -35,32 +42,51 @@ CYAN   = "\033[96m"
 BOLD   = "\033[1m"
 RESET  = "\033[0m"
 
-def banner():
+def banner(rls_mode: bool = False):
+    subtitle = "RLS Lockdown — PostgREST deny-all" if rls_mode else "Imobverse MVP — Tabelas proptech"
     print(f"""
 {BOLD}{CYAN}╔══════════════════════════════════════════════════════╗
 ║     🚀  Orbe Systems — Supabase Migration Runner      ║
-║         Imobverse MVP — Tabelas proptech               ║
+║         {subtitle:<43} ║
 ╚══════════════════════════════════════════════════════╝{RESET}
 """)
 
 def parse_statements(sql_text: str) -> list[str]:
     """
     Divide o SQL em statements individuais por ';', ignorando
-    comentários e linhas em branco.
+    comentários, linhas em branco e blocos dollar-quoted ($$ ... $$).
     """
-    # Remove comentários de linha única
     cleaned = re.sub(r"--[^\n]*", "", sql_text)
-    # Divide por ';' e filtra vazios
-    raw = cleaned.split(";")
     statements = []
-    for stmt in raw:
-        stripped = stmt.strip()
-        if stripped:
-            statements.append(stripped)
+    buf = []
+    in_dollar = False
+    i = 0
+
+    while i < len(cleaned):
+        if cleaned[i:i + 2] == "$$":
+            in_dollar = not in_dollar
+            buf.append("$$")
+            i += 2
+            continue
+
+        if not in_dollar and cleaned[i] == ";":
+            stmt = "".join(buf).strip()
+            if stmt:
+                statements.append(stmt)
+            buf = []
+            i += 1
+            continue
+
+        buf.append(cleaned[i])
+        i += 1
+
+    stmt = "".join(buf).strip()
+    if stmt:
+        statements.append(stmt)
     return statements
 
-def run_migration(db_url: str, sql_path: str):
-    banner()
+def run_migration(db_url: str, sql_path: str, rls_mode: bool = False):
+    banner(rls_mode=rls_mode)
 
     # ── Valida o arquivo SQL ──────────────────────────────────────────────────
     if not os.path.isfile(sql_path):
@@ -123,6 +149,7 @@ def run_migration(db_url: str, sql_path: str):
                 "relation already exists",
                 "index already exists",
                 "column already exists",
+                "does not exist",
             ]
             if any(kw in err_msg.lower() for kw in ignorable):
                 print(f"          {YELLOW}⚠ Já existia (ignorado): {err_msg[:120]}{RESET}")
@@ -151,22 +178,28 @@ def run_migration(db_url: str, sql_path: str):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
+    args = [a for a in sys.argv[1:] if a != "--rls"]
+    rls_mode = "--rls" in sys.argv[1:]
+
+    if not args:
         print(f"""
 {BOLD}Uso:{RESET}
   python run_migration.py "DATABASE_URL"
+  python run_migration.py "DATABASE_URL" --rls
 
 {BOLD}Exemplo:{RESET}
   python run_migration.py "postgresql://postgres:minha_senha@db.abcdef.supabase.co:5432/postgres"
+  python run_migration.py "postgresql://postgres:minha_senha@db.abcdef.supabase.co:5432/postgres" --rls
 
 {YELLOW}Onde encontrar a URL:{RESET}
-  Supabase Dashboard → Settings → Database → Connection string
+  Supabase Dashboard -> Settings -> Database -> Connection string
   Mode: Session (porta 5432)
 """)
         sys.exit(0)
 
-    db_url   = sys.argv[1]
-    # Busca o SQL relativo a este script
-    sql_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "supabase_migration.sql")
+    db_url = args[0]
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    sql_file = "supabase_rls_policies.sql" if rls_mode else "supabase_migration.sql"
+    sql_path = os.path.join(base_dir, sql_file)
 
-    run_migration(db_url, sql_path)
+    run_migration(db_url, sql_path, rls_mode=rls_mode)

@@ -56,7 +56,11 @@ export default function ProjectsGrid() {
   }, []);
 
   return (
-    <section id="projects" className="max-w-7xl mx-auto px-6 py-24">
+    <section
+      id="projects"
+      data-narrative-chapter="2"
+      className="max-w-7xl mx-auto px-6 py-24 scroll-mt-8"
+    >
       {/* Section header */}
       <div className="mb-14">
         <div className="flex items-center gap-3 mb-4">

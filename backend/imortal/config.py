@@ -73,3 +73,16 @@ def setup_logging() -> None:
         handlers=handlers,
         force=True,
     )
+
+# ─── Licenciamento Assinatura ──────────────────────────────────────────────────
+ORBE_PUBLIC_KEY: str = """-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt99bPAViCjs9WENKHhyH
+8jgzWygODrxrdcBqKkaN155R6QmiajWby/1BPV//Zuz0w7A1Ka4XPOEPhhpHgwCj
+t0eezJ6bOX3hXp1dMYYuXjlKNpQG7JCydkNKjMQnxMUCbRbj3RcYl29Ur1lxUK5o
+7N3ywtwofJ8rERseDHlPdUZ/ksmY/Rh57YyPxADunpkACVVbM8NF+NJw9llyFqKV
+aCA8rsvRPeTnpx4attdPLYGexwVQvYDtEEZxbfFX6TQh1bB1sf7LxfRJ54LQaNUJ
+PDsUOBzMLAOIZTvfUyLUOhbqhe3L2s4D5eIs2Uq2P+tkFXGzv6BH7gy6TrOdk7Ui
+iQIDAQAB
+-----END PUBLIC KEY-----"""
+LICENSE_TOKEN_FILE: str = os.getenv("IMORTAL_LICENSE_FILE", "license.token")
+

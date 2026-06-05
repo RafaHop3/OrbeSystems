@@ -1,23 +1,68 @@
 -- ════════════════════════════════════════════════════════════════════════════════
--- SUPABASE MIGRATION & SEED SCRIPT — ORBE SYSTEMS / IMORTAL
+-- SUPABASE MIGRATION & SEED SCRIPT — ORBE SYSTEMS / IMORTAL / IMOBVERSE
 -- ════════════════════════════════════════════════════════════════════════════════
 -- Este script realiza o setup do banco de dados no ambiente do Supabase (PostgreSQL),
--- garantindo a criação de índices, a sincronização de tabelas e o cadastro do IMORTAL.
+-- garantindo a criação de tabelas, índices, a sincronização de tabelas e o cadastro do IMORTAL e IMOBVERSE.
 
 -- 1. Ativar a extensão de vetores (caso queira implantar o RAG chatbot no futuro)
 CREATE EXTENSION IF NOT EXISTS vector;
 
--- 2. Garantir consistência nas colunas de projetos
+-- 2. Criar a tabela projects_metadata se não existir
+CREATE TABLE IF NOT EXISTS projects_metadata (
+    id TEXT PRIMARY KEY,
+    repo_name TEXT,
+    custom_description TEXT,
+    image_url TEXT,
+    video_url TEXT,
+    deploy_url TEXT,
+    is_featured BOOLEAN NOT NULL DEFAULT false,
+    is_premium_only BOOLEAN NOT NULL DEFAULT false
+);
+
+-- 3. Garantir consistência nas colunas de projetos
 ALTER TABLE projects_metadata ADD COLUMN IF NOT EXISTS deploy_url TEXT;
 ALTER TABLE projects_metadata ADD COLUMN IF NOT EXISTS is_featured BOOLEAN NOT NULL DEFAULT false;
 ALTER TABLE projects_metadata ADD COLUMN IF NOT EXISTS repo_name TEXT;
 ALTER TABLE projects_metadata ADD COLUMN IF NOT EXISTS is_premium_only BOOLEAN NOT NULL DEFAULT false;
 
--- 3. Criar índices para otimizar busca do Grid do Portfólio
+-- 4. Criar índices para otimizar busca do Grid do Portfólio
 CREATE INDEX IF NOT EXISTS ix_projects_metadata_is_featured ON projects_metadata (is_featured);
 CREATE INDEX IF NOT EXISTS ix_projects_metadata_is_premium_only ON projects_metadata (is_premium_only);
 
--- 4. Registrar o Projeto IMORTAL como Premium e Destaque
+-- 5. Criar tabelas de RBAC (roles) e Subscrições se não existirem
+CREATE TABLE IF NOT EXISTS user_roles (
+    id TEXT PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+    role_name TEXT NOT NULL DEFAULT 'user'
+);
+
+CREATE TABLE IF NOT EXISTS user_subscriptions (
+    id TEXT PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+    stripe_customer_id TEXT,
+    subscription_status TEXT NOT NULL DEFAULT 'none'
+);
+
+CREATE INDEX IF NOT EXISTS ix_user_subscriptions_stripe_customer_id ON user_subscriptions (stripe_customer_id);
+
+-- 6. Migrar dados existentes de users para as tabelas de RBAC/Subscrições
+INSERT INTO user_roles (id, user_id, role_name)
+SELECT 
+    gen_random_uuid()::text, 
+    id, 
+    role::text 
+FROM users
+ON CONFLICT (user_id) DO NOTHING;
+
+INSERT INTO user_subscriptions (id, user_id, subscription_status)
+SELECT 
+    gen_random_uuid()::text, 
+    id, 
+    CASE WHEN role::text = 'premium' THEN 'active' ELSE 'none' END
+FROM users
+ON CONFLICT (user_id) DO NOTHING;
+
+-- 7. Registrar o Projeto IMORTAL como Premium e Destaque
 INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only)
 VALUES (
     'imortal', 
@@ -34,26 +79,14 @@ SET repo_name = EXCLUDED.repo_name,
     is_featured = EXCLUDED.is_featured,
     is_premium_only = EXCLUDED.is_premium_only;
 
--- 5. Helper Queries de Administração (Execute manualmente se precisar forçar plano)
---
--- Para promover um usuário a PREMIUM manualmente no Supabase:
--- UPDATE user_roles SET role_name = 'premium' WHERE user_id = 'UUID_DO_USUARIO';
--- UPDATE user_subscriptions SET subscription_status = 'active' WHERE user_id = 'UUID_DO_USUARIO';
--- UPDATE users SET role = 'premium', subscription_status = 'active' WHERE id = 'UUID_DO_USUARIO';
---
--- Para rebaixar de volta a usuário gratuito:
--- UPDATE user_roles SET role_name = 'user' WHERE user_id = 'UUID_DO_USUARIO';
--- UPDATE user_subscriptions SET subscription_status = 'canceled' WHERE user_id = 'UUID_DO_USUARIO';
--- UPDATE users SET role = 'user', subscription_status = 'none' WHERE id = 'UUID_DO_USUARIO';
-
 -- ════════════════════════════════════════════════════════════════════════════════
 -- IMOBVERSE — Tabelas do Motor Proptech
 -- ════════════════════════════════════════════════════════════════════════════════
 
--- 6. Tabela de Imóveis
+-- 8. Tabela de Imóveis
 CREATE TABLE IF NOT EXISTS imob_properties (
     id               TEXT PRIMARY KEY,
-    owner_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    owner_id         UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title            VARCHAR(150) NOT NULL,
     description      TEXT NOT NULL,
     price            FLOAT NOT NULL,
@@ -79,7 +112,7 @@ CREATE INDEX IF NOT EXISTS ix_imob_properties_status   ON imob_properties (statu
 CREATE INDEX IF NOT EXISTS ix_imob_properties_city     ON imob_properties (city);
 CREATE INDEX IF NOT EXISTS ix_imob_properties_owner_id ON imob_properties (owner_id);
 
--- 7. Tabela de Itens de Vistoria
+-- 9. Tabela de Itens de Vistoria
 CREATE TABLE IF NOT EXISTS imob_inspection_items (
     id                   TEXT PRIMARY KEY,
     property_id          TEXT NOT NULL REFERENCES imob_properties(id) ON DELETE CASCADE,
@@ -97,7 +130,7 @@ CREATE TABLE IF NOT EXISTS imob_inspection_items (
 CREATE INDEX IF NOT EXISTS ix_imob_inspection_property ON imob_inspection_items (property_id);
 CREATE INDEX IF NOT EXISTS ix_imob_inspection_status   ON imob_inspection_items (status);
 
--- 8. Tabela de Leads
+-- 10. Tabela de Leads
 CREATE TABLE IF NOT EXISTS imob_leads (
     id              TEXT PRIMARY KEY,
     property_id     TEXT NOT NULL REFERENCES imob_properties(id) ON DELETE CASCADE,
@@ -111,7 +144,7 @@ CREATE TABLE IF NOT EXISTS imob_leads (
 
 CREATE INDEX IF NOT EXISTS ix_imob_leads_property ON imob_leads (property_id);
 
--- 9. Registrar o Projeto IMOBVERSE como Premium e Destaque
+-- 11. Registrar o Projeto IMOBVERSE como Premium e Destaque
 INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only)
 VALUES (
     'imobverse',
@@ -128,3 +161,8 @@ SET repo_name          = EXCLUDED.repo_name,
     is_featured        = EXCLUDED.is_featured,
     is_premium_only    = EXCLUDED.is_premium_only;
 
+-- ════════════════════════════════════════════════════════════════════════════════
+-- PÓS-MIGRAÇÃO OBRIGATÓRIA (SEGURANÇA)
+-- ════════════════════════════════════════════════════════════════════════════════
+-- Após este script, execute o lockdown de RLS para bloquear acesso via chave anon:
+--   python run_migration.py "DATABASE_URL" --rls

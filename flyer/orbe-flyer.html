@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbe Systems — Flyer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --graphite: #12151c;
+      --sapphire: #1e6fd9;
+      --cyan: #22d3ee;
+      --text: #e8edf4;
+      --muted: #8b9bb4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #050608;
+      font-family: "Inter", Helvetica, Arial, sans-serif;
+      padding: 24px;
+    }
+
+    .flyer {
+      width: 1080px;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+      background: var(--bg);
+    }
+
+    .flyer-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 45%, rgba(30, 111, 217, 0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 20% 80%, rgba(34, 211, 238, 0.08) 0%, transparent 60%),
+        linear-gradient(180deg, #0a0c10 0%, #050608 100%);
+    }
+
+    .flyer-bg::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 20%, transparent 75%);
+    }
+
+    .orb {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      transform: translate(-50%, -50%);
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(34, 211, 238, 0.35), rgba(30, 111, 217, 0.15) 40%, transparent 70%);
+      box-shadow: 0 0 80px rgba(30, 111, 217, 0.4), 0 0 120px rgba(34, 211, 238, 0.15);
+      opacity: 0.7;
+    }
+
+    .terminal-lines {
+      position: absolute;
+      left: 5%;
+      right: 5%;
+      bottom: 8%;
+      font-family: "Roboto Mono", monospace;
+      font-size: 9px;
+      color: rgba(34, 211, 238, 0.25);
+      line-height: 1.6;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 48px 56px 40px;
+    }
+
+    .brand {
+      font-family: "Roboto Mono", monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      color: var(--sapphire);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .brand span { color: var(--cyan); }
+
+    h1 {
+      font-size: clamp(22px, 2.4vw, 32px);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-transform: uppercase;
+      max-width: 92%;
+      margin-bottom: 14px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 85%;
+      margin-bottom: 28px;
+    }
+
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: auto;
+      margin-bottom: 24px;
+    }
+
+    .pillar {
+      background: rgba(18, 21, 28, 0.85);
+      border: 1px solid rgba(30, 111, 217, 0.25);
+      border-left: 3px solid var(--sapphire);
+      padding: 14px 16px;
+      border-radius: 2px;
+    }
+
+    .pillar-icon {
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .pillar h3 {
+      font-family: "Roboto Mono", monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .pillar p {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .cta-block {
+      border-top: 1px solid rgba(30, 111, 217, 0.3);
+      padding-top: 18px;
+    }
+
+    .cta-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      color: var(--text);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .cta-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .cta-url {
+      font-family: "Roboto Mono", monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--cyan);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .cta-url:hover { color: var(--sapphire); }
+
+    @media print {
+      body { padding: 0; background: white; }
+      .flyer { box-shadow: none; width: 100%; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <article class="flyer" role="img" aria-label="Flyer promocional Orbe Systems">
+    <div class="flyer-bg" aria-hidden="true"></div>
+    <div class="orb" aria-hidden="true"></div>
+    <pre class="terminal-lines" aria-hidden="true">[AUDIT] RLS lockdown applied — 23 tables secured
+[SYS] PostgREST deny-all policy active
+[OK] cyber-safety posture: hardened
+[LOG] terminal-first engineering pipeline ready</pre>
+
+    <div class="content">
+      <p class="brand"><span>ORBE</span> SYSTEMS</p>
+
+      <h1>O terminal é a sua arma.<br />A IA é a sua inteligência.</h1>
+
+      <p class="subtitle">
+        Consultoria, automação e auditoria de infraestrutura — leveza operacional e cyber safety
+        direto no ambiente do seu time, sem depender de IDEs pesadas na máquina virtual.
+      </p>
+
+      <section class="pillars">
+        <div class="pillar">
+          <div class="pillar-icon" aria-hidden="true">⚡</div>
+          <h3>Leveza absoluta</h3>
+          <p>Respostas de nível sênior rodando direto no seu terminal. Consumo zero de hardware local.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon" aria-hidden="true">🛡️</div>
+          <h3>Mentalidade hacker</h3>
+          <p>Foco puro. Sem abas, sem distrações, sem tirar a mão do teclado.</p>
+        </div>
+        <div class="pillar">
+          <div class="pillar-icon" aria-hidden="true">🔍</div>
+          <h3>Auditoria &amp; cyber safety</h3>
+          <p>Decifre logs, faça auditorias de código e gere relatórios de hardening em tempo real.</p>
+        </div>
+      </section>
+
+      <footer class="cta-block">
+        <p class="cta-title">Soberania tecnológica e infraestrutura blindada.</p>
+        <p class="cta-sub">
+          Visite nosso ecossistema e conheça nossas soluções de desenvolvimento e defesa ativa:
+        </p>
+        <a class="cta-url" href="https://orbesystems.com.br">orbesystems.com.br</a>
+      </footer>
+    </div>
+  </article>
+</body>
+</html>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import logo from '../../imagems/logos/Design sem nome.png';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
+import MouseAtomTrail from '@/components/MouseAtomTrail';
 
 export const metadata: Metadata = {
   title: 'Orbe Systems | Engineering & Arquitetura de Dados',
@@ -42,6 +43,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className="antialiased">
         <AnalyticsTracker />
+        <MouseAtomTrail />
         {children}
       </body>
     </html>

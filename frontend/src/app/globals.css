@@ -21,6 +21,22 @@ body {
   overflow-x: hidden;
 }
 
+/* Subtle body scanlines for depth */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.04) 3px,
+    rgba(0, 0, 0, 0.04) 4px
+  );
+  pointer-events: none;
+  z-index: 9998;
+}
+
 /* ── Custom Scrollbar ── */
 ::-webkit-scrollbar {
   width: 6px;
@@ -93,3 +109,20 @@ body {
     box-shadow: 0 0 20px #00fff530, inset 0 0 20px #00fff508;
   }
 }
+
+/* ── Shimmer animation ── */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+.animate-shimmer {
+  animation: shimmer 1.4s ease infinite;
+}
+
+/* ── Scroll-reveal base (no-JS fallback) ── */
+@media (prefers-reduced-motion: reduce) {
+  .will-change-transform {
+    will-change: auto;
+  }
+}
+

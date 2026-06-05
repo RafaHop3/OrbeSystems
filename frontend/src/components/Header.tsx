@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, X, FileText, LayoutGrid, Mail, LogIn, LogOut, Crown, Zap, Building2, ChevronDown } from 'lucide-react';
+import { Menu, X, FileText, LayoutGrid, Mail, LogIn, LogOut, Crown, Zap, Building2, ChevronDown, Monitor } from 'lucide-react';
 import Link from 'next/link';
 import OrbeLogo from './OrbeLogo';
 import { useAuth } from '@/hooks/useAuth';
 import { logoutAction } from '@/lib/auth-actions';
 
 const NAV_LINKS = [
+  { label: 'Workspace', href: '/workspace', icon: Monitor },
   { label: 'Projetos', href: '/#projects', icon: FileText },
   { label: 'Skills', href: '/skills', icon: LayoutGrid },
   { label: 'Contato', href: '/#contact', icon: Mail },

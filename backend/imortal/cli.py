@@ -9,13 +9,18 @@ from rich.table import Table
 from rich.text import Text
 from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.prompt import Prompt
+from jose import jwt, JWTError
+from datetime import datetime, timezone
 from imortal.ir import validate_ir
 from imortal.ai import generate_ir_from_intent
 from imortal.prover import FormalVerifier
 from imortal.sandbox import SandboxFuzzer
 from imortal.compiler import CodeCompiler
 from imortal.visualizer import IRVisualizer
-from imortal.config import FUZZ_RUNS, FUZZ_LOOP_ITERATIONS, OUTPUT_DIR, setup_logging
+from imortal.config import (
+    FUZZ_RUNS, FUZZ_LOOP_ITERATIONS, OUTPUT_DIR, setup_logging,
+    ORBE_PUBLIC_KEY, LICENSE_TOKEN_FILE
+)
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -36,8 +41,107 @@ def print_banner():
     console.print(Panel(banner_text, border_style="cyan", expand=False))
     console.print("[bold white]A IA propõe, a matemática prova, a sandbox estressa, o humano autoriza.[/]\n")
 
+def verify_cli_license() -> dict:
+    """
+    Verifica a licenca do usuario offline usando a chave publica do servidor.
+    Retorna um dicionario com o status de validacao e informacoes do usuario.
+    """
+    token = os.getenv("IMORTAL_LICENSE_TOKEN", "").strip()
+    
+    # Se nao estiver no env, tenta ler do arquivo local
+    if not token and os.path.exists(LICENSE_TOKEN_FILE):
+        try:
+            with open(LICENSE_TOKEN_FILE, "r", encoding="utf-8") as f:
+                token = f.read().strip()
+        except Exception as e:
+            logger.warning("Falha ao ler o arquivo %s: %s", LICENSE_TOKEN_FILE, e)
+            
+    # Se ainda assim nao encontrar, solicita via prompt
+    if not token:
+        console.print(Panel(
+            "[bold yellow]🔑 LICENCA REQUERIDA PARA EXECUCAO OFFLINE[/]\n\n"
+            "Nao foi encontrada uma licenca valida no ambiente ou arquivo local.\n"
+            "Para validar sua assinatura premium e liberar a toolchain, faca login em:\n"
+            "👉 [bold white]https://orbesystems.com.br/assinar[/]\n\n"
+            "Copie o seu Token de Licenca Offline e insira abaixo:",
+            border_style="yellow",
+            expand=False
+        ))
+        token = Prompt.ask("[bold cyan]Inserir Token de Licenca[/]").strip()
+        
+    if not token:
+        return {"valid": False, "reason": "Nenhum token fornecido."}
+        
+    try:
+        # Decodifica e valida a assinatura digital e o emissor
+        payload = jwt.decode(
+            token, 
+            ORBE_PUBLIC_KEY, 
+            algorithms=["RS256"],
+            audience=None,
+            issuer="orbesystems.com.br"
+        )
+        
+        # Validacao extra de expiracao
+        exp_timestamp = payload.get("exp", 0)
+        exp_date = datetime.fromtimestamp(exp_timestamp, tz=timezone.utc)
+        now = datetime.now(timezone.utc)
+        
+        if now > exp_date:
+            return {"valid": False, "reason": "A licenca informada esta expirada."}
+            
+        role = payload.get("role", "")
+        features = payload.get("features", [])
+        
+        # Acesso requer perfil de premium ou a feature do compilador ativada
+        if role != "premium" and "imortal_avr_compiler" not in features:
+            return {"valid": False, "reason": "Sua licenca nao possui permissao para o compilador IMORTAL."}
+            
+        # Salva o token localmente para facilitar futuros boots
+        try:
+            with open(LICENSE_TOKEN_FILE, "w", encoding="utf-8") as f:
+                f.write(token)
+        except Exception:
+            pass
+            
+        return {
+            "valid": True,
+            "email": payload.get("sub"),
+            "role": role,
+            "expires_at": exp_date
+        }
+    except JWTError as e:
+        return {"valid": False, "reason": f"Assinatura de licenca invalida: {str(e)}"}
+    except Exception as e:
+        return {"valid": False, "reason": f"Falha na integridade do token: {str(e)}"}
+
 async def run_cli_pipeline(user_intent: str):
-    """Executa o pipeline completo na CLI com animações e relatórios Rich."""
+    """Executa o pipeline completo na CLI com animacoes e relatorios Rich."""
+    
+    # ── Validação do Token de Licença Offline ─────────────────────────────────
+    license_info = verify_cli_license()
+    if not license_info["valid"]:
+        console.print(Panel(
+            f"[bold red]✖ ACESSO RECUSADO: LICENÇA INVÁLIDA[/]\n\n"
+            f"Motivo: [bold white]{license_info['reason']}[/]\n\n"
+            f"Adquira ou valide sua licença no portal da Orbe Systems.",
+            title="Licensing Error",
+            border_style="red",
+            expand=False
+        ))
+        return
+
+    # Boas-vindas ao usuário verificado
+    console.print(Panel(
+        f"[bold green]🔒 ASSINATURA VERIFICADA COM SUCESSO![/]\n\n"
+        f"Usuário: [bold white]{license_info['email']}[/]\n"
+        f"Expira em: [bold white]{license_info['expires_at'].strftime('%Y-%m-%d %H:%M:%S')} UTC[/]\n\n"
+        f"Módulo IMORTAL Premium Bare-Metal ativado e liberado.",
+        title="Offline Verified License",
+        border_style="green",
+        expand=False
+    ))
+
     console.print(f"[bold cyan]Intenção Recebida:[/] '{user_intent}'\n")
 
     # 1. Inferência de IA

@@ -23,6 +23,7 @@ from routes.webhooks import router as webhooks_router
 from routes.imortal import router as imortal_router
 from routes.imobverse import router as imobverse_router
 from security.auth import verify_password
+from security.supabase_rls import ensure_supabase_rls
 from sqlalchemy import inspect, text
 from database import engine, Base
 import models.metadata  # Import to register models
@@ -120,6 +121,7 @@ async def lifespan(app: FastAPI):
         print(f"INFO: [Database] Initializing tables...")
         Base.metadata.create_all(bind=engine)
         run_migrations()
+        ensure_supabase_rls(engine)
     except Exception as e:
         print(f"ERROR: [Database] Failed to init DB: {e}")
     

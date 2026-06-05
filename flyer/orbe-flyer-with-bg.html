@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Orbe Systems — Flyer (com arte IA)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --sapphire: #1e6fd9;
+      --cyan: #22d3ee;
+      --text: #e8edf4;
+      --muted: #b8c5d9;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #050608;
+      font-family: Inter, Helvetica, sans-serif;
+      padding: 24px;
+    }
+    .flyer {
+      width: 1080px;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.65);
+    }
+    .flyer img.bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.55) contrast(1.1);
+    }
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(5, 6, 8, 0.75) 0%,
+        rgba(5, 6, 8, 0.35) 40%,
+        rgba(5, 6, 8, 0.85) 100%
+      );
+    }
+    .content {
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      padding: 44px 52px 36px;
+    }
+    .brand {
+      font-family: "Roboto Mono", monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      color: var(--sapphire);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      text-shadow: 0 0 20px rgba(30, 111, 217, 0.5);
+    }
+    .brand span { color: var(--cyan); }
+    h1 {
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.12;
+      color: var(--text);
+      text-transform: uppercase;
+      text-shadow: 0 2px 24px rgba(0, 0, 0, 0.8);
+      max-width: 95%;
+      margin-bottom: 12px;
+    }
+    .subtitle {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 82%;
+      margin-bottom: 22px;
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.9);
+    }
+    .pillars {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: auto;
+      margin-bottom: 20px;
+    }
+    .pillar {
+      background: rgba(8, 10, 14, 0.82);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      border-left: 3px solid var(--sapphire);
+      padding: 12px 14px;
+    }
+    .pillar h3 {
+      font-family: "Roboto Mono", monospace;
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--cyan);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin: 4px 0 5px;
+    }
+    .pillar p { font-size: 10px; color: var(--muted); line-height: 1.4; }
+    .cta-block {
+      border-top: 1px solid rgba(34, 211, 238, 0.35);
+      padding-top: 14px;
+    }
+    .cta-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .cta-sub { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
+    .cta-url {
+      font-family: "Roboto Mono", monospace;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--cyan);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <article class="flyer">
+    <!-- Ajuste o caminho se mover os arquivos -->
+    <img class="bg" src="orbe-flyer-background.png" alt="" />
+    <div class="overlay"></div>
+    <div class="content">
+      <p class="brand"><span>ORBE</span> SYSTEMS</p>
+      <h1>O terminal é a sua arma.<br />A IA é a sua inteligência.</h1>
+      <p class="subtitle">
+        Consultoria, automação e auditoria — leveza e cyber safety no ambiente do seu time,
+        sem IDEs pesadas travando sua VM.
+      </p>
+      <section class="pillars">
+        <div class="pillar">
+          <div>⚡</div>
+          <h3>Leveza absoluta</h3>
+          <p>Respostas de nível sênior no terminal. Consumo zero de hardware local.</p>
+        </div>
+        <div class="pillar">
+          <div>🛡️</div>
+          <h3>Mentalidade hacker</h3>
+          <p>Foco puro. Sem abas, sem distrações, sem tirar a mão do teclado.</p>
+        </div>
+        <div class="pillar">
+          <div>🔍</div>
+          <h3>Auditoria &amp; cyber safety</h3>
+          <p>Logs, auditorias de código e relatórios de hardening em tempo real.</p>
+        </div>
+      </section>
+      <footer class="cta-block">
+        <p class="cta-title">Soberania tecnológica e infraestrutura blindada.</p>
+        <p class="cta-sub">Visite nosso ecossistema de desenvolvimento e defesa ativa:</p>
+        <a class="cta-url" href="https://orbesystems.com.br">orbesystems.com.br</a>
+      </footer>
+    </div>
+  </article>
+</body>
+</html>

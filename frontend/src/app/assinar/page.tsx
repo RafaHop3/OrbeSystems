@@ -8,8 +8,8 @@
  * para a página de checkout seguro do Stripe.
  */
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useTransition, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createCheckoutSessionAction } from "@/lib/auth-actions";
 
 const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://orbe-systems-api.onrender.com";
@@ -71,10 +71,38 @@ const PLANS = [
   },
 ];
 
-export default function AssinarPage() {
+function AssinarPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+
+  const fromRoute = searchParams.get("from");
+
+  const getBannerDetails = () => {
+    if (!fromRoute) return null;
+    if (fromRoute.includes("imobverse")) {
+      return {
+        title: "🏠 Imobverse — Plataforma Proptech & Vistoria",
+        description: "Esta tela requer a assinatura do plano PREMIUM. O Imobverse integra um motor de reputação em tempo real, inteligência de vistorias fotográficas de imóveis para prevenir fraudes, e geração segura de leads de locação.",
+        why: "Por que essa tela é Premium? O Imobverse executa consultas complexas de reputação no banco de dados e processa o upload e processamento de imagens de vistoria na nuvem."
+      };
+    }
+    if (fromRoute.includes("imortal")) {
+      return {
+        title: "⚡ IMORTAL — Hardware Formal Verification",
+        description: "Esta tela requer a assinatura do plano PREMIUM. O IMORTAL possui verificação formal matemática via Microsoft Z3 Solver e sandbox de fuzzing estocástico para provar a corretude de firmware para microcontroladores AVR antes da compilação.",
+        why: "Por que essa tela é Premium? A verificação matemática e a execução concorrente em sandbox de fuzzing utilizam alta capacidade de processamento (CPU-bound) isolada em nossos servidores."
+      };
+    }
+    return {
+      title: "🔒 Tela Restrita / Ferramenta Premium",
+      description: "A funcionalidade que você tentou acessar faz parte do ecossistema de ferramentas premium da Orbe Systems.",
+      why: "Por que essa tela é Premium? Nossos algoritmos avançados e ferramentas analíticas rodam sob um ecossistema seguro de microsserviços exclusivos para assinantes premium."
+    };
+  };
+
+  const banner = getBannerDetails();
 
   const handleStripeCheckout = () => {
     setError(null);
@@ -110,6 +138,19 @@ export default function AssinarPage() {
             Acesso completo às ferramentas de Data Architecture &amp; Engineering
           </p>
         </div>
+
+        {/* Banner de aviso para rotas premium bloqueadas */}
+        {banner && (
+          <div style={styles.premiumBanner}>
+            <div style={styles.bannerTitle}>
+              <span>👑</span> {banner.title}
+            </div>
+            <p style={styles.bannerDesc}>{banner.description}</p>
+            <div style={styles.bannerWhy}>
+              <strong>💡 {banner.why}</strong>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div style={styles.errorBanner}>
@@ -212,6 +253,24 @@ export default function AssinarPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function AssinarPage() {
+  return (
+    <Suspense fallback={
+      <div style={styles.page}>
+        <div style={styles.grid} />
+        <div style={styles.container}>
+          <div style={styles.header}>
+            <div style={styles.badge}>UPGRADE_SYSTEM</div>
+            <h1 style={styles.title}>Carregando...</h1>
+          </div>
+        </div>
+      </div>
+    }>
+      <AssinarPageContent />
+    </Suspense>
   );
 }
 
@@ -370,5 +429,37 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: "12px",
     marginTop: "48px",
     lineHeight: 1.6,
+  },
+  premiumBanner: {
+    background: "rgba(188,19,254,0.06)",
+    border: "1px solid rgba(188,19,254,0.3)",
+    boxShadow: "0 0 20px rgba(188,19,254,0.1)",
+    borderRadius: "12px",
+    padding: "24px",
+    marginBottom: "40px",
+    textAlign: "left",
+  },
+  bannerTitle: {
+    color: "#bc13fe",
+    fontSize: "18px",
+    fontWeight: 700,
+    marginBottom: "8px",
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+  },
+  bannerDesc: {
+    color: "rgba(255,255,255,0.75)",
+    fontSize: "13px",
+    lineHeight: 1.6,
+    marginBottom: "12px",
+  },
+  bannerWhy: {
+    background: "rgba(0,0,0,0.3)",
+    borderLeft: "3px solid #00fff5",
+    padding: "10px 14px",
+    fontSize: "12px",
+    color: "#00fff5",
+    lineHeight: 1.5,
   },
 };
