@@ -15,6 +15,7 @@ from routes.auth_public import router as auth_public_router
 from routes.admin import router as admin_router
 from routes.admin_projects import router as admin_projects_router
 from routes.admin_users import router as admin_users_router
+from routes.admin_database import router as admin_database_router
 from routes.analytics import router as analytics_router
 from routes.upload import router as upload_router
 from routes.users import router as users_router
@@ -118,7 +119,7 @@ async def lifespan(app: FastAPI):
     print(" OrbeSystems API shutting down...")
 
 
-# ── App ───────────────────────────────────────────────────────────────────────
+# ── App ────────────────────────────────────────────────────────────
 import traceback
 from fastapi.responses import JSONResponse
 
@@ -131,7 +132,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ── CORS Middleware ─────────────────────────────────────────────────────────────
+# ── CORS Middleware ────────────────────────────────────────────────────────
 # IMPORTANT: Must be registered FIRST, before any exception handlers.
 # This ensures CORS headers are present even on 500 error responses.
 # Without this, the browser blocks the response before the JS can read the error.
@@ -164,7 +165,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.state.limiter = auth_limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# ── Secure Docs ───────────────────────────────────────────────────────────────
+# ── Secure Docs ──────────────────────────────────────────────────────────
 
 def get_current_admin_docs(credentials: HTTPBasicCredentials = Depends(security_basic)):
     correct_username = secrets.compare_digest(credentials.username, settings.ADMIN_USERNAME)
@@ -189,16 +190,17 @@ async def openapi(username: str = Depends(get_current_admin_docs)):
     return get_openapi(title=app.title, version=app.version, routes=app.routes)
 
 
-# ── Routers ───────────────────────────────────────────────────────────────────
+# ── Routers ───────────────────────────────────────────────────────────
 app.include_router(projects_router, prefix="/api")
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(auth_public_router, prefix="/api/auth", tags=["auth-public"])
 app.include_router(admin_router, prefix="/api/admin", tags=["admin"])
 app.include_router(admin_projects_router, prefix="/api/admin", tags=["admin-projects"])
 app.include_router(admin_users_router, prefix="/api/admin", tags=["admin-users"])
+app.include_router(admin_database_router, prefix="/api/admin", tags=["admin-database"])
 app.include_router(analytics_router, prefix="/api/analytics", tags=["analytics"])
 app.include_router(upload_router, prefix="/api/admin", tags=["admin-upload"])
-# ── User Domain (RBAC) ────────────────────────────────────────────────────────
+# ── User Domain (RBAC) ───────────────────────────────────────────────────────
 app.include_router(users_router, prefix="/api/users", tags=["users"])
 app.include_router(checkout_router, prefix="/api/users", tags=["users-checkout"])
 app.include_router(webhooks_router, prefix="/api", tags=["webhooks"])
