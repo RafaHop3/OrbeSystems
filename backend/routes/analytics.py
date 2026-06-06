@@ -7,11 +7,6 @@ from security.auth import get_current_admin_user
 
 router = APIRouter()
 
-@router.options("/log")
-async def options_log():
-    """CORS preflight handler for /log endpoint"""
-    return {"status": "ok"}
-
 @router.post("/log")
 @limiter.limit("30/minute")
 async def log_visit(request: Request):

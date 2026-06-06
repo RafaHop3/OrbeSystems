@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ExternalLink, Github, Cpu, Shield, Zap, ArrowRight } from 'lucide-react';
 
-// URL do IMORTAL em produção (Render) — atualizar quando o deploy estiver ativo
-const IMORTAL_LIVE_URL = process.env.NEXT_PUBLIC_IMORTAL_URL || 'https://imortal.onrender.com';
+// URL do IMORTAL em produção (Vercel) — atualizar quando o deploy estiver ativo
+const IMORTAL_LIVE_URL = process.env.NEXT_PUBLIC_IMORTAL_URL || 'https://imortal.vercel.app';
 const IMORTAL_GITHUB   = 'https://github.com/RafaHop3/IMORTAL';
 
 export default function ImortalHero() {
@@ -124,9 +124,9 @@ export default function ImortalHero() {
               }`}
             />
             {isLive === true
-              ? 'SISTEMA ONLINE — RENDER'
+              ? 'SISTEMA ONLINE — VERCEL'
               : isLive === false
-              ? 'INICIANDO SERVIDOR (30s)...'
+              ? 'VERIFICANDO STATUS (ERRO)...'
               : 'VERIFICANDO STATUS...'}
           </div>
         </div>
@@ -226,7 +226,7 @@ export default function ImortalHero() {
         {/* Nota Free Tier Render */}
         {isLive === false && (
           <p className="font-mono text-[10px] text-yellow-400/50 animate-pulse">
-            ⚡ Servidor no plano gratuito do Render — acorda em ~30 segundos ao primeiro acesso
+            ⚡ Servidor em Serverless Functions do Vercel — inicializando sob demanda
           </p>
         )}
       </div>

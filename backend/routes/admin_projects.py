@@ -57,7 +57,12 @@ async def list_admin_projects(db: Session = Depends(get_db)):
 
         return repos
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print(f"[Admin API] GitHub fetch failed in admin, using DB cache fallback: {e}")
+        from routes.projects import get_repositories_from_db
+        db_repos = get_repositories_from_db(db)
+        if db_repos:
+            return db_repos
+        raise HTTPException(status_code=500, detail="Não foi possível obter os projetos do GitHub nem do banco de dados cache.")
 
 
 @router.post("/projects/{repo_id}")

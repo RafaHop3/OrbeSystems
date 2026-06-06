@@ -30,7 +30,7 @@ export default function FileUploader({
     formData.append('file', file);
 
     const token = localStorage.getItem('orbe_admin_token');
-    const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
+    const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.vercel.app';
     const API_URL = rawUrl.trim().replace(/\/$/, '');
 
     try {

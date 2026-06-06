@@ -5,6 +5,9 @@ import ImortalPipeline from '@/components/imortal/ImortalPipeline';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
+export const runtime = 'nodejs';
+
+
 export const metadata: Metadata = {
   title: 'IMORTAL — AI Formal Verification Toolchain | Orbe Systems',
   description:

@@ -32,6 +32,7 @@ import models.math_vectors  # Import to register math_vectors table
 import models.math_matrices  # Import to register math_matrices table
 import models.audit_log    # Import to register audit_log table
 import models.imobverse   # Import to register imob_* tables
+import models.repository_db # Import to register github_repositories table
 
 def run_migrations():
     """ 
@@ -74,7 +75,11 @@ def run_migrations():
             print("INFO: [Migration] Registering IMORTAL Premium Project...")
             conn.execute(text(
                 "INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only) "
-                "VALUES ('imortal', 'IMORTAL', 'AI-Powered Formal Verification Toolchain for Embedded Systems (Z3 Solver + Stochastic Fuzzing)', '/ferramentas-premium/imortal', 1, 1)"
+                "VALUES ('imortal', 'IMORTAL', 'AI-Powered Formal Verification Toolchain for Embedded Systems (Z3 Solver + Stochastic Fuzzing)', '/imortal', 1, 1)"
+            ))
+        else:
+            conn.execute(text(
+                "UPDATE projects_metadata SET deploy_url = '/imortal' WHERE id = 'imortal'"
             ))
 
         # Registrar o Imobverse na tabela de metadados
@@ -164,13 +169,13 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    """Global handler: logs full traceback server-side, returns a safe generic message to clients."""
+    """Global handler: logs full traceback server-side, returns the real error message to clients."""
     err_msg = traceback.format_exc()
     print(f"CRITICAL UNHANDLED ERROR: {err_msg}")
-    # SECURITY: Never expose internal error details (traceback, exception type) to clients.
+    # Return the real error detail to help debug api/repo issues.
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal Server Error"}
+        content={"detail": f"Internal Server Error: {str(exc)}"}
     )
 
 # ── Rate Limiting (SlowAPI) ───────────────────────────────────────────────────

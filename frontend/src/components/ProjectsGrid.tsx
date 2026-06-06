@@ -40,7 +40,20 @@ export default function ProjectsGrid() {
     setErrorMsg('');
     try {
       const res = await fetch(`${API_URL}/api/projects`, { cache: 'no-store' });
-      if (!res.ok) throw new Error(`HTTP ${res.status} — ${res.statusText}`);
+      if (!res.ok) {
+        let errDetail = `HTTP ${res.status}`;
+        try {
+          const errData = await res.json();
+          if (errData && errData.detail) {
+            errDetail += ` — ${errData.detail}`;
+          } else {
+            errDetail += ` — ${res.statusText}`;
+          }
+        } catch {
+          errDetail += ` — ${res.statusText}`;
+        }
+        throw new Error(errDetail);
+      }
       const data: Repository[] = await res.json();
       setRepos(data);
       setStatus('success');

@@ -10,12 +10,12 @@ from security.auth import require_premium
 from models.users import User
 
 from imortal.ir import validate_ir, get_default_ir
-from imortal.ai import generate_ir_from_intent
+from imortal.ai import generate_ir_from_intent, call_ollama_json
 from imortal.prover import FormalVerifier
 from imortal.sandbox import SandboxFuzzer
 from imortal.compiler import CodeCompiler
 from imortal.visualizer import IRVisualizer
-from imortal.config import FUZZ_RUNS, FUZZ_LOOP_ITERATIONS
+from imortal.config import FUZZ_RUNS, FUZZ_LOOP_ITERATIONS, OLLAMA_HIGH_LEVEL_MODEL, OLLAMA_LOW_LEVEL_MODEL
 
 router = APIRouter(prefix="/imortal", tags=["imortal"])
 logger = logging.getLogger(__name__)
@@ -136,41 +136,47 @@ class GenerateRequest(BaseModel):
 class IRRequest(BaseModel):
     ir: Dict[str, Any]
 
-# ── Helper para Chamada Estruturada do Gemini ─────────────────────────────────
-async def call_gemini_json(system_instruction: str, user_prompt: str) -> Dict[str, Any]:
-    from imortal.config import GEMINI_API_KEY, GEMINI_MODEL
+# ── Helper para Chamada Estruturada (Híbrida Gemini/Ollama) ────────────────────
+async def call_llm_json(system_instruction: str, user_prompt: str, local_model_name: str) -> Dict[str, Any]:
+    from imortal.config import GEMINI_API_KEY, GEMINI_MODEL, PRODUCTION_MODE
     
-    if not GEMINI_API_KEY:
-        raise HTTPException(status_code=503, detail="Chave de API do Gemini não configurada no backend.")
-        
-    url = (
-        f"https://generativelanguage.googleapis.com/v1beta/models/"
-        f"{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
-    )
-    body = {
-        "system_instruction": {"parts": [{"text": system_instruction}]},
-        "contents": [{"parts": [{"text": user_prompt}]}],
-        "generationConfig": {
-            "temperature": 0.15,
-            "maxOutputTokens": 4096,
-            "responseMimeType": "application/json"
-        },
-    }
-    data = json.dumps(body).encode("utf-8")
-    req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"}, method="POST")
+    # Prioriza o Gemini se em modo de produção e com chave de API configurada
+    if PRODUCTION_MODE and GEMINI_API_KEY:
+        try:
+            url = (
+                f"https://generativelanguage.googleapis.com/v1beta/models/"
+                f"{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
+            )
+            body = {
+                "system_instruction": {"parts": [{"text": system_instruction}]},
+                "contents": [{"parts": [{"text": user_prompt}]}],
+                "generationConfig": {
+                    "temperature": 0.15,
+                    "maxOutputTokens": 4096,
+                    "responseMimeType": "application/json"
+                },
+            }
+            data = json.dumps(body).encode("utf-8")
+            req = urllib.request.Request(url, data=data, headers={"Content-Type": "application/json"}, method="POST")
+            
+            def perform_request():
+                with urllib.request.urlopen(req, timeout=35) as resp:
+                    return resp.read().decode("utf-8")
+            
+            result_str = await asyncio.to_thread(perform_request)
+            result_json = json.loads(result_str)
+            text_response = result_json["candidates"][0]["content"]["parts"][0]["text"]
+            return json.loads(text_response)
+        except Exception as e:
+            logger.error(f"Erro na chamada do Gemini Cloud: {e}. Tentando fallback local no Ollama...")
+            
+    # Fallback local resiliente 24/7 (Ollama)
     try:
-        def perform_request():
-            with urllib.request.urlopen(req, timeout=35) as resp:
-                return resp.read().decode("utf-8")
-        
-        result_str = await asyncio.to_thread(perform_request)
-        result_json = json.loads(result_str)
-        text_response = result_json["candidates"][0]["content"]["parts"][0]["text"]
-        return json.loads(text_response)
+        return await call_ollama_json(system_instruction, user_prompt, local_model_name)
     except Exception as e:
-        logger.error(f"Erro na chamada do Gemini: {e}")
+        logger.error(f"Erro na chamada do Ollama local ({local_model_name}): {e}")
         # Seguindo as diretrizes do SECURITY_PROTOCOL.md: Logar internamente e retornar mensagem genérica
-        raise HTTPException(status_code=500, detail="Erro interno no serviço de Inteligência Artificial.")
+        raise HTTPException(status_code=500, detail="Erro interno no serviço de Inteligência Artificial Local.")
 
 # ── Endpoints de Análise de Negócio e Segurança ────────────────────────────────
 @router.post("/cyber")
@@ -179,7 +185,7 @@ async def analyze_cyber(data: GenerateRequest, current_user: User = Depends(requ
     prompt = data.prompt.strip()
     if not prompt:
         raise HTTPException(status_code=400, detail="Descrição vazia.")
-    return await call_gemini_json(CYBER_SYSTEM_PROMPT, prompt)
+    return await call_llm_json(CYBER_SYSTEM_PROMPT, prompt, OLLAMA_LOW_LEVEL_MODEL)
 
 @router.post("/marketing")
 async def analyze_marketing(data: GenerateRequest, current_user: User = Depends(require_premium)):
@@ -187,7 +193,7 @@ async def analyze_marketing(data: GenerateRequest, current_user: User = Depends(
     prompt = data.prompt.strip()
     if not prompt:
         raise HTTPException(status_code=400, detail="Descrição vazia.")
-    return await call_gemini_json(MARKETING_SYSTEM_PROMPT, prompt)
+    return await call_llm_json(MARKETING_SYSTEM_PROMPT, prompt, OLLAMA_HIGH_LEVEL_MODEL)
 
 @router.post("/demographic")
 async def analyze_demographic(data: GenerateRequest, current_user: User = Depends(require_premium)):
@@ -195,7 +201,7 @@ async def analyze_demographic(data: GenerateRequest, current_user: User = Depend
     prompt = data.prompt.strip()
     if not prompt:
         raise HTTPException(status_code=400, detail="Descrição vazia.")
-    return await call_gemini_json(DEMOGRAPHIC_SYSTEM_PROMPT, prompt)
+    return await call_llm_json(DEMOGRAPHIC_SYSTEM_PROMPT, prompt, OLLAMA_HIGH_LEVEL_MODEL)
 
 # ── Endpoints do Compilador AVR / Verificador Formal ───────────────────────────
 @router.get("/default")

@@ -22,7 +22,7 @@ export default function VisitorMonitor() {
   const fetchVisits = async () => {
     try {
       const token = localStorage.getItem('orbe_admin_token');
-      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
+      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.vercel.app';
       const API_URL = rawUrl.trim().replace(/\/$/, '');
       
       const res = await fetch(`${API_URL}/api/analytics/list`, {

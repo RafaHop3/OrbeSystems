@@ -19,7 +19,7 @@ const APPS: DesktopApp[] = [
   { id: 'webide', label: 'WebIDE', icon: 'code', action: 'view', view: 'webide' },
   { id: 'site', label: 'Firefox', icon: 'globe', action: 'link', href: 'https://orbesystems.com.br' },
   { id: 'audit', label: 'Cyber Audit', icon: 'shield', action: 'link', href: '/cyber-security' },
-  { id: 'imortal', label: 'IMORTAL', icon: 'zap', action: 'link', href: '/ferramentas-premium/imortal' },
+  { id: 'imortal', label: 'IMORTAL', icon: 'zap', action: 'link', href: '/imortal' },
   { id: 'imob', label: 'Imobverse', icon: 'building', action: 'link', href: '/ferramentas-premium/imobverse' },
 ];
 

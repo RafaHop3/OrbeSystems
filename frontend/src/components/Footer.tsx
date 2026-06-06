@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Github, Mail, Server, Check } from 'lucide-react';
+import { Github, Mail, Shield, Check } from 'lucide-react';
 
 export default function Footer() {
   const [showToast, setShowToast] = useState(false);
@@ -34,9 +34,9 @@ export default function Footer() {
           {/* Branding */}
           <div className="flex flex-col items-center md:items-start gap-2">
             <div className="flex items-center gap-2">
-              <Server size={14} className="text-neon-cyan" />
+              <Shield size={14} className="text-neon-cyan" />
               <span className="font-mono text-sm text-neon-cyan font-semibold uppercase tracking-tighter">
-                Orbe Systems
+                The Orbe Systems
               </span>
             </div>
             <p className="font-mono text-xs text-terminal-muted">

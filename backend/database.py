@@ -18,15 +18,22 @@ connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else 
 
 # Ensure SQLite directory exists
 if db_url.startswith("sqlite"):
-    # Extract path from sqlite:///./data/projects.db
+    # If running on Vercel or other Serverless, force database to live in /tmp
+    if os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME"):
+        db_url = "sqlite:////tmp/projects.db"
+        print(f"[Database] Serverless environment detected. Redirected SQLite URL to: {db_url}")
+
     db_path = db_url.replace("sqlite:///", "").replace("./", "")
     if db_path.startswith("/"):
         db_dir = os.path.dirname(db_path)
     else:
         db_dir = os.path.dirname(os.path.abspath(db_path))
-    if db_dir and not os.path.exists(db_dir):
-        os.makedirs(db_dir, exist_ok=True)
-        print(f"[Database] Created directory: {db_dir}")
+    if db_dir:
+        try:
+            os.makedirs(db_dir, exist_ok=True)
+            print(f"[Database] Created directory: {db_dir}")
+        except Exception as e:
+            print(f"[Database] Warning: Could not create directory {db_dir}: {e}")
 
 from sqlalchemy.pool import NullPool
 

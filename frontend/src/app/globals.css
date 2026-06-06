@@ -119,6 +119,17 @@ body::after {
   animation: shimmer 1.4s ease infinite;
 }
 
+/* ── Scan Beam animation ── */
+@keyframes scan-beam {
+  0% { top: 0%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+.animate-scan-beam {
+  animation: scan-beam 2s linear infinite;
+}
+
 /* ── Scroll-reveal base (no-JS fallback) ── */
 @media (prefers-reduced-motion: reduce) {
   .will-change-transform {

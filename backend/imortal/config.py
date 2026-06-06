@@ -41,7 +41,9 @@ GEMINI_MODEL: str = settings.GEMINI_MODEL or os.getenv("GEMINI_MODEL", "gemini-1
 # Ollama local (desenvolvimento)
 OLLAMA_URL: str = settings.OLLAMA_URL or os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 DEFAULT_MODEL: str = settings.IMORTAL_MODEL or os.getenv("IMORTAL_MODEL", "qwen2.5-coder:7b")
-OLLAMA_TIMEOUT: float = float(os.getenv("OLLAMA_TIMEOUT", "4.0"))
+OLLAMA_HIGH_LEVEL_MODEL: str = os.getenv("OLLAMA_HIGH_LEVEL_MODEL", DEFAULT_MODEL)
+OLLAMA_LOW_LEVEL_MODEL: str = os.getenv("OLLAMA_LOW_LEVEL_MODEL", "deepseek-coder:6.7b")
+OLLAMA_TIMEOUT: float = float(os.getenv("OLLAMA_TIMEOUT", "45.0"))
 
 # ─── Prova Formal Z3 ──────────────────────────────────────────────────────────
 Z3_TIMEOUT_MS: int = settings.Z3_TIMEOUT_MS

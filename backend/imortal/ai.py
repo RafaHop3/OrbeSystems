@@ -1,11 +1,13 @@
 import json
 import logging
+import asyncio
 import urllib.request
 import urllib.error
 from typing import Dict, Any, Tuple
 from imortal.ir import get_default_ir, validate_ir
 from imortal.config import (
     OLLAMA_URL, DEFAULT_MODEL, OLLAMA_TIMEOUT,
+    OLLAMA_HIGH_LEVEL_MODEL, OLLAMA_LOW_LEVEL_MODEL,
     GEMINI_API_KEY, GEMINI_MODEL, PRODUCTION_MODE,
 )
 
@@ -233,13 +235,17 @@ async def _call_gemini(prompt: str) -> "str | None":
 
 
 async def _call_ollama(prompt: str, model_name: str) -> "str | None":
-    """Chama o Ollama local. Retorna texto ou None."""
+    """Chama o Ollama local de forma nao-bloqueante. Retorna texto ou None."""
     payload = {"model": model_name, "prompt": f"{SYSTEM_PROMPT}\n\nIntencao Humana: {prompt}", "stream": False}
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(OLLAMA_URL, data=data, headers={"Content-Type": "application/json"})
-    try:
+    
+    def perform_request():
         with urllib.request.urlopen(req, timeout=OLLAMA_TIMEOUT) as resp:
             return json.loads(resp.read().decode("utf-8")).get("response", "").strip()
+            
+    try:
+        return await asyncio.to_thread(perform_request)
     except urllib.error.URLError as e:
         logger.warning("[AI Engine] Ollama inacessivel: %s", e.reason)
     except Exception as e:
@@ -247,9 +253,37 @@ async def _call_ollama(prompt: str, model_name: str) -> "str | None":
     return None
 
 
+async def call_ollama_json(system_instruction: str, user_prompt: str, model_name: str) -> Dict[str, Any]:
+    """Chama o Ollama local de forma nao-bloqueante esperando uma resposta JSON estruturada."""
+    payload = {
+        "model": model_name,
+        "prompt": f"INSTRUCOES:\n{system_instruction}\n\nENTRADA:\n{user_prompt}",
+        "format": "json",
+        "stream": False,
+        "options": {
+            "temperature": 0.15
+        }
+    }
+    data = json.dumps(payload).encode("utf-8")
+    req = urllib.request.Request(OLLAMA_URL, data=data, headers={"Content-Type": "application/json"})
+    
+    def perform_request():
+        with urllib.request.urlopen(req, timeout=OLLAMA_TIMEOUT) as resp:
+            return resp.read().decode("utf-8")
+            
+    try:
+        res_str = await asyncio.to_thread(perform_request)
+        res_json = json.loads(res_str)
+        text_response = res_json.get("response", "").strip()
+        return json.loads(text_response)
+    except Exception as e:
+        logger.error("[AI Engine] call_ollama_json falhou com o modelo %s: %s", model_name, e)
+        raise e
+
+
 async def generate_ir_from_intent(
     prompt: str,
-    model_name: str = DEFAULT_MODEL
+    model_name: str = OLLAMA_HIGH_LEVEL_MODEL
 ) -> Tuple[Dict[str, Any], bool]:
     """
     Gera IR a partir de intencao em linguagem natural.

@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef } from 'react';
 import { Star, GitFork, ExternalLink, Shield, Zap, Globe, Lock } from 'lucide-react';
 import Link from 'next/link';
 import type { Repository } from '@/types/repository';
@@ -35,22 +36,72 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
   const langColor = LANGUAGE_COLORS[repo.language ?? ''] ?? '#8b949e';
   const animDelay = `${index * 80}ms`;
 
+  const [scanState, setScanState] = useState<'hidden' | 'scanning' | 'decrypting' | 'discovered'>('hidden');
+  const [scanProgress, setScanProgress] = useState(0);
+  const cardRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setScanState('scanning');
+          observer.unobserve(el);
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (scanState === 'hidden' || scanState === 'discovered') return;
+
+    const duration = 1200; // 1.2 segundos para decodificar
+    const startTime = Date.now();
+
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, Math.floor((elapsed / duration) * 100));
+      setScanProgress(pct);
+
+      if (pct >= 50 && scanState === 'scanning') {
+        setScanState('decrypting');
+      }
+
+      if (pct >= 100) {
+        clearInterval(interval);
+        setScanState('discovered');
+      }
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [scanState]);
+
   return (
     <article
-      className="group relative flex flex-col bg-terminal-surface border border-terminal-border rounded-lg overflow-hidden 
-                 transition-all duration-400 hover:-translate-y-1
-                 hover:border-neon-cyan/60 hover:shadow-[0_0_30px_rgba(0,255,245,0.12),0_8px_40px_rgba(0,0,0,0.6)]"
+      ref={cardRef}
+      className={`group relative flex flex-col bg-terminal-surface border rounded-lg overflow-hidden 
+                 transition-all duration-700 ease-in-out hover:-translate-y-1
+                 ${scanState === 'discovered' 
+                   ? 'max-h-[800px] border-terminal-border hover:border-neon-cyan/60 hover:shadow-[0_0_30px_rgba(0,255,245,0.12),0_8px_40px_rgba(0,0,0,0.6)]' 
+                   : 'max-h-[130px] border-neon-cyan/30 shadow-[0_0_15px_rgba(0,255,245,0.05)]'
+                 }`}
       style={{ animationDelay: animDelay }}
     >
       {/* Terminal title bar */}
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#161b22] border-b border-terminal-border">
+      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#161b22] border-b border-terminal-border flex-shrink-0">
         <span className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e]" />
         <span className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d4a10e]" />
         <span className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29]" />
         <span className="ml-2 font-mono text-xs text-terminal-muted/70 flex-1 text-center truncate">
           {repo.full_name}.git
         </span>
-        {repo.is_featured && (
+        {repo.is_featured && scanState === 'discovered' && (
           <span className="flex items-center gap-1 text-[10px] font-mono text-neon-purple border border-neon-purple/40 rounded px-1.5 py-0.5">
             <Zap size={8} />
             FEATURED
@@ -58,8 +109,40 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
         )}
       </div>
 
-      {/* Card content */}
-      <div className="flex flex-col flex-1 gap-0">
+      {/* AI Scanning overlay / status bar */}
+      {scanState !== 'discovered' && (
+        <div className="flex-1 flex flex-col justify-center p-4 bg-[#0a0f1d]/90 relative overflow-hidden h-[94px] font-mono select-none">
+          {/* Scanning Laser Beam */}
+          <div className="absolute left-0 right-0 h-0.5 bg-neon-cyan/80 shadow-[0_0_8px_#00fff5] animate-scan-beam" />
+          
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[9px] text-neon-cyan font-bold tracking-wider animate-pulse flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-neon-cyan animate-ping" />
+              AI SCANNER // DETECTADO
+            </span>
+            <span className="text-[9px] text-neon-cyan/80 font-bold">{scanProgress}%</span>
+          </div>
+
+          {/* Progress bar */}
+          <div className="h-1 bg-white/5 border border-white/10 rounded overflow-hidden mb-2">
+            <div 
+              className="h-full bg-neon-cyan transition-all duration-75" 
+              style={{ width: `${scanProgress}%` }} 
+            />
+          </div>
+
+          {/* Telemetry logs */}
+          <div className="text-[8px] text-terminal-muted truncate">
+            {scanProgress < 30 && `> RESOLVING: ORBE://${repo.name.toUpperCase()}`}
+            {scanProgress >= 30 && scanProgress < 60 && `> DECRYPTING METADATA: PARSING HEADERS`}
+            {scanProgress >= 60 && scanProgress < 90 && `> ANALYSIS: ACTIVE LANG [${repo.language ? repo.language.toUpperCase() : 'UNKNOWN'}]`}
+            {scanProgress >= 90 && `> SUCCESS: DECRYPTION COMPLETED.`}
+          </div>
+        </div>
+      )}
+
+      {/* Card content - revealed once discovered */}
+      <div className={`flex flex-col flex-1 gap-0 transition-opacity duration-500 ${scanState === 'discovered' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         {/* Media Section */}
         {(repo.image_url || repo.video_url) && (
           <div className="relative w-full aspect-video bg-black/40 overflow-hidden border-b border-terminal-border/50 group-hover:border-neon-cyan/30 transition-colors">
@@ -207,7 +290,7 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
       </div>
 
       {/* Featured glow overlay */}
-      {repo.is_featured && (
+      {repo.is_featured && scanState === 'discovered' && (
         <div className="absolute inset-0 rounded-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
           <div className="absolute inset-0 bg-gradient-to-b from-neon-purple/5 via-transparent to-neon-cyan/5 rounded-lg" />
         </div>

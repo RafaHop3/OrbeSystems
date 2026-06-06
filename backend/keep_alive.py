@@ -30,8 +30,9 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 logger = logging.getLogger("keep_alive")
 
 # ── Config ────────────────────────────────────────────────────────────────────
-SELF_URL = "https://orbe-systems-api.onrender.com/health"
-PING_INTERVAL_MINUTES = 14
+import os
+SELF_URL = os.getenv("KEEP_ALIVE_URL", "https://orbe-systems-api.onrender.com/health")
+PING_INTERVAL_MINUTES = int(os.getenv("KEEP_ALIVE_INTERVAL", "14"))
 
 # ── Scheduler instance ────────────────────────────────────────────────────────
 _scheduler = AsyncIOScheduler()

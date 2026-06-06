@@ -65,7 +65,7 @@ export default function Header() {
                   boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
                 }}>
                   <Link
-                    href="/ferramentas-premium/imortal"
+                    href="/imortal"
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
                     onClick={() => setIsToolsOpen(false)}
                   >
@@ -168,7 +168,7 @@ export default function Header() {
             {user?.role === 'premium' && (
               <>
                 <Link
-                  href="/ferramentas-premium/imortal"
+                  href="/imortal"
                   onClick={() => setIsMobileMenuOpen(false)}
                   className="flex items-center gap-3 font-mono text-xs text-neon-purple hover:text-white transition-colors duration-200 tracking-wider py-3"
                 >

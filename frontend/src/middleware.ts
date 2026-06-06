@@ -16,7 +16,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // ── Rotas protegidas por nível de acesso ─────────────────────────────────────
-const PREMIUM_ROUTES = ["/ferramentas-premium"];
+const PREMIUM_ROUTES = ["/ferramentas-premium", "/imortal"];
 const AUTH_ROUTES = ["/dashboard", "/perfil"];
 const LOGIN_PAGE = "/login";
 const UPGRADE_PAGE = "/assinar";
@@ -99,6 +99,7 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/ferramentas-premium/:path*",
+    "/imortal/:path*",
     "/dashboard/:path*",
     "/perfil/:path*",
   ],

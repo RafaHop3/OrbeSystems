@@ -1,6 +1,28 @@
 import logging
 from typing import Dict, Any, List, Tuple
-from z3 import Solver, Int, Bool, Real, And, Or, Not, Implies, If, sat, unsat
+try:
+    import z3
+    from z3 import Solver, Int, Bool, Real, And, Or, Not, Implies, If, sat, unsat
+    HAS_Z3 = True
+except (ImportError, Exception) as e:
+    HAS_Z3 = False
+    Z3_IMPORT_ERROR = str(e)
+    # Define placeholder classes/functions to prevent NameErrors in type annotations or references
+    class SolverPlaceholder:
+        def __init__(self, *args, **kwargs): pass
+        def set(self, *args, **kwargs): pass
+    Solver = SolverPlaceholder
+    Int = lambda name: f"Int({name})"
+    Bool = lambda name: f"Bool({name})"
+    Real = lambda name: f"Real({name})"
+    And = lambda *args: f"And({args})"
+    Or = lambda *args: f"Or({args})"
+    Not = lambda arg: f"Not({arg})"
+    Implies = lambda a, b: f"Implies({a}, {b})"
+    If = lambda c, t, e: f"If({c}, {t}, {e})"
+    sat = "sat"
+    unsat = "unsat"
+
 from imortal.ir import TARGET_LIMITS
 from imortal.config import Z3_TIMEOUT_MS
 
@@ -301,6 +323,8 @@ class FormalVerifier:
         Executa a prova lógica. Retorna (True, []) se aprovado matematicamente,
         ou (False, [lista_de_contra_exemplos]) se houver alguma brecha de segurança.
         """
+        if not HAS_Z3:
+            return False, [f"O verificador formal (Z3 Prover) não está disponível no servidor de produção (limitações de ambiente serverless). Erro de importação: {Z3_IMPORT_ERROR}"]
         # 1. Processar Setup
         for instr in self.ir.get("setup", []):
             self.process_instruction(instr)
