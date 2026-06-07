@@ -23,7 +23,7 @@ Segurança:
 """
 
 import logging
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -243,9 +243,35 @@ def create_inspection_item(
     return item.to_dict()
 
 
+@router.get("/properties/{property_id}/inspections")
+def list_property_inspections(
+    property_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_premium),
+):
+    """
+    Lista todos os itens de vistoria para um imóvel específico do anunciante premium.
+    """
+    prop = db.query(ImobProperty).filter(
+        ImobProperty.id == property_id,
+        ImobProperty.owner_id == current_user.id
+    ).first()
+
+    if not prop:
+        raise HTTPException(status_code=403, detail="Imovel nao encontrado ou sem permissao de acesso.")
+
+    inspections = db.query(ImobInspectionItem).filter(
+        ImobInspectionItem.property_id == property_id
+    ).order_by(ImobInspectionItem.created_at.desc()).all()
+
+    return [item.to_dict() for item in inspections]
+
+
+
 @router.post("/inspections/checkout")
 def submit_checkout_photo(
     payload: CheckoutPhotoSubmit,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user: User = Depends(require_premium),
 ):
@@ -257,6 +283,12 @@ def submit_checkout_photo(
         result = ReputationEngineService.submit_checkout_photo(
             db, payload, tenant_user_id=current_user.id
         )
+        
+        # Agenda a análise automatizada via LLM em background
+        from services.reputation_engine import run_automated_analysis
+        from database import SessionLocal
+        background_tasks.add_task(run_automated_analysis, result["id"], SessionLocal)
+        
         return result
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

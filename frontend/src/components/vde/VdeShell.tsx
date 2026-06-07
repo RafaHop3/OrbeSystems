@@ -11,6 +11,7 @@ import {
   Settings,
   HelpCircle,
   ArrowLeft,
+  LayoutGrid,
 } from 'lucide-react';
 import OrbeLogo from '../OrbeLogo';
 import type { VdeView } from './types';
@@ -18,6 +19,7 @@ import VdeDesktop from './VdeDesktop';
 import VdeTerminal from './VdeTerminal';
 import VdeWebIDE from './VdeWebIDE';
 import VdeAssistant from './VdeAssistant';
+import VdeUserDashboard from './VdeUserDashboard';
 
 function formatTimer(seconds: number) {
   const m = Math.floor(seconds / 60);
@@ -35,8 +37,9 @@ function formatClock() {
   });
 }
 
-const TABS: { id: VdeView; label: string; icon: typeof Monitor }[] = [
+const TABS: { id: VdeView; label: string; icon: any }[] = [
   { id: 'desktop', label: 'Desktop', icon: Monitor },
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutGrid },
   { id: 'terminal', label: 'Terminal', icon: Terminal },
   { id: 'webide', label: 'WebIDE', icon: Code2 },
 ];
@@ -117,6 +120,7 @@ export default function VdeShell() {
       <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
         <div className="flex-1 flex flex-col min-h-0 min-w-0">
           {view === 'desktop' && <VdeDesktop onOpenView={setView} />}
+          {view === 'dashboard' && <VdeUserDashboard />}
           {view === 'terminal' && <VdeTerminal />}
           {view === 'webide' && <VdeWebIDE />}
         </div>

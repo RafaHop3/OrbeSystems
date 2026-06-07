@@ -16,13 +16,13 @@ export default function Footer() {
   };
 
   return (
-    <footer className="border-t border-terminal-border mt-24 relative">
+    <footer className="border-t border-renaissance-border mt-24 relative bg-[#130f0d]">
       {/* Toast Notification */}
       {showToast && (
         <div className="fixed bottom-8 right-8 z-[100] animate-fade-in-up">
-          <div className="bg-terminal-surface border border-neon-green/50 px-4 py-2 rounded shadow-[0_0_20px_rgba(57,255,20,0.1)] flex items-center gap-3">
-            <Check size={14} className="text-neon-green" />
-            <span className="font-mono text-xs text-neon-green uppercase tracking-widest">
+          <div className="bg-renaissance-surface border-2 border-renaissance-gold px-4 py-2.5 rounded shadow-gilt flex items-center gap-3">
+            <Check size={14} className="text-renaissance-gold" />
+            <span className="font-cinzel text-[10px] text-renaissance-gold uppercase tracking-widest">
               &gt; Email copiado com sucesso.
             </span>
           </div>
@@ -34,13 +34,12 @@ export default function Footer() {
           {/* Branding */}
           <div className="flex flex-col items-center md:items-start gap-2">
             <div className="flex items-center gap-2">
-              <Shield size={14} className="text-neon-cyan" />
-              <span className="font-mono text-sm text-neon-cyan font-semibold uppercase tracking-tighter">
-                The Orbe Systems
+              <span className="font-cinzel text-sm text-[#dfd2b8] tracking-widest uppercase font-bold">
+                ORBE<span className="text-renaissance-gold">SYSTEMS</span>
               </span>
             </div>
-            <p className="font-mono text-xs text-terminal-muted">
-              Software Engineering &amp; Arquitetura de Dados
+            <p className="font-serif text-xs italic text-renaissance-muted">
+              L’Architettura dell’Informazione &amp; Ingegneria di Codice
             </p>
           </div>
 
@@ -48,7 +47,7 @@ export default function Footer() {
           <div id="contact" className="flex flex-col md:flex-row items-center gap-4">
             <a
               href={`mailto:${email}`}
-              className="font-mono text-sm text-terminal-muted transition-colors hover:text-white hidden md:block"
+              className="font-serif text-sm text-renaissance-muted transition-colors hover:text-white hidden md:block"
             >
               {email}
             </a>
@@ -58,14 +57,14 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"
-                className="w-9 h-9 rounded border border-terminal-border text-terminal-muted flex items-center justify-center transition-all duration-300 hover:text-white hover:border-white/40"
+                className="w-9 h-9 rounded border border-renaissance-border text-renaissance-muted flex items-center justify-center transition-all duration-300 hover:text-white hover:border-renaissance-gold hover:shadow-gilt"
               >
                 <Github size={15} />
               </a>
               <button
                 onClick={handleCopyEmail}
                 aria-label="Copy Email"
-                className="w-9 h-9 rounded border border-terminal-border text-terminal-muted flex items-center justify-center transition-all duration-300 hover:text-neon-green hover:border-neon-green/40 hover:shadow-neon-green"
+                className="w-9 h-9 rounded border border-renaissance-border text-renaissance-muted flex items-center justify-center transition-all duration-300 hover:text-renaissance-gold hover:border-renaissance-gold hover:shadow-gilt"
               >
                 <Mail size={15} />
               </button>
@@ -74,14 +73,12 @@ export default function Footer() {
         </div>
 
         {/* Bottom row */}
-        <div className="mt-10 pt-6 border-t border-terminal-border/50 flex flex-col md:flex-row items-center justify-between gap-2">
-          <p className="font-mono text-xs text-terminal-muted/50">
-            &copy; {year} Orbe Systems. Todos os direitos reservados.
+        <div className="mt-10 pt-6 border-t border-renaissance-border/55 flex flex-col md:flex-row items-center justify-between gap-2">
+          <p className="font-serif text-xs text-renaissance-muted/60">
+            &copy; {year} Bottega d'Orbe Systems. Tutti i diritti riservati.
           </p>
-          <p className="font-mono text-xs text-terminal-muted/30">
-            <span className="text-neon-cyan/40">exit 0</span>
-            {' — '}
-            orbesystems.com.br
+          <p className="font-cinzel text-[10px] tracking-widest text-renaissance-gold/50">
+            Laus Deo · orbesystems.com.br
           </p>
         </div>
       </div>

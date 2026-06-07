@@ -61,26 +61,26 @@ export default function ScrollNarrativeEngine({ children }: Props) {
           if (hudBar) hudBar.style.width = `${progress * 100}%`;
           
           if (progress < 0.28) {
-            if (hudLoc) hudLoc.innerText = 'CHAPTER_01';
+            if (hudLoc) hudLoc.innerText = 'STANZA_I';
             if (hudMod) {
-              hudMod.innerText = 'CORE_NUCLEUS';
-              hudMod.style.color = '#00fff5'; // neon cyan
+              hudMod.innerText = 'INGRESSO';
+              hudMod.style.color = '#c5a059'; // gold
             }
-            if (hudTel) hudTel.innerText = `COHESION: ${(Math.min(100, progress * 4.5 * 100)).toFixed(0)}%`;
+            if (hudTel) hudTel.innerText = `COHESIO: ${(Math.min(100, progress * 4.5 * 100)).toFixed(0)}%`;
           } else if (progress < 0.65) {
-            if (hudLoc) hudLoc.innerText = 'CHAPTER_02';
+            if (hudLoc) hudLoc.innerText = 'STANZA_II';
             if (hudMod) {
-              hudMod.innerText = 'VDE_WORKSPACE';
-              hudMod.style.color = '#39ff14'; // neon green
+              hudMod.innerText = 'OFFICINA_VDE';
+              hudMod.style.color = '#c5a059';
             }
-            if (hudTel) hudTel.innerText = `LOTTIE_PROG: ${(Math.min(100, (progress - 0.28) / (0.65 - 0.28) * 100)).toFixed(0)}%`;
+            if (hudTel) hudTel.innerText = `PERSPECTIVA: ${(Math.min(100, (progress - 0.28) / (0.65 - 0.28) * 100)).toFixed(0)}%`;
           } else {
-            if (hudLoc) hudLoc.innerText = 'CHAPTER_03';
+            if (hudLoc) hudLoc.innerText = 'STANZA_III';
             if (hudMod) {
-              hudMod.innerText = 'PUBLIC_REPOS';
-              hudMod.style.color = '#bc13fe'; // neon purple
+              hudMod.innerText = 'CAPOLAVORI';
+              hudMod.style.color = '#52141a'; // burgundy
             }
-            if (hudTel) hudTel.innerText = `DBMS_SYNC: ACTIVE`;
+            if (hudTel) hudTel.innerText = `SVELATO: EXPONERE`;
           }
 
           // Generate automatic technical logs based on scroll progress delta
@@ -94,24 +94,22 @@ export default function ScrollNarrativeEngine({ children }: Props) {
               (container as any).lastScrollPos = currentScrollPos;
               
               const logPool = [
-                `SYS: MEM_ALLOC 0x${Math.floor(Math.random()*16777215).toString(16).toUpperCase()}`,
-                `NET: GATEWAY PING ${(Math.random()*15 + 5).toFixed(1)}ms`,
-                `SEC: PORT_SCAN ${[22, 80, 443, 8000, 8080][Math.floor(Math.random()*5)]} (OPEN)`,
-                `IA: MODEL_STATUS ${['QWEN2.5', 'DEEPSEEK', 'GEMINI_1.5'][Math.floor(Math.random()*3)]} ACTIVE`,
-                `DB: SYNC_LATENCY ${Math.floor(Math.random()*120 + 40)}ms`,
-                `Z3: PROVER_RESULT ${['OK', 'SAT', 'UNSAT'][Math.floor(Math.random()*3)]}`,
-                `VDE: CPU_LOAD ${(Math.random()*20 + 5).toFixed(0)}%`,
-                `SEC: SHIELD_RLS ENFORCED`,
-                `SYS: TELEMETRY ${(Math.random()*100 + 50).toFixed(0)}kb/s`,
-                `SYS: ENTROPY_VAL ${(Math.random()*100).toFixed(0)}%`,
-                `SYS: CACHE_HIT FOR_REPOS`,
-                `NET: WS_CONN ESTABLISHED`,
+                `COMPVTANDO: DATAFLOW EST STABILIS`,
+                `PROBATOR_Z3: LOGICA PROVATA (SAT)`,
+                `COGNITIO: GEMINI_IA OPERATING`,
+                `ORBE_CORE: HARMONIA COHESIONIS`,
+                `SEC_SHIELD: RLS REGVLA ENFORCED`,
+                `VDE_DESKTOP: OFFICINA PROSPETTIVA`,
+                `EXPOSITIO: CAPOLAVORI PLACED`,
+                `NET_GATEWAY: PORTA COMMVNICATIONIS`,
+                `TELEMETRIA: EFFLVSVS GOLDEN DVST`,
+                `SISTEMA: ENTROPIA REDVCTA`,
               ];
               const randomLog = logPool[Math.floor(Math.random() * logPool.length)];
               
               const newLine = document.createElement('span');
               newLine.innerText = `> ${randomLog}`;
-              newLine.className = 'text-neon-cyan/70 text-[8px] tracking-tight truncate';
+              newLine.className = 'text-[#52141a]/95 text-[8.5px] font-serif tracking-tight truncate italic';
               
               container.appendChild(newLine);
               if (container.children.length > 6) {
@@ -265,47 +263,47 @@ export default function ScrollNarrativeEngine({ children }: Props) {
 
       <div className="relative z-10">{children}</div>
 
-      {/* Floating HUD: Diagnostics console */}
+      {/* Floating HUD: Codex Orbe Scroll diary */}
       <div 
         id="scroll-hud" 
-        className="fixed right-8 top-[35%] -translate-y-1/2 z-[40] hidden xl:flex flex-col w-64 bg-terminal-surface/75 border border-terminal-border/60 backdrop-blur-md rounded-lg p-4 font-mono text-[10px] text-terminal-muted space-y-3 opacity-0 transition-opacity duration-300 pointer-events-none"
-        style={{ boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}
+        className="fixed right-8 top-[35%] -translate-y-1/2 z-[40] hidden xl:flex flex-col w-64 bg-[#f1e7d0] border-2 border-[#c5a059] rounded p-4 font-serif text-[10px] text-[#2b1d16] space-y-3 opacity-0 transition-opacity duration-300 pointer-events-none"
+        style={{ boxShadow: '2px 10px 30px rgba(0,0,0,0.65)' }}
       >
-        <div className="flex items-center justify-between border-b border-terminal-border/40 pb-2">
-          <span className="text-neon-cyan font-bold tracking-widest uppercase">SYS DIAGNOSTIC</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-neon-cyan animate-pulse" />
+        <div className="flex items-center justify-between border-b border-[#2b1d16]/20 pb-2">
+          <span className="font-cinzel text-xs text-[#52141a] font-bold tracking-wider uppercase">CODEX ORBE</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-[#52141a] animate-pulse" />
         </div>
         <div className="space-y-1.5">
           <div className="flex justify-between">
-            <span>SYS_LOC:</span>
-            <span id="hud-location" className="text-white font-bold">HERO_CORE</span>
+            <span>STANZA:</span>
+            <span id="hud-location" className="font-cinzel text-[#1c130d] font-bold">STANZA_I</span>
           </div>
           <div className="flex justify-between">
-            <span>MODULE:</span>
-            <span id="hud-module" className="text-white">CORE_NUCLEUS</span>
+            <span>DISPOSITIO:</span>
+            <span id="hud-module" className="font-serif italic font-bold">INGRESSO</span>
           </div>
           <div className="flex justify-between">
-            <span>TELEMETRY:</span>
-            <span id="hud-telemetry" className="text-white">PARTICLES: 96/96</span>
+            <span>PROPORTIO:</span>
+            <span id="hud-telemetry" className="font-serif">PROPORZIONE AUREA</span>
           </div>
         </div>
         <div className="space-y-1">
           <div className="flex justify-between text-[9px] opacity-75">
-            <span>SCROLL_TRIGGER:</span>
-            <span id="hud-progress-pct">0.0%</span>
+            <span>SCRITTVRA:</span>
+            <span id="hud-progress-pct" className="font-mono">0.0%</span>
           </div>
           {/* Scroll progress bar */}
-          <div className="h-1.5 w-full bg-white/5 border border-white/10 rounded overflow-hidden">
-            <div id="hud-progress-bar" className="h-full bg-neon-cyan transition-all duration-75" style={{ width: '0%' }} />
+          <div className="h-1 w-full bg-[#2b1d16]/10 border border-[#2b1d16]/20 rounded-full overflow-hidden">
+            <div id="hud-progress-bar" className="h-full bg-[#52141a] transition-all duration-75" style={{ width: '0%' }} />
           </div>
         </div>
         <div 
           id="hud-logs-container" 
-          className="border-t border-terminal-border/30 pt-2 text-[8px] text-terminal-muted/75 flex flex-col gap-0.5 h-20 overflow-hidden font-mono"
+          className="border-t border-[#2b1d16]/20 pt-2 text-[8.5px] text-[#2b1d16]/75 flex flex-col gap-0.5 h-20 overflow-hidden font-serif italic"
           style={{ scrollBehavior: 'smooth' }}
         >
-          <span className="text-neon-cyan/70">&gt; Booting Orbe HUD v1.2.0...</span>
-          <span className="text-neon-cyan/70">&gt; Core nucleus online.</span>
+          <span className="text-[#52141a]/95">&gt; Incipit Codex Orbe v1.2.0...</span>
+          <span className="text-[#52141a]/95">&gt; Stanza prima inizializzata.</span>
         </div>
       </div>
 

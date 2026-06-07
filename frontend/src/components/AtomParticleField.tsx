@@ -5,8 +5,8 @@ import { getOrbeShapePoints } from '@/lib/orbe-shape-points';
 import { narrativeState } from '@/lib/narrative-state';
 
 const PARTICLE_COUNT = 96;
-const CYAN = { r: 0, g: 255, b: 245 };
-const SAPPHIRE = { r: 0, g: 102, b: 255 };
+const GOLD = { r: 212, g: 175, b: 55 };
+const AMBER = { r: 197, g: 160, b: 89 };
 const LINK_DISTANCE = 90;
 const LINK_DISTANCE_COALESCED = 130;
 
@@ -110,9 +110,9 @@ export default function AtomParticleField() {
         p.y += p.vy;
 
         const alpha = lerp(0.35, 0.95, cohesion) * (1 - chapter2 * 0.2);
-        const r = lerp(CYAN.r, SAPPHIRE.r, cohesion * 0.5);
-        const g = lerp(CYAN.g, SAPPHIRE.g, cohesion * 0.5);
-        const b = lerp(CYAN.b, SAPPHIRE.b, cohesion * 0.5);
+        const r = lerp(GOLD.r, AMBER.r, cohesion * 0.5);
+        const g = lerp(GOLD.g, AMBER.g, cohesion * 0.5);
+        const b = lerp(GOLD.b, AMBER.b, cohesion * 0.5);
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
@@ -131,7 +131,7 @@ export default function AtomParticleField() {
             const dist = Math.hypot(dx, dy);
             if (dist < linkDist) {
               const a = (1 - dist / linkDist) * linkAlpha;
-              ctx.strokeStyle = `rgba(0,102,255,${a})`;
+              ctx.strokeStyle = `rgba(212,175,55,${a})`;
               ctx.lineWidth = 0.6;
               ctx.beginPath();
               ctx.moveTo(particles[i].x, particles[i].y);

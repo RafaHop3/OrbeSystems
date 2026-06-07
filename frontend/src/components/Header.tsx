@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, X, FileText, LayoutGrid, Mail, LogIn, LogOut, Crown, Zap, Building2, ChevronDown, Monitor } from 'lucide-react';
+import { Menu, X, FileText, LayoutGrid, Mail, LogIn, LogOut, Crown, Zap, Building2, ChevronDown, Monitor, Terminal } from 'lucide-react';
 import Link from 'next/link';
 import OrbeLogo from './OrbeLogo';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,7 +9,7 @@ import { logoutAction } from '@/lib/auth-actions';
 
 const NAV_LINKS = [
   { label: 'Workspace', href: '/workspace', icon: Monitor },
-  { label: 'Projetos', href: '/#projects', icon: FileText },
+  { label: 'Repositórios', href: '/repositorios', icon: FileText },
   { label: 'Skills', href: '/skills', icon: LayoutGrid },
   { label: 'Contato', href: '/#contact', icon: Mail },
 ];
@@ -20,7 +20,7 @@ export default function Header() {
   const { user, loading } = useAuth();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-terminal-border backdrop-blur-md bg-terminal-bg/80">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-renaissance-border backdrop-blur-md bg-renaissance-bg/85 shadow-md">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo area */}
         <Link href="/" className="flex items-center gap-3 group z-50">
@@ -29,8 +29,8 @@ export default function Header() {
               <OrbeLogo className="w-8 h-8" />
             </div>
           </div>
-          <span className="font-mono text-sm font-bold tracking-tighter text-white group-hover:text-neon-cyan transition-colors">
-            ORBE<span className="text-neon-cyan">SYSTEMS</span>
+          <span className="font-cinzel text-sm font-bold tracking-widest text-[#dfd2b8] group-hover:text-renaissance-gold-light transition-colors uppercase">
+            ORBE<span className="text-renaissance-gold">SYSTEMS</span>
           </span>
         </Link>
 
@@ -40,9 +40,9 @@ export default function Header() {
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-terminal-muted hover:text-neon-cyan transition-all duration-200 group"
+              className="flex items-center gap-1.5 font-cinzel text-[11px] uppercase tracking-widest text-renaissance-muted hover:text-renaissance-gold transition-all duration-200 group"
             >
-              <Icon size={14} className="group-hover:scale-110 transition-transform" />
+              <Icon size={12} className="group-hover:scale-110 transition-transform text-renaissance-gold/80" />
               <span>{label}</span>
             </Link>
           ))}
@@ -51,39 +51,50 @@ export default function Header() {
           {user?.role === 'premium' && (
             <div style={{ position: 'relative' }} onMouseEnter={() => setIsToolsOpen(true)} onMouseLeave={() => setIsToolsOpen(false)}>
               <button
-                className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-neon-purple hover:text-white transition-all duration-200 group"
+                className="flex items-center gap-2 font-cinzel text-[11px] uppercase tracking-widest text-renaissance-gold hover:text-white transition-all duration-200 group"
               >
-                <Zap size={14} className="group-hover:scale-110 transition-transform" />
+                <Zap size={12} className="group-hover:scale-110 transition-transform" />
                 <span>Ferramentas</span>
                 <ChevronDown size={11} style={{ transition: 'transform 0.2s', transform: isToolsOpen ? 'rotate(180deg)' : 'none' }} />
               </button>
               {isToolsOpen && (
                 <div style={{
                   position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)',
-                  marginTop: '8px', background: '#0d1117', border: '1px solid rgba(168,85,247,0.3)',
-                  borderRadius: '12px', padding: '8px', minWidth: '200px', zIndex: 100,
-                  boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+                  marginTop: '8px', background: '#181310', border: '1px solid rgba(197,160,89,0.3)',
+                  borderRadius: '6px', padding: '8px', minWidth: '200px', zIndex: 100,
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.65)',
                 }}>
                   <Link
                     href="/imortal"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors"
                     onClick={() => setIsToolsOpen(false)}
                   >
-                    <Zap size={14} color="#a855f7" />
+                    <Zap size={14} color="#c5a059" />
                     <div>
-                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#f1f5f9', fontFamily: 'monospace' }}>IMORTAL</div>
-                      <div style={{ fontSize: '10px', color: '#64748b' }}>Formal Verification + Z3</div>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#f1e7d0', fontFamily: 'var(--font-cinzel), serif' }}>IMORTAL</div>
+                      <div style={{ fontSize: '10px', color: '#8e7f73' }}>Formal Verification + Z3</div>
                     </div>
                   </Link>
                   <Link
                     href="/ferramentas-premium/imobverse"
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/5 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors"
                     onClick={() => setIsToolsOpen(false)}
                   >
-                    <Building2 size={14} color="#a855f7" />
+                    <Building2 size={14} color="#c5a059" />
                     <div>
-                      <div style={{ fontSize: '12px', fontWeight: 700, color: '#f1f5f9', fontFamily: 'monospace' }}>Imobverse</div>
-                      <div style={{ fontSize: '10px', color: '#64748b' }}>Proptech + Motor de Reputação</div>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#f1e7d0', fontFamily: 'var(--font-cinzel), serif' }}>Imobverse</div>
+                      <div style={{ fontSize: '10px', color: '#8e7f73' }}>Proptech + Reputation Engine</div>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/ferramentas-premium/powershell-bot"
+                    className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-white/5 transition-colors"
+                    onClick={() => setIsToolsOpen(false)}
+                  >
+                    <Terminal size={14} color="#c5a059" />
+                    <div>
+                      <div style={{ fontSize: '11px', fontWeight: 700, color: '#f1e7d0', fontFamily: 'var(--font-cinzel), serif' }}>PowerShell Bot</div>
+                      <div style={{ fontSize: '10px', color: '#8e7f73' }}>SecDevOps + SAST Auditor</div>
                     </div>
                   </Link>
                 </div>
@@ -95,9 +106,9 @@ export default function Header() {
         {/* Right side controls */}
         <div className="flex items-center gap-3 z-50">
           {/* Status badge */}
-          <div className="hidden sm:flex items-center gap-2 font-mono text-[10px] text-terminal-muted border border-neon-green/30 rounded-full px-3 py-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse-neon" />
-            <span className="text-neon-green">SYSTEM ACTIVE</span>
+          <div className="hidden sm:flex items-center gap-2 font-cinzel text-[9px] text-renaissance-gold border border-renaissance-gold/30 rounded px-3 py-1 bg-renaissance-gold/5">
+            <span className="w-1 h-1 rounded-full bg-renaissance-gold animate-pulse" />
+            <span className="tracking-widest uppercase">GALLERIA APERTA</span>
           </div>
 
           {/* Login & Premium buttons (desktop) */}
@@ -105,14 +116,14 @@ export default function Header() {
             {!user && (
               <Link
                 href="/assinar"
-                className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-neon-purple hover:text-white transition-colors border border-neon-purple/30 rounded-full px-3 py-1.5 hover:bg-neon-purple/10"
+                className="flex items-center gap-1.5 font-cinzel text-[9px] uppercase tracking-widest text-[#dfd2b8] hover:text-renaissance-gold-light transition-colors border border-renaissance-gold/30 rounded px-3 py-1.5 hover:bg-renaissance-gold/10"
               >
-                <Crown size={12} />
+                <Crown size={11} className="text-renaissance-gold" />
                 <span>Premium</span>
               </Link>
             )}
             {loading ? (
-              <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-terminal-muted border border-terminal-border/30 rounded-full px-3 py-1.5">
+              <span className="flex items-center gap-1.5 font-cinzel text-[9px] uppercase tracking-widest text-renaissance-muted border border-renaissance-border/30 rounded px-3 py-1.5">
                 ...
               </span>
             ) : user ? (
@@ -121,17 +132,17 @@ export default function Header() {
                   await logoutAction();
                   window.location.href = '/';
                 }}
-                className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-terminal-muted hover:text-neon-cyan transition-colors border border-terminal-border/30 rounded-full px-3 py-1.5 hover:border-neon-cyan/30 hover:bg-neon-cyan/5"
+                className="flex items-center gap-1.5 font-cinzel text-[9px] uppercase tracking-widest text-renaissance-muted hover:text-renaissance-gold transition-colors border border-renaissance-border/40 rounded px-3 py-1.5 hover:border-renaissance-gold/30 hover:bg-renaissance-gold/5"
               >
-                <LogOut size={12} />
+                <LogOut size={11} className="text-renaissance-gold" />
                 <span>Logout</span>
               </button>
             ) : (
               <Link
                 href="/login"
-                className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wider text-terminal-muted hover:text-neon-cyan transition-colors border border-terminal-border/30 rounded-full px-3 py-1.5 hover:border-neon-cyan/30 hover:bg-neon-cyan/5"
+                className="flex items-center gap-1.5 font-cinzel text-[9px] uppercase tracking-widest text-renaissance-muted hover:text-renaissance-gold transition-colors border border-renaissance-border/40 rounded px-3 py-1.5 hover:border-renaissance-gold/30 hover:bg-renaissance-gold/5"
               >
-                <LogIn size={12} />
+                <LogIn size={11} className="text-renaissance-gold" />
                 <span>Login</span>
               </Link>
             )}
@@ -139,7 +150,7 @@ export default function Header() {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="md:hidden p-1.5 text-terminal-muted hover:text-neon-cyan transition-colors"
+            className="md:hidden p-1.5 text-renaissance-muted hover:text-renaissance-gold transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -182,6 +193,14 @@ export default function Header() {
                 >
                   <Building2 size={16} />
                   <span>Imobverse</span>
+                </Link>
+                <Link
+                  href="/ferramentas-premium/powershell-bot"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-3 font-mono text-xs text-neon-cyan hover:text-white transition-colors duration-200 tracking-wider py-3"
+                >
+                  <Terminal size={16} />
+                  <span>PowerShell Bot</span>
                 </Link>
               </>
             )}

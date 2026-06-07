@@ -11,6 +11,7 @@ export interface Repository {
   language: string | null;
   stargazers_count: number;
   forks_count: number;
+  watchers_count?: number;
   topics: string[];
   updated_at: string;
   is_featured: boolean;

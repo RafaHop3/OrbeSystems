@@ -6,9 +6,9 @@ const TRAIL_LENGTH = 24;
 const ATOM_RADIUS = 32;
 
 const ELECTRONS = [
-  { angle: 0,                   orbitRadius: ATOM_RADIUS,      speed: 0.07,  color: '#00fff5' },
-  { angle: Math.PI * 2 / 3,    orbitRadius: ATOM_RADIUS * 0.7, speed: -0.055, color: '#0066ff' },
-  { angle: Math.PI * 4 / 3,    orbitRadius: ATOM_RADIUS * 1.3, speed: 0.04,  color: '#bd00ff' },
+  { angle: 0,                   orbitRadius: ATOM_RADIUS,      speed: 0.05,  color: '#ffd700' },
+  { angle: Math.PI * 2 / 3,    orbitRadius: ATOM_RADIUS * 0.8, speed: -0.04,  color: '#d4af37' },
+  { angle: Math.PI * 4 / 3,    orbitRadius: ATOM_RADIUS * 1.2, speed: 0.03,  color: '#c5a059' },
 ] as const;
 
 type TrailPoint = { x: number; y: number; age: number };
@@ -75,7 +75,7 @@ export default function MouseAtomTrail() {
         ctx.beginPath();
         ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
         ctx.lineTo(trail[i].x, trail[i].y);
-        ctx.strokeStyle = `rgba(0,255,245,${alpha})`;
+        ctx.strokeStyle = `rgba(212,175,55,${alpha})`;
         ctx.lineWidth = width;
         ctx.lineCap = 'round';
         ctx.stroke();
@@ -88,9 +88,9 @@ export default function MouseAtomTrail() {
 
       // ── Nucleus ──
       const grad = ctx.createRadialGradient(x, y, 0, x, y, 10);
-      grad.addColorStop(0, 'rgba(0,255,245,0.9)');
-      grad.addColorStop(0.4, 'rgba(0,102,255,0.5)');
-      grad.addColorStop(1, 'rgba(0,102,255,0)');
+      grad.addColorStop(0, 'rgba(255,215,0,0.85)');
+      grad.addColorStop(0.4, 'rgba(212,175,55,0.4)');
+      grad.addColorStop(1, 'rgba(212,175,55,0)');
       ctx.beginPath();
       ctx.arc(x, y, 10, 0, Math.PI * 2);
       ctx.fillStyle = grad;
@@ -99,9 +99,9 @@ export default function MouseAtomTrail() {
       // Inner nucleus dot
       ctx.beginPath();
       ctx.arc(x, y, 3, 0, Math.PI * 2);
-      ctx.fillStyle = '#00fff5';
-      ctx.shadowColor = '#00fff5';
-      ctx.shadowBlur = 12;
+      ctx.fillStyle = '#d4af37';
+      ctx.shadowColor = '#ffd700';
+      ctx.shadowBlur = 8;
       ctx.fill();
       ctx.shadowBlur = 0;
 

@@ -10,6 +10,8 @@ module.exports = {
       fontFamily: {
         mono: ['"JetBrains Mono"', '"Fira Code"', 'Consolas', 'monospace'],
         sans: ['"Inter"', 'system-ui', 'sans-serif'],
+        serif: ['"EB Garamond"', 'serif'],
+        cinzel: ['"Cinzel"', 'serif'],
       },
       colors: {
         neon: {
@@ -24,6 +26,19 @@ module.exports = {
           surface: '#0d1117',
           border: '#1e2d3d',
           muted: '#8b949e',
+        },
+        renaissance: {
+          bg: '#0c0a08', // Dark charcoal/walnut marble slate
+          surface: '#181310', // Walnut wood grain surface
+          border: '#2a1f18', // Aged dark wood/leather seam
+          muted: '#8e7f73', // Dust charcoal tint
+          gold: '#c5a059', // Antique gold
+          'gold-light': '#ffd700', // Bright gold highlight
+          gilt: '#d4af37', // Gilded gold
+          vellum: '#f1e7d0', // Aged parchment cream
+          parchment: '#dfd2b8', // Deeper vellum tone
+          burgundy: '#52141a', // Crimson wine oil paint
+          crimson: '#3b0e12', // Shadowed crimson
         },
       },
       animation: {
@@ -72,6 +87,8 @@ module.exports = {
         'neon-green': '0 0 8px #39ff14, 0 0 20px #39ff1440',
         'neon-purple': '0 0 8px #bd00ff, 0 0 20px #bd00ff40',
         'terminal': 'inset 0 0 30px rgba(0,255,245,0.05)',
+        'gilt': '0 0 15px rgba(212,175,55,0.25), inset 0 0 10px rgba(212,175,55,0.1)',
+        'spotlight': '0 0 40px rgba(212,175,55,0.15)',
       },
     },
   },

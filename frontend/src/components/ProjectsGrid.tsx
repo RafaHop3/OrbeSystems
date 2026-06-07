@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 import { AlertTriangle, RefreshCw, Terminal } from 'lucide-react';
 import type { Repository } from '@/types/repository';
 import ProjectCard from './ProjectCard';
-
-const API_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+import { API_BASE_URL as API_URL } from '@/lib/api';
 
 function LoadingSkeleton() {
   return (
@@ -14,7 +12,7 @@ function LoadingSkeleton() {
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="bg-terminal-surface border border-terminal-border rounded-lg overflow-hidden animate-pulse"
+          className="bg-renaissance-surface border-2 border-renaissance-gold/30 rounded overflow-hidden animate-pulse"
         >
           <div className="h-10 bg-[#161b22] border-b border-terminal-border" />
           <div className="p-5 space-y-3">
@@ -77,18 +75,17 @@ export default function ProjectsGrid() {
       {/* Section header */}
       <div className="mb-14">
         <div className="flex items-center gap-3 mb-4">
-          <div className="flex-1 h-px bg-gradient-to-r from-neon-cyan/40 to-transparent" />
-          <span className="font-mono text-xs text-neon-cyan tracking-widest uppercase">
-            ls -la ~/projects
+          <div className="flex-1 h-px bg-gradient-to-r from-renaissance-gold/30 to-transparent" />
+          <span className="font-cinzel text-xs text-renaissance-gold tracking-widest uppercase">
+            STANZA II · EXPOSITIO CAPOLAVORI
           </span>
-          <div className="flex-1 h-px bg-gradient-to-l from-neon-cyan/40 to-transparent" />
+          <div className="flex-1 h-px bg-gradient-to-l from-renaissance-gold/30 to-transparent" />
         </div>
-        <h2 className="font-mono text-3xl md:text-4xl font-bold text-white/90 text-center">
-          Repositórios{' '}
-          <span className="text-neon-cyan">Públicos</span>
+        <h2 className="font-cinzel text-3xl md:text-4xl font-semibold text-white/90 text-center uppercase tracking-wide">
+          Galeria de <span className="text-renaissance-gold italic font-serif normal-case font-normal">Repositórios</span>
         </h2>
-        <p className="font-mono text-sm text-terminal-muted text-center mt-3">
-          <span className="text-neon-green">$</span> github.com/theorbesystems-sketch — projetos em produção e em desenvolvimento
+        <p className="font-serif text-sm text-renaissance-muted text-center mt-3 italic">
+          Bottega d'Orbe · Códigos, engines e arquiteturas públicas expostas à visitação.
         </p>
       </div>
 

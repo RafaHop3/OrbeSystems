@@ -32,8 +32,13 @@ function formatDate(raw: string): string {
   });
 }
 
+function formatDateYear(raw: string): string {
+  if (!raw) return '—';
+  return new Date(raw).getFullYear().toString();
+}
+
 export default function ProjectCard({ repo, index }: ProjectCardProps) {
-  const langColor = LANGUAGE_COLORS[repo.language ?? ''] ?? '#8b949e';
+  const langColor = LANGUAGE_COLORS[repo.language ?? ''] ?? '#8e7f73';
   const animDelay = `${index * 80}ms`;
 
   const [scanState, setScanState] = useState<'hidden' | 'scanning' | 'decrypting' | 'discovered'>('hidden');
@@ -61,7 +66,7 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
   useEffect(() => {
     if (scanState === 'hidden' || scanState === 'discovered') return;
 
-    const duration = 1200; // 1.2 segundos para decodificar
+    const duration = 1200; // 1.2 segundos para restaurar
     const startTime = Date.now();
 
     const interval = setInterval(() => {
@@ -85,58 +90,57 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
   return (
     <article
       ref={cardRef}
-      className={`group relative flex flex-col bg-terminal-surface border rounded-lg overflow-hidden 
-                 transition-all duration-700 ease-in-out hover:-translate-y-1
+      className={`group relative flex flex-col overflow-hidden transition-all duration-700 ease-in-out hover:-translate-y-1 bg-[#181310]
                  ${scanState === 'discovered' 
-                   ? 'max-h-[800px] border-terminal-border hover:border-neon-cyan/60 hover:shadow-[0_0_30px_rgba(0,255,245,0.12),0_8px_40px_rgba(0,0,0,0.6)]' 
-                   : 'max-h-[130px] border-neon-cyan/30 shadow-[0_0_15px_rgba(0,255,245,0.05)]'
+                   ? 'max-h-[850px] gilded-frame hover:shadow-spotlight' 
+                   : 'max-h-[130px] border-2 border-renaissance-gold/30 shadow-[0_0_15px_rgba(212,175,55,0.05)]'
                  }`}
       style={{ animationDelay: animDelay }}
     >
-      {/* Terminal title bar */}
-      <div className="flex items-center gap-2 px-4 py-2.5 bg-[#161b22] border-b border-terminal-border flex-shrink-0">
-        <span className="w-3 h-3 rounded-full bg-[#ff5f57] border border-[#e0443e]" />
-        <span className="w-3 h-3 rounded-full bg-[#febc2e] border border-[#d4a10e]" />
-        <span className="w-3 h-3 rounded-full bg-[#28c840] border border-[#1aab29]" />
-        <span className="ml-2 font-mono text-xs text-terminal-muted/70 flex-1 text-center truncate">
-          {repo.full_name}.git
+      {/* Museum Title/Catalog Bar */}
+      <div className="flex items-center justify-between px-4 py-3 bg-[#130f0d] border-b border-renaissance-border flex-shrink-0">
+        <div className="flex items-center gap-1.5">
+          <span className="font-cinzel text-[9px] tracking-widest text-renaissance-gold uppercase">
+            OPERA N. {index + 1}
+          </span>
+        </div>
+        <span className="font-serif text-[10px] text-renaissance-muted italic truncate max-w-[150px]">
+          {repo.name.toLowerCase()}
         </span>
         {repo.is_featured && scanState === 'discovered' && (
-          <span className="flex items-center gap-1 text-[10px] font-mono text-neon-purple border border-neon-purple/40 rounded px-1.5 py-0.5">
-            <Zap size={8} />
-            FEATURED
+          <span className="font-cinzel text-[8px] tracking-widest text-[#ffd700] border border-[#ffd700]/30 bg-renaissance-gold/10 px-1.5 py-0.5 rounded">
+            CAPOLAVORO
           </span>
         )}
       </div>
 
-      {/* AI Scanning overlay / status bar */}
+      {/* Museum Restoration Scan overlay */}
       {scanState !== 'discovered' && (
-        <div className="flex-1 flex flex-col justify-center p-4 bg-[#0a0f1d]/90 relative overflow-hidden h-[94px] font-mono select-none">
-          {/* Scanning Laser Beam */}
-          <div className="absolute left-0 right-0 h-0.5 bg-neon-cyan/80 shadow-[0_0_8px_#00fff5] animate-scan-beam" />
+        <div className="flex-1 flex flex-col justify-center p-5 bg-[#120d0a] relative overflow-hidden h-[94px] font-serif select-none">
+          {/* Scanning Golden Light Beam */}
+          <div className="absolute left-0 right-0 h-0.5 bg-[#d4af37] shadow-[0_0_10px_#ffd700] animate-scan-beam" />
           
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[9px] text-neon-cyan font-bold tracking-wider animate-pulse flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-neon-cyan animate-ping" />
-              AI SCANNER // DETECTADO
+          <div className="flex items-center justify-between mb-1.5 font-cinzel">
+            <span className="text-[9px] text-renaissance-gold tracking-widest animate-pulse flex items-center gap-1.5 uppercase">
+              <span className="w-1.5 h-1.5 rounded-full bg-renaissance-gold animate-ping" />
+              Svelando il Disegno ({scanProgress}%)
             </span>
-            <span className="text-[9px] text-neon-cyan/80 font-bold">{scanProgress}%</span>
           </div>
 
           {/* Progress bar */}
-          <div className="h-1 bg-white/5 border border-white/10 rounded overflow-hidden mb-2">
+          <div className="h-1 bg-white/5 border border-renaissance-border rounded overflow-hidden mb-2">
             <div 
-              className="h-full bg-neon-cyan transition-all duration-75" 
+              className="h-full bg-renaissance-gold transition-all duration-75" 
               style={{ width: `${scanProgress}%` }} 
             />
           </div>
 
           {/* Telemetry logs */}
-          <div className="text-[8px] text-terminal-muted truncate">
-            {scanProgress < 30 && `> RESOLVING: ORBE://${repo.name.toUpperCase()}`}
-            {scanProgress >= 30 && scanProgress < 60 && `> DECRYPTING METADATA: PARSING HEADERS`}
-            {scanProgress >= 60 && scanProgress < 90 && `> ANALYSIS: ACTIVE LANG [${repo.language ? repo.language.toUpperCase() : 'UNKNOWN'}]`}
-            {scanProgress >= 90 && `> SUCCESS: DECRYPTION COMPLETED.`}
+          <div className="text-[9px] text-renaissance-muted italic">
+            {scanProgress < 30 && `> Preparando la tela virtuale: ORBE://${repo.name.toUpperCase()}`}
+            {scanProgress >= 30 && scanProgress < 60 && `> Restaurando il chiaroscuro: delineando i contorni`}
+            {scanProgress >= 60 && scanProgress < 90 && `> Analisi della materia: [${repo.language ? repo.language.toUpperCase() : 'DOCUMENTAZIONE'}]`}
+            {scanProgress >= 90 && `> Finito: Capolavoro svelato all'esposizione.`}
           </div>
         </div>
       )}
@@ -145,7 +149,7 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
       <div className={`flex flex-col flex-1 gap-0 transition-opacity duration-500 ${scanState === 'discovered' ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         {/* Media Section */}
         {(repo.image_url || repo.video_url) && (
-          <div className="relative w-full aspect-video bg-black/40 overflow-hidden border-b border-terminal-border/50 group-hover:border-neon-cyan/30 transition-colors">
+          <div className="relative w-full aspect-video bg-black/40 overflow-hidden border-b border-renaissance-border/50 transition-colors">
             {repo.video_url ? (
               <video 
                 src={repo.video_url} 
@@ -153,59 +157,68 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
                 muted 
                 loop 
                 playsInline
-                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                className="w-full h-full object-cover opacity-75 group-hover:opacity-95 transition-opacity"
               />
             ) : (
               <img 
                 src={repo.image_url} 
                 alt={repo.name}
-                className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                className="w-full h-full object-cover opacity-75 group-hover:opacity-95 transition-opacity"
               />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
           </div>
         )}
 
         <div className="p-5 flex flex-col flex-1 gap-4">
           {/* Name */}
           <div>
-            <h3 className="font-mono text-base font-semibold text-white group-hover:text-neon-cyan transition-colors duration-300 flex items-center gap-2">
-              <span className="text-neon-green/60 font-normal">~/</span>
+            <h3 className="font-cinzel text-sm font-semibold tracking-wider text-white group-hover:text-renaissance-gold transition-colors duration-300">
               {repo.name}
             </h3>
           </div>
 
           {/* Description */}
-          <p className="font-mono text-xs text-terminal-muted leading-relaxed flex-1 line-clamp-3">
+          <p className="font-serif text-xs text-[#dfd2b8]/75 leading-relaxed flex-1 line-clamp-3 italic">
             {repo.custom_description || repo.description || (
-              <span className="italic text-terminal-muted/50">
-                # Sem descrição — código fala por si.
+              <span className="italic text-renaissance-muted/50">
+                # Il codice stesso narra la propria perfezione.
               </span>
             )}
           </p>
 
+          {/* Cartellino dell'Opera */}
+          <div className="cartellino mt-1 select-none">
+            <div className="text-[8px] font-cinzel tracking-widest text-[#52141a] uppercase font-bold">Cartellino d'Esposizione</div>
+            <div className="text-[11px] font-serif font-bold text-[#1c130d] mt-0.5">{repo.name}</div>
+            <div className="text-[10px] font-serif italic text-[#1c130d]/85 leading-none mt-1">
+              Materia: <span className="font-bold">{repo.language || 'Codice Logico'}</span> su Silicio · c. 1502 / {formatDateYear(repo.updated_at)}
+            </div>
+          </div>
+
           {/* Topics */}
-          {repo.topics.length > 0 && (
+          {/* Topics */}
+          {Array.isArray(repo.topics) && repo.topics.length > 0 && (
             <div className="flex flex-wrap gap-1.5">
-              {repo.topics.slice(0, 5).map((topic) => (
+              {repo.topics.slice(0, 4).map((topic) => (
                 <span
                   key={topic}
-                  className="font-mono text-[10px] px-2 py-0.5 rounded border border-neon-cyan/20 text-neon-cyan/70 bg-neon-cyan/5"
+                  className="font-cinzel text-[8px] tracking-wider px-2 py-0.5 rounded border border-renaissance-gold/20 text-renaissance-gold/85 bg-renaissance-gold/5"
                 >
-                  {topic}
+                  {topic.toUpperCase()}
                 </span>
               ))}
             </div>
           )}
 
           {/* Meta row */}
-          <div className="flex items-center justify-between pt-3 border-t border-terminal-border">
+          <div className="flex items-center justify-between pt-3 border-t border-renaissance-border text-renaissance-muted">
             <div className="flex items-center gap-4">
               {/* Language */}
               {repo.language && (
-                <span className="flex items-center gap-1.5 font-mono text-xs text-terminal-muted">
+                <span className="flex items-center gap-1.5 font-cinzel text-[9px] uppercase tracking-wider">
                   <span
-                    className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                    className="w-2 h-2 rounded-full flex-shrink-0"
                     style={{ backgroundColor: langColor }}
                   />
                   {repo.language}
@@ -213,88 +226,76 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
               )}
 
               {/* Stars */}
-              <span className="flex items-center gap-1 font-mono text-xs text-terminal-muted">
-                <Star size={11} className="text-yellow-400/70" />
-                {repo.stargazers_count}
+              <span className="flex items-center gap-1 font-serif text-xs">
+                <Star size={11} className="text-renaissance-gold" />
+                {repo.stargazers_count ?? 0}
               </span>
 
               {/* Forks */}
-              <span className="flex items-center gap-1 font-mono text-xs text-terminal-muted">
+              <span className="flex items-center gap-1 font-serif text-xs">
                 <GitFork size={11} />
-                {repo.forks_count}
+                {repo.forks_count ?? 0}
               </span>
             </div>
 
             {/* Updated */}
-            <span className="font-mono text-[10px] text-terminal-muted/50">
-              {formatDate(repo.updated_at)}
+            <span className="font-serif text-[10px] italic">
+              Aggiornato il {formatDate(repo.updated_at)}
             </span>
           </div>
 
           {/* CTA buttons */}
           <div className="flex flex-col gap-2 mt-1">
-            {repo.deploy_url && (
-              // Internal route (premium tools) → SPA Link
-              // External URL → new tab anchor
-              repo.deploy_url.startsWith('/') ? (
-                <Link
-                  href={repo.deploy_url}
-                  className="group/btn flex items-center justify-center gap-2 w-full py-2.5 rounded
-                             font-mono text-xs font-bold tracking-[0.2em] uppercase
-                             border border-neon-purple/50 text-neon-purple
-                             bg-neon-purple/10
-                             hover:bg-neon-purple/20 hover:border-neon-purple hover:text-white
-                             hover:shadow-[0_0_20px_rgba(188,19,254,0.4)]
-                             transition-all duration-300 relative overflow-hidden"
-                >
-                  <Lock size={14} className="group-hover/btn:scale-110 transition-transform duration-300" />
-                  Acessar Premium
-                </Link>
-              ) : (
-                <a
-                  href={repo.deploy_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group/btn flex items-center justify-center gap-2 w-full py-2.5 rounded
-                             font-mono text-xs font-bold tracking-[0.2em] uppercase
-                             border border-neon-purple/50 text-neon-purple
-                             bg-neon-purple/10
-                             hover:bg-neon-purple/20 hover:border-neon-purple hover:text-white
-                             hover:shadow-[0_0_20px_rgba(188,19,254,0.4)]
-                             transition-all duration-300 relative overflow-hidden"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
-                  <Globe size={14} className="group-hover/btn:scale-110 transition-transform duration-300" />
-                  Ver Projeto Online
-                </a>
-              )
-            )}
+            {typeof repo.deploy_url === 'string' && repo.deploy_url.startsWith('/') ? (
+              <Link
+                href={repo.deploy_url}
+                className="group/btn flex items-center justify-center gap-2 w-full py-2.5 rounded
+                           font-cinzel text-[10px] tracking-widest uppercase font-bold
+                           border-2 border-renaissance-gold text-[#dfd2b8]
+                           bg-renaissance-gold/10
+                           hover:bg-renaissance-gold/20 hover:text-white
+                           hover:shadow-gilt
+                           transition-all duration-300 relative overflow-hidden"
+              >
+                <Lock size={12} className="text-renaissance-gold group-hover/btn:scale-110 transition-transform duration-300" />
+                Acessar Premium
+              </Link>
+            ) : typeof repo.deploy_url === 'string' ? (
+              <a
+                href={repo.deploy_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group/btn flex items-center justify-center gap-2 w-full py-2.5 rounded
+                           font-cinzel text-[10px] tracking-widest uppercase font-bold
+                           border-2 border-renaissance-gold text-[#dfd2b8]
+                           bg-renaissance-gold/10
+                           hover:bg-renaissance-gold/20 hover:text-white
+                           hover:shadow-gilt
+                           transition-all duration-300 relative overflow-hidden"
+              >
+                <Globe size={12} className="text-renaissance-gold group-hover/btn:scale-110 transition-transform duration-300" />
+                Ver Projeto Online
+              </a>
+            ) : null}
             
             <a
               href={repo.html_url}
               target="_blank"
               rel="noopener noreferrer"
               className="group/btn flex items-center justify-center gap-2 w-full py-2.5 rounded
-                         font-mono text-xs font-medium tracking-wider
-                         border border-neon-cyan/40 text-neon-cyan/80
-                         bg-neon-cyan/5
-                         hover:bg-neon-cyan/15 hover:border-neon-cyan hover:text-neon-cyan
-                         hover:shadow-neon-cyan
+                         font-cinzel text-[9px] tracking-widest uppercase
+                         border border-renaissance-gold/40 text-renaissance-gold/90
+                         bg-renaissance-gold/5
+                         hover:bg-renaissance-gold/15 hover:border-renaissance-gold hover:text-renaissance-gold
+                         hover:shadow-gilt
                          transition-all duration-300"
             >
-              <ExternalLink size={12} className="group-hover/btn:rotate-12 transition-transform duration-300" />
+              <ExternalLink size={11} className="group-hover/btn:rotate-12 transition-transform duration-300" />
               Acessar Repositório
             </a>
           </div>
         </div>
       </div>
-
-      {/* Featured glow overlay */}
-      {repo.is_featured && scanState === 'discovered' && (
-        <div className="absolute inset-0 rounded-lg pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          <div className="absolute inset-0 bg-gradient-to-b from-neon-purple/5 via-transparent to-neon-cyan/5 rounded-lg" />
-        </div>
-      )}
     </article>
   );
 }

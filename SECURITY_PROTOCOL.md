@@ -1,188 +1,142 @@
-# 🔒 Orbe Systems — Security Protocol
-> **Version:** 1.0 | **Date:** 2026-05-21 | **Author:** Rafael / Antigravity AI
+# 🔒 PROTOCOLO DE DESENVOLVIMENTO SEGURO E DEVSECOPS — ORBE SYSTEMS
+> **Versão:** 2.0 (INFLEXÍVEL) | **Status:** VIGENTE & MANDATÓRIO | **Autor:** Orbe Systems Core AI / Antigravity
 
-This document defines the **mandatory security baseline** for all Orbe Systems projects.
-Every new project, feature, and deployment MUST pass this checklist before merging.
-
----
-
-## 📋 Pre-Commit Checklist
-
-Before every `git commit`, verify:
-
-- [ ] No `.env` files staged: `git status` shows no `.env*` files
-- [ ] No hardcoded secrets, tokens, passwords, or API keys in source files
-- [ ] All new secret fields use environment variables (not default values in code)
-- [ ] No new debug/test endpoints are left public and unauthenticated
-- [ ] No `traceback` or internal error details are returned in HTTP responses
-
-```bash
-# Quick pre-commit check: scan for secrets
-grep -rn "ghp_\|sk_live_\|sk_test_\|whsec_\|password=\|api_key=" --include="*.py" --include="*.ts" --include="*.js" .
-```
+Este documento estabelece o **protocolo de segurança e boas práticas de desenvolvimento** para todos os projetos da Orbe Systems. Ele é absoluto, inegociável e atua como a barreira final de controle de qualidade antes de qualquer merge ou deployment em produção (Vercel, Render ou VPS).
 
 ---
 
-## 🌍 Environment Variables Rules
+## 🚫 DECLARAÇÃO DE INFLEXIBILIDADE
 
-### The Golden Rule
-> **Source code NEVER contains real secrets.** It only contains structure.
-
-| ✅ Allowed in source | ❌ Forbidden in source |
-|---|---|
-| Variable names (e.g., `GITHUB_TOKEN: str`) | Real values (e.g., `ghp_abc123...`) |
-| `.env.example` with FAKE/placeholder values | `.env` files with real values |
-| Validation logic for secret format | Default values that are real secrets |
-
-### File Naming Convention
-
-| File | Commit to Git? | Purpose |
-|---|---|---|
-| `.env` | **NO** ❌ | Local development secrets |
-| `.env.local` | **NO** ❌ | Local Next.js overrides |
-| `.env.example` | **YES** ✅ | Template with fake values for onboarding |
-| `.env.production.example` | **YES** ✅ | Production template (no real values) |
-
-### Required Variables Per Project
-
-**Backend (FastAPI)**:
-```
-SECRET_KEY         # python -c "import secrets; print(secrets.token_hex(32))"
-ADMIN_USERNAME     # your chosen admin username
-ADMIN_PASSWORD_HASH # python generate_hash.py
-GITHUB_TOKEN       # from github.com/settings/tokens
-DATABASE_URL       # sqlite:///./data/projects.db (local) or PostgreSQL URL
-```
-
-**Frontend (Next.js)**:
-```
-NEXT_PUBLIC_API_URL  # http://localhost:8000 (dev) or Render URL (prod)
-```
+1. **Zero Tolerância**: Nenhuma linha de código que viole este protocolo será fundida no branch principal (`main`).
+2. **Falha por Padrão**: Se um único item deste protocolo não puder ser comprovado como funcional no Pull Request, o build de CI/CD deve falhar.
+3. **Revisões Periódicas**: Qualquer alteração neste protocolo exige aprovação unânime do time de engenharia e liderança de DevSecOps.
 
 ---
 
-## 🚫 Forbidden Patterns
+## 💻 PARTE 1: DIRETRIZES DO CLIENTE (FRONTEND & UI/UX)
+*O foco é performance bruta, acessibilidade, SEO e resiliência da interface do usuário.*
 
-### 1. Hardcoded Fallback Secrets
-```python
-# ❌ FORBIDDEN — insecure default
-GITHUB_TOKEN: str = "ghp_my_real_token"
+### 1.1 Componentização Atômica
+- **Regra**: Proibida a duplicação de estruturas de UI comuns. Elementos reutilizáveis (botões, cards, inputs, modais) devem ser isolados em componentes puros e independentes.
+- **Enforcement**: Se uma estrutura HTML/Tailwind for repetida mais de 2 vezes, ela deve virar um componente.
 
-# ✅ CORRECT — no default, Pydantic fails on missing value
-GITHUB_TOKEN: str
-```
+### 1.2 Mobile-First Real
+- **Regra**: Todos os layouts devem ser desenvolvidos pensando primeiro em telas pequenas (mobile), usando os modificadores do Tailwind (ex: `md:`, `lg:`) para expandir e adaptar a interface para desktops.
+- **Enforcement**: Verificação de quebra de layout em telas de 320px a 480px.
 
-### 2. Exposing Debug Info in HTTP Responses
-```python
-# ❌ FORBIDDEN — leaks internal details to attackers
-return JSONResponse(status_code=500, content={
-    "traceback": traceback.format_exc(),  # Never!
-    "error_msg": str(exc),                # Never!
-})
+### 1.3 Otimização Crítica de Mídias e Imagens
+- **Regra**: Formatos legados (.png, .jpg) são proibidos para imagens estáticas grandes. Devem ser convertidos para `.webp` ou `.avif`.
+- **Regra no Next.js**: É **obrigatório** o uso do componente `<Image />` (`next/image`) nativo com `placeholder="blur"`, lazy loading automático e dimensionamento explícito (ou `fill`).
+- **Objetivo**: Evitar perdas de pontuação por CLS (Cumulative Layout Shift) e LCP (Largest Contentful Paint) no Core Web Vitals.
 
-# ✅ CORRECT — log internally, return generic message
-print(f"INTERNAL ERROR: {traceback.format_exc()}")
-return JSONResponse(status_code=500, content={"detail": "Internal Server Error"})
-```
+### 1.4 Gestão de Estado Eficiente
+- **Regra**: Evitar o uso indiscriminado de React Context ou propagação excessiva de estados no topo da árvore React, para não travar o render do navegador do usuário.
+- **Diretriz**: Para fluxos reativos em tempo real (como logs de terminal ou contadores), utilize gerenciadores de estado leves e focados (ex: **Zustand** ou **Signals**).
 
-### 3. Unauthenticated Debug/Admin Endpoints
-```python
-# ❌ FORBIDDEN — publicly exposes configuration
-@app.get("/debug-config")
-async def debug_config():
-    return {"admin_username": settings.ADMIN_USERNAME}
-
-# ✅ CORRECT — use the protected /docs endpoint for debugging
-# Or add admin token dependency: Depends(get_current_admin)
-```
-
-### 4. Verbose Auth Logging
-```python
-# ❌ FORBIDDEN — leaks expected credentials in logs
-print(f"[AUTH] Expected: '{ADMIN_USERNAME}'")
-print(f"[AUTH] Password result: {is_valid}")
-
-# ✅ CORRECT — minimal, non-revealing logs
-print("[AUTH] Login attempt received.")
-```
+### 1.5 Tratamento de Estados de Erro (Error Boundaries)
+- **Regra**: "Telas brancas" ou travamentos totais por falha em requisições são inaceitáveis.
+- **Enforcement**: Todo componente que consome APIs externas deve estar envolvido em um **Error Boundary** ou possuir tratamentos locais de erro, exibindo um componente de Fallback amigável e um botão de `Tentar Novamente` (`Retry`).
 
 ---
 
-## 🔐 Deployment Checklist (Render / Vercel)
+## 🖥️ PARTE 2: DIRETRIZES DO SERVIDOR (BACKEND, INFRAESTRUTURA & CYBER SAFETY)
+*O foco é a blindagem de dados, resiliência do sistema, controle financeiro de consumo e velocidade de resposta.*
 
-### Before every production deployment:
+### 2.1 Funções Serverless / Microsserviços Isolados
+- **Regra**: Rotas com alto consumo de CPU ou chamadas de longa duração (ex: compilações e geração de IAs) devem ser isoladas em endpoints ou funções serverless dedicadas. Uma rota lenta nunca deve travar outras partes operacionais da aplicação.
 
-- [ ] All env vars set in Render/Vercel dashboard (NOT in `render.yaml` as `value:`)
-- [ ] `SECRET_KEY` is a cryptographically random 64-char hex string
-- [ ] `ADMIN_PASSWORD_HASH` is a bcrypt hash (not the plaintext password)
-- [ ] `GITHUB_TOKEN` is a real PAT with minimal scopes (`read:user`, `public_repo`)
-- [ ] Stripe keys are production keys (`sk_live_`, `whsec_`)
-- [ ] CORS `allow_origins` is locked to production domain(s) only
+### 2.2 Variáveis de Ambiente Protegidas (Zero Secrets)
+- **Regra**: Chaves de API, segredos de JWT, strings de conexão a bancos de dados ou tokens de serviços de nuvem **nunca** devem ser inseridos diretamente no código fonte ou commits do Git.
+- **Enforcement**: Devem ser carregados estritamente via variáveis de ambiente (`process.env` no Node, `settings` / `os.getenv` no Python).
+- **Git**: Arquivos `.env` e chaves locais devem constar obrigatoriamente no `.gitignore`.
 
-### Generating Secrets Safely
-```bash
-# SECRET_KEY
-python -c "import secrets; print(secrets.token_hex(32))"
+### 2.3 Estratégia de Cache Inteligente (Stale-While-Revalidate / ISR)
+- **Regra**: Consultas recorrentes ao banco de dados para conteúdos que mudam com pouca frequência (ex: posts, portfólios, dados estáticos) devem ser evitadas.
+- **Implementação**: Configurar cabeçalhos de cache eficientes ou utilizar **ISR (Incremental Static Regeneration)** no Next.js. O servidor deve servir páginas estáticas instantaneamente a partir da borda da CDN (Vercel Edge) e validar a atualização em segundo plano. Isso reduz os custos de processamento de banco de dados e APIs em até 90%.
 
-# ADMIN_PASSWORD_HASH
-cd backend && python generate_hash.py
+### 2.4 Validação Rigorosa no Server-Side
+- **Regra**: **NUNCA CONFIE NOS DADOS DO CLIENTE.** Qualquer input recebido pelo backend deve ser estritamente validado e sanitizado no lado do servidor.
+- **Implementação**:
+  - No Backend Python (FastAPI): Uso obrigatório de schemas do **Pydantic** para tipagem e validação forte.
+  - No Frontend/Edge/Node: Uso obrigatório de esquemas **Zod** para validação antes de qualquer processamento ou mutação de banco.
+- **Objetivo**: Prevenção total contra SQL Injection, injeção de parâmetros, XSS e corrupção do esquema do banco de dados.
 
-# Verify bcrypt hash is valid
-python -c "import bcrypt; print(bcrypt.checkpw(b'mypassword', b'$2b$12$...yourhashere...'))"
-```
-
----
-
-## 🔑 Access Control Rules
-
-| Endpoint Category | Auth Required |
-|---|---|
-| `GET /health` | None (keep-alive probe) |
-| `GET /api/projects` | None (public portfolio) |
-| `POST /api/auth/login` | Rate-limited (5/min) |
-| `GET /docs` | HTTP Basic (admin only) |
-| `GET /api/admin/*` | JWT Bearer token |
-| `GET /debug/*` | **MUST NOT EXIST in production** |
+### 2.5 Implementação de Rate Limiting
+- **Regra**: Todas as rotas de API públicas e endpoints sensíveis (especialmente `/api/auth/login`, registro de usuários, criação de entidades, endpoints de processamento pesado e terminal) devem possuir limites de requisição por IP/Usuário.
+- **Implementação**: Uso de Middlewares na borda (Edge Rate Limiting) para barrar ataques de força bruta, scrapers ou negação de serviço (DoS) antes mesmo de consumirem ciclos do seu banco de dados principal.
 
 ---
 
-## 🗂️ Git History — Leaked Secrets Response
+## 📊 MATRIZ DE IMPACTO E PRIORIDADE DE ENFORCEMENT
 
-If a secret is ever committed by mistake:
+A prioridade de aplicação dos controles é definida pelo risco e impacto operacional/financeiro:
 
-1. **Immediately revoke** the token/key from its provider (GitHub, Stripe, Cloudinary)
-2. Generate a new secret
-3. **Remove from git history** (if needed):
+| Controle DevSecOps | Nível de Impacto | Beneficiário Principal | Destinação Principal |
+| :--- | :--- | :--- | :--- |
+| **Edge Rate Limiting** | **Crítico / Alto** | Proteção de Infraestrutura | Servidor / Controle de Custos |
+| **Zod / Pydantic Validation** | **Alto** | Prevenção de Bugs e Ataques | Segurança da Aplicação / Dados |
+| **Cache Inteligente / ISR** | **Médio** | Velocidade e Custo | Cliente (SEO) / Servidor |
+| **Otimização de Mídias/Imagens**| **Médio** | Performance (Lighthouse) | Cliente (Core Web Vitals) |
+| **Error Boundaries / Fallbacks** | **Médio** | Resiliência de Interface | Cliente (UX / Retenção) |
+
+---
+
+## 🛡️ PROTOCOLO DE ANÁLISE ANTES DO COMMIT (PRE-COMMIT)
+
+Antes de rodar `git commit` ou empurrar código para branches de PR:
+
+1. **Varredura de Segredos**:
+   Execute uma busca local por tokens acidentais na base:
    ```bash
-   git filter-branch --force --index-filter \
-     "git rm --cached --ignore-unmatch backend/.env" \
-     --prune-empty --tag-name-filter cat -- --all
-   git push origin --force --all
+   grep -rn "ghp_\|sk_live_\|sk_test_\|whsec_\|password=\|api_key=" --include="*.py" --include="*.ts" --include="*.js" .
    ```
-4. Update the `.gitignore` to prevent recurrence
-5. Document the incident in the project changelog
+2. **Verificação de Builds**:
+   Confirme se a validação estática de tipos (TypeScript/Pydantic) e lints passa localmente:
+   ```bash
+   # Frontend
+   npm run build
+   # Backend
+   pytest
+   ```
+3. **Checagem de RLS (Row Level Security)**:
+   Se estiver utilizando Supabase ou outro banco relacional na nuvem, garanta que todas as novas tabelas possuam políticas de RLS ativadas antes do commit da migração SQL.
 
 ---
 
-## 📦 New Project Onboarding Template
+## ⚠️ PROCEDIMENTO DE CONTENÇÃO (VAZAMENTO DE SEGREDO)
 
-When starting a new Orbe Systems project, run this setup:
+Se um segredo for commitado acidentalmente e enviado para o repositório remoto:
 
-```bash
-# 1. Copy env templates
-cp backend/.env.example backend/.env
-cp frontend/.env.production.example frontend/.env.local
-
-# 2. Fill in real values in the .env files
-
-# 3. Verify gitignore is in place
-cat .gitignore | grep "\.env"
-
-# 4. Confirm nothing is staged
-git status
-```
+1. **Revogue Imediatamente**: Inative a chave na plataforma provedora (AWS, GitHub, Stripe, Supabase).
+2. **Substitua a Chave**: Crie um novo token no provedor e insira-o no painel de controle de variáveis de ambiente do servidor.
+3. **Expurgue o Histórico**: Remova o arquivo comprometido do histórico do Git utilizando `git-filter-repo` ou `git filter-branch` e faça força do push para os branches remotos.
+4. **Documente**: Registre o incidente na auditoria interna de vulnerabilidades.
 
 ---
 
-*This protocol is enforced by the Orbe Systems development standard.
-Violations should be caught in code review before merge.*
+## 🐚 PARTE 3: REGRAS DE AUTOMAÇÃO E SEGURANÇA EM SCRIPTS (POWERSHELL SECDEVOPS)
+*O foco é garantir que scripts executados localmente ou em pipelines de CI/CD estejam livres de vulnerabilidades críticas.*
+
+### 3.1 Auditoria e Varredura de Scripts (OrbePSShield SAST)
+Todos os scripts PowerShell (`.ps1`) gerados ou utilizados em projetos da Orbe Systems devem passar obrigatoriamente pela análise estática do **OrbePSShield** e seguir as seguintes travas de conformidade:
+
+| Regra / Padrão Detectado | Severidade | Impacto no Score | Mitigação Mandatória |
+| :--- | :---: | :---: | :--- |
+| `iex` ou `Invoke-Expression` | **CRÍTICO** | -40 pontos | Utilizar chamada explícita por operador de chamada `&` ou executar scripts locais auditados. |
+| `Disable-NetFirewall` / `Set-MpPreference` | **CRÍTICO** | -35 pontos | Nunca desabilitar o firewall local ou o Windows Defender Antivírus via script. |
+| `Set-ExecutionPolicy Bypass` | **ALTO** | -25 pontos | Executar com `-Scope Process` ou rodar via wrapper `.bat` temporário de processo único. |
+| `password` / `senha` / `secret` (texto limpo) | **ALTO** | -20 pontos | Utilizar `Get-Credential` ou carregar segredos de cofres de chaves (SecretManagement). |
+| `http://` (Sem criptografia TLS) | **MÉDIO** | -10 pontos | Utilizar obrigatoriamente o protocolo seguro `https://` para evitar interceptações MitM. |
+| `Remove-Item` com `-Force` (Sem `-Confirm`) | **BAIXO** | -5 pontos | Adicionar `-Confirm:$false` ou `-WhatIf` de forma explícita para evitar deleção catastrófica. |
+
+### 3.2 Execução Segura e Encapsulamento
+- **Bypass de Política Global Proibido**: É expressamente proibido alterar a política de execução global do Windows. wrappers de arquivos batch (`.bat`) devem encapsular a execução em escopo local e isolado:
+  ```cmd
+  powershell -NoProfile -ExecutionPolicy RemoteSigned -File "%~dp0SeuScript.ps1"
+  ```
+- **Pipelines CI/CD**: Arquivos de pipeline GitHub Actions (`.yml`) que invoquem código PowerShell devem rodar sob shells tipados e protegidos com validações rigorosas de erros (`$ErrorActionPreference = 'Stop'`).
+
+---
+
+*Este protocolo foi desenhado para manter o ecossistema da Orbe Systems escalável, seguro contra explorações, rápido no carregamento e financeiramente eficiente no modelo serverless.*
+

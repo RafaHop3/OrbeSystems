@@ -23,6 +23,7 @@ from routes.checkout import router as checkout_router
 from routes.webhooks import router as webhooks_router
 from routes.imortal import router as imortal_router
 from routes.imobverse import router as imobverse_router
+from routes.powershell_bot import router as powershell_bot_router
 from security.auth import verify_password
 from security.supabase_rls import ensure_supabase_rls
 from sqlalchemy import inspect, text
@@ -90,6 +91,15 @@ def run_migrations():
             conn.execute(text(
                 "INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only) "
                 "VALUES ('imobverse', 'Imobverse', 'Plataforma Proptech com Motor de Reputacao, Vistoria Fotografica Inteligente e Geracao de Leads', '/ferramentas-premium/imobverse', 1, 1)"
+            ))
+
+        # Registrar o PowerShell Bot na tabela de metadados
+        ps_bot_exists = conn.execute(text("SELECT 1 FROM projects_metadata WHERE id = 'powershell-bot'")).fetchone()
+        if not ps_bot_exists:
+            print("INFO: [Migration] Registering POWERSHELL-BOT Premium Project...")
+            conn.execute(text(
+                "INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only) "
+                "VALUES ('powershell-bot', 'PowerShell Shield Bot', 'Assistente SecDevOps para geracao de prompts seguros, analise de riscos e scripts PowerShell multi-formato', '/ferramentas-premium/powershell-bot', 1, 1)"
             ))
 
     print("INFO: [Migration] Schema is up to date.")
@@ -227,6 +237,9 @@ app.include_router(checkout_router, prefix="/api/users", tags=["users-checkout"]
 app.include_router(webhooks_router, prefix="/api", tags=["webhooks"])
 app.include_router(imortal_router, prefix="/api", tags=["imortal"])
 app.include_router(imobverse_router, prefix="/api", tags=["imobverse"])
+app.include_router(powershell_bot_router, prefix="/api", tags=["PowerShell Bot"])
+from routes.suite_inteligente import router as suite_inteligente_router
+app.include_router(suite_inteligente_router)
 
 
 @app.get("/health", tags=["health"])

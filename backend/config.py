@@ -1,16 +1,14 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    # GitHub Token — REQUIRED. Set via .env or environment variable.
-    # Generate at: https://github.com/settings/tokens (classic, read:user + public_repo)
-    GITHUB_TOKEN: str
+    # GitHub Token — Set via .env or environment variable.
+    GITHUB_TOKEN: str = ""
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:3002,https://orbesystems.com.br,https://www.orbesystems.com.br"
     
-    # Critical credentials — NO defaults. Pydantic raises ValidationError on startup
-    # if these are missing from .env / environment, preventing insecure boot.
-    SECRET_KEY: str
-    ADMIN_PASSWORD_HASH: str
-    ADMIN_USERNAME: str  # Must be set in .env — no default exposed in source code
+    # Critical credentials. Defaults to empty strings to avoid Vercel import-time crashes.
+    SECRET_KEY: str = ""
+    ADMIN_PASSWORD_HASH: str = ""
+    ADMIN_USERNAME: str = ""
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
     # Cloudinary Uplink (Permanent Storage)

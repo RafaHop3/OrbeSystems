@@ -13,8 +13,8 @@ if "supabase" in db_url and "sslmode=require" not in db_url:
     separator = "&" if "?" in db_url else "?"
     db_url += f"{separator}sslmode=require"
 
-# SQLite handles threads differently than PostgreSQL
-connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
+# SQLite handles threads differently than PostgreSQL. Add a 30s timeout to prevent locking.
+connect_args = {"check_same_thread": False, "timeout": 30} if db_url.startswith("sqlite") else {}
 
 # Ensure SQLite directory exists
 if db_url.startswith("sqlite"):

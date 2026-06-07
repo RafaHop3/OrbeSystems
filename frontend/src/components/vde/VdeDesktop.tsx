@@ -8,6 +8,7 @@ import {
   Shield,
   Zap,
   Building2,
+  LayoutGrid,
 } from 'lucide-react';
 import OrbeLogo from '../OrbeLogo';
 import type { DesktopApp } from './types';
@@ -15,6 +16,7 @@ import type { VdeView } from './types';
 
 const APPS: DesktopApp[] = [
   { id: 'home', label: 'Home', icon: 'home', action: 'view', view: 'desktop' },
+  { id: 'dashboard', label: 'Painel Orbe', icon: 'layout', action: 'view', view: 'dashboard' },
   { id: 'terminal', label: 'Xfce Terminal', icon: 'terminal', action: 'view', view: 'terminal' },
   { id: 'webide', label: 'WebIDE', icon: 'code', action: 'view', view: 'webide' },
   { id: 'site', label: 'Firefox', icon: 'globe', action: 'link', href: 'https://orbesystems.com.br' },
@@ -31,6 +33,7 @@ const ICONS = {
   shield: Shield,
   zap: Zap,
   building: Building2,
+  layout: LayoutGrid,
 };
 
 type Props = {
