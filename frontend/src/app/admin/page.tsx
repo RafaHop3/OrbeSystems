@@ -75,7 +75,7 @@ export default function AdminDashboard() {
   const [injectMsg, setInjectMsg]             = useState('');
   const router = useRouter();
 
-  const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
+  const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-fuc5.vercel.app';
   const API_URL = rawUrl.trim().replace(/\/$/, '');
 
   useEffect(() => {

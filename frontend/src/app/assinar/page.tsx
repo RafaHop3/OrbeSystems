@@ -12,7 +12,7 @@ import { useState, useTransition, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createCheckoutSessionAction } from "@/lib/auth-actions";
 
-const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://orbe-systems-api.onrender.com";
+const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://orbe-systems-fuc5.vercel.app";
 const API_URL = rawUrl.trim().replace(/\/$/, "");
 
 const PLANS = [

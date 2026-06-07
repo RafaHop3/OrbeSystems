@@ -20,7 +20,7 @@ export default function AdminLogin() {
     console.log('[FRONTEND] Sending login:', { username, password: trimmedPassword, passwordLength: trimmedPassword.length });
 
     try {
-      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
+      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-fuc5.vercel.app';
       const API_URL = rawUrl.trim().replace(/\/$/, '');
 
       const res = await fetch(`${API_URL}/api/auth/login`, {
@@ -46,7 +46,7 @@ export default function AdminLogin() {
       
       router.push('/admin');
     } catch (err: any) {
-      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
+      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-fuc5.vercel.app';
       const API_URL = rawUrl.trim().replace(/\/$/, '');
       
       // If it's a manual error we threw (like ACCESS DENIED), use that.

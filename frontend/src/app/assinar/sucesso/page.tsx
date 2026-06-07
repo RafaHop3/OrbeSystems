@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle, Loader2 } from "lucide-react";
 
-const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://orbe-systems-api.onrender.com";
+const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://orbe-systems-fuc5.vercel.app";
 const API_URL = rawUrl.trim().replace(/\/$/, "");
 
 export default function AssinarSucessoPage() {
