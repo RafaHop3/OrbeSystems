@@ -9,7 +9,9 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import type { Repository } from '@/types/repository';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+import { API_BASE_URL } from '@/lib/api';
+
+const API_URL = API_BASE_URL;
 
 interface InspectionItem {
   id: string;

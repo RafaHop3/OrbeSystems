@@ -305,19 +305,22 @@ export default function CyberSecurityPage() {
                 </div>
               )}
 
-              {consoleOutput.map((line, idx) => (
-                <div 
-                  key={idx}
-                  className={`
-                    ${line.type === 'error' ? 'text-red-400 font-bold' : ''}
-                    ${line.type === 'warning' ? 'text-neon-purple font-semibold' : ''}
-                    ${line.type === 'success' ? 'text-neon-green' : ''}
-                    ${line.type === 'info' ? 'text-neon-cyan' : ''}
-                  `}
-                >
-                  {line.text}
-                </div>
-              ))}
+              {consoleOutput.map((line, idx) => {
+                if (!line) return null;
+                return (
+                  <div 
+                    key={idx}
+                    className={`
+                      ${line.type === 'error' ? 'text-red-400 font-bold' : ''}
+                      ${line.type === 'warning' ? 'text-neon-purple font-semibold' : ''}
+                      ${line.type === 'success' ? 'text-neon-green' : ''}
+                      ${line.type === 'info' ? 'text-neon-cyan' : ''}
+                    `}
+                  >
+                    {line.text}
+                  </div>
+                );
+              })}
 
               {isRunning && (
                 <div className="inline-block w-2 h-3.5 bg-neon-green animate-pulse ml-0.5" />

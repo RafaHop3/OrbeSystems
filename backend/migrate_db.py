@@ -11,6 +11,8 @@ import models.metadata
 import models.math_vectors
 import models.math_matrices
 import models.audit_log
+import models.imobverse
+import models.repository_db
 
 def run_migration():
     print("Conectando ao banco de dados...")

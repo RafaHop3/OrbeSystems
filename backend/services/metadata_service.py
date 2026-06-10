@@ -23,9 +23,21 @@ def get_all_metadata(db: Session) -> Dict[str, dict]:
     }
 
 
-def get_project_metadata(repo_id: int, db: Session) -> Optional[dict]:
+def get_project_metadata(repo_id: str | int, db: Session) -> Optional[dict]:
     """Returns custom metadata for a specific repository."""
-    item = db.query(ProjectMetadata).filter(ProjectMetadata.id == str(repo_id)).first()
+    repo_id_str = str(repo_id)
+    if repo_id_str.isdigit():
+        repo_id_int = int(repo_id_str)
+        all_items = db.query(ProjectMetadata).all()
+        for item in all_items:
+            if not item.id.isdigit():
+                import hashlib
+                h = int(hashlib.md5(item.id.encode('utf-8')).hexdigest()[:8], 16)
+                if h == repo_id_int:
+                    repo_id_str = item.id
+                    break
+
+    item = db.query(ProjectMetadata).filter(ProjectMetadata.id == repo_id_str).first()
     if item:
         return {
             "repo_name": item.repo_name,
@@ -52,13 +64,24 @@ def get_featured_repo_names(db: Session) -> list[str]:
     return [r.repo_name for r in results if r.repo_name]
 
 
-def save_project_metadata(repo_id: int, metadata: dict, db: Session) -> None:
+def save_project_metadata(repo_id: str | int, metadata: dict, db: Session) -> None:
     """Creates or updates custom metadata for a specific repository.
     
     Commits the transaction. The caller is responsible for the session lifecycle.
     Preserves existing values when new value is None (allows explicit clearing with empty string "").
     """
     repo_id_str = str(repo_id)
+    if repo_id_str.isdigit():
+        repo_id_int = int(repo_id_str)
+        all_items = db.query(ProjectMetadata).all()
+        for item in all_items:
+            if not item.id.isdigit():
+                import hashlib
+                h = int(hashlib.md5(item.id.encode('utf-8')).hexdigest()[:8], 16)
+                if h == repo_id_int:
+                    repo_id_str = item.id
+                    break
+
     db_item = db.query(ProjectMetadata).filter(ProjectMetadata.id == repo_id_str).first()
 
     if db_item:

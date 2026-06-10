@@ -2,6 +2,7 @@ import logging
 import asyncio
 import urllib.request
 import json
+import threading
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import Dict, Any
@@ -15,10 +16,27 @@ from imortal.prover import FormalVerifier
 from imortal.sandbox import SandboxFuzzer
 from imortal.compiler import CodeCompiler
 from imortal.visualizer import IRVisualizer
-from imortal.config import FUZZ_RUNS, FUZZ_LOOP_ITERATIONS, OLLAMA_HIGH_LEVEL_MODEL, OLLAMA_LOW_LEVEL_MODEL
+from imortal.config import FUZZ_RUNS, FUZZ_LOOP_ITERATIONS, OLLAMA_HIGH_LEVEL_MODEL, OLLAMA_LOW_LEVEL_MODEL, MAX_CONCURRENT_PIPELINES
 
 router = APIRouter(prefix="/imortal", tags=["imortal"])
 logger = logging.getLogger(__name__)
+
+from contextlib import contextmanager
+
+_pipeline_semaphore = threading.Semaphore(MAX_CONCURRENT_PIPELINES)
+
+@contextmanager
+def pipeline_rate_limit():
+    acquired = _pipeline_semaphore.acquire(blocking=False)
+    if not acquired:
+        raise HTTPException(
+            status_code=429,
+            detail="Servidor ocupado com muitas análises simultâneas. Por favor, aguarde alguns instantes."
+        )
+    try:
+        yield
+    finally:
+        _pipeline_semaphore.release()
 
 # ── Prompts do Sistema ────────────────────────────────────────────────────────
 CYBER_SYSTEM_PROMPT = """You are IMORTAL CyberSec, an elite cybersecurity threat intelligence AI by Orbe Systems.
@@ -185,7 +203,8 @@ async def analyze_cyber(data: GenerateRequest, current_user: User = Depends(requ
     prompt = data.prompt.strip()
     if not prompt:
         raise HTTPException(status_code=400, detail="Descrição vazia.")
-    return await call_llm_json(CYBER_SYSTEM_PROMPT, prompt, OLLAMA_LOW_LEVEL_MODEL)
+    with pipeline_rate_limit():
+        return await call_llm_json(CYBER_SYSTEM_PROMPT, prompt, OLLAMA_LOW_LEVEL_MODEL)
 
 @router.post("/marketing")
 async def analyze_marketing(data: GenerateRequest, current_user: User = Depends(require_premium)):
@@ -193,7 +212,8 @@ async def analyze_marketing(data: GenerateRequest, current_user: User = Depends(
     prompt = data.prompt.strip()
     if not prompt:
         raise HTTPException(status_code=400, detail="Descrição vazia.")
-    return await call_llm_json(MARKETING_SYSTEM_PROMPT, prompt, OLLAMA_HIGH_LEVEL_MODEL)
+    with pipeline_rate_limit():
+        return await call_llm_json(MARKETING_SYSTEM_PROMPT, prompt, OLLAMA_HIGH_LEVEL_MODEL)
 
 @router.post("/demographic")
 async def analyze_demographic(data: GenerateRequest, current_user: User = Depends(require_premium)):
@@ -201,7 +221,8 @@ async def analyze_demographic(data: GenerateRequest, current_user: User = Depend
     prompt = data.prompt.strip()
     if not prompt:
         raise HTTPException(status_code=400, detail="Descrição vazia.")
-    return await call_llm_json(DEMOGRAPHIC_SYSTEM_PROMPT, prompt, OLLAMA_HIGH_LEVEL_MODEL)
+    with pipeline_rate_limit():
+        return await call_llm_json(DEMOGRAPHIC_SYSTEM_PROMPT, prompt, OLLAMA_HIGH_LEVEL_MODEL)
 
 # ── Endpoints do Compilador AVR / Verificador Formal ───────────────────────────
 @router.get("/default")
@@ -216,22 +237,23 @@ async def generate_ir(data: GenerateRequest, current_user: User = Depends(requir
     if not prompt:
         raise HTTPException(status_code=400, detail="Prompt de intenção vazio.")
     
-    try:
-        ir_dict, is_mock = await generate_ir_from_intent(prompt)
-        
-        viz = IRVisualizer(ir_dict)
-        pseudocode = viz.to_pseudocode()
-        flowchart = viz.to_flowchart_nodes()
-        
-        return {
-            "ir": ir_dict,
-            "is_mock": is_mock,
-            "pseudocode": pseudocode,
-            "flowchart": flowchart
-        }
-    except Exception as e:
-        logger.error(f"Erro na geração de IR para o prompt '{prompt}': {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Erro interno ao gerar IR.")
+    with pipeline_rate_limit():
+        try:
+            ir_dict, is_mock = await generate_ir_from_intent(prompt)
+            
+            viz = IRVisualizer(ir_dict)
+            pseudocode = viz.to_pseudocode()
+            flowchart = viz.to_flowchart_nodes()
+            
+            return {
+                "ir": ir_dict,
+                "is_mock": is_mock,
+                "pseudocode": pseudocode,
+                "flowchart": flowchart
+            }
+        except Exception as e:
+            logger.error(f"Erro na geração de IR para o prompt '{prompt}': {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Erro interno ao gerar IR.")
 
 @router.post("/verify")
 async def verify_ir(data: IRRequest, current_user: User = Depends(require_premium)):
@@ -241,53 +263,56 @@ async def verify_ir(data: IRRequest, current_user: User = Depends(require_premiu
     if not valid_struct:
         return {"success": False, "errors": [f"Erro estrutural: {e}" for e in errs]}
     
-    try:
-        def run_z3():
-            verifier = FormalVerifier(ir_dict)
-            return verifier.verify()
-            
-        success, z3_errors = await asyncio.to_thread(run_z3)
-        return {"success": success, "errors": z3_errors}
-    except Exception as e:
-        logger.error(f"Erro na prova formal Z3: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Erro na execução do verificador formal.")
+    with pipeline_rate_limit():
+        try:
+            def run_z3():
+                verifier = FormalVerifier(ir_dict)
+                return verifier.verify()
+                
+            success, z3_errors = await asyncio.to_thread(run_z3)
+            return {"success": success, "errors": z3_errors}
+        except Exception as e:
+            logger.error(f"Erro na prova formal Z3: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Erro na execução do verificador formal.")
 
 @router.post("/fuzz")
 async def fuzz_ir(data: IRRequest, current_user: User = Depends(require_premium)):
     """Simula o hardware em Sandbox via fuzzing estocástico."""
     ir_dict = data.ir
-    try:
-        def run_fuzz():
-            fuzzer = SandboxFuzzer(ir_dict)
-            return fuzzer.fuzz(num_runs=FUZZ_RUNS, loop_iterations=FUZZ_LOOP_ITERATIONS)
-            
-        success, fuzz_errors = await asyncio.to_thread(run_fuzz)
-        return {"success": success, "errors": fuzz_errors}
-    except Exception as e:
-        logger.error(f"Erro no fuzzing estocástico: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Erro na simulação em Sandbox.")
+    with pipeline_rate_limit():
+        try:
+            def run_fuzz():
+                fuzzer = SandboxFuzzer(ir_dict)
+                return fuzzer.fuzz(num_runs=FUZZ_RUNS, loop_iterations=FUZZ_LOOP_ITERATIONS)
+                
+            success, fuzz_errors = await asyncio.to_thread(run_fuzz)
+            return {"success": success, "errors": fuzz_errors}
+        except Exception as e:
+            logger.error(f"Erro no fuzzing estocástico: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Erro na simulação em Sandbox.")
 
 @router.post("/compile")
 async def compile_ir(data: IRRequest, current_user: User = Depends(require_premium)):
     """Compila a IR em código C++ e Intel HEX (ATMega328P)."""
     ir_dict = data.ir
-    try:
-        compiler = CodeCompiler(ir_dict)
-        cpp_code = compiler.to_cpp()
-        
-        def run_compile():
-            return compiler.compile()
+    with pipeline_rate_limit():
+        try:
+            compiler = CodeCompiler(ir_dict)
+            cpp_code = compiler.to_cpp()
             
-        hex_code, is_mock, compile_log = await asyncio.to_thread(run_compile)
-        return {
-            "cpp": cpp_code,
-            "hex": hex_code,
-            "is_mock": is_mock,
-            "log": compile_log
-        }
-    except Exception as e:
-        logger.error(f"Erro na compilação do código: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail="Erro ao compilar o código fonte.")
+            def run_compile():
+                return compiler.compile()
+                
+            hex_code, is_mock, compile_log = await asyncio.to_thread(run_compile)
+            return {
+                "cpp": cpp_code,
+                "hex": hex_code,
+                "is_mock": is_mock,
+                "log": compile_log
+            }
+        except Exception as e:
+            logger.error(f"Erro na compilação do código: {e}", exc_info=True)
+            raise HTTPException(status_code=500, detail="Erro ao compilar o código fonte.")
 
 
 import io

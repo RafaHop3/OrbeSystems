@@ -10,8 +10,9 @@ import {
   ShieldCheck, TrendingUp, X, Send, ChevronDown
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { API_BASE_URL } from '@/lib/api';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+const API_URL = API_BASE_URL;
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Property {
@@ -199,12 +200,22 @@ const PropertyCard = ({ property, onClick }: { property: Property; onClick: () =
 // ── Main Component ─────────────────────────────────────────────────────────────
 export default function ImobversePage() {
   const { user, loading: authLoading } = useAuth();
-  const [activeView, setActiveView] = useState<'listings' | 'my-properties' | 'new-property'>('listings');
+  const [activeView, setActiveView] = useState<'listings' | 'senior-match' | 'my-properties' | 'new-property'>('listings');
   const [properties, setProperties] = useState<Property[]>([]);
   const [myProperties, setMyProperties] = useState<Property[]>([]);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
   const [loadingProps, setLoadingProps] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Senior Matchmaker states
+  const [matchResults, setMatchResults] = useState<any[]>([]);
+  const [matchLoading, setMatchLoading] = useState(false);
+  const [matchCity, setMatchCity] = useState('');
+  const [matchMaxPrice, setMatchMaxPrice] = useState('');
+  const [importanceAccessibility, setImportanceAccessibility] = useState('high');
+  const [importanceSecurity, setImportanceSecurity] = useState('high');
+  const [importanceConvenience, setImportanceConvenience] = useState('medium');
+  const [importanceSilence, setImportanceSilence] = useState('medium');
 
   // Filters
   const [filterCity, setFilterCity] = useState('');
@@ -280,10 +291,40 @@ export default function ImobversePage() {
     }
   }, [apiFetch, isPremium]);
 
+  const runSeniorMatch = useCallback(async () => {
+    setMatchLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_URL}/api/imobverse/senior-match`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          city: matchCity || undefined,
+          max_price: matchMaxPrice ? parseFloat(matchMaxPrice) : undefined,
+          importance_accessibility: importanceAccessibility,
+          importance_security: importanceSecurity,
+          importance_convenience: importanceConvenience,
+          importance_silence: importanceSilence,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.detail ?? `Erro ${res.status}`);
+      }
+      const data = await res.json();
+      setMatchResults(data);
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setMatchLoading(false);
+    }
+  }, [matchCity, matchMaxPrice, importanceAccessibility, importanceSecurity, importanceConvenience, importanceSilence]);
+
   useEffect(() => {
     if (activeView === 'listings') loadProperties();
     if (activeView === 'my-properties') loadMyProperties();
-  }, [activeView, loadProperties, loadMyProperties]);
+    if (activeView === 'senior-match') runSeniorMatch();
+  }, [activeView, loadProperties, loadMyProperties, runSeniorMatch]);
 
   // ── Submit Lead ───────────────────────────────────────────────────────────────
   const submitLead = async (e: React.FormEvent) => {
@@ -437,6 +478,7 @@ export default function ImobversePage() {
       }}>
         {[
           { id: 'listings', label: '🏠 Buscar Imóveis', public: true },
+          { id: 'senior-match', label: '👴👵 Matchmaker Sênior', public: true },
           { id: 'my-properties', label: '📋 Meus Imóveis', public: false },
           { id: 'new-property', label: '＋ Anunciar Imóvel', public: false },
         ].map(tab => (
@@ -576,6 +618,300 @@ export default function ImobversePage() {
                     onClick={() => setSelectedProperty(prop)}
                   />
                 ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── VIEW: Senior Matchmaker ───────────────────────────────────────────── */}
+        {activeView === 'senior-match' && (
+          <div>
+            {/* Preferences Questionnaire Card */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(168,85,247,0.06) 0%, rgba(59,130,246,0.02) 100%)',
+              border: '1px solid rgba(168,85,247,0.2)',
+              borderRadius: '16px', padding: '24px', marginBottom: '32px',
+            }}>
+              <h2 style={{
+                fontSize: '18px', fontWeight: 800, color: '#f1f5f9',
+                marginBottom: '18px', display: 'flex', alignItems: 'center', gap: '8px',
+              }}>
+                <Filter size={18} color="#a855f7" />
+                Preferências do Senhor / Senhora (Garantia de Match)
+              </h2>
+              <form onSubmit={e => { e.preventDefault(); runSeniorMatch(); }} style={{
+                display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '16px', alignItems: 'flex-end'
+              }}>
+                <div>
+                  <label style={labelStyle}>Cidade de Interesse</label>
+                  <input
+                    value={matchCity}
+                    onChange={e => setMatchCity(e.target.value)}
+                    placeholder="Ex: São Paulo"
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Orçamento Máximo (R$)</label>
+                  <input
+                    type="number"
+                    value={matchMaxPrice}
+                    onChange={e => setMatchMaxPrice(e.target.value)}
+                    placeholder="Ex: 4000"
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label style={labelStyle}>Importância: Sem Escadas / Elevador</label>
+                  <select
+                    value={importanceAccessibility}
+                    onChange={e => setImportanceAccessibility(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="high">Alta (Crucial)</option>
+                    <option value="medium">Média (Desejável)</option>
+                    <option value="low">Baixa</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>Importância: Portaria & Câmeras</label>
+                  <select
+                    value={importanceSecurity}
+                    onChange={e => setImportanceSecurity(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="high">Alta (Crucial)</option>
+                    <option value="medium">Média (Desejável)</option>
+                    <option value="low">Baixa</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>Importância: Próximo a Hospitais</label>
+                  <select
+                    value={importanceConvenience}
+                    onChange={e => setImportanceConvenience(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="high">Alta (Crucial)</option>
+                    <option value="medium">Média (Desejável)</option>
+                    <option value="low">Baixa</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>Importância: Rua Silenciosa</label>
+                  <select
+                    value={importanceSilence}
+                    onChange={e => setImportanceSilence(e.target.value)}
+                    style={inputStyle}
+                  >
+                    <option value="high">Alta (Crucial)</option>
+                    <option value="medium">Média (Desejável)</option>
+                    <option value="low">Baixa</option>
+                  </select>
+                </div>
+                <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
+                  <button
+                    type="submit"
+                    disabled={matchLoading}
+                    style={{
+                      padding: '12px 32px',
+                      background: 'linear-gradient(135deg, #a855f7, #3b82f6)',
+                      color: 'white', border: 'none', borderRadius: '10px',
+                      fontWeight: 800, fontSize: '14px', cursor: matchLoading ? 'not-allowed' : 'pointer',
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      boxShadow: '0 0 15px rgba(168,85,247,0.3)',
+                    }}
+                  >
+                    {matchLoading ? (
+                      <><Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> Calculando...</>
+                    ) : (
+                      <>✨ Calcular Match Perfeito</>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+
+            {/* Results Grid */}
+            {matchLoading ? (
+              <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
+                <Loader2 size={32} style={{ animation: 'spin 1s linear infinite', margin: '0 auto 12px' }} />
+                <p>Processando algoritmo de compatibilidade sênior...</p>
+              </div>
+            ) : matchResults.length === 0 ? (
+              <div style={{
+                textAlign: 'center', padding: '80px',
+                background: 'rgba(255,255,255,0.02)', borderRadius: '16px',
+                border: '1px dashed rgba(255,255,255,0.08)',
+              }}>
+                <Building2 size={48} color="rgba(255,255,255,0.1)" style={{ margin: '0 auto 16px' }} />
+                <p style={{ color: '#64748b', fontSize: '15px' }}>Nenhum imóvel corresponde aos critérios básicos.</p>
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }}>
+                {matchResults.map((result: any) => {
+                  const prop = result.property;
+                  const matchColor = result.match_percentage >= 85 ? '#10b981' : result.match_percentage >= 60 ? '#f59e0b' : '#ef4444';
+                  
+                  return (
+                    <div
+                      key={prop.id}
+                      style={{
+                        background: 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.01) 100%)',
+                        border: '1px solid rgba(255,255,255,0.08)',
+                        borderRadius: '16px',
+                        overflow: 'hidden',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        transition: 'all 0.3s ease',
+                      }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.borderColor = 'rgba(168,85,247,0.3)';
+                        e.currentTarget.style.boxShadow = '0 10px 30px rgba(168,85,247,0.05)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                    >
+                      {/* Left: Image */}
+                      <div style={{
+                        width: '240px',
+                        height: 'auto',
+                        background: prop.cover_image_url
+                          ? `url(${prop.cover_image_url}) center/cover no-repeat`
+                          : 'linear-gradient(135deg, #1e1b4b 0%, #312e81 100%)',
+                        position: 'relative',
+                        flexShrink: 0,
+                      }}>
+                        <div style={{ position: 'absolute', top: 12, left: 12 }}>
+                          <span style={{
+                            background: prop.deal_type === 'venda' ? 'rgba(168,85,247,0.9)' : 'rgba(59,130,246,0.9)',
+                            color: 'white', borderRadius: '6px', padding: '3px 10px',
+                            fontSize: '11px', fontWeight: 700, textTransform: 'uppercase',
+                          }}>
+                            {prop.deal_type}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Right: Info */}
+                      <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                        <div>
+                          {/* Title and Match percentage */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '16px', marginBottom: '8px' }}>
+                            <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#f1f5f9' }}>{prop.title}</h3>
+                            <div style={{
+                              background: `${matchColor}15`,
+                              color: matchColor,
+                              border: `1px solid ${matchColor}30`,
+                              padding: '6px 12px',
+                              borderRadius: '8px',
+                              fontSize: '14px',
+                              fontWeight: 800,
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              flexShrink: 0,
+                            }}>
+                              <span>✨ {result.match_percentage}% Match</span>
+                            </div>
+                          </div>
+
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '16px' }}>
+                            <MapPin size={12} color="#a855f7" />
+                            <span style={{ fontSize: '13px', color: '#94a3b8' }}>{prop.neighborhood}, {prop.city}</span>
+                          </div>
+
+                          {/* Breakdown Scores */}
+                          <div style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+                            gap: '12px',
+                            marginBottom: '20px',
+                            background: 'rgba(255,255,255,0.02)',
+                            padding: '12px',
+                            borderRadius: '10px',
+                          }}>
+                            {[
+                              { label: '🧑‍🦽 Acessibilidade', val: result.breakdown.accessibility },
+                              { label: '🛡️ Segurança', val: result.breakdown.security },
+                              { label: '🏥 Conveniência', val: result.breakdown.convenience },
+                              { label: '🤫 Silêncio', val: result.breakdown.silence },
+                            ].map((score, sIdx) => (
+                              <div key={sIdx}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
+                                  <span>{score.label}</span>
+                                  <span style={{ fontWeight: 700, color: score.val >= 70 ? '#10b981' : score.val >= 40 ? '#f59e0b' : '#ef4444' }}>{score.val}%</span>
+                                </div>
+                                <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+                                  <div style={{
+                                    height: '100%',
+                                    width: `${score.val}%`,
+                                    background: score.val >= 70 ? '#10b981' : score.val >= 40 ? '#f59e0b' : '#ef4444',
+                                    borderRadius: '2px',
+                                  }} />
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Match Reasons */}
+                          <div style={{ marginBottom: '20px' }}>
+                            <div style={{ fontSize: '11px', fontWeight: 700, color: '#a855f7', textTransform: 'uppercase', marginBottom: '8px', letterSpacing: '0.5px' }}>
+                              Por que este imóvel é ideal?
+                            </div>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                              {result.match_reasons.map((reason: string, rIdx: number) => (
+                                <div key={rIdx} style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#cbd5e1' }}>
+                                  <CheckCircle size={14} color="#10b981" style={{ flexShrink: 0 }} />
+                                  <span>{reason}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Price and Details button */}
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          borderTop: '1px solid rgba(255,255,255,0.06)',
+                          paddingTop: '16px',
+                        }}>
+                          <span style={{ fontSize: '20px', fontWeight: 800, color: '#a855f7' }}>
+                            {formatCurrency(prop.price)}
+                            {prop.deal_type === 'aluguel' && <span style={{ fontSize: '12px', fontWeight: 400, color: '#64748b' }}>/mês</span>}
+                          </span>
+                          <button
+                            onClick={() => setSelectedProperty(prop)}
+                            style={{
+                              padding: '8px 20px',
+                              background: 'rgba(168,85,247,0.1)',
+                              border: '1px solid rgba(168,85,247,0.3)',
+                              borderRadius: '8px',
+                              color: '#a855f7',
+                              fontWeight: 700,
+                              fontSize: '13px',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              transition: 'all 0.2s',
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.2)'; }}
+                            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(168,85,247,0.1)'; }}
+                          >
+                            <Eye size={14} />
+                            Ver Detalhes
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

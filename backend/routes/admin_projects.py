@@ -44,7 +44,16 @@ async def list_admin_projects(db: Session = Depends(get_db)):
     """
     try:
         repos = await fetch_repositories()
+    except Exception as e:
+        print(f"[Admin API] GitHub fetch failed in admin, using DB cache fallback: {e}")
+        from routes.projects import get_repositories_from_db
+        repos = get_repositories_from_db(db)
+        if not repos:
+            raise HTTPException(status_code=500, detail="Não foi possível obter os projetos do GitHub nem do banco de dados cache.")
+
+    try:
         metadata = get_all_metadata(db)
+        existing_ids = {repo.id for repo in repos}
 
         for repo in repos:
             custom = metadata.get(str(repo.id))
@@ -55,14 +64,42 @@ async def list_admin_projects(db: Session = Depends(get_db)):
                 repo.deploy_url = custom.get("deploy_url")
                 repo.is_premium_only = custom.get("is_premium_only")
 
+        # Append manually injected custom projects/tools
+        from models.repository import Repository
+        from datetime import datetime, timezone
+        for repo_id_str, meta in metadata.items():
+            try:
+                repo_id = int(repo_id_str)
+            except ValueError:
+                import hashlib
+                repo_id = int(hashlib.md5(repo_id_str.encode('utf-8')).hexdigest()[:8], 16)
+
+            if repo_id not in existing_ids:
+                repo_name = meta.get("repo_name") or repo_id_str
+                repos.append(
+                    Repository(
+                        id=repo_id,
+                        name=repo_name,
+                        full_name=f"theorbesystems-sketch/{repo_name.lower()}",
+                        description=meta.get("custom_description") or "Premium tool built for our platform",
+                        html_url=f"https://github.com/theorbesystems-sketch/{repo_name.lower()}",
+                        language="Python",
+                        stargazers_count=42,
+                        forks_count=12,
+                        topics=["premium", "tool", "orbesystems"],
+                        updated_at=datetime.now(timezone.utc).isoformat(),
+                        is_featured=meta.get("is_featured", False),
+                        custom_description=meta.get("custom_description"),
+                        image_url=meta.get("image_url"),
+                        video_url=meta.get("video_url"),
+                        deploy_url=meta.get("deploy_url"),
+                        is_premium_only=meta.get("is_premium_only", False),
+                    )
+                )
+
         return repos
     except Exception as e:
-        print(f"[Admin API] GitHub fetch failed in admin, using DB cache fallback: {e}")
-        from routes.projects import get_repositories_from_db
-        db_repos = get_repositories_from_db(db)
-        if db_repos:
-            return db_repos
-        raise HTTPException(status_code=500, detail="Não foi possível obter os projetos do GitHub nem do banco de dados cache.")
+        raise HTTPException(status_code=500, detail=f"Erro ao obter projetos: {str(e)}")
 
 
 @router.post("/projects/{repo_id}")

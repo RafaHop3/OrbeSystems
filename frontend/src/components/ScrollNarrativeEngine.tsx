@@ -201,6 +201,27 @@ export default function ScrollNarrativeEngine({ children }: Props) {
         );
       }
 
+      // ── FreedomSection: slide up and fade in ──
+      const freedomSection = narrative.querySelector('#freedom-manifesto');
+      if (freedomSection) {
+        gsap.fromTo(
+          freedomSection,
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.95,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: freedomSection,
+              start: 'top 85%',
+              end: 'top 50%',
+              toggleActions: 'play none none reverse',
+            },
+          }
+        );
+      }
+
       // ── Projects header ──
       const projectsHeader = narrative.querySelector('#projects h2');
       if (projectsHeader) {

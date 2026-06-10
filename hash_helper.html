@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Orbe Systems — SHA-256 Hash Auditor</title>
+    <style>
+        body {
+            background-color: #0b0f19;
+            color: #c9d1d9;
+            font-family: 'JetBrains Mono', 'Fira Code', Courier, monospace;
+            padding: 40px;
+            margin: 0;
+        }
+        h1 {
+            color: #00fff5;
+            font-size: 24px;
+            border-bottom: 2px solid #30363d;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #161b22;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            box-shadow: 0 0 20px rgba(0, 255, 245, 0.1);
+        }
+        .file-input-wrapper {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px dashed #00fff5;
+            border-radius: 6px;
+            text-align: center;
+            background: rgba(0, 255, 245, 0.02);
+            transition: all 0.3s ease;
+        }
+        .file-input-wrapper:hover {
+            background: rgba(0, 255, 245, 0.05);
+            border-color: #bc13fe;
+        }
+        input[type="file"] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            color: #c9d1d9;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #30363d;
+        }
+        th {
+            background-color: #0d1117;
+            color: #00fff5;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 13px;
+        }
+        td {
+            font-size: 13px;
+        }
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        .hash-value {
+            color: #bc13fe;
+            font-weight: bold;
+            word-break: break-all;
+        }
+        .filename {
+            color: #ffffff;
+            font-weight: bold;
+        }
+        .status-ready {
+            color: #39ff14;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Orbe Systems — SHA-256 Hash Auditor</h1>
+        <div class="file-input-wrapper">
+            <input type="file" id="file-selector" multiple>
+            <p style="margin-top: 10px; font-size: 12px; color: #8b949e;">Selecione os arquivos do projeto para calcular seus hashes SHA-256 reais.</p>
+        </div>
+        
+        <table id="results-table" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Nome do Arquivo</th>
+                    <th>Tamanho (bytes)</th>
+                    <th>Hash SHA-256</th>
+                </tr>
+            </thead>
+            <tbody id="results-body">
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const fileSelector = document.getElementById('file-selector');
+        const resultsTable = document.getElementById('results-table');
+        const resultsBody = document.getElementById('results-body');
+
+        fileSelector.addEventListener('change', async (event) => {
+            const files = event.target.files;
+            resultsBody.innerHTML = '';
+            
+            if (files.length > 0) {
+                resultsTable.style.display = 'table';
+            } else {
+                resultsTable.style.display = 'none';
+                return;
+            }
+
+            for (const file of files) {
+                const row = document.createElement('tr');
+                
+                const nameTd = document.createElement('td');
+                nameTd.className = 'filename';
+                nameTd.textContent = file.name;
+                row.appendChild(nameTd);
+
+                const sizeTd = document.createElement('td');
+                sizeTd.textContent = file.size.toLocaleString() + ' B';
+                row.appendChild(sizeTd);
+
+                const hashTd = document.createElement('td');
+                hashTd.className = 'hash-value';
+                hashTd.textContent = 'Calculando...';
+                row.appendChild(hashTd);
+
+                resultsBody.appendChild(row);
+
+                // Calculate hash
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const hashBuffer = await crypto.subtle.digest('SHA-256', arrayBuffer);
+                    const hashArray = Array.from(new Uint8Array(hashBuffer));
+                    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    hashTd.textContent = hashHex;
+                } catch (err) {
+                    hashTd.textContent = 'Erro: ' + err.message;
+                    hashTd.style.color = '#ff6b6b';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -168,15 +168,25 @@ $$R = \begin{cases}
 
 ## 🔒 4. Assinaturas de Integridade (Hashes SHA-256)
 
-Os hashes SHA-256 abaixo atestam a integridade e conformidade de cada componente gerado na versão final do **OrbePSShield**:
+Os hashes SHA-256 abaixo atestam a integridade e conformidade de cada componente gerado na versão final do ecossistema **Orbe Systems**, incluindo os módulos **OrbePSShield** e **IMORTAL**:
 
 | Arquivo | Hash SHA-256 |
 | :--- | :--- |
 | `backend/routes/powershell_bot.py` | `5e20a3479db4224724b22cdba0893b3befe40aa2673270446c2976eec6ade6eb` |
-| `backend/main.py` | `f824cab1b85788832d81e4ba7f5aa45e4bfa95ec95daa65569f41b158ff8d18f` |
-| `frontend/src/app/ferramentas-premium/powershell-bot/page.tsx` | `86904dd50564ba25177f21ead0cd2b8e63c9c91304621f3f20fa317d2692faff` |
+| `backend/main.py` | `924b3c2f06a574d865145de0d865c14a5f9cf27ff671b5111b02bfafaedec462` |
+| `frontend/src/app/ferramentas-premium/powershell-bot/page.tsx` | `f23de2d960c3d44d6ec05596a9e729b2c617f5789b810eba2f03fd3735294eb5` |
 | `frontend/src/components/Header.tsx` | `3f25fab9d85cd40b0dcb2727e5d9d11f5b8b82f138e427b9ae7d47b361b1a0ec` |
-| `frontend/src/app/(categories)/cyber-security/page.tsx` | `6788a4bb311aeb24ac91b7c70d13ee89d882b94e23d8276c7151f7c2398cc2bd` |
+| `frontend/src/app/(categories)/cyber-security/page.tsx` | `7ed0416a6acabe088a6b3c9b06882e87d8e70d1811589ea42508383d538d86d7` |
 | `SECURITY_PROTOCOL.md` | `239e3d3e17c9e36001ab1c620213950d5d8cb105a3084771df98d38fd6076951` |
-| `ORGANIZACAO_ATIVOS.md` | `PENDENTE_POS_COMMIT` |
+| `ORGANIZACAO_ATIVOS.md` | `c8d196e8b95893d9a730ff18f420cf38bcbedaf0d067284b753e7c87df901094` |
+| `NORMATIZACAO_JURIDICO_TECNICA.md` | `dfe5d53a916d9cf19dcf7548ba517979dc285a294aa7982b047dce97681e5b3a` |
+| `backend/imortal/ai.py` | `0b073a6bd398c1401fe5d1e622f4b710bb1d50b140499c61becc66d409dd68ea` |
+| `backend/imortal/compiler.py` | `5ffa3f4b08f91c9ff371623e489ee44ab4fee4e0e4e3362b456915eb5edfc4a2` |
+| `backend/imortal/prover.py` | `d1a3014fd96cce5c0ad187c1c34c144f38e0ddc380e3588e54aba889ab1dc67f` |
+| `backend/imortal/sandbox.py` | `6e8593f6568403ac0abf2faa08af76f0c692d64818cbb205aa0b8cfc24ed2065` |
+| `backend/imortal/server.py` | `a330e4dc427964e8be5fddf17a1f5f2d3a19328483588ccfe1532d5b438e0cf9` |
+| `backend/imortal/visualizer.py` | `56f6172090b23b1ee47cea1ee7a908edd2ad512ea1165ae43ad62e0853069f59` |
+| `frontend/src/app/api/ping-backend/route.ts` | `b741c200f77eccffbe5404ab61a3696d946e2a251f54ce7411ac68487288b6d5` |
+| `frontend/vercel.json` | `e289797953ccacef4bdce1c4f01b82e4196714fdcad4f93226bf7a289ea7609b` |
+
 

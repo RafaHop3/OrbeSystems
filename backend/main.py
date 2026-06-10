@@ -140,10 +140,22 @@ async def lifespan(app: FastAPI):
         ensure_supabase_rls(engine)
     except Exception as e:
         print(f"ERROR: [Database] Failed to init DB: {e}")
+        
+    # Start Keep-Alive Scheduler
+    try:
+        from keep_alive import start_keep_alive
+        start_keep_alive()
+    except Exception as e:
+        print(f"WARNING: [KeepAlive] Failed to start keep-alive scheduler: {e}")
     
     yield
     
     # Shutdown
+    try:
+        from keep_alive import stop_keep_alive
+        stop_keep_alive()
+    except Exception as e:
+        print(f"WARNING: [KeepAlive] Failed to stop keep-alive scheduler: {e}")
     print(" OrbeSystems API shutting down...")
 
 
@@ -244,14 +256,29 @@ app.include_router(suite_inteligente_router)
 
 @app.get("/health", tags=["health"])
 async def health_check():
-    """Lightweight health probe for Render keep-alive pings."""
+    """Health probe for keep-alive pings. Also queries the database to prevent Supabase auto-pausing."""
     from datetime import datetime
+    from database import SessionLocal
+    
+    db_status = "unknown"
+    try:
+        db = SessionLocal()
+        # Fast query to keep Supabase active
+        db.execute(text("SELECT 1")).fetchone()
+        db_status = "connected"
+    except Exception as e:
+        db_status = f"error: {str(e)}"
+    finally:
+        db.close()
+        
     return {
         "status": "operational",
         "service": "orbe-systems-api",
-        "version": "1.3.0",
+        "version": "1.3.1",
+        "database": db_status,
         "deployed_at": datetime.utcnow().isoformat()
     }
+
 
 
 # SECURITY NOTE: The /debug/github-lookup endpoint has been removed.

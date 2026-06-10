@@ -2,12 +2,16 @@
 Test Suite: User Registration & Database Operations
 Tests signup flow, user creation, validation, and database integrity
 """
-
-import pytest
+import sys
+import os
 import asyncio
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
+
+# Add parent directory to sys.path to resolve backend package imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 # ─── Test Database Setup ───
 TEST_DB_URL = "sqlite:///./test_data.db"
@@ -23,7 +27,7 @@ class TestUserRegistration:
     
     def test_valid_registration(self):
         """Test successful user registration with valid data"""
-        from backend.routes.auth_public import register
+        from backend.routes.users import register
         
         user_data = {
             "email": "test_user@orbe.com",

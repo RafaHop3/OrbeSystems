@@ -689,26 +689,29 @@ export default function VdeTerminal() {
 
       {/* Terminal log logs */}
       <div className="flex-1 p-4 font-mono text-xs md:text-sm overflow-y-auto leading-relaxed space-y-1">
-        {lines.map((line, idx) => (
-          <div
-            key={idx}
-            className={
-              line.type === 'success'
-                ? 'text-neon-green'
-                : line.type === 'error'
-                  ? 'text-red-500 font-bold'
-                  : line.type === 'warning'
-                    ? 'text-neon-purple'
-                    : line.type === 'info'
-                      ? 'text-neon-cyan'
-                      : line.type === 'input'
-                        ? 'text-white font-medium'
-                        : 'text-gray-300'
-            }
-          >
-            {line.text}
-          </div>
-        ))}
+        {lines.map((line, idx) => {
+          if (!line) return null;
+          return (
+            <div
+              key={idx}
+              className={
+                line.type === 'success'
+                  ? 'text-neon-green'
+                  : line.type === 'error'
+                    ? 'text-red-500 font-bold'
+                    : line.type === 'warning'
+                      ? 'text-neon-purple'
+                      : line.type === 'info'
+                        ? 'text-neon-cyan'
+                        : line.type === 'input'
+                          ? 'text-white font-medium'
+                          : 'text-gray-300'
+              }
+            >
+              {line.text}
+            </div>
+          );
+        })}
 
         {/* Command line prompt input field */}
         <div className="flex items-center text-white mt-2 relative">

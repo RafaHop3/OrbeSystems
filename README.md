@@ -70,17 +70,21 @@ Abra http://localhost:3000
 
 ## 🚀 Deploy
 
-### Backend → Render
+### Backend → Render (Alternativa Free Tier)
 - **Build Command:** `pip install -r requirements.txt`
 - **Start Command:** `uvicorn main:app --host 0.0.0.0 --port $PORT`
 - Adicione a variável `ALLOWED_ORIGINS` com o domínio da Vercel + `https://orbesystems.com.br`
-- Adicione `GITHUB_TOKEN` (opcional, mas recomendado para evitar rate limit)
+- **Manutenção de Atividade (Keep-Alive):** Para contornar a suspensão automática após 15 minutos de inatividade no plano gratuito do Render, **não** utilize schedulers internos (que consomem recursos e falham se o contêiner já estiver suspenso). Utilize o **Vercel Cron Job** configurado no frontend, que aciona a rota externa de ping `/api/ping-backend` a cada 10 minutos para manter o backend ativo.
+
+### Backend → Vercel Serverless (Recomendado)
+- O backend está totalmente preparado para ser executado como serverless no Vercel (conforme `vercel.json` na raiz da pasta `backend`). Nesta modalidade, as funções escalam para zero automaticamente e não requerem nenhum robô de keep-alive.
 
 ### Frontend → Vercel
-- Conecte o repositório no painel da Vercel
+- Conecte o repositório no painel da Vercel.
 - Configure a variável de ambiente:
-  - `NEXT_PUBLIC_API_URL` = URL do seu serviço no Render (ex: `https://orbe-systems-api.onrender.com`)
-- O Vercel detectará automaticamente o Next.js e fará o deploy
+  - `NEXT_PUBLIC_API_URL` = URL do seu backend (ex: `https://orbe-systems-fuc5.vercel.app` ou URL do Render).
+- O Vercel detectará as configurações de Cron contidas em `frontend/vercel.json` e executará o ping automático.
+
 
 ---
 

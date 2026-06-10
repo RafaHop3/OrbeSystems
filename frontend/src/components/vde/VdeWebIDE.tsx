@@ -3,7 +3,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Play, Save, FolderOpen, Terminal, Code2, RefreshCw, ChevronRight, ChevronDown, File, Folder } from 'lucide-react';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+import { API_BASE_URL } from '@/lib/api';
+
+const API_URL = API_BASE_URL;
 
 // ── File system tree ──────────────────────────────────────────────────────────
 type FileNode = { name: string; type: 'file' | 'dir'; lang?: string; content?: string; children?: FileNode[] };
@@ -166,35 +168,38 @@ function FileTree({ nodes, depth = 0, onSelect, selected }: { nodes: FileNode[];
   const [open, setOpen] = useState<Record<string, boolean>>({ backend: true, frontend: false });
   return (
     <div>
-      {nodes.map(node => (
-        <div key={node.name}>
-          {node.type === 'dir' ? (
-            <>
+      {nodes.map(node => {
+        if (!node) return null;
+        return (
+          <div key={node.name}>
+            {node.type === 'dir' ? (
+              <>
+                <button
+                  onClick={() => setOpen(o => ({ ...o, [node.name]: !o[node.name] }))}
+                  className="flex items-center gap-1 w-full px-2 py-0.5 hover:bg-white/5 text-terminal-muted hover:text-white font-mono text-[11px] transition-colors"
+                  style={{ paddingLeft: `${8 + depth * 12}px` }}
+                >
+                  {open[node.name] ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+                  <Folder size={11} className="text-yellow-400/80" />
+                  <span>{node.name}</span>
+                </button>
+                {open[node.name] && node.children && (
+                  <FileTree nodes={node.children} depth={depth + 1} onSelect={onSelect} selected={selected} />
+                )}
+              </>
+            ) : (
               <button
-                onClick={() => setOpen(o => ({ ...o, [node.name]: !o[node.name] }))}
-                className="flex items-center gap-1 w-full px-2 py-0.5 hover:bg-white/5 text-terminal-muted hover:text-white font-mono text-[11px] transition-colors"
+                onClick={() => onSelect(node)}
+                className={`flex items-center gap-1.5 w-full px-2 py-0.5 font-mono text-[11px] transition-colors ${selected === node.name ? 'bg-neon-cyan/10 text-neon-cyan' : 'text-terminal-muted hover:text-white hover:bg-white/5'}`}
                 style={{ paddingLeft: `${8 + depth * 12}px` }}
               >
-                {open[node.name] ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
-                <Folder size={11} className="text-yellow-400/80" />
+                <File size={11} />
                 <span>{node.name}</span>
               </button>
-              {open[node.name] && node.children && (
-                <FileTree nodes={node.children} depth={depth + 1} onSelect={onSelect} selected={selected} />
-              )}
-            </>
-          ) : (
-            <button
-              onClick={() => onSelect(node)}
-              className={`flex items-center gap-1.5 w-full px-2 py-0.5 font-mono text-[11px] transition-colors ${selected === node.name ? 'bg-neon-cyan/10 text-neon-cyan' : 'text-terminal-muted hover:text-white hover:bg-white/5'}`}
-              style={{ paddingLeft: `${8 + depth * 12}px` }}
-            >
-              <File size={11} />
-              <span>{node.name}</span>
-            </button>
-          )}
-        </div>
-      ))}
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -348,11 +353,14 @@ function TerminalEmulator() {
   return (
     <div className="flex flex-col h-full bg-black font-mono text-xs">
       <div className="flex-1 overflow-auto p-3 space-y-0.5">
-        {lines.map((l, i) => (
-          <div key={i} className={l.type === 'input' ? 'text-neon-cyan' : l.type === 'error' ? 'text-red-400' : 'text-white/70'}>
-            {l.text || '\u00A0'}
-          </div>
-        ))}
+        {lines.map((l, i) => {
+          if (!l) return null;
+          return (
+            <div key={i} className={l.type === 'input' ? 'text-neon-cyan' : l.type === 'error' ? 'text-red-400' : 'text-white/70'}>
+              {l.text || '\u00A0'}
+            </div>
+          );
+        })}
         <div ref={bottomRef} />
       </div>
       <div className="flex items-center gap-2 border-t border-white/10 px-3 py-2">

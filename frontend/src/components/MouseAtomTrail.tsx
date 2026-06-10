@@ -1,158 +1,181 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-
-const TRAIL_LENGTH = 24;
-const ATOM_RADIUS = 32;
-
-const ELECTRONS = [
-  { angle: 0,                   orbitRadius: ATOM_RADIUS,      speed: 0.05,  color: '#ffd700' },
-  { angle: Math.PI * 2 / 3,    orbitRadius: ATOM_RADIUS * 0.8, speed: -0.04,  color: '#d4af37' },
-  { angle: Math.PI * 4 / 3,    orbitRadius: ATOM_RADIUS * 1.2, speed: 0.03,  color: '#c5a059' },
-] as const;
-
-type TrailPoint = { x: number; y: number; age: number };
+import gsap from 'gsap';
 
 export default function MouseAtomTrail() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouseRef = useRef({ x: -1000, y: -1000 });
-  const trailRef = useRef<TrailPoint[]>([]);
-  const rafRef = useRef<number>(0);
-  const timeRef = useRef(0);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReduced) return;
+    if (prefersReduced || typeof window === 'undefined') return;
 
-    const ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    let dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Create dot elements for the trail
+    const dotsCount = 8;
+    const dots: HTMLDivElement[] = [];
 
-    const resize = () => {
-      dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.floor(window.innerWidth * dpr);
-      canvas.height = Math.floor(window.innerHeight * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    resize();
-
-    const onMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-    };
-    const onLeave = () => {
-      mouseRef.current = { x: -1000, y: -1000 };
-    };
-
-    window.addEventListener('mousemove', onMove);
-    window.addEventListener('mouseleave', onLeave);
-    window.addEventListener('resize', resize);
-
-    const draw = () => {
-      timeRef.current += 1;
-      const t = timeRef.current;
-      const { x, y } = mouseRef.current;
-
-      // Push new trail point
-      trailRef.current.push({ x, y, age: 0 });
-      if (trailRef.current.length > TRAIL_LENGTH) {
-        trailRef.current.shift();
-      }
-      // Age all points
-      trailRef.current.forEach((p) => { p.age += 1; });
-
-      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-      // ── Trail ──
-      const trail = trailRef.current;
-      for (let i = 1; i < trail.length; i++) {
-        const progress = i / trail.length;
-        const alpha = progress * 0.5;
-        const width = progress * 3;
-        ctx.beginPath();
-        ctx.moveTo(trail[i - 1].x, trail[i - 1].y);
-        ctx.lineTo(trail[i].x, trail[i].y);
-        ctx.strokeStyle = `rgba(212,175,55,${alpha})`;
-        ctx.lineWidth = width;
-        ctx.lineCap = 'round';
-        ctx.stroke();
+    for (let i = 0; i < dotsCount; i++) {
+      const dot = document.createElement('div');
+      dot.className = 'absolute top-0 left-0 rounded-full pointer-events-none mix-blend-screen';
+      
+      // The leading dot is the main cursor dot
+      if (i === 0) {
+        dot.className += ' w-2.5 h-2.5 bg-white z-[10000]';
+        dot.style.boxShadow = '0 0 10px #ffffff, 0 0 20px #c5a059';
+      } else if (i === 1) {
+        // Second dot is the main glowing ring
+        dot.className += ' w-8 h-8 border border-[#c5a059] z-[9999]';
+        dot.style.boxShadow = '0 0 12px rgba(197, 160, 89, 0.3)';
+      } else {
+        // Trailing particles
+        const size = 6 - (i * 0.5);
+        dot.className += ' z-[9998]';
+        dot.style.width = `${size}px`;
+        dot.style.height = `${size}px`;
+        dot.style.backgroundColor = i % 2 === 0 ? '#c5a059' : '#00fff5';
+        dot.style.opacity = String(1.0 - i / dotsCount);
+        dot.style.boxShadow = i % 2 === 0 ? '0 0 8px #c5a059' : '0 0 8px #00fff5';
       }
 
-      if (x < 0) {
-        rafRef.current = requestAnimationFrame(draw);
-        return;
-      }
+      container.appendChild(dot);
+      dots.push(dot);
+    }
 
-      // ── Nucleus ──
-      const grad = ctx.createRadialGradient(x, y, 0, x, y, 10);
-      grad.addColorStop(0, 'rgba(255,215,0,0.85)');
-      grad.addColorStop(0.4, 'rgba(212,175,55,0.4)');
-      grad.addColorStop(1, 'rgba(212,175,55,0)');
-      ctx.beginPath();
-      ctx.arc(x, y, 10, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
+    // Set initial positions off-screen
+    dots.forEach((dot) => {
+      gsap.set(dot, { xPercent: -50, yPercent: -50, x: -100, y: -100 });
+    });
 
-      // Inner nucleus dot
-      ctx.beginPath();
-      ctx.arc(x, y, 3, 0, Math.PI * 2);
-      ctx.fillStyle = '#d4af37';
-      ctx.shadowColor = '#ffd700';
-      ctx.shadowBlur = 8;
-      ctx.fill();
-      ctx.shadowBlur = 0;
+    // We use quickTo for maximum 120Hz monitor efficiency and zero performance lag
+    const quickX = dots.map((dot, index) => 
+      gsap.quickTo(dot, 'x', { 
+        duration: index === 0 ? 0.08 : 0.08 + index * 0.045, 
+        ease: 'power2.out' 
+      })
+    );
+    const quickY = dots.map((dot, index) => 
+      gsap.quickTo(dot, 'y', { 
+        duration: index === 0 ? 0.08 : 0.08 + index * 0.045, 
+        ease: 'power2.out' 
+      })
+    );
 
-      // ── Electron orbits ──
-      ELECTRONS.forEach((el, idx) => {
-        const angle = el.angle + t * el.speed;
-        const tiltX = Math.sin(t * 0.008 + idx) * 0.6;
-
-        // Orbit ring (ellipse)
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(tiltX + (idx * Math.PI) / ELECTRONS.length);
-        ctx.beginPath();
-        ctx.ellipse(0, 0, el.orbitRadius, el.orbitRadius * 0.4, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = `${el.color}33`;
-        ctx.lineWidth = 0.8;
-        ctx.stroke();
-        ctx.restore();
-
-        // Electron dot
-        const ex = x + Math.cos(angle) * el.orbitRadius;
-        const ey = y + Math.sin(angle) * el.orbitRadius * 0.4;
-
-        ctx.beginPath();
-        ctx.arc(ex, ey, 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = el.color;
-        ctx.shadowColor = el.color;
-        ctx.shadowBlur = 10;
-        ctx.fill();
-        ctx.shadowBlur = 0;
-      });
-
-      rafRef.current = requestAnimationFrame(draw);
+    const onMouseMove = (e: MouseEvent) => {
+      quickX.forEach((qX) => qX(e.clientX));
+      quickY.forEach((qY) => qY(e.clientY));
     };
 
-    rafRef.current = requestAnimationFrame(draw);
+    const onMouseDown = () => {
+      // Scale down inner dot, expand and rotate second dot
+      gsap.to(dots[0], { scale: 1.8, duration: 0.1 });
+      gsap.to(dots[1], { scale: 0.7, borderColor: '#00fff5', duration: 0.15 });
+    };
+
+    const onMouseUp = () => {
+      gsap.to(dots[0], { scale: 1, duration: 0.1 });
+      gsap.to(dots[1], { scale: 1, borderColor: '#c5a059', duration: 0.15 });
+    };
+
+    // Global listener for hovering interactive elements
+    const onMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target) return;
+
+      const isClickable = 
+        target.tagName === 'A' || 
+        target.tagName === 'BUTTON' || 
+        target.closest('a') || 
+        target.closest('button') || 
+        target.classList.contains('cursor-pointer') ||
+        target.getAttribute('role') === 'button';
+
+      if (isClickable) {
+        // Expand ring, make it cyan/gold hybrid
+        gsap.to(dots[1], {
+          scale: 1.6,
+          borderColor: '#00fff5',
+          backgroundColor: 'rgba(0, 255, 245, 0.05)',
+          borderWidth: '2px',
+          duration: 0.25,
+        });
+        // Fade out inner dot slightly for cleaner pointer focus
+        gsap.to(dots[0], {
+          scale: 0.5,
+          opacity: 0.8,
+          duration: 0.2,
+        });
+        // Make trailing particles dynamic
+        dots.slice(2).forEach((dot, idx) => {
+          gsap.to(dot, {
+            scale: 1.4,
+            backgroundColor: '#00fff5',
+            duration: 0.25,
+          });
+        });
+      }
+    };
+
+    const onMouseOut = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target) return;
+
+      const isClickable = 
+        target.tagName === 'A' || 
+        target.tagName === 'BUTTON' || 
+        target.closest('a') || 
+        target.closest('button') || 
+        target.classList.contains('cursor-pointer') ||
+        target.getAttribute('role') === 'button';
+
+      if (isClickable) {
+        // Reset styles
+        gsap.to(dots[1], {
+          scale: 1,
+          borderColor: '#c5a059',
+          backgroundColor: 'transparent',
+          borderWidth: '1px',
+          duration: 0.25,
+        });
+        gsap.to(dots[0], {
+          scale: 1,
+          opacity: 1,
+          duration: 0.2,
+        });
+        dots.slice(2).forEach((dot, idx) => {
+          gsap.to(dot, {
+            scale: 1,
+            backgroundColor: idx % 2 === 0 ? '#c5a059' : '#00fff5',
+            duration: 0.25,
+          });
+        });
+      }
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mousedown', onMouseDown);
+    window.addEventListener('mouseup', onMouseUp);
+    window.addEventListener('mouseover', onMouseOver);
+    window.addEventListener('mouseout', onMouseOut);
 
     return () => {
-      cancelAnimationFrame(rafRef.current);
-      window.removeEventListener('mousemove', onMove);
-      window.removeEventListener('mouseleave', onLeave);
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mousedown', onMouseDown);
+      window.removeEventListener('mouseup', onMouseUp);
+      window.removeEventListener('mouseover', onMouseOver);
+      window.removeEventListener('mouseout', onMouseOut);
+      if (container) {
+        container.innerHTML = '';
+      }
     };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="fixed inset-0 w-full h-full pointer-events-none z-[9999]"
-      aria-hidden="true"
-      style={{ mixBlendMode: 'screen' }}
+    <div
+      ref={containerRef}
+      className="fixed inset-0 w-full h-full pointer-events-none z-[99999] hidden md:block"
     />
   );
 }
