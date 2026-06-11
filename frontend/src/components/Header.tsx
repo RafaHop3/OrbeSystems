@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, X, FileText, LayoutGrid, Mail, LogIn, LogOut, Crown, Zap, Building2, ChevronDown, Monitor, Terminal } from 'lucide-react';
+import { Menu, X, FileText, LayoutGrid, Mail, LogIn, LogOut, Crown, Zap, Building2, ChevronDown, Monitor, Terminal, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import OrbeLogo from './OrbeLogo';
 import { useAuth } from '@/hooks/useAuth';
@@ -11,8 +11,10 @@ const NAV_LINKS = [
   { label: 'Workspace', href: '/workspace', icon: Monitor },
   { label: 'Repositórios', href: '/repositorios', icon: FileText },
   { label: 'Skills', href: '/skills', icon: LayoutGrid },
+  { label: 'Kids 🚀', href: '/kids', icon: Sparkles },
   { label: 'Contato', href: '/#contact', icon: Mail },
 ];
+
 
 export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
