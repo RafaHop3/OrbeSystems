@@ -5,6 +5,7 @@ import Footer from '@/components/Footer';
 import ScrollNarrativeEngine from '@/components/ScrollNarrativeEngine';
 import VdePreview from '@/components/vde/VdePreview';
 import FreedomSection from '@/components/FreedomSection';
+import KidsPromoSection from '@/components/KidsPromoSection';
 
 export default function HomePage() {
   return (
@@ -14,9 +15,11 @@ export default function HomePage() {
         <HeroSection />
         <VdePreview />
         <FreedomSection />
+        <KidsPromoSection />
         <ProjectsGrid />
       </ScrollNarrativeEngine>
       <Footer />
     </main>
   );
 }
+

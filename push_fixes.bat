@@ -13,7 +13,7 @@ echo 2. Adicionando arquivos modificados ao Git...
 git add .
 echo.
 echo 3. Criando commit com as novas implementacoes...
-git commit -m "feat: documentos legais, agente offline e melhorias de seguranca no IMORTAL"
+git commit -m "feat: adicionar estúdio de código Kids Studio e banner promocional na home"
 echo.
 echo 4. Enviando para o repositorio remoto (GitHub)...
 git push
@@ -22,3 +22,4 @@ echo ===================================================
 echo Sync Completo! O Render iniciara o auto-redeploy.
 echo ===================================================
 pause
+
