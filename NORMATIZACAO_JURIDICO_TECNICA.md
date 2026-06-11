@@ -109,9 +109,9 @@ Os hashes a seguir atestam a integridade absoluta da arquitetura IMORTAL no ecos
 | `backend/imortal/server.py` | Servidor API local para orquestração offline e CLI | `a330e4dc427964e8be5fddf17a1f5f2d3a19328483588ccfe1532d5b438e0cf9` |
 | `backend/imortal/visualizer.py` | Motor de geração de dashboards gráficos e renderizador SVG | `56f6172090b23b1ee47cea1ee7a908edd2ad512ea1165ae43ad62e0853069f59` |
 | `frontend/src/app/api/ping-backend/route.ts` | Rota do Next.js para manter o backend ativo via requisições de cron externas | `b741c200f77eccffbe5404ab61a3696d946e2a251f54ce7411ac68487288b6d5` |
-| `frontend/vercel.json` | Configuração do Vercel Cron Job para automação de pings de keep-alive | `e289797953ccacef4bdce1c4f01b82e4196714fdcad4f93226bf7a289ea7609b` |
+| `frontend/vercel.json` | Configuração do Vercel Cron Job para automação de pings de keep-alive | `ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356` |
 | `SECURITY_PROTOCOL.md` | Protocolo Geral de Cibersegurança e DevSecOps da Orbe | `239e3d3e17c9e36001ab1c620213950d5d8cb105a3084771df98d38fd6076951` |
-| `NORMATIZACAO_JURIDICO_TECNICA.md` | Este termo de normatização técnico-legal | `14eb4d94727440306d0205032be77bf7356849e9353f2ae859f7046a58c61a8d` |
+| `NORMATIZACAO_JURIDICO_TECNICA.md` | Este termo de normatização técnico-legal | `9fc8b04d2221715e40b7aabee971efd98870df741e1c3d05c64346266aebaff5` |
 
 ---
 
