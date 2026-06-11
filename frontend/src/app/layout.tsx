@@ -3,6 +3,7 @@ import './globals.css';
 import logo from '../../imagems/logos/Design sem nome.png'; // Nota: Verifique se a pasta 'imagems' está correta ou se é um typo de 'imagens'
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import MouseAtomTrail from '@/components/MouseAtomTrail';
+import OrbeAssistant from '@/components/OrbeAssistant';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://orbesystems.com.br'),
@@ -22,6 +23,7 @@ export default function RootLayout({
         {/* Componentes Globais de Rastreamento e Animação */}
         <AnalyticsTracker />
         <MouseAtomTrail />
+        <OrbeAssistant />
         
         <main className="relative min-h-screen overflow-x-hidden">
           {children}
