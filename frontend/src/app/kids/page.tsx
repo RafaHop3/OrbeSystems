@@ -3,14 +3,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   Play, RotateCcw, Send, Trash2, Sparkles, Trophy, BookOpen, 
-  Award, Terminal, Code2, RefreshCw, Lightbulb, ChevronRight, HelpCircle
+  Award, Terminal, Code2, RefreshCw, Lightbulb, ChevronRight, HelpCircle,
+  Gamepad2, Cpu, Globe, BarChart3, Rocket
 } from 'lucide-react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-// ── DATA: LESSONS & CHALLENGES ──
-interface Lesson {
+// ── DATA STRUCTURES ──
+
+interface Challenge {
   id: string;
   title: string;
   difficulty: 'Iniciante' | 'Explorador' | 'Criador';
@@ -22,93 +24,389 @@ interface Lesson {
   hint: string;
 }
 
-const LESSONS: Lesson[] = [
-  {
-    id: "hello_world",
-    title: "👋 Lição 1: Diga Olá!",
-    difficulty: "Iniciante",
-    description: "Aprenda a fazer o computador falar imprimindo textos na tela!",
-    code: `// Lição 1: Diga Olá!
-// Clique em "Executar Código" para rodar a mensagem abaixo!
-
-console.log("Olá, Mundo! 🚀");
-console.log("Estou aprendendo a programar na Orbe Systems!");
-`,
-    expected: "Olá, Mundo!",
-    xpReward: 30,
-    badge: "🐣 Iniciante do Código",
-    hint: "Tente mudar o texto entre aspas para imprimir seu próprio nome!"
-  },
-  {
-    id: "variables",
-    title: "📦 Lição 2: Variáveis",
-    difficulty: "Iniciante",
-    description: "Variáveis são como caixas com nomes para guardar informações.",
-    code: `// Lição 2: Variáveis
-// Vamos criar duas caixinhas e somar seus valores!
-
-let nivelCodigo = 5;
-let pontosBonus = 10;
-let totalPontos = nivelCodigo + pontosBonus;
-
-console.log("Meu nível de código é: " + nivelCodigo);
-console.log("Adicionando bônus...");
-console.log("Pontos Totais: " + totalPontos);
-`,
-    expected: "Pontos Totais:",
-    xpReward: 40,
-    badge: "📦 Mestre das Caixas",
-    hint: "Mude o valor de 'nivelCodigo' para um número maior, como 100!"
-  },
-  {
-    id: "loops",
-    title: "🔁 Lição 3: Repetições (Loops)",
-    difficulty: "Explorador",
-    description: "Loops dizem ao computador para repetir uma ação várias vezes.",
-    code: `// Lição 3: Repetições
-// Vamos contar de 1 até 5 usando o loop 'for'!
-
-for (let contagem = 1; contagem <= 5; contagem++) {
-  console.log("Contagem: " + contagem + " 🌟");
+interface LibraryDoc {
+  name: string;
+  description: string;
+  usage: string;
 }
 
-console.log("Contagem finalizada!");
+interface Theme {
+  id: string;
+  name: string;
+  emoji: string;
+  title: string;
+  intro: string;
+  libraryDocs: LibraryDoc[];
+  libraryCode: string;
+  challenges: Challenge[];
+}
+
+const THEMES: Theme[] = [
+  {
+    id: "jogos",
+    name: "Criação de Jogos",
+    emoji: "🎮",
+    title: "🎮 Desenvolvimento de Jogos e Física",
+    intro: "Como funcionam os videogames? Eles rodam em um loop constante de atualização e desenho (Game Loop), controlam posições cartesianas (X, Y) e verificam se os personagens colidiram com itens ou inimigos para pontuar.",
+    libraryCode: `
+const EngineJogos = {
+  desenharMapa: function(px, py) {
+    let grid = "";
+    for(let y=0; y<5; y++) {
+      for(let x=0; x<10; x++) {
+        if(x === px && y === py) grid += "👦 ";
+        else if(x === 9 && y === 4) grid += "🏆 ";
+        else grid += "░░ ";
+      }
+      grid += "\\n";
+    }
+    console.log(grid);
+  },
+  verificarColisao: function(x1, y1, x2, y2, alcance) {
+    let dist = Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
+    console.log("Distância calculada: " + dist.toFixed(2));
+    return dist <= alcance;
+  }
+};
 `,
-    expected: "Contagem: 5",
-    xpReward: 50,
-    badge: "🔁 Guardião do Loop",
-    hint: "Você consegue mudar 'contagem <= 5' para 'contagem <= 10' para contar mais alto?"
+    libraryDocs: [
+      {
+        name: "EngineJogos.desenharMapa(x, y)",
+        description: "Desenha um mapa gráfico em ASCII com o jogador 👦 na coordenada (x, y). A taça 🏆 está em (9, 4).",
+        usage: "EngineJogos.desenharMapa(3, 2);"
+      },
+      {
+        name: "EngineJogos.verificarColisao(x1, y1, x2, y2, r)",
+        description: "Calcula a distância e verifica se dois elementos com coordenadas (x1, y1) e (x2, y2) estão colidindo dentro do raio (r).",
+        usage: "let bateu = EngineJogos.verificarColisao(1, 1, 2, 2, 1.5);"
+      }
+    ],
+    challenges: [
+      {
+        id: "game_walk",
+        title: "🚶 Movimento do Jogador",
+        difficulty: "Iniciante",
+        description: "Use a biblioteca EngineJogos para desenhar o mapa com o jogador na coordenada X=4 e Y=2!",
+        code: `// Use a biblioteca EngineJogos para desenhar o jogador em X=4 e Y=2!
+EngineJogos.desenharMapa(4, 2);
+`,
+        expected: "👦",
+        xpReward: 30,
+        badge: "🎮 Gamer Aprendiz",
+        hint: "Basta chamar a função EngineJogos.desenharMapa passando 4 e 2 como argumentos."
+      },
+      {
+        id: "game_collision",
+        title: "💥 Detecção de Colisão",
+        difficulty: "Explorador",
+        description: "Use EngineJogos.verificarColisao para ver se o jogador em (9, 3) pegou a taça que está em (9, 4) com raio de colisão de 1.5!",
+        code: `// Verifique se o jogador em (9, 3) está colidindo com a taça em (9, 4)
+let colidiu = EngineJogos.verificarColisao(9, 3, 9, 4, 1.5);
+console.log("Colisão com prêmio: " + colidiu);
+`,
+        expected: "Colisão com prêmio: true",
+        xpReward: 40,
+        badge: "💥 Mestre do Hitbox",
+        hint: "A função retorna true ou false. O console.log irá imprimir o resultado final."
+      }
+    ]
   },
   {
-    id: "conditions",
-    title: "🚦 Lição 4: Condições (Se/Senão)",
-    difficulty: "Explorador",
-    description: "Faça o código tomar decisões inteligentes baseado em regras.",
-    code: `// Lição 4: Condições
-// Vamos ver se temos moedas suficientes para comprar uma varinha mágica!
-
-let moedasDeOuro = 15;
-let precoVarinha = 10;
-
-if (moedasDeOuro >= precoVarinha) {
-  console.log("Eba! Você comprou a Varinha Mágica! 🪄✨");
-} else {
-  console.log("Ah não! Você precisa de mais moedas de ouro. 🪙");
-}
+    id: "ia",
+    name: "Inteligência Artificial",
+    emoji: "🤖",
+    title: "🤖 Inteligência Artificial e Neurônios",
+    intro: "Como as IAs tomam decisões? Elas utilizam 'neurônios artificiais' que multiplicam entradas por 'pesos' e verificam se ultrapassam um limite. Elas também processam sentimentos lendo palavras especiais.",
+    libraryCode: `
+const IA = {
+  neuronioDecisao: function(entradas, pesos, limite) {
+    let soma = 0;
+    for(let i=0; i<entradas.length; i++) {
+      soma += entradas[i] * pesos[i];
+    }
+    console.log("Soma ponderada da rede: " + soma.toFixed(1) + " (Limite: " + limite + ")");
+    return soma >= limite;
+  },
+  analisarSentimento: function(texto) {
+    let felizes = ["feliz", "bom", "legal", "adoro", "sim", "oba", "incrível"];
+    let tristes = ["triste", "ruim", "chato", "odeio", "não", "droga", "erro"];
+    let score = 0;
+    let palavras = texto.toLowerCase().split(" ");
+    palavras.forEach(p => {
+      if(felizes.includes(p)) score++;
+      if(tristes.includes(p)) score--;
+    });
+    console.log("Score de sentimento: " + score);
+    return score > 0 ? "Alegre 😊" : score < 0 ? "Preocupado 😟" : "Neutro 😐";
+  }
+};
 `,
-    expected: "Varinha Mágica!",
-    xpReward: 50,
-    badge: "🚦 Explorador de Caminhos",
-    hint: "Tente mudar 'moedasDeOuro' para 5 e execute o código de novo!"
+    libraryDocs: [
+      {
+        name: "IA.neuronioDecisao(entradas, pesos, limite)",
+        description: "Simula um neurônio simplificado. Multiplica as entradas pelos pesos e diz se a decisão é verdadeira (acima do limite).",
+        usage: "IA.neuronioDecisao([1, 0], [0.5, 0.5], 0.4);"
+      },
+      {
+        name: "IA.analisarSentimento(frase)",
+        description: "Analisa o texto e responde se ele transmite um sentimento Alegre 😊, Preocupado 😟 ou Neutro 😐.",
+        usage: "IA.analisarSentimento('Hoje é um bom dia legal!');"
+      }
+    ],
+    challenges: [
+      {
+        id: "ai_neuron",
+        title: "🧠 Ativando o Neurônio",
+        difficulty: "Explorador",
+        description: "Ajuste os pesos do neurônio para que a decisão seja VERDADEIRA. Entradas: [1, 1], Limite: 1.5. Mude os pesos para que a soma passe de 1.5!",
+        code: `// Ajuste os pesos no segundo argumento para que a soma supere o limite (1.5)
+let decisao = IA.neuronioDecisao([1, 1], [0.5, 0.5], 1.5);
+console.log("Decisão do robô: " + decisao);
+`,
+        expected: "Decisão do robô: true",
+        xpReward: 50,
+        badge: "🧠 Treinador de Rede",
+        hint: "Mude os pesos de [0.5, 0.5] para valores maiores, por exemplo, [1.0, 1.0]."
+      },
+      {
+        id: "ai_sentiment",
+        title: "😊 Sentimento Feliz",
+        difficulty: "Iniciante",
+        description: "Chame a função IA.analisarSentimento com uma frase que contenha palavras alegres como 'bom', 'legal' ou 'incrível'!",
+        code: `// Escreva uma frase super feliz para a IA detectar!
+let sentimento = IA.analisarSentimento("Este dia está incrível e muito bom!");
+console.log("Resultado: " + sentimento);
+`,
+        expected: "Alegre",
+        xpReward: 30,
+        badge: "😊 Sensor de Emoção",
+        hint: "Use palavras do banco de dados feliz: 'feliz', 'bom', 'legal', 'adoro', 'sim', 'oba', 'incrível'."
+      }
+    ]
+  },
+  {
+    id: "web",
+    name: "Web Design",
+    emoji: "🌐",
+    title: "🌐 Web, Cores e Design Digital",
+    intro: "A internet funciona com linguagens que criam estrutura e estilos. As cores digitais são representadas por intensidades de Vermelho, Verde e Azul (RGB) de 0 a 255, ou por códigos hexadecimais de base 16.",
+    libraryCode: `
+const WebDesign = {
+  rgbParaHex: function(r, g, b) {
+    const toHex = (c) => {
+      const hex = Math.max(0, Math.min(255, c)).toString(16);
+      return hex.length === 1 ? "0" + hex : hex;
+    };
+    let hex = "#" + toHex(r) + toHex(g) + toHex(b);
+    console.log("Convertido RGB(" + r + "," + g + "," + b + ") para " + hex);
+    return hex;
+  },
+  gerarCSSGradiente: function(cor1, cor2) {
+    let css = "linear-gradient(to right, " + cor1 + ", " + cor2 + ")";
+    console.log("Estilo Gradiente CSS: " + css);
+    return css;
+  }
+};
+`,
+    libraryDocs: [
+      {
+        name: "WebDesign.rgbParaHex(r, g, b)",
+        description: "Transforma valores de cor R (red), G (green), B (blue) de 0 a 255 em um código hexadecimal.",
+        usage: "WebDesign.rgbParaHex(255, 255, 255);"
+      },
+      {
+        name: "WebDesign.gerarCSSGradiente(corHex1, corHex2)",
+        description: "Gera uma string de gradiente CSS moderno a partir de duas cores hexadecimais.",
+        usage: "WebDesign.gerarCSSGradiente('#ff0000', '#0000ff');"
+      }
+    ],
+    challenges: [
+      {
+        id: "web_hex",
+        title: "🎨 Código das Cores",
+        difficulty: "Iniciante",
+        description: "Converta a cor verde pura RGB(0, 255, 0) para o seu código hexadecimal equivalente usando a biblioteca!",
+        code: `// Converta o verde puro para hexadecimal
+let hexVerde = WebDesign.rgbParaHex(0, 255, 0);
+console.log("Hexadecimal: " + hexVerde);
+`,
+        expected: "#00ff00",
+        xpReward: 35,
+        badge: "🎨 Pintor Digital",
+        hint: "Passe os valores 0, 255, e 0 para a função rgbParaHex."
+      },
+      {
+        id: "web_gradient",
+        title: "🌈 Gradiente Moderno",
+        difficulty: "Explorador",
+        description: "Gere um gradiente CSS unindo a cor roxa '#8b5cf6' e a cor ciano '#06b6d4'!",
+        code: `// Gere o gradiente ligando o roxo e o ciano
+let gradiente = WebDesign.gerarCSSGradiente("#8b5cf6", "#06b6d4");
+`,
+        expected: "linear-gradient",
+        xpReward: 40,
+        badge: "🌈 Designer do Amanhã",
+        hint: "Chame gerarCSSGradiente com '#8b5cf6' e '#06b6d4' como parâmetros."
+      }
+    ]
+  },
+  {
+    id: "dados",
+    name: "Ciência de Dados",
+    emoji: "📊",
+    title: "📊 Ciência de Dados e Algoritmos",
+    intro: "Cientistas de dados analisam informações para encontrar padrões, fazer previsões e tomar decisões. Eles organizam dados usando listas (arrays) e calculam estatísticas como médias.",
+    libraryCode: `
+const DataScience = {
+  calcularMedia: function(lista) {
+    if(!lista.length) return 0;
+    let soma = lista.reduce((a,b) => a+b, 0);
+    let med = soma / lista.length;
+    console.log("Média calculada da lista: " + med.toFixed(1));
+    return med;
+  },
+  filtrarAcimaDe: function(lista, limite) {
+    let filtrado = lista.filter(x => x > limite);
+    console.log("Itens acima de " + limite + ": [" + filtrado.join(", ") + "]");
+    return filtrado;
+  },
+  ordenarLista: function(lista) {
+    let ordenada = [...lista].sort((a,b) => a-b);
+    console.log("Lista ordenada: [" + ordenada.join(", ") + "]");
+    return ordenada;
+  }
+};
+`,
+    libraryDocs: [
+      {
+        name: "DataScience.calcularMedia(lista)",
+        description: "Calcula a média aritmética simples de todos os números presentes na lista.",
+        usage: "DataScience.calcularMedia([10, 8, 6]);"
+      },
+      {
+        name: "DataScience.filtrarAcimaDe(lista, limite)",
+        description: "Filtra a lista retornando apenas os elementos que forem maiores que o limite especificado.",
+        usage: "DataScience.filtrarAcimaDe([1, 5, 10], 4);"
+      },
+      {
+        name: "DataScience.ordenarLista(lista)",
+        description: "Coloca a lista de números em ordem crescente (do menor para o maior).",
+        usage: "DataScience.ordenarLista([9, 2, 7]);"
+      }
+    ],
+    challenges: [
+      {
+        id: "ds_average",
+        title: "📈 Média de Notas",
+        difficulty: "Iniciante",
+        description: "Calcule a média das notas da turma usando a lista [7, 8, 9, 10]!",
+        code: `// Calcule a média aritmética simples da lista de notas fornecida
+let media = DataScience.calcularMedia([7, 8, 9, 10]);
+`,
+        expected: "Média calculada da lista: 8.5",
+        xpReward: 35,
+        badge: "📈 Analista Júnior",
+        hint: "Passe a lista de notas [7, 8, 9, 10] como argumento para calcularMedia."
+      },
+      {
+        id: "ds_filter",
+        title: "🔍 Filtro Estrito",
+        difficulty: "Explorador",
+        description: "Filtre a lista [12, 45, 2, 8, 99, 15] para manter somente os valores maiores que 14!",
+        code: `// Filtre a lista para números maiores que 14
+let filtrados = DataScience.filtrarAcimaDe([12, 45, 2, 8, 99, 15], 14);
+`,
+        expected: "Itens acima de 14: [45, 99, 15]",
+        xpReward: 45,
+        badge: "🔍 Filtro de Elite",
+        hint: "O primeiro parâmetro é a lista e o segundo é o limite numérico (14)."
+      }
+    ]
+  },
+  {
+    id: "espaco",
+    name: "Espaço e Física",
+    emoji: "🚀",
+    title: "🚀 Física e Lançamento de Foguetes",
+    intro: "Foguetes sobem baseados nas leis de movimento de Isaac Newton! A força dos motores (Empuxo) precisa superar o Peso do foguete (Massa x Gravidade). Se a força resultante for positiva, ele acelera e voa!",
+    libraryCode: `
+const FisicaEspacial = {
+  simularLancamento: function(empuxo, massa, segundos) {
+    let gravidade = 9.8;
+    let altura = 0;
+    let velocidade = 0;
+    
+    for(let t=1; t<=segundos; t++) {
+      let peso = massa * gravidade;
+      let forcaResultante = empuxo - peso;
+      let aceleracao = forcaResultante / massa;
+      velocidade += aceleracao;
+      if(velocidade < 0) velocidade = 0;
+      altura += velocidade;
+      if(altura < 0) altura = 0;
+      
+      console.log("Tempo: " + t + "s | Velocidade: " + velocidade.toFixed(1) + " m/s | Altura: " + altura.toFixed(1) + " m");
+    }
+    return altura;
+  },
+  velocidadeEscape: function(massaPlaneta, raioPlaneta) {
+    const G = 6.674e-11;
+    let v = Math.sqrt((2 * G * massaPlaneta) / raioPlaneta);
+    let kmh = (v * 3.6).toFixed(0);
+    console.log("Velocidade de escape necessária: " + kmh + " km/h");
+    return kmh;
+  }
+};
+`,
+    libraryDocs: [
+      {
+        name: "FisicaEspacial.simularLancamento(empuxo, massa, s)",
+        description: "Simula a subida de um foguete sob gravidade terrestre (9.8m/s²) por (s) segundos. Retorna a altura final em metros.",
+        usage: "FisicaEspacial.simularLancamento(20000, 1000, 5);"
+      },
+      {
+        name: "FisicaEspacial.velocidadeEscape(massa, raio)",
+        description: "Calcula e imprime a velocidade necessária em km/h para escapar da gravidade de um astro de massa (kg) e raio (m).",
+        usage: "FisicaEspacial.velocidadeEscape(5.97e24, 6.37e6);"
+      }
+    ],
+    challenges: [
+      {
+        id: "space_launch",
+        title: "🚀 Lançamento Estelar",
+        difficulty: "Criador",
+        description: "Lance um foguete de massa 1200kg com um motor superpotente de 25000 Newtons por 4 segundos!",
+        code: `// Faça a simulação de voo do foguete por 4 segundos
+let alturaFinal = FisicaEspacial.simularLancamento(25000, 1200, 4);
+`,
+        expected: "Tempo: 4s",
+        xpReward: 50,
+        badge: "🚀 Engenheiro Aeroespacial",
+        hint: "Basta passar os valores 25000 (empuxo), 1200 (massa) e 4 (segundos) para simularLancamento."
+      },
+      {
+        id: "space_escape",
+        title: "🌍 Escapando da Terra",
+        difficulty: "Criador",
+        description: "Calcule a velocidade de escape da Terra. Massa da Terra: 5.97e24 kg, Raio da Terra: 6371000 metros (6.371e6)!",
+        code: `// Calcule a velocidade de escape para a Terra
+let vEscape = FisicaEspacial.velocidadeEscape(5.972e24, 6371000);
+`,
+        expected: "Velocidade de escape necessária: 40268",
+        xpReward: 60,
+        badge: "🌍 Viajante Interplanetário",
+        hint: "Passe a massa (5.972e24) como primeiro argumento e o raio (6371000) como segundo argumento."
+      }
+    ]
   }
 ];
 
 const QUICK_CHIPS = [
   { text: "Explicar meu código!", label: "Explicar meu código! 💻" },
-  { text: "O que é um bug?", label: "O que é um bug? 🐛" },
-  { text: "Como criar um jogo?", label: "Como criar um jogo? 🎮" },
-  { text: "Me ensine Python!", label: "Me ensine Python! 🐍" },
-  { text: "Me dê um desafio!", label: "Me dê um desafio! 🏆" }
+  { text: "Quais bibliotecas posso usar?", label: "Bibliotecas disponíveis? 📦" },
+  { text: "Como escolher outro tema?", label: "Escolher Tema! 🗺️" },
+  { text: "Dê um desafio acadêmico!", label: "Desafio Acadêmico! 🏆" },
+  { text: "O que é um bug no código?", label: "O que é um bug? 🐛" }
 ];
 
 const FUN_FACTS = [
@@ -133,10 +431,13 @@ export default function KidsStudioPage() {
   const [badges, setBadges] = useState<string[]>([]);
   const [questionsAsked, setQuestionsAsked] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-  const [currentLessonId, setCurrentLessonId] = useState<string>("hello_world");
+  
+  // Theme and Challenge Selector States
+  const [selectedThemeId, setSelectedThemeId] = useState<string>("jogos");
+  const [currentLessonId, setCurrentLessonId] = useState<string>("game_walk");
 
   // IDE states
-  const [code, setCode] = useState(LESSONS[0].code);
+  const [code, setCode] = useState(THEMES[0].challenges[0].code);
   const [language, setLanguage] = useState<'js' | 'python'>('js');
   const [consoleLogs, setConsoleLogs] = useState<{ text: string; type: 'log' | 'error' | 'success' | 'system' }[]>([]);
 
@@ -145,9 +446,12 @@ export default function KidsStudioPage() {
   const [userMsg, setUserMsg] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [funFact, setFunFact] = useState("");
+  const [showHelpModal, setShowHelpModal] = useState(false);
 
   const chatEndRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<HTMLTextAreaElement>(null);
+
+  const selectedTheme = THEMES.find(t => t.id === selectedThemeId) || THEMES[0];
 
   // Audio synthesize function
   const playTone = (freq: number, duration: number, type: 'sine' | 'square' | 'sawtooth' | 'triangle' = 'sine') => {
@@ -173,7 +477,6 @@ export default function KidsStudioPage() {
     }
   };
 
-
   const playSuccessSound = () => {
     playTone(523.25, 0.08); // C5
     setTimeout(() => playTone(659.25, 0.08), 80); // E5
@@ -194,7 +497,6 @@ export default function KidsStudioPage() {
 
   // Load progress and set welcome message on mount
   useEffect(() => {
-    // Load local storage if present
     if (typeof window !== 'undefined') {
       const raw = localStorage.getItem("orbe_kids_progress");
       if (raw) {
@@ -218,7 +520,7 @@ export default function KidsStudioPage() {
     setChatHistory([
       {
         sender: 'bot',
-        text: `👋 **Olá, futuro desenvolvedor! Eu sou o Techy, seu tutor de programação!** 🤖✨\n\nAqui no espaço **Orbe Kids**, você pode aprender a programar de verdade!\n\n1. **Escolha uma lição** na barra lateral esquerda.\n2. Edite o código no centro e clique em **Executar Código ⚡**.\n3. Me pergunte qualquer coisa no chat à direita! Vamos começar?`,
+        text: `👋 **Olá, futuro desenvolvedor e cientista! Bem-vindo ao Orbe Kids Studio!** 🤖✨\n\nAqui, acreditamos na nobreza do conhecimento e no seu futuro acadêmico. Você tem total liberdade para **escolher o tema** que quer dominar hoje:\n\n🎮 **Criação de Jogos & Física**\n🤖 **Inteligência Artificial & Neurônios**\n🌐 **Web Design & Interfaces**\n📊 **Ciência de Dados & Algoritmos**\n🚀 **Espaço & Newton**\n\n1. Escolha o tema na barra lateral esquerda.\n2. Veja os conceitos de **Conhecimento Livre** e a **Biblioteca de Funções**.\n3. Digite e clique em **Executar Código ⚡**.\n4. Converse comigo no chat à direita! Qual tema de estudo você quer escolher?`,
         time: timeString
       }
     ]);
@@ -247,9 +549,8 @@ export default function KidsStudioPage() {
           playLevelUpSound();
           awardBadge(`⭐ Nível ${nextLvl}`);
           
-          // Add Bot celebration message
           setTimeout(() => {
-            appendBotMessage(`🎉 **VOCÊ SUBIU DE NÍVEL!** Parabéns, você agora é **Nível ${nextLvl}**! 🚀\n\nSeu cérebro de programador está ficando gigante! Continue assim!`);
+            appendBotMessage(`🎉 **VOCÊ SUBIU DE NÍVEL!** Parabéns, você agora é **Nível ${nextLvl}**! 🚀\n\nSeu cérebro de programador está crescendo de forma nobre! Continue assim!`);
           }, 800);
           
           return nextLvl;
@@ -276,7 +577,7 @@ export default function KidsStudioPage() {
 
   // Run Code logic
   const handleRunCode = () => {
-    setConsoleLogs([{ text: "[Servidor] Compilando e executando código...", type: 'system' }]);
+    setConsoleLogs([{ text: "[Servidor] Compilando e executando código com bibliotecas preenchidas...", type: 'system' }]);
     playTone(600, 0.05, 'triangle');
 
     setTimeout(() => {
@@ -298,8 +599,12 @@ export default function KidsStudioPage() {
     };
 
     try {
+      // Prepend current theme library code before executing
+      const libraryCode = selectedTheme ? selectedTheme.libraryCode : "";
+      const fullCode = libraryCode + "\n" + code;
+
       // Evaluate user code in a safe boundary function
-      const evalFunc = new Function(code);
+      const evalFunc = new Function(fullCode);
       evalFunc();
       console.log = originalLog;
 
@@ -312,12 +617,12 @@ export default function KidsStudioPage() {
         playSuccessSound();
         addXP(15);
         
-        // Check current lesson criteria
+        // Check current challenge criteria
         checkLessonCompletion(logs.join("\n"));
       } else {
         setConsoleLogs(prev => [
           ...prev,
-          { text: "[Aviso] O código rodou, mas nada foi impresso. Use console.log(\"texto\") para escrever na tela!", type: 'system' as const }
+          { text: "[Aviso] O código rodou, mas nada foi impresso no console. Use console.log(...) para escrever na tela!", type: 'system' as const }
         ]);
         playTone(300, 0.15);
       }
@@ -352,13 +657,11 @@ export default function KidsStudioPage() {
 
         if (line.startsWith("print(") && line.endsWith(")")) {
           const content = line.substring(6, line.length - 1).trim();
-          // basic evaluation of variables vs quotes
           if ((content.startsWith('"') && content.endsWith('"')) || (content.startsWith("'") && content.endsWith("'"))) {
             outputs.push(content.substring(1, content.length - 1));
           } else if (variables[content] !== undefined) {
             outputs.push(String(variables[content]));
           } else {
-            // Check math inside print
             try {
               const res = new Function(`return ${content}`)();
               outputs.push(String(res));
@@ -386,6 +689,11 @@ export default function KidsStudioPage() {
       playSuccessSound();
       addXP(15);
 
+      // Check simulated Python completion
+      if (outputs.length > 0) {
+        checkLessonCompletion(outputs.join("\n"));
+      }
+
     } catch (e: any) {
       playErrorSound();
       setConsoleLogs(prev => [
@@ -396,16 +704,17 @@ export default function KidsStudioPage() {
   };
 
   const checkLessonCompletion = (outputStr: string) => {
-    const currentLesson = LESSONS.find(l => l.id === currentLessonId);
-    if (!currentLesson || completedLessons.includes(currentLessonId)) return;
+    if (!selectedTheme) return;
+    const currentChallenge = selectedTheme.challenges.find(c => c.id === currentLessonId);
+    if (!currentChallenge || completedLessons.includes(currentLessonId)) return;
 
-    if (outputStr.toLowerCase().includes(currentLesson.expected.toLowerCase())) {
+    if (outputStr.toLowerCase().includes(currentChallenge.expected.toLowerCase())) {
       setCompletedLessons(prev => [...prev, currentLessonId]);
-      addXP(currentLesson.xpReward);
-      awardBadge(currentLesson.badge);
+      addXP(currentChallenge.xpReward);
+      awardBadge(currentChallenge.badge);
 
       setTimeout(() => {
-        appendBotMessage(`🎉 **Excelente trabalho!** Você completou a **${currentLesson.title}**!\n\n🎖️ Emblema desbloqueado: **${currentLesson.badge}**\n✨ Recompensa: **+${currentLesson.xpReward} XP**!`);
+        appendBotMessage(`🎉 **Excelente trabalho! O nobre desafio foi vencido!** Você completou: **${currentChallenge.title}**!\n\n🎖️ Emblema desbloqueado: **${currentChallenge.badge}**\n✨ Recompensa: **+${currentChallenge.xpReward} XP**!\n\nVocê está pavimentando seu futuro acadêmico na programação! 🚀`);
       }, 1000);
     }
   };
@@ -429,28 +738,61 @@ export default function KidsStudioPage() {
     return `O computador não entendeu as instruções escritas nessa linha. Revise com atenção cada palavra digitada!`;
   };
 
-  // Chatbot tutor router
-  const handleSendChat = () => {
+  // Chatbot tutor router (Integrates with /api/kids/chat + Fallback)
+  const handleSendChat = async () => {
     if (!userMsg.trim()) return;
 
-    const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    setChatHistory(prev => [...prev, { sender: 'user', text: userMsg, time: timeString }]);
-    const query = userMsg;
+    const text = userMsg;
     setUserMsg("");
-
+    const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    // Add user message to history
+    const updatedHistory = [...chatHistory, { sender: 'user' as const, text, time: timeString }];
+    setChatHistory(updatedHistory);
     setIsTyping(true);
 
-    setTimeout(() => {
+    try {
+      // Map history to Gemini format (limit to last 10 messages for speed)
+      const apiMessages = updatedHistory.slice(-10).map(msg => ({
+        role: msg.sender === 'bot' ? 'assistant' : 'user',
+        content: msg.text
+      }));
+
+      // Call the new kids chat API endpoint
+      const res = await fetch('/api/kids/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: apiMessages })
+      });
+
+      if (!res.ok) {
+        throw new Error("HTTP Error: " + res.status);
+      }
+
+      const data = await res.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
       setIsTyping(false);
-      const response = getTutorResponse(query);
-      appendBotMessage(response);
+      appendBotMessage(data.response);
       setQuestionsAsked(q => q + 1);
       addXP(10);
       
       // Question badges
       if (questionsAsked + 1 >= 5) awardBadge("💬 Curioso");
       if (questionsAsked + 1 >= 15) awardBadge("🧠 Filósofo Dev");
-    }, 700 + Math.random() * 500);
+    } catch (err) {
+      console.warn("API tutor failed, utilizing local rule-based system:", err);
+      setIsTyping(false);
+      const fallbackReply = getTutorResponse(text);
+      appendBotMessage(fallbackReply + "\n\n*(Nota: Rodando em modo offline)*");
+      setQuestionsAsked(q => q + 1);
+      addXP(10);
+      
+      if (questionsAsked + 1 >= 5) awardBadge("💬 Curioso");
+      if (questionsAsked + 1 >= 15) awardBadge("🧠 Filósofo Dev");
+    }
   };
 
   const handleExplainCode = () => {
@@ -478,6 +820,23 @@ export default function KidsStudioPage() {
       if (code.includes("if ") || code.includes("else")) {
         exp += `• Vi uma **condicional (se/senão)**. Ela serve para o programa tomar decisões baseadas em regras de verdadeiro ou falso.\n`;
       }
+      
+      // Check library usage
+      if (code.includes("EngineJogos")) {
+        exp += `• Você está usando as funções de **Criação de Jogos** (\`EngineJogos\`) para renderizar mapas ou calcular colisões de física!\n`;
+      }
+      if (code.includes("IA")) {
+        exp += `• Você está usando a biblioteca de **Inteligência Artificial** (\`IA\`) para rodar neurônios matemáticos ou classificar emoções!\n`;
+      }
+      if (code.includes("WebDesign")) {
+        exp += `• Você está usando a biblioteca de **Web Design** (\`WebDesign\`) para converter escalas de cores e criar gradientes digitais!\n`;
+      }
+      if (code.includes("DataScience")) {
+        exp += `• Você está usando a biblioteca de **Ciência de Dados** (\`DataScience\`) para fazer análises estatísticas, ordenar números e calcular médias!\n`;
+      }
+      if (code.includes("FisicaEspacial")) {
+        exp += `• Você está chamando a biblioteca de **Física Espacial** (\`FisicaEspacial\`) para simular empuxos de foguetes gravitacionais!\n`;
+      }
 
       exp += `\n💡 Clique em **Executar Código ⚡** para ver o resultado prático!`;
       appendBotMessage(exp);
@@ -488,46 +847,57 @@ export default function KidsStudioPage() {
   const getTutorResponse = (msgText: string): string => {
     const q = msgText.toLowerCase();
 
+    if (q.includes("biblioteca") || q.includes("libraria") || q.includes("funç") || q.includes("func")) {
+      return `### 📦 Bibliotecas do Orbe Kids Studio
+      
+Cada tema de estudo oferece bibliotecas prontas que você pode usar chamando funções diretamente no editor:
+• **Criação de Jogos**: \`EngineJogos.desenharMapa(x, y)\` e \`EngineJogos.verificarColisao(x1,y1,x2,y2,r)\`
+• **Inteligência Artificial**: \`IA.neuronioDecisao(entradas, pesos, limite)\` e \`IA.analisarSentimento(frase)\`
+• **Web Design**: \`WebDesign.rgbParaHex(r,g,b)\` e \`WebDesign.gerarCSSGradiente(c1,c2)\`
+• **Ciência de Dados**: \`DataScience.calcularMedia(lista)\`, \`DataScience.filtrarAcimaDe(lista,limite)\` e \`DataScience.ordenarLista(lista)\`
+• **Espaço e Física**: \`FisicaEspacial.simularLancamento(empuxo,massa,s)\` e \`FisicaEspacial.velocidadeEscape(massa,raio)\`
+
+Selecione um tema na barra esquerda para ver as descrições de uso detalhadas!`;
+    }
+
+    if (q.includes("tema") || q.includes("assunto") || q.includes("escolher")) {
+      return `### 🗺️ Escolha o seu Tema de Estudo!
+      
+No Orbe Kids, incentivamos a nobreza intelectual. Você escolhe o tema de estudo clicando nos botões na barra lateral esquerda:
+1. **Criação de Jogos 🎮**
+2. **Inteligência Artificial 🤖**
+3. **Web Design 🌐**
+4. **Ciência de Dados 📊**
+5. **Espaço e Física 🚀**
+      
+Ao mudar o tema, a biblioteca correspondente é importada automaticamente para o seu editor!`;
+    }
+
     if (q.includes("variável") || q.includes("variavel")) {
       return `### 📦 O que é uma Variável?
       
-Uma variável é como uma caixa de sapatos etiquetada. Dentro dela, você guarda uma coisa (por exemplo, o número de vidas de um jogo: \`let vidas = 3;\`).
-Toda vez que você fala o nome da caixa, o computador abre e vê o valor lá dentro!
-
-Em JavaScript criamos assim:
-\`\`\`js
-let meuNome = "Techy";
-console.log(meuNome);
-\`\`\``;
+Uma variável é como uma caixa de sapatos etiquetada. Dentro dela, você guarda uma coisa (por exemplo: \`let vidas = 3;\`).
+Toda vez que você fala o nome da caixa, o computador abre e vê o valor lá dentro!`;
     }
 
     if (q.includes("loop") || q.includes("repeti")) {
       return `### 🔁 O que são Loops?
       
-Loops repetem coisas para você. Em vez de escrever 100 vezes \`console.log("Olá");\`, você diz ao computador: *"repita isso 100 vezes"* em apenas 3 linhas de código!
-
-Exemplo de Loop:
-\`\`\`js
-for (let i = 1; i <= 3; i++) {
-  console.log("Pulo número " + i);
-}
-\`\`\``;
+Loops repetem coisas para você. Em vez de escrever 100 vezes \`console.log("Olá");\`, você diz ao computador: *"repita isso 100 vezes"* em apenas 3 linhas de código!`;
     }
 
     if (q.includes("bug") || q.includes("erro")) {
       awardBadge("🐛 Caçador de Bugs");
       return `### 🐛 O que é um Bug?
       
-Um "bug" é apenas um erro de escrita no código! O termo surgiu em 1947 quando cientistas encontraram um inseto de verdade atrapalhando o funcionamento do computador.
-Encontrar e corrigir bugs faz parte do dia a dia de todo programador!`;
+Um \"bug\" é apenas um erro de escrita no código! O termo surgiu em 1947 quando cientistas encontraram um inseto de verdade atrapalhando o funcionamento físico de um computador valvulado.`;
     }
 
     if (q.includes("jogo") || q.includes("games") || q.includes("roblox") || q.includes("minecraft")) {
       return `### 🎮 Criando Jogos!
       
-Jogos de computador como Roblox e Minecraft são feitos de milhares de linhas de código organizados.
-Eles usam um **Game Loop** (um laço que roda a cada milissegundo verificando se você apertou teclas, atualizando os personagens e desenhando os gráficos na tela!).
-Você pode começar criando joguinhos em blocos no **Scratch** ou no **Roblox Studio**!`;
+Jogos de computador são feitos de milhares de linhas de código organizados.
+Eles usam um **Game Loop** (um laço que roda a cada milissegundo verificando se você apertou teclas, atualizando os personagens e desenhando os gráficos na tela!).`;
     }
 
     if (q.includes("python")) {
@@ -536,34 +906,60 @@ Você pode começar criando joguinhos em blocos no **Scratch** ou no **Roblox St
 Python é uma das linguagens mais amadas do mundo porque ela se parece muito com o inglês falado e tem poucas regras visuais.
 Para escrever algo na tela em Python, você só digita:
 \`print("Olá!")\`
-
 Mude a opção de linguagem no topo do editor para **Python** para testar!`;
     }
 
-    if (q.includes("desafio") || q.includes("quest")) {
-      return `### 🏆 Desafio do Techy!
+    if (q.includes("desafio") || q.includes("quest") || q.includes("acad")) {
+      return `### 🏆 Desafios Acadêmicos!
       
-Você consegue criar um código que conte de **10 até 1**, e no final escreva **"LANÇAMENTO! 🚀"**?
-Dica: use uma repetição ou console.log para cada número. Tente fazer no editor!`;
+Cada tema de estudo tem desafios que ajudam você a desenvolver pensamento acadêmico e de engenharia!
+Escolha um tema à esquerda e selecione um desafio para carregar as instruções e o código inicial!`;
     }
 
     if (q.includes("olá") || q.includes("ola") || q.includes("oi") || q.includes("oi techy")) {
-      return `🤖 **Olá, jovem programador!** Estou animado para aprender com você. Pergunte-me algo como *"O que é uma variável?"* ou escolha uma lição na lateral!`;
+      return `🤖 **Olá, jovem programador!** Estou animado para aprender com você. Pergunte-me algo como *"O que é uma variável?"* ou escolha um tema de estudo na lateral!`;
     }
 
-    return `🤖 **Boa pergunta!**
-
+    return `🤖 **Excelente pergunta!**
+    
 Para te ajudar melhor a entender sobre tecnologia:
-- Clique em qualquer **Lição** à esquerda para carregar o modelo.
-- Modifique e clique em **Executar Código ⚡**.
-- Digite uma palavra chave como **Variáveis, Loops, ou Bugs** para eu explicar!`;
+- Clique em qualquer **Tema** à esquerda para ver o **Conhecimento Livre** e as funções da **Biblioteca**.
+- Modifique o código do desafio e clique em **Executar Código ⚡**.
+- Digite uma palavra chave como **Variáveis, Loops, ou Bibliotecas** para eu explicar!`;
   };
 
-  const loadLesson = (ls: Lesson) => {
-    setCurrentLessonId(ls.id);
-    setCode(ls.code);
+  const handleSelectTheme = (themeId: string) => {
+    setSelectedThemeId(themeId);
+    const theme = THEMES.find(t => t.id === themeId);
+    if (theme && theme.challenges.length > 0) {
+      const firstChallenge = theme.challenges[0];
+      setCurrentLessonId(firstChallenge.id);
+      setCode(firstChallenge.code);
+      setConsoleLogs([
+        { text: `[Sistema] Carregado o tema: ${theme.title}`, type: 'system' },
+        { text: `[Sistema] Biblioteca '${theme.name}' importada com sucesso! Pronto para usar.`, type: 'success' },
+        { text: `[Desafio] ${firstChallenge.title}: ${firstChallenge.description}`, type: 'system' }
+      ]);
+      playTone(587.33, 0.1, 'sine');
+      
+      // Update chat history with welcome to the theme
+      setIsTyping(true);
+      setTimeout(() => {
+        setIsTyping(false);
+        appendBotMessage(`📚 **Bem-vindo ao tema ${theme.name}!** ${theme.emoji}\n\n${theme.intro}\n\n💡 Seu primeiro desafio acadêmico é: **${firstChallenge.title}**!\n\nUse as funções da biblioteca descritas na lateral e clique em **Executar Código ⚡** quando terminar.`);
+      }, 400);
+    }
+  };
+
+  const loadChallenge = (challenge: Challenge, themeId: string) => {
+    setCurrentLessonId(challenge.id);
+    setSelectedThemeId(themeId);
+    setCode(challenge.code);
     setLanguage('js');
-    setConsoleLogs([{ text: `[Lição] Carregada com sucesso: ${ls.title}`, type: 'system' }]);
+    setConsoleLogs([
+      { text: `[Desafio] Carregado com sucesso: ${challenge.title}`, type: 'system' },
+      { text: `[Objetivo] ${challenge.description}`, type: 'system' }
+    ]);
     
     // Play sound
     playTone(587.33, 0.1, 'sine');
@@ -572,7 +968,7 @@ Para te ajudar melhor a entender sobre tecnologia:
     setIsTyping(true);
     setTimeout(() => {
       setIsTyping(false);
-      appendBotMessage(`📚 **Nova lição carregada:** **${ls.title}**\n\n*Objetivo:* ${ls.description}\n\n💡 *Dica:* ${ls.hint}`);
+      appendBotMessage(`📚 **Desafio Carregado:** **${challenge.title}**\n\n*Objetivo:* ${challenge.description}\n\n💡 *Dica:* ${challenge.hint}`);
     }, 400);
   };
 
@@ -602,7 +998,7 @@ Para te ajudar melhor a entender sobre tecnologia:
                 <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent uppercase tracking-wider font-mono">
                   Orbe Kids Studio
                 </h1>
-                <p className="text-xs text-purple-300 font-semibold tracking-widest uppercase">Escola de Programadores Mirins 🤖</p>
+                <p className="text-xs text-purple-300 font-semibold tracking-widest uppercase">Escola de Programadores Mirins & Cientistas 🤖</p>
               </div>
             </div>
 
@@ -644,41 +1040,107 @@ Para te ajudar melhor a entender sobre tecnologia:
           {/* Main workspace layout split into three sections */}
           <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-[500px]">
             
-            {/* 1. Left sidebar: Lessons & Progress */}
-            <aside className="bg-[#120b24]/55 border border-[#8b5cf6]/20 rounded-2xl p-4 flex flex-col gap-4">
-              <h2 className="text-xs font-extrabold uppercase tracking-widest text-cyan-400 flex items-center gap-1.5 border-b border-white/5 pb-2">
-                <BookOpen size={14} />
-                <span>Lições e Desafios</span>
-              </h2>
-
-              <div className="flex flex-col gap-2.5">
-                {LESSONS.map(ls => {
-                  const isActive = ls.id === currentLessonId;
-                  const isDone = completedLessons.includes(ls.id);
-                  return (
-                    <button
-                      key={ls.id}
-                      onClick={() => loadLesson(ls)}
-                      className={`w-full text-left p-3 rounded-xl border text-xs transition-all duration-200 flex flex-col gap-1 ${
-                        isActive 
-                          ? 'bg-cyan-500/10 border-cyan-400 text-cyan-300' 
-                          : 'bg-white/5 border-white/10 hover:border-cyan-500/50 hover:text-white'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between font-bold">
-                        <span>{ls.title}</span>
-                        {isDone && <span className="text-emerald-400 text-sm">✅</span>}
-                      </div>
-                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-400">
-                        {ls.difficulty}
-                      </span>
-                    </button>
-                  );
-                })}
+            {/* 1. Left sidebar: Themes & Challenges Explorer */}
+            <aside className="bg-[#120b24]/55 border border-[#8b5cf6]/20 rounded-2xl p-4 flex flex-col gap-4 overflow-y-auto max-h-[85vh]">
+              
+              {/* Theme Selector */}
+              <div className="flex flex-col gap-2">
+                <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-purple-400 flex items-center gap-1">
+                  <span>Escolha o Tema de Estudo</span>
+                </h3>
+                <div className="flex flex-col gap-1.5">
+                  {THEMES.map(theme => {
+                    const isSelected = selectedThemeId === theme.id;
+                    return (
+                      <button
+                        key={theme.id}
+                        onClick={() => handleSelectTheme(theme.id)}
+                        className={`w-full text-left p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
+                          isSelected 
+                            ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md' 
+                            : 'bg-white/5 border-white/10 hover:border-cyan-500/30 hover:text-white text-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-base">{theme.emoji}</span>
+                          <span>{theme.name}</span>
+                        </div>
+                        <ChevronRight size={12} className={isSelected ? 'text-cyan-400' : 'text-gray-600'} />
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
 
+              {/* Free Knowledge summary */}
+              {selectedTheme && (
+                <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 flex flex-col gap-1.5">
+                  <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-cyan-400 flex items-center gap-1">
+                    <HelpCircle size={11} />
+                    <span>Conhecimento Livre</span>
+                  </h3>
+                  <p className="text-[11px] text-gray-400 leading-relaxed font-sans">
+                    {selectedTheme.intro}
+                  </p>
+                </div>
+              )}
+
+              {/* Library docs */}
+              {selectedTheme && (
+                <div className="bg-white/[0.02] border border-white/5 rounded-xl p-3 flex flex-col gap-2">
+                  <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 flex items-center gap-1">
+                    <Code2 size={11} />
+                    <span>Biblioteca do Tema</span>
+                  </h3>
+                  <div className="flex flex-col gap-2 max-h-40 overflow-y-auto pr-1">
+                    {selectedTheme.libraryDocs.map((doc, idx) => (
+                      <div key={idx} className="flex flex-col gap-0.5 border-b border-white/5 pb-1.5 last:border-none last:pb-0">
+                        <span className="font-mono text-[10px] text-yellow-300 font-bold break-all">{doc.name}</span>
+                        <span className="text-[10px] text-gray-400 leading-snug">{doc.description}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Challenges */}
+              {selectedTheme && (
+                <div className="flex flex-col gap-2">
+                  <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-yellow-400 flex items-center gap-1">
+                    <Trophy size={11} />
+                    <span>Desafios Acadêmicos</span>
+                  </h3>
+                  <div className="flex flex-col gap-2">
+                    {selectedTheme.challenges.map(ch => {
+                      const isActive = ch.id === currentLessonId;
+                      const isDone = completedLessons.includes(ch.id);
+                      return (
+                        <button
+                          key={ch.id}
+                          onClick={() => loadChallenge(ch, selectedTheme.id)}
+                          className={`w-full text-left p-3 rounded-xl border text-xs transition-all flex flex-col gap-1 ${
+                            isActive 
+                              ? 'bg-cyan-500/10 border-cyan-400 text-cyan-300 shadow-sm' 
+                              : 'bg-white/5 border-white/10 hover:border-cyan-500/50 hover:text-white'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between font-bold w-full">
+                            <span className="truncate">{ch.title}</span>
+                            {isDone && <span className="text-emerald-400 text-xs">✅</span>}
+                          </div>
+                          <div className="flex justify-between w-full text-[9px] font-extrabold uppercase tracking-wider text-purple-400">
+                            <span>{ch.difficulty}</span>
+                            <span>+{ch.xpReward} XP</span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Fun Fact card */}
-              <div className="mt-auto bg-purple-500/5 border border-purple-500/20 rounded-xl p-3.5 flex flex-col gap-2">
+              <div className="bg-purple-500/5 border border-purple-500/20 rounded-xl p-3.5 flex flex-col gap-2 mt-auto">
                 <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-yellow-400 flex items-center gap-1">
                   <Lightbulb size={12} />
                   <span>Fato Curioso</span>
@@ -715,8 +1177,9 @@ Para te ajudar melhor a entender sobre tecnologia:
                       if (val === 'python') {
                         setCode(`# Digite seu código Python aqui!\nnome = "DevKids"\nprint("Olá,", nome)\nprint("Simulador Python ativo!")`);
                       } else {
-                        const activeL = LESSONS.find(l => l.id === currentLessonId);
-                        setCode(activeL ? activeL.code : LESSONS[0].code);
+                        const currentTheme = THEMES.find(t => t.id === selectedThemeId);
+                        const activeL = currentTheme?.challenges.find(c => c.id === currentLessonId);
+                        setCode(activeL ? activeL.code : THEMES[0].challenges[0].code);
                       }
                     }}
                     className="bg-white/5 border border-[#8b5cf6]/30 text-white text-[11px] font-bold px-2 py-1 rounded-md outline-none cursor-pointer"
@@ -735,7 +1198,8 @@ Para te ajudar melhor a entender sobre tecnologia:
 
                   <button
                     onClick={() => {
-                      const activeL = LESSONS.find(l => l.id === currentLessonId);
+                      const currentTheme = THEMES.find(t => t.id === selectedThemeId);
+                      const activeL = currentTheme?.challenges.find(c => c.id === currentLessonId);
                       if (activeL && language === 'js') {
                         setCode(activeL.code);
                       } else {
@@ -767,7 +1231,7 @@ Para te ajudar melhor a entender sobre tecnologia:
                 />
               </div>
 
-              {/* Output Console Console Output */}
+              {/* Output Console */}
               <div className="h-44 bg-black border-t-2 border-[#8b5cf6]/20 flex flex-col">
                 <div className="bg-white/[0.02] border-b border-white/5 px-4 py-1.5 flex items-center justify-between shrink-0">
                   <span className="font-mono text-[10px] font-extrabold uppercase tracking-widest text-yellow-400 flex items-center gap-1">
@@ -883,7 +1347,6 @@ Para te ajudar melhor a entender sobre tecnologia:
                   ))}
                 </div>
 
-                
                 <div className="flex gap-2">
                   <textarea
                     value={userMsg}
@@ -913,19 +1376,79 @@ Para te ajudar melhor a entender sobre tecnologia:
           {/* Quick Info Callout footer */}
           <div className="bg-[#120b24]/30 border border-white/5 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
             <span className="text-gray-400 leading-relaxed max-w-3xl text-center sm:text-left">
-              🌐 **Estúdio de Programação Gratuito:** Servidor patrocinado por parceiros para manter a educação de tecnologia aberta e gratuita para todas as crianças do Brasil!
+              🌐 **Estúdio de Programação Gratuito:** Servidor patrocinado por parceiros para manter a educação de tecnologia aberta, nobre e gratuita para todas as crianças do Brasil!
             </span>
-            <Link 
-              href="/"
-              className="bg-white/5 border border-white/10 hover:bg-white/10 px-4 py-2 rounded-xl text-gray-300 font-extrabold uppercase tracking-widest text-[10px] shrink-0 transition-colors"
-            >
-              Voltar ao Site Principal
-            </Link>
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => setShowHelpModal(true)}
+                className="text-[10px] text-gray-500 hover:text-red-400 transition-colors uppercase font-mono tracking-wider"
+              >
+                Quer ajuda? Clique aqui 🛡️
+              </button>
+              <span className="text-white/10">|</span>
+              <Link 
+                href="/"
+                className="bg-white/5 border border-white/10 hover:bg-white/10 px-4 py-2 rounded-xl text-gray-300 font-extrabold uppercase tracking-widest text-[10px] shrink-0 transition-colors"
+              >
+                Voltar ao Site Principal
+              </Link>
+            </div>
           </div>
 
         </div>
 
       </div>
+
+      {showHelpModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <div className="bg-[#120b24] border border-red-500/30 rounded-2xl max-w-md w-full p-6 flex flex-col gap-4 shadow-2xl">
+            <h3 className="text-lg font-bold text-red-400 flex items-center gap-2">
+              <span>🛡️ Canal de Apoio e Segurança</span>
+            </h3>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              Você não está sozinho! Se precisar de ajuda, conselho, estiver passando por dificuldades ou quiser denunciar alguma situação, entre em contato gratuitamente com os órgãos de proteção oficiais:
+            </p>
+            <div className="flex flex-col gap-2.5 my-2">
+              <a 
+                href="tel:100" 
+                className="flex items-center justify-between p-3 bg-white/5 border border-white/10 hover:border-red-400/50 rounded-xl transition-all"
+              >
+                <div className="flex flex-col text-left">
+                  <span className="text-xs font-bold text-white">Disque 100</span>
+                  <span className="text-[10px] text-gray-400">Conselho Tutelar e Direitos Humanos</span>
+                </div>
+                <span className="text-xs font-mono font-bold text-red-400 bg-red-500/10 px-2.5 py-1 rounded-md">Ligar 100</span>
+              </a>
+              <a 
+                href="tel:190" 
+                className="flex items-center justify-between p-3 bg-white/5 border border-white/10 hover:border-red-400/50 rounded-xl transition-all"
+              >
+                <div className="flex flex-col text-left">
+                  <span className="text-xs font-bold text-white">190 (Polícia Militar)</span>
+                  <span className="text-[10px] text-gray-400">Emergência e socorro imediato</span>
+                </div>
+                <span className="text-xs font-mono font-bold text-red-400 bg-red-500/10 px-2.5 py-1 rounded-md">Ligar 190</span>
+              </a>
+              <a 
+                href="tel:188" 
+                className="flex items-center justify-between p-3 bg-white/5 border border-white/10 hover:border-red-400/50 rounded-xl transition-all"
+              >
+                <div className="flex flex-col text-left">
+                  <span className="text-xs font-bold text-white">188 (CVV)</span>
+                  <span className="text-[10px] text-gray-400">Apoio emocional gratuito</span>
+                </div>
+                <span className="text-xs font-mono font-bold text-red-400 bg-red-500/10 px-2.5 py-1 rounded-md">Ligar 188</span>
+              </a>
+            </div>
+            <button 
+              onClick={() => setShowHelpModal(false)}
+              className="mt-2 w-full bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold text-xs py-2 rounded-xl transition-colors"
+            >
+              Fechar Janela
+            </button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </>
