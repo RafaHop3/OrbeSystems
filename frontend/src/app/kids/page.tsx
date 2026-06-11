@@ -104,11 +104,11 @@ if (moedasDeOuro >= precoVarinha) {
 ];
 
 const QUICK_CHIPS = [
-  "Explicar meu código! 💻",
-  "O que é um bug? 🐛",
-  "Como criar um jogo? 🎮",
-  "Me ensine Python! 🐍",
-  "Me dê um desafio! 🏆"
+  { text: "Explicar meu código!", label: "Explicar meu código! 💻" },
+  { text: "O que é um bug?", label: "O que é um bug? 🐛" },
+  { text: "Como criar um jogo?", label: "Como criar um jogo? 🎮" },
+  { text: "Me ensine Python!", label: "Me ensine Python! 🐍" },
+  { text: "Me dê um desafio!", label: "Me dê um desafio! 🏆" }
 ];
 
 const FUN_FACTS = [
@@ -150,7 +150,7 @@ export default function KidsStudioPage() {
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
   // Audio synthesize function
-  const playTone = (freq: number, duration: number, type: OscillatorType = 'sine') => {
+  const playTone = (freq: number, duration: number, type: 'sine' | 'square' | 'sawtooth' | 'triangle' = 'sine') => {
     if (typeof window === 'undefined') return;
     try {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -172,6 +172,7 @@ export default function KidsStudioPage() {
       console.warn('Audio Context blocked/failed:', e);
     }
   };
+
 
   const playSuccessSound = () => {
     playTone(523.25, 0.08); // C5
@@ -869,18 +870,19 @@ Para te ajudar melhor a entender sobre tecnologia:
                     <button
                       key={idx}
                       onClick={() => {
-                        if (chip.includes("Explicar meu código")) {
+                        if (chip.text.includes("Explicar meu código")) {
                           handleExplainCode();
                         } else {
-                          setUserMsg(chip.replace(/[^\w\s\p{P}]/gu, "").trim());
+                          setUserMsg(chip.text);
                         }
                       }}
                       className="bg-purple-500/10 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded-full transition-all"
                     >
-                      {chip}
+                      {chip.label}
                     </button>
                   ))}
                 </div>
+
                 
                 <div className="flex gap-2">
                   <textarea
