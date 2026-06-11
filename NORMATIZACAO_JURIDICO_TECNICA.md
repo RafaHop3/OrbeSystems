@@ -104,14 +104,14 @@ Os hashes a seguir atestam a integridade absoluta da arquitetura IMORTAL no ecos
 | :--- | :--- | :--- |
 | `backend/imortal/ai.py` | Motor de tradução de linguagem natural em IR estruturada | `0b073a6bd398c1401fe5d1e622f4b710bb1d50b140499c61becc66d409dd68ea` |
 | `backend/imortal/compiler.py` | Transcompilador IR para código C++ nativo ATMega328P | `5ffa3f4b08f91c9ff371623e489ee44ab4fee4e0e4e3362b456915eb5edfc4a2` |
-| `backend/imortal/prover.py` | Verificador de Prova Formal por Z3 e tradutor de equações SSA | `d1a3014fd96cce5c0ad187c1c34c144f38e0ddc380e3588e54aba889ab1dc67f` |
-| `backend/imortal/sandbox.py` | Emulador estocástico e sandbox de Fuzzing de hardware | `6e8593f6568403ac0abf2faa08af76f0c692d64818cbb205aa0b8cfc24ed2065` |
+| `backend/imortal/prover.py` | Verificador de Prova Formal por Z3 e tradutor de equações SSA | `f507a9caf1d43352b21e365ca354b596c9abed0cb14892bb603201a597109744` |
+| `backend/imortal/sandbox.py` | Emulador estocástico e sandbox de Fuzzing de hardware | `237a58d1a1ca6697589b5cc0e8253ac6d20131f75790b9eb1ff51653b06b65ee` |
 | `backend/imortal/server.py` | Servidor API local para orquestração offline e CLI | `a330e4dc427964e8be5fddf17a1f5f2d3a19328483588ccfe1532d5b438e0cf9` |
 | `backend/imortal/visualizer.py` | Motor de geração de dashboards gráficos e renderizador SVG | `56f6172090b23b1ee47cea1ee7a908edd2ad512ea1165ae43ad62e0853069f59` |
 | `frontend/src/app/api/ping-backend/route.ts` | Rota do Next.js para manter o backend ativo via requisições de cron externas | `b741c200f77eccffbe5404ab61a3696d946e2a251f54ce7411ac68487288b6d5` |
 | `frontend/vercel.json` | Configuração do Vercel Cron Job para automação de pings de keep-alive | `e289797953ccacef4bdce1c4f01b82e4196714fdcad4f93226bf7a289ea7609b` |
 | `SECURITY_PROTOCOL.md` | Protocolo Geral de Cibersegurança e DevSecOps da Orbe | `239e3d3e17c9e36001ab1c620213950d5d8cb105a3084771df98d38fd6076951` |
-| `NORMATIZACAO_JURIDICO_TECNICA.md` | Este termo de normatização técnico-legal | `a39dbcbcf751cbc09b3ec22781a8b211c89e4295f37514901a7c336d07d22184` |
+| `NORMATIZACAO_JURIDICO_TECNICA.md` | Este termo de normatização técnico-legal | `94cd5b20db6271c00105b6b2073ab71a223685bb2de77cdac1f587e49755bc11` |
 
 ---
 

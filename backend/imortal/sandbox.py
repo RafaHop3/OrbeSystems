@@ -72,10 +72,13 @@ class StateEmulator:
             if op == "+": return left + right
             elif op == "-": return left - right
             elif op == "*": return left * right
-            elif op == "/":
+            elif op in ("/", "%"):
                 if right == 0:
-                    raise RuntimeException(f"Divisão por zero em tempo de execução: {left} / {right}")
-                return left // right # Divisão inteira bare-metal
+                    raise RuntimeException(f"Divisão/módulo por zero em tempo de execução: {left} {op} {right}")
+                if op == "/":
+                    return left // right # Divisão inteira bare-metal
+                else:
+                    return left % right
             elif op == "==": return 1 if left == right else 0
             elif op == "!=": return 1 if left != right else 0
             elif op == "<": return 1 if left < right else 0
@@ -165,6 +168,15 @@ class StateEmulator:
             else:
                 if var not in self.variables:
                     raise RuntimeException(f"Variável não declarada: '{var}'")
+                
+                # Verifica limites concretos na sandbox para evitar overflows silenciosos
+                decl = next((d for d in self.ir.get("declarations", []) if d["name"] == var), None)
+                if decl:
+                    min_val = decl.get("min_val", -32768)
+                    max_val = decl.get("max_val", 32767)
+                    if val < min_val or val > max_val:
+                        raise RuntimeException(f"Integer Overflow/Underflow em tempo de execução: Atribuição à variável '{var}' com valor {val} fora dos limites ({min_val} a {max_val}).")
+                
                 self.variables[var] = val
                 
         elif op == "serial_print":

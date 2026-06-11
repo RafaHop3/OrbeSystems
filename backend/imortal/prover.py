@@ -137,12 +137,15 @@ class FormalVerifier:
             left_val = self.translate_expr(expr.get("left"))
             right_val = self.translate_expr(expr.get("right"))
             
-            # Verificação de Divisão por Zero
-            if op == "/":
+            # Verificação de Divisão e Módulo por Zero
+            if op in ("/", "%"):
                 self.safety_assertions.append(
-                    (right_val != 0, f"Possível divisão por zero detectada ao dividir {expr.get('left')} por {expr.get('right')}.")
+                    (right_val != 0, f"Possível divisão/módulo por zero detectada ao operar {expr.get('left')} {op} {expr.get('right')}.")
                 )
-                return left_val / right_val
+                if op == "/":
+                    return left_val / right_val
+                else:
+                    return left_val % right_val
                 
             if op == "+": return left_val + right_val
             if op == "-": return left_val - right_val
@@ -247,6 +250,16 @@ class FormalVerifier:
                 z3_val = self.translate_expr(val_expr)
                 new_var = self.fresh_var(var_name)
                 self.solver.add(new_var == z3_val)
+
+                # Busca limites declarados da variavel para provar ausencia de overflow/underflow
+                decl = next((d for d in self.ir.get("declarations", []) if d["name"] == var_name), None)
+                if decl:
+                    min_val = decl.get("min_val", -32768)
+                    max_val = decl.get("max_val", 32767)
+                    self.safety_assertions.append(
+                        (And(new_var >= min_val, new_var <= max_val),
+                         f"Integer Overflow/Underflow: Atribuição à variável '{var_name}' pode violar os limites ({min_val} a {max_val}).")
+                    )
                 
         elif op == "if":
             cond_expr = instr.get("condition")
