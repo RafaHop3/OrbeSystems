@@ -92,7 +92,7 @@ async def register(
     db.commit()
     db.refresh(new_user)
 
-    print(f"[Users] ✅ New registration: {new_user.email} (id={new_user.id})")
+    print(f"[Users] [OK] New registration: {new_user.email} (id={new_user.id})")
     return _build_token(new_user)
 
 
@@ -117,5 +117,5 @@ async def login(
             detail="Invalid credentials.",
         )
 
-    print(f"[Users] 🔐 Login: {user.email} | role={user.role}")
+    print(f"[Users] [LOGIN] {user.email} | role={user.role}")
     return _build_token(user)

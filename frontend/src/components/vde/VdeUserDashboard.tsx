@@ -196,7 +196,19 @@ function TelemetrySparkline({ data }: { data: number[] }) {
 
 export default function VdeUserDashboard() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'webhooks' | 'tools' | 'repos'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'webhooks' | 'tools' | 'repos' | 'events'>('overview');
+  
+  // Test Events States
+  const [testEvents, setTestEvents] = useState<any[]>([]);
+  const [eventsLoading, setEventsLoading] = useState<boolean>(false);
+  const [eventFilterService, setEventFilterService] = useState<string>('');
+  const [eventFilterStatus, setEventFilterStatus] = useState<string>('');
+  const [newEventForm, setNewEventForm] = useState({
+    event_type: 'custom_test',
+    service: 'dashboard',
+    status: 'success',
+    message: 'User triggered test event from dashboard'
+  });
   
   // Imobverse States
   const [properties, setProperties] = useState<any[]>([]);
@@ -273,10 +285,81 @@ export default function VdeUserDashboard() {
     }
   };
 
+  // Fetch test events
+  const fetchTestEvents = async () => {
+    setEventsLoading(true);
+    try {
+      let url = `${API_URL}/api/test-events?limit=50`;
+      if (eventFilterService) url += `&service=${eventFilterService}`;
+      if (eventFilterStatus) url += `&status=${eventFilterStatus}`;
+      const res = await fetch(url, { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setTestEvents(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch test events:', err);
+    } finally {
+      setEventsLoading(false);
+    }
+  };
+
+  // Create test event
+  const handleCreateTestEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await fetch(`${API_URL}/api/test-events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          event_type: newEventForm.event_type,
+          service: newEventForm.service,
+          status: newEventForm.status,
+          message: newEventForm.message,
+          details: { client_ip: "127.0.0.1", user_role: user?.role }
+        })
+      });
+      if (res.ok) {
+        setNewEventForm(prev => ({ ...prev, message: '' }));
+        fetchTestEvents();
+        playCyberBeep(900, 0.08, 'sine');
+      }
+    } catch (err) {
+      console.error('Failed to create test event:', err);
+    }
+  };
+
+  // Clear test events
+  const handleClearTestEvents = async () => {
+    if (!confirm('Deseja limpar todos os eventos de teste?')) return;
+    try {
+      const res = await fetch(`${API_URL}/api/test-events`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (res.ok || res.status === 204) {
+        fetchTestEvents();
+        playCyberBeep(400, 0.15, 'sawtooth');
+      } else {
+        alert('Apenas administradores podem limpar os eventos de teste.');
+      }
+    } catch (err) {
+      console.error('Failed to clear events:', err);
+    }
+  };
+
   useEffect(() => {
     fetchData();
     fetchRepos();
   }, [user]);
+
+  // Fetch events when tab changes or filters change
+  useEffect(() => {
+    if (activeTab === 'events' && user) {
+      fetchTestEvents();
+    }
+  }, [activeTab, eventFilterService, eventFilterStatus, user]);
 
   // Fetch inspections when property changes
   useEffect(() => {
@@ -645,7 +728,8 @@ export default function VdeUserDashboard() {
             { id: 'overview', label: 'Geral', icon: Server },
             { id: 'webhooks', label: 'Orquestrador IA', icon: Cpu },
             { id: 'tools', label: 'Suite Inteligente', icon: Sparkles },
-            { id: 'repos', label: 'Repositórios', icon: Database }
+            { id: 'repos', label: 'Repositórios', icon: Database },
+            { id: 'events', label: 'Eventos de Teste', icon: Clock }
           ].map(tab => {
             const Icon = tab.icon;
             return (
@@ -1201,6 +1285,227 @@ export default function VdeUserDashboard() {
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* TAB: Test Events List & Dispatcher */}
+        {activeTab === 'events' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
+              <div>
+                <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wide">
+                  Console de Monitoramento de Eventos
+                </h3>
+                <p className="font-sans text-xs text-terminal-muted mt-0.5">
+                  Visualização em tempo real de logs de teste, prova matemática do IMORTAL, e auditoria de segurança.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={fetchTestEvents}
+                  disabled={eventsLoading}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded font-mono text-[10px] uppercase text-white hover:bg-white/10 transition-all"
+                >
+                  <RefreshCw size={11} className={eventsLoading ? 'animate-spin' : ''} />
+                  Atualizar
+                </button>
+                <button
+                  onClick={handleClearTestEvents}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 border border-red-500/30 rounded font-mono text-[10px] uppercase text-red-400 hover:bg-red-500/20 transition-all"
+                >
+                  Limpar Logs
+                </button>
+              </div>
+            </div>
+
+            {/* Filter Bar */}
+            <div className="flex flex-wrap gap-4 bg-white/2 border border-white/5 rounded-lg p-3.5">
+              <div className="flex items-center gap-2">
+                <label className="font-mono text-[10px] text-white/40 uppercase">Filtrar Serviço:</label>
+                <select
+                  value={eventFilterService}
+                  onChange={e => setEventFilterService(e.target.value)}
+                  className="bg-black/40 border border-white/10 rounded px-2.5 py-1 font-mono text-xs text-white outline-none"
+                >
+                  <option value="">Todos os Serviços</option>
+                  <option value="gateway">Gateway API</option>
+                  <option value="imobverse">Imobverse</option>
+                  <option value="imortal">IMORTAL</option>
+                  <option value="powershell_bot">PowerShell Bot</option>
+                  <option value="suite_inteligente">Suite Inteligente</option>
+                  <option value="dashboard">Dashboard VDE</option>
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <label className="font-mono text-[10px] text-white/40 uppercase">Status:</label>
+                <select
+                  value={eventFilterStatus}
+                  onChange={e => setEventFilterStatus(e.target.value)}
+                  className="bg-black/40 border border-white/10 rounded px-2.5 py-1 font-mono text-xs text-white outline-none"
+                >
+                  <option value="">Todos</option>
+                  <option value="success">Sucesso</option>
+                  <option value="failed">Falha</option>
+                  <option value="warning">Aviso</option>
+                  <option value="info">Informação</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Event list */}
+              <div className="lg:col-span-2 space-y-3">
+                <div className="bg-black/30 border border-white/5 rounded-xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-white/5 border-b border-white/5 font-mono text-[10px] text-white/40 uppercase">
+                          <th className="p-3">Data/Hora</th>
+                          <th className="p-3">Serviço</th>
+                          <th className="p-3">Tipo</th>
+                          <th className="p-3">Status</th>
+                          <th className="p-3">Mensagem</th>
+                        </tr>
+                      </thead>
+                      <tbody className="font-mono text-xs text-white/80 divide-y divide-white/5">
+                        {eventsLoading ? (
+                          <tr>
+                            <td colSpan={5} className="p-8 text-center text-terminal-muted">
+                              Buscando registros na tabela...
+                            </td>
+                          </tr>
+                        ) : testEvents.length === 0 ? (
+                          <tr>
+                            <td colSpan={5} className="p-8 text-center text-terminal-muted">
+                              Nenhum evento registrado com os filtros ativos.
+                            </td>
+                          </tr>
+                        ) : (
+                          testEvents.map(evt => {
+                            const isSuccess = evt.status === 'success';
+                            const isFailed = evt.status === 'failed';
+                            const isWarning = evt.status === 'warning';
+                            return (
+                              <React.Fragment key={evt.id}>
+                                <tr className="hover:bg-white/2 transition-colors">
+                                  <td className="p-3 text-[10px] text-white/45">
+                                    {new Date(evt.created_at).toLocaleString('pt-BR')}
+                                  </td>
+                                  <td className="p-3">
+                                    <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">
+                                      {evt.service}
+                                    </span>
+                                  </td>
+                                  <td className="p-3 text-[10px] uppercase font-semibold text-neon-cyan">
+                                    {evt.event_type}
+                                  </td>
+                                  <td className="p-3">
+                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
+                                      isSuccess ? 'bg-neon-green/15 text-neon-green' :
+                                      isFailed ? 'bg-red-500/15 text-red-400' :
+                                      isWarning ? 'bg-yellow-500/15 text-yellow-400' :
+                                      'bg-neon-cyan/15 text-neon-cyan'
+                                    }`}>
+                                      {evt.status.toUpperCase()}
+                                    </span>
+                                  </td>
+                                  <td className="p-3 max-w-[200px] truncate" title={evt.message}>
+                                    {evt.message}
+                                  </td>
+                                </tr>
+                                {evt.details && (
+                                  <tr className="bg-black/60">
+                                    <td colSpan={5} className="p-3 text-[10px] text-terminal-muted border-t border-b border-white/5">
+                                      <div className="flex gap-2 items-start pl-4">
+                                        <span className="text-neon-purple font-bold">PAYLOAD:</span>
+                                        <pre className="text-neon-green/90 whitespace-pre-wrap leading-relaxed max-w-full overflow-x-auto">
+                                          {JSON.stringify(evt.details)}
+                                        </pre>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                )}
+                              </React.Fragment>
+                            );
+                          })
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              {/* Creator Form */}
+              <div className="lg:col-span-1">
+                <div className="bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
+                  <h4 className="font-mono text-xs font-bold text-white uppercase tracking-wide border-b border-white/5 pb-2">
+                    Disparar Evento de Teste
+                  </h4>
+                  <form onSubmit={handleCreateTestEvent} className="space-y-4">
+                    <div>
+                      <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Tipo do Evento</label>
+                      <input
+                        value={newEventForm.event_type}
+                        onChange={e => setNewEventForm(prev => ({ ...prev, event_type: e.target.value }))}
+                        className="w-full bg-black/40 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
+                        required
+                        placeholder="e.g. simulation_run"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Serviço</label>
+                      <select
+                        value={newEventForm.service}
+                        onChange={e => setNewEventForm(prev => ({ ...prev, service: e.target.value }))}
+                        className="w-full bg-black/40 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
+                      >
+                        <option value="dashboard">Dashboard VDE</option>
+                        <option value="gateway">Gateway API</option>
+                        <option value="imobverse">Imobverse</option>
+                        <option value="imortal">IMORTAL</option>
+                        <option value="powershell_bot">PowerShell Bot</option>
+                        <option value="suite_inteligente">Suite Inteligente</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Status</label>
+                      <select
+                        value={newEventForm.status}
+                        onChange={e => setNewEventForm(prev => ({ ...prev, status: e.target.value }))}
+                        className="w-full bg-black/40 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
+                      >
+                        <option value="success">Sucesso (success)</option>
+                        <option value="failed">Falha (failed)</option>
+                        <option value="warning">Aviso (warning)</option>
+                        <option value="info">Informação (info)</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Mensagem descritiva</label>
+                      <textarea
+                        value={newEventForm.message}
+                        onChange={e => setNewEventForm(prev => ({ ...prev, message: e.target.value }))}
+                        className="w-full h-20 bg-black/40 border border-white/10 rounded p-2 font-mono text-xs text-white outline-none focus:border-neon-cyan/50 resize-none"
+                        required
+                        placeholder="Descreva o que ocorreu no teste..."
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-2 bg-gradient-to-r from-neon-cyan to-neon-blue text-white rounded font-mono text-xs font-bold hover:shadow-neon-cyan transition-all flex items-center justify-center gap-1.5"
+                    >
+                      <Play size={12} />
+                      Disparar Evento
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

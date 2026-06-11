@@ -138,7 +138,14 @@ def sync_repositories_to_db(db, repos: list[Repository]):
     """Sync/upsert repositories into the github_repositories table."""
     from models.repository_db import RepositoryDB
     try:
+        # Deduplicate by id (last entry wins) to prevent UNIQUE constraint failures
+        # when the same repo appears multiple times in the list (e.g. injected + GitHub fetch).
+        seen_ids: dict[int, Repository] = {}
         for repo in repos:
+            seen_ids[repo.id] = repo
+        unique_repos = list(seen_ids.values())
+
+        for repo in unique_repos:
             db_repo = db.query(RepositoryDB).filter(RepositoryDB.id == repo.id).first()
             if db_repo:
                 db_repo.name = repo.name
@@ -177,7 +184,7 @@ def sync_repositories_to_db(db, repos: list[Repository]):
                 )
                 db.add(db_repo)
         db.commit()
-        project_logger.info(f"Successfully synced {len(repos)} repositories to RepositoryDB.")
+        project_logger.info(f"Successfully synced {len(unique_repos)} repositories to RepositoryDB.")
     except Exception as e:
         db.rollback()
         project_logger.error(f"Failed to sync repositories to RepositoryDB: {e}")
@@ -218,7 +225,7 @@ async def get_projects(current_user: User | None = Depends(get_current_user_opti
             project_logger.error(f"GitHub API fetch failed: {github_exc}. Falling back to database cache.")
 
         metadata = get_all_metadata(db)
-        existing_ids = {repo.id for repo in repos}
+        existing_ids = {repo.id for repo in repos}  # mutable — updated as repos are appended below
 
         if fetch_success:
             # 2. Merge metadata overrides with fetched repos
@@ -250,29 +257,30 @@ async def get_projects(current_user: User | None = Depends(get_current_user_opti
                             project_logger.error(f"Failed to fetch injected repo {repo_name} from GitHub: {e}")
 
                         if github_data:
-                            repos.append(
-                                Repository(
-                                    id=github_data["id"],
-                                    name=github_data["name"],
-                                    full_name=github_data["full_name"],
-                                    description=github_data.get("description"),
-                                    html_url=github_data["html_url"],
-                                    language=github_data.get("language"),
-                                    stargazers_count=github_data.get("stargazers_count", 0),
-                                    forks_count=github_data.get("forks_count", 0),
-                                    topics=github_data.get("topics", []),
-                                    updated_at=github_data.get("updated_at", ""),
-                                    is_featured=True,
-                                    custom_description=meta.get("custom_description"),
-                                    image_url=meta.get("image_url"),
-                                    video_url=meta.get("video_url"),
-                                    deploy_url=meta.get("deploy_url"),
-                                    is_premium_only=meta.get("is_premium_only"),
-                                )
+                            new_repo = Repository(
+                                id=github_data["id"],
+                                name=github_data["name"],
+                                full_name=github_data["full_name"],
+                                description=github_data.get("description"),
+                                html_url=github_data["html_url"],
+                                language=github_data.get("language"),
+                                stargazers_count=github_data.get("stargazers_count", 0),
+                                forks_count=github_data.get("forks_count", 0),
+                                topics=github_data.get("topics", []),
+                                updated_at=github_data.get("updated_at", ""),
+                                is_featured=True,
+                                custom_description=meta.get("custom_description"),
+                                image_url=meta.get("image_url"),
+                                video_url=meta.get("video_url"),
+                                deploy_url=meta.get("deploy_url"),
+                                is_premium_only=meta.get("is_premium_only"),
                             )
+                            if new_repo.id not in existing_ids:
+                                repos.append(new_repo)
+                                existing_ids.add(new_repo.id)
                         else:
-                            repos.append(
-                                Repository(
+                            if repo_id not in existing_ids:
+                                fallback_repo = Repository(
                                     id=repo_id,
                                     name=repo_name,
                                     full_name=f"theorbesystems-sketch/{repo_name.lower()}",
@@ -290,7 +298,8 @@ async def get_projects(current_user: User | None = Depends(get_current_user_opti
                                     deploy_url=meta.get("deploy_url"),
                                     is_premium_only=meta.get("is_premium_only"),
                                 )
-                            )
+                                repos.append(fallback_repo)
+                                existing_ids.add(repo_id)
 
             # 4. Sync the fully-merged and injected list to the database
             sync_repositories_to_db(db, repos)

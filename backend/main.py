@@ -35,6 +35,8 @@ import models.math_matrices  # Import to register math_matrices table
 import models.audit_log    # Import to register audit_log table
 import models.imobverse   # Import to register imob_* tables
 import models.repository_db # Import to register github_repositories table
+import models.test_event  # Import to register test_events table
+
 
 def run_migrations():
     """ 
@@ -102,6 +104,24 @@ def run_migrations():
                 "VALUES ('powershell-bot', 'PowerShell Shield Bot', 'Assistente SecDevOps para geracao de prompts seguros, analise de riscos e scripts PowerShell multi-formato', '/ferramentas-premium/powershell-bot', 1, 1)"
             ))
 
+        # Seed initial test events if table is empty
+        try:
+            # Check if table has rows
+            row_count = conn.execute(text("SELECT COUNT(*) FROM test_events")).fetchone()[0]
+            if row_count == 0:
+                print("INFO: [Migration] Seeding initial test events...")
+                import uuid
+                from datetime import datetime, timezone
+                conn.execute(text(
+                    "INSERT INTO test_events (id, event_type, service, status, message, details, created_at) VALUES "
+                    f"('{str(uuid.uuid4())}', 'system_init', 'gateway', 'success', 'OrbeSystems API Gateway initialized successfully', NULL, '{datetime.utcnow().isoformat()}'),"
+                    f"('{str(uuid.uuid4())}', 'z3_proof', 'imortal', 'success', 'Z3 Solver verified core loops without deadlock', '{{\"engine\": \"z3\", \"variables\": 150, \"constraints\": 420}}', '{datetime.utcnow().isoformat()}'),"
+                    f"('{str(uuid.uuid4())}', 'security_scan', 'powershell_bot', 'warning', 'PowerShell Bot detected raw Invoke-Expression in script', '{{\"script_length\": 1024, \"threat_level\": \"medium\"}}', '{datetime.utcnow().isoformat()}'),"
+                    f"('{str(uuid.uuid4())}', 'lzw_compress', 'suite_inteligente', 'success', 'LZW Compression achieved 74.2% ratio', '{{\"original_size\": 4200, \"compressed_size\": 1083}}', '{datetime.utcnow().isoformat()}')"
+                ))
+        except Exception as e:
+            print(f"WARNING: [Migration] Failed to seed initial test events: {e}")
+
     print("INFO: [Migration] Schema is up to date.")
 
 # Task List:
@@ -147,10 +167,23 @@ async def lifespan(app: FastAPI):
         start_keep_alive()
     except Exception as e:
         print(f"WARNING: [KeepAlive] Failed to start keep-alive scheduler: {e}")
+        
+    # Start Proactive Offline Agent Daemon
+    try:
+        from services.offline_agent import start_offline_agent
+        start_offline_agent()
+    except Exception as e:
+        print(f"WARNING: [OfflineAgent] Failed to start proactive offline agent: {e}")
     
     yield
     
     # Shutdown
+    try:
+        from services.offline_agent import stop_offline_agent
+        stop_offline_agent()
+    except Exception as e:
+        print(f"WARNING: [OfflineAgent] Failed to stop proactive offline agent: {e}")
+        
     try:
         from keep_alive import stop_keep_alive
         stop_keep_alive()
@@ -252,6 +285,11 @@ app.include_router(imobverse_router, prefix="/api", tags=["imobverse"])
 app.include_router(powershell_bot_router, prefix="/api", tags=["PowerShell Bot"])
 from routes.suite_inteligente import router as suite_inteligente_router
 app.include_router(suite_inteligente_router)
+from routes.test_events import router as test_events_router
+app.include_router(test_events_router)
+from routes.offline_agent import router as offline_agent_router
+app.include_router(offline_agent_router)
+
 
 
 @app.get("/health", tags=["health"])

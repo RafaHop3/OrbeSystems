@@ -1,8 +1,24 @@
 @echo off
-echo Preparando para fazer o push das alteracoes para o GitHub...
+:: Garante que o diretorio de execucao seja o da pasta do script
+cd /d "%~dp0"
+
+echo ===================================================
+echo [Orbe Systems] Preparando Git Push das Alteracoes
+echo ===================================================
+echo.
+echo 1. Atualizando hashes criptograficos de conformidade...
+python update_project_hashes.py
+echo.
+echo 2. Adicionando arquivos modificados ao Git...
 git add .
-git commit -m "feat: implement RBAC and Premium Stripe Subscription"
+echo.
+echo 3. Criando commit com as novas implementacoes...
+git commit -m "feat: documentos legais e agente proativo offline de background"
+echo.
+echo 4. Enviando para o repositorio remoto (GitHub)...
 git push
 echo.
-echo Push concluido! O Render deve iniciar o redeploy automaticamente.
+echo ===================================================
+echo Sync Completo! O Render iniciara o auto-redeploy.
+echo ===================================================
 pause

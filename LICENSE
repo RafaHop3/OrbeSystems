@@ -1,0 +1,49 @@
+# GNU AFFERO GENERAL PUBLIC LICENSE
+Version 3, 19 November 2007
+
+Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
+Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
+
+## Preamble
+
+The GNU Affero General Public License is a free, copyleft license for software and other kinds of works, specifically designed to ensure that when a modified version of the software is run on a server to provide services over a network, its source code is made available to the public.
+
+For developers and users of Orbe Systems and the IMORTAL module, this license guarantees that any derivative work or service powered by our technology must remain open-source under the same terms.
+
+---
+
+## ⚖️ REGULAMENTO DE LICENCIAMENTO HÍBRIDO DA ORBE SYSTEMS
+
+Este repositório é regido por um **Modelo de Licenciamento Dual**:
+
+1. **Licenciamento Open Source Copyleft Forte (GNU AGPLv3):**
+   - Todo o código contido neste repositório está licenciado sob a licença GNU AGPLv3. 
+   - Qualquer parte deste software que for executada em servidores de rede, disponibilizando serviços interativos a usuários remotos (SaaS/PaaS), **deve ter seu código-fonte correspondente e completo disponibilizado publicamente** sob esta mesma licença AGPLv3.
+
+2. **Licenciamento Comercial Proprietário:**
+   - Empresas e corporações que desejarem integrar o motor de compilação segura, prova matemática formal e sandboxing do **IMORTAL** em suas aplicações proprietárias de código fechado devem adquirir uma licença comercial corporativa diretamente com a **Orbe Systems LTDA**.
+   - Para termos comerciais, entre em contato através do canal oficial: `contato@orbesystems.com.br`.
+
+---
+
+## TERMS AND CONDITIONS
+
+### 1. Definitions.
+
+"This License" refers to version 3 of the GNU Affero General Public License.
+"Copyright" also means copyright-like laws that apply to other kinds of works, such as semiconductor masks.
+"The Program" refers to any copyrightable work licensed under this License. Each licensee is addressed as "you". "Licensees" and "recipients" may be individuals or organizations.
+
+To "modify" a work means to copy from or adapt all or part of the work in a fashion requiring copyright permission, other than the making of an exact copy. The resulting work is called a "modified version" of the earlier work or a work "based on" the earlier work.
+
+A "covered work" means either the unmodified Program or a work based on the Program.
+
+To "propagate" a work means to do anything with it that, without permission, would make you directly or secondarily liable for infringement under applicable copyright law, except executing it on a computer or modifying a private copy. Propagation includes copying, distribution (with or without modification), making available to the public, and in some countries other activities as well.
+
+To "convey" a work means any kind of propagation that enables other parties to make or receive copies. Mere interaction with a user through a computer network, with no transfer of a copy, is not conveying.
+
+### 2. Source Code and Network Interaction.
+
+If you modify the Program, your modified version must prominently offer all users interacting with it remotely through a computer network (if your version supports such interaction) an opportunity to receive the Corresponding Source of your version by providing access to the Corresponding Source from a network server at no charge, through some standard or customary means of facilitating copying of software. This Corresponding Source shall include the source code for any shared libraries or helper tools used in execution.
+
+For detailed text of the GNU Affero General Public License, see: https://www.gnu.org/licenses/agpl-3.0.txt
