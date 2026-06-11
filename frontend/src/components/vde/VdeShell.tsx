@@ -12,6 +12,8 @@ import {
   HelpCircle,
   ArrowLeft,
   LayoutGrid,
+  Bot,
+  X,
 } from 'lucide-react';
 import OrbeLogo from '../OrbeLogo';
 import type { VdeView } from './types';
@@ -20,12 +22,6 @@ import VdeTerminal from './VdeTerminal';
 import VdeWebIDE from './VdeWebIDE';
 import VdeAssistant from './VdeAssistant';
 import VdeUserDashboard from './VdeUserDashboard';
-
-function formatTimer(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  return `${m}:${s.toString().padStart(2, '0')}`;
-}
 
 function formatClock() {
   return new Date().toLocaleString('pt-BR', {
@@ -46,20 +42,20 @@ const TABS: { id: VdeView; label: string; icon: any }[] = [
 
 export default function VdeShell() {
   const [view, setView] = useState<VdeView>('desktop');
-  const [secondsLeft, setSecondsLeft] = useState(59 * 60 + 40);
-  const [clock, setClock] = useState(formatClock());
+  const [clock, setClock] = useState('');
+  // Chat panel: hidden on mobile by default, always visible on lg+
+  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setSecondsLeft((s) => (s > 0 ? s - 1 : 59 * 60 + 40));
-      setClock(formatClock());
-    }, 1000);
+    setClock(formatClock());
+    const t = setInterval(() => setClock(formatClock()), 1000);
     return () => clearInterval(t);
   }, []);
 
   return (
     <div className="h-[100dvh] flex flex-col bg-[#0a0c10] text-white overflow-hidden">
-      {/* Top bar — estilo LabEx / VDE */}
+
+      {/* Top bar */}
       <header className="shrink-0 flex items-center gap-2 md:gap-4 px-2 md:px-4 py-2 bg-[#161b22] border-b border-terminal-border">
         <Link
           href="/"
@@ -88,43 +84,73 @@ export default function VdeShell() {
         </div>
 
         <div className="hidden md:flex flex-1 min-w-0 items-center font-mono text-[10px] text-terminal-muted truncate px-2">
-          <span className="text-neon-cyan/80">Cyber Safety</span>
+          <span className="text-neon-cyan/80">Orbe VDE</span>
           <span className="mx-2 text-white/20">/</span>
-          <span>Configurando ambiente Orbe VDE</span>
+          <span>ambiente virtual — acesso livre</span>
         </div>
 
         <div className="flex items-center gap-1 md:gap-2 ml-auto shrink-0">
-          <span className="hidden lg:flex items-center gap-1 font-mono text-[10px] text-neon-green border border-neon-green/30 rounded-full px-2 py-0.5">
+          <span className="flex items-center gap-1 font-mono text-[10px] text-neon-green border border-neon-green/30 rounded-full px-2 py-0.5">
             <span className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse" />
             LIVE
           </span>
-          <button type="button" className="p-1.5 text-terminal-muted hover:text-white" aria-label="Idioma">
+
+          {/* Orbe Assistant toggle — visível em telas menores que lg */}
+          <button
+            type="button"
+            onClick={() => setChatOpen(o => !o)}
+            aria-label="Orbe Assistant"
+            className={`lg:hidden flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-mono text-[10px] border transition-all ${
+              chatOpen
+                ? 'bg-neon-cyan/20 border-neon-cyan/40 text-neon-cyan'
+                : 'bg-white/5 border-white/10 text-terminal-muted hover:text-white'
+            }`}
+          >
+            {chatOpen ? <X size={13} /> : <Bot size={13} />}
+            {chatOpen ? 'Fechar' : 'Orbe AI'}
+          </button>
+
+          <button type="button" className="hidden md:block p-1.5 text-terminal-muted hover:text-white" aria-label="Idioma">
             <Globe size={16} />
           </button>
-          <button type="button" className="p-1.5 text-terminal-muted hover:text-white" aria-label="Tema">
+          <button type="button" className="hidden md:block p-1.5 text-terminal-muted hover:text-white" aria-label="Tema">
             <Moon size={16} />
           </button>
-          <button type="button" className="p-1.5 text-terminal-muted hover:text-white" aria-label="Configurações">
-            <Settings size={16} />
-          </button>
-          <button type="button" className="p-1.5 text-terminal-muted hover:text-white" aria-label="Ajuda">
+          <button type="button" className="hidden md:block p-1.5 text-terminal-muted hover:text-white" aria-label="Ajuda">
             <HelpCircle size={16} />
           </button>
-          <div className="font-mono text-xs md:text-sm font-bold text-white tabular-nums bg-red-500/15 border border-red-500/30 rounded px-2 py-1">
-            {formatTimer(secondsLeft)}
-          </div>
         </div>
       </header>
 
-      {/* Main: canvas + assistant */}
-      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden">
+      {/* Main canvas */}
+      <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden relative">
+
+        {/* Content area */}
         <div className="flex-1 flex flex-col min-h-0 min-w-0">
-          {view === 'desktop' && <VdeDesktop onOpenView={setView} />}
+          {view === 'desktop'   && <VdeDesktop onOpenView={setView} />}
           {view === 'dashboard' && <VdeUserDashboard />}
-          {view === 'terminal' && <VdeTerminal />}
-          {view === 'webide' && <VdeWebIDE />}
+          {view === 'terminal'  && <VdeTerminal />}
+          {view === 'webide'    && <VdeWebIDE />}
         </div>
-        <VdeAssistant />
+
+        {/* Sidebar assistant: always visible on lg, slide-in on mobile */}
+        <div className={`
+          flex-col
+          lg:flex lg:relative lg:w-auto
+          ${chatOpen ? 'flex fixed inset-0 z-50 bg-black/60 backdrop-blur-sm items-end justify-end p-3' : 'hidden'}
+        `}>
+          {/* Backdrop close on mobile */}
+          {chatOpen && (
+            <div
+              className="absolute inset-0 lg:hidden"
+              onClick={() => setChatOpen(false)}
+            />
+          )}
+          <div className="relative z-10 w-full max-w-sm lg:max-w-none lg:w-auto flex-1 lg:flex-none">
+            <VdeAssistant />
+          </div>
+        </div>
+
       </div>
 
       {/* Taskbar */}
