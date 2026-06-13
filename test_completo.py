@@ -67,6 +67,7 @@ def checar(condicao, nome, msg_ok="", msg_fail=""):
 admin_token = None
 user_token = None
 premium_token = None
+test_user_id = None
 test_user_email = f"teste_auto_{int(time.time())}@orbesystems-qa.com"
 test_user_password = "Senha@Segura123"
 
@@ -150,7 +151,7 @@ def test_auth_admin():
 # 4. AUTH — USUÁRIO PÚBLICO
 # ══════════════════════════════════════════════════════════════
 def test_auth_user():
-    global user_token
+    global user_token, test_user_id
     sep("4. AUTH USUÁRIO (Register + Login)")
 
     # Registro com senha fraca
@@ -171,6 +172,7 @@ def test_auth_user():
         if r.status_code == 201:
             data = r.json()
             user_token = data.get("access_token")
+            test_user_id = data.get("user", {}).get("id")
             checar(bool(user_token), "Registro retorna access_token", f"token={user_token[:20] if user_token else 'None'}...")
             checar(data.get("user", {}).get("role") == "user", "Role padrão = 'user'", f"role={data.get('user', {}).get('role')}")
     except Exception as e:
@@ -192,7 +194,9 @@ def test_auth_user():
                           timeout=10)
         checar(r.status_code == 200, "Login usuário válido → 200", f"status={r.status_code}")
         if r.status_code == 200:
-            user_token = r.json().get("access_token")
+            data = r.json()
+            user_token = data.get("access_token")
+            test_user_id = data.get("user", {}).get("id")
             checar(bool(user_token), "Login retorna access_token", "OK")
     except Exception as e:
         falhou("Login usuário", str(e))
@@ -515,6 +519,118 @@ def test_events():
 
 
 # ══════════════════════════════════════════════════════════════
+# 14. OFFLINE AGENT INTEGRATION TESTS
+# ══════════════════════════════════════════════════════════════
+def test_offline_agent():
+    global premium_token
+    sep("14. OFFLINE AGENT")
+
+    if not admin_token:
+        aviso("test_offline_agent", "admin_token não disponível. Pulando testes do offline agent.")
+        return
+    if not test_user_id:
+        aviso("test_offline_agent", "test_user_id não disponível. Pulando testes do offline agent.")
+        return
+
+    # 1. Elevar novo usuário a premium
+    try:
+        headers = get_auth_headers(admin_token)
+        headers["X-CSRF-Token"] = "CSRF_TOKEN_TEST"
+        r = requests.post(f"{BASE_URL}/api/admin/users/{test_user_id}/role?role=premium", headers=headers, timeout=10)
+        if checar(r.status_code == 200, "Elevar usuário a premium → 200", f"status={r.status_code}"):
+            # Login novamente para obter token premium
+            r_login = requests.post(f"{BASE_URL}/api/users/login",
+                                    json={"email": test_user_email, "password": test_user_password},
+                                    timeout=10)
+            if checar(r_login.status_code == 200, "Login do novo usuário premium → 200", f"status={r_login.status_code}"):
+                premium_token = r_login.json().get("access_token")
+                checar(bool(premium_token), "Login premium retorna access_token", "OK")
+                checar(r_login.json().get("user", {}).get("role") == "premium", "Usuário agora possui role 'premium'", f"role={r_login.json().get('user', {}).get('role')}")
+    except Exception as e:
+        falhou("Elevar usuário a premium", str(e))
+
+    if not premium_token:
+        aviso("test_offline_agent", "premium_token não configurado. Pulando restante dos testes do offline agent.")
+        return
+
+    # 2. Submeter job sem token premium (anônimo ou token inválido)
+    # Anônimo
+    try:
+        r = requests.post(f"{BASE_URL}/api/offline-agent/submit", json={"prompt": "Test offline agent anonymous"}, timeout=10)
+        checar(r.status_code in [401, 403], "Submeter job sem token → 401/403", f"status={r.status_code}")
+    except Exception as e:
+        falhou("Submeter job sem token", str(e))
+
+    # Token inválido
+    try:
+        r = requests.post(f"{BASE_URL}/api/offline-agent/submit",
+                          json={"prompt": "Test offline agent invalid token"},
+                          headers=get_auth_headers("token_invalido_123"),
+                          timeout=10)
+        checar(r.status_code in [401, 403], "Submeter job com token inválido → 401/403", f"status={r.status_code}")
+    except Exception as e:
+        falhou("Submeter job com token inválido", str(e))
+
+    # 3. Submeter job com token premium → 200 + job_id
+    job_id = None
+    try:
+        r = requests.post(f"{BASE_URL}/api/offline-agent/submit",
+                          json={"prompt": "Test premium offline agent prompt execution"},
+                          headers=get_auth_headers(premium_token),
+                          timeout=10)
+        if checar(r.status_code == 200, "Submeter job com token premium → 200", f"status={r.status_code}"):
+            data = r.json()
+            job_id = data.get("job_id")
+            checar(bool(job_id), "Job submetido retornou job_id", f"job_id={job_id}")
+    except Exception as e:
+        falhou("Submeter job com token premium", str(e))
+
+    if not job_id:
+        aviso("test_offline_agent", "job_id não obtido. Pulando testes de listagem e detalhes.")
+        return
+
+    # 4. Listar jobs → lista contendo o job_id submetido
+    try:
+        r = requests.get(f"{BASE_URL}/api/offline-agent/jobs",
+                         headers=get_auth_headers(premium_token),
+                         timeout=10)
+        if checar(r.status_code == 200, "Listar jobs offline com token premium → 200", f"status={r.status_code}"):
+            data = r.json()
+            if checar(isinstance(data, list), "Retorna lista de jobs", f"tipo={type(data).__name__}"):
+                job_ids = [job.get("job_id") for job in data]
+                checar(job_id in job_ids, f"Lista de jobs contém o job_id submetido ({job_id})", f"jobs={job_ids}")
+    except Exception as e:
+        falhou("Listar jobs offline com token premium", str(e))
+
+    # 5. Buscar status de um job específico → sucesso
+    try:
+        r = requests.get(f"{BASE_URL}/api/offline-agent/jobs/{job_id}",
+                         headers=get_auth_headers(premium_token),
+                         timeout=10)
+        if checar(r.status_code == 200, f"Buscar status do job {job_id} → 200", f"status={r.status_code}"):
+            data = r.json()
+            checar(data.get("job_id") == job_id, "Resultado de buscar job tem job_id correto", str(data.get("job_id")))
+            checar("status" in data, "Resultado de buscar job tem campo status", str(data.get("status")))
+    except Exception as e:
+        falhou(f"Buscar status do job {job_id}", str(e))
+
+    # 6. Limpar jobs e verificar listagem vazia
+    try:
+        r = requests.delete(f"{BASE_URL}/api/offline-agent/jobs",
+                            headers=get_auth_headers(premium_token),
+                            timeout=10)
+        if checar(r.status_code == 200, "Limpar jobs offline com token premium → 200", f"status={r.status_code}"):
+            r_list = requests.get(f"{BASE_URL}/api/offline-agent/jobs",
+                                  headers=get_auth_headers(premium_token),
+                                  timeout=10)
+            checar(r_list.status_code == 200 and isinstance(r_list.json(), list) and len(r_list.json()) == 0,
+                   "Listagem subsequente retorna lista vazia",
+                   f"count={len(r_list.json()) if r_list.status_code == 200 and isinstance(r_list.json(), list) else '?'}")
+    except Exception as e:
+        falhou("Limpar jobs offline com token premium", str(e))
+
+
+# ══════════════════════════════════════════════════════════════
 # RELATÓRIO FINAL
 # ══════════════════════════════════════════════════════════════
 def relatorio_final():
@@ -584,6 +700,7 @@ if __name__ == "__main__":
     test_imobverse_lead()
     test_rate_limiting()
     test_events()
+    test_offline_agent()
     
     sucesso = relatorio_final()
     sys.exit(0 if sucesso else 1)
