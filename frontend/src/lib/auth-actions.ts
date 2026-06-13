@@ -161,3 +161,40 @@ export async function getMeAction(): Promise<{ user?: AuthUser; error?: string }
     return { error: "Connection error" };
   }
 }
+
+export async function passkeyLoginAction(
+  emailOrCredentialId: string,
+  isCredentialId = false
+): Promise<{ success: boolean; error?: string; user?: AuthUser }> {
+  try {
+    const body = isCredentialId
+      ? { credential_id: emailOrCredentialId }
+      : { email: emailOrCredentialId };
+
+    const res = await fetch(`${API_URL}/api/users/passkey-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      return { success: false, error: data.detail ?? "Passkey authentication failed." };
+    }
+
+    const data = await res.json();
+    await setAuthCookie(data.access_token);
+
+    return {
+      success: true,
+      user: {
+        email: data.user.email,
+        role: data.user.role,
+        is_premium: data.user.role === "premium",
+      },
+    };
+  } catch {
+    return { success: false, error: "Connection error. Try again." };
+  }
+}
+

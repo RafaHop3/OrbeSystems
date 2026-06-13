@@ -175,11 +175,11 @@ Os hashes SHA-256 abaixo atestam a integridade e conformidade de cada componente
 | `backend/routes/powershell_bot.py` | `5e20a3479db4224724b22cdba0893b3befe40aa2673270446c2976eec6ade6eb` |
 | `backend/main.py` | `a41ed887181af8439e52d8acfec996192dc66d846573a6728075d8d8d3cb8b99` |
 | `frontend/src/app/ferramentas-premium/powershell-bot/page.tsx` | `f23de2d960c3d44d6ec05596a9e729b2c617f5789b810eba2f03fd3735294eb5` |
-| `frontend/src/components/Header.tsx` | `039fc15e8e01132bc533aa1338c46328f74702d505cd78916fc7ba49564f191f` |
+| `frontend/src/components/Header.tsx` | `8412c5aa06d89b9df4400f50ac708cff2297d203d95bc0b43e0b23cff315b82e` |
 | `frontend/src/app/(categories)/cyber-security/page.tsx` | `7ed0416a6acabe088a6b3c9b06882e87d8e70d1811589ea42508383d538d86d7` |
 | `SECURITY_PROTOCOL.md` | `239e3d3e17c9e36001ab1c620213950d5d8cb105a3084771df98d38fd6076951` |
-| `ORGANIZACAO_ATIVOS.md` | `137d29c25230fdc3124a703428fd57527cea5431d27d8f95430f5a39bcd63df1` |
-| `NORMATIZACAO_JURIDICO_TECNICA.md` | `9fc8b04d2221715e40b7aabee971efd98870df741e1c3d05c64346266aebaff5` |
+| `ORGANIZACAO_ATIVOS.md` | `fe82111e9ad53d5505ac5591e5fa20cb556dc6e30a43ff83c8cfacfc2a531edc` |
+| `NORMATIZACAO_JURIDICO_TECNICA.md` | `c28faea7fc216f84997d210178ff2af89ce5377789843b605da3c11aa9dcdc63` |
 | `backend/imortal/ai.py` | `0b073a6bd398c1401fe5d1e622f4b710bb1d50b140499c61becc66d409dd68ea` |
 | `backend/imortal/compiler.py` | `5ffa3f4b08f91c9ff371623e489ee44ab4fee4e0e4e3362b456915eb5edfc4a2` |
 | `backend/imortal/prover.py` | `f507a9caf1d43352b21e365ca354b596c9abed0cb14892bb603201a597109744` |

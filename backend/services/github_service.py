@@ -99,7 +99,32 @@ async def fetch_repositories() -> list[Repository]:
     transport = httpx.AsyncHTTPTransport(retries=2)
     async with httpx.AsyncClient(timeout=15.0, transport=transport) as client:
         response = await client.get(url, headers=_build_headers(), params=params)
-        response.raise_for_status()
+        
+        if response.status_code == 403:
+            error_data = response.json() if response.text else {}
+            message = error_data.get("message", "Access forbidden")
+            if "rate limit" in message.lower():
+                print(f"[GitHub API] Rate limit exceeded on repos list: {message}")
+                raise HTTPException(
+                    status_code=429,
+                    detail="GitHub API rate limit exceeded. Backend is using cached data."
+                )
+            print(f"[GitHub API] Access forbidden on repos list: {message}")
+            raise HTTPException(status_code=403, detail=f"GitHub API access forbidden: {message}")
+        
+        if response.status_code == 401:
+            print(f"[GitHub API] Unauthorized — GITHUB_TOKEN may be expired or invalid.")
+            raise HTTPException(status_code=401, detail="GitHub token expired or invalid. Contact admin.")
+        
+        try:
+            response.raise_for_status()
+        except Exception as e:
+            print(f"[GitHub API] HTTP error fetching repos list: {response.status_code} — {response.text[:200]}")
+            raise HTTPException(
+                status_code=502,
+                detail=f"GitHub API returned {response.status_code}. Service may be temporarily unavailable."
+            )
+        
         raw_repos: list[dict] = response.json()
 
     # Resolve featured list — own session since this may be called from a cached context

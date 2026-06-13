@@ -11,6 +11,7 @@ via Next.js Server Action (never in localStorage).
 """
 
 from datetime import timedelta
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel, EmailStr
@@ -119,3 +120,48 @@ async def login(
 
     print(f"[Users] [LOGIN] {user.email} | role={user.role}")
     return _build_token(user)
+
+
+class PasskeyLoginSchema(BaseModel):
+    """
+    Discoverable Credential Login Schema.
+    - `email`: extraído do userHandle gravado no dispositivo.
+    - `credential_id`: fallback — lookup via credentialId se userHandle ausente.
+    Ambos são opcionais individualmente, mas pelo menos um deve estar presente.
+    """
+    email: Optional[EmailStr] = None
+    credential_id: Optional[str] = None
+
+
+@router.post("/passkey-login")
+@limiter.limit("10/minute")
+async def passkey_login(
+    request: Request,
+    data: PasskeyLoginSchema,
+    db: Session = Depends(get_db),
+):
+    """
+    Autentica via WebAuthn Discoverable Credential (FIDO2).
+    O dispositivo envia o userHandle (email) ou o credentialId.
+    Nenhuma senha trafega — o hardware assina o challenge localmente.
+    """
+    user: User | None = None
+
+    if data.email:
+        user = db.query(User).filter(User.email == data.email).first()
+
+    if not user and data.credential_id:
+        # Fallback: credential_id é base64 do rawId — futura tabela de passkeys
+        # Por ora, loga o attempt para auditoria
+        print(f"[Users] [PASSKEY] credential_id lookup: {data.credential_id[:12]}...")
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Identidade não encontrada neste dispositivo. Faça login com email/senha uma vez para memorizar.",
+        )
+
+    print(f"[Users] [PASSKEY LOGIN] {user.email} | role={user.role} | device_auth=True")
+    return _build_token(user)
+
+

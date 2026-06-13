@@ -404,9 +404,11 @@ let vEscape = FisicaEspacial.velocidadeEscape(5.972e24, 6371000);
 const QUICK_CHIPS = [
   { text: "Explicar meu código!", label: "Explicar meu código! 💻" },
   { text: "Quais bibliotecas posso usar?", label: "Bibliotecas disponíveis? 📦" },
-  { text: "Como escolher outro tema?", label: "Escolher Tema! 🗺️" },
-  { text: "Dê um desafio acadêmico!", label: "Desafio Acadêmico! 🏆" },
-  { text: "O que é um bug no código?", label: "O que é um bug? 🐛" }
+  { text: "O que é uma variável?", label: "O que é variável? 📦" },
+  { text: "O que é um loop?", label: "O que é loop? 🔁" },
+  { text: "O que é um bug no código?", label: "O que é bug? 🐛" },
+  { text: "Como funciona a IA?", label: "Como funciona IA? 🤖" },
+  { text: "Dê um desafio acadêmico!", label: "Desafio! 🏆" }
 ];
 
 const FUN_FACTS = [
@@ -758,11 +760,15 @@ export default function KidsStudioPage() {
         content: msg.text
       }));
 
-      // Call the new kids chat API endpoint
+      // Call the new kids chat API endpoint with full context
       const res = await fetch('/api/kids/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: apiMessages })
+        body: JSON.stringify({
+          messages: apiMessages,
+          theme: selectedTheme?.name ?? undefined,
+          editorCode: code?.trim() ? code : undefined,
+        })
       });
 
       if (!res.ok) {
@@ -848,84 +854,278 @@ export default function KidsStudioPage() {
     const q = msgText.toLowerCase();
 
     if (q.includes("biblioteca") || q.includes("libraria") || q.includes("funç") || q.includes("func")) {
-      return `### 📦 Bibliotecas do Orbe Kids Studio
-      
-Cada tema de estudo oferece bibliotecas prontas que você pode usar chamando funções diretamente no editor:
-• **Criação de Jogos**: \`EngineJogos.desenharMapa(x, y)\` e \`EngineJogos.verificarColisao(x1,y1,x2,y2,r)\`
-• **Inteligência Artificial**: \`IA.neuronioDecisao(entradas, pesos, limite)\` e \`IA.analisarSentimento(frase)\`
-• **Web Design**: \`WebDesign.rgbParaHex(r,g,b)\` e \`WebDesign.gerarCSSGradiente(c1,c2)\`
-• **Ciência de Dados**: \`DataScience.calcularMedia(lista)\`, \`DataScience.filtrarAcimaDe(lista,limite)\` e \`DataScience.ordenarLista(lista)\`
-• **Espaço e Física**: \`FisicaEspacial.simularLancamento(empuxo,massa,s)\` e \`FisicaEspacial.velocidadeEscape(massa,raio)\`
+      return `📦 **Bibliotecas do Orbe Kids Studio!**
 
-Selecione um tema na barra esquerda para ver as descrições de uso detalhadas!`;
+Cada tema tem funções prontas que você usa no editor. Chama assim:
+
+• 🎮 **Jogos**: \`EngineJogos.desenharMapa(x, y)\` • \`EngineJogos.verificarColisao(x1,y1,x2,y2,r)\`
+• 🤖 **IA**: \`IA.neuronioDecisao(entradas, pesos, limite)\` • \`IA.analisarSentimento(frase)\`
+• 🌐 **Web**: \`WebDesign.rgbParaHex(r,g,b)\` • \`WebDesign.gerarCSSGradiente(c1,c2)\`
+• 📊 **Dados**: \`DataScience.calcularMedia(lista)\` • \`DataScience.filtrarAcimaDe(lista, limite)\` • \`DataScience.ordenarLista(lista)\`
+• 🚀 **Espaço**: \`FisicaEspacial.simularLancamento(empuxo, massa, s)\` • \`FisicaEspacial.velocidadeEscape(massa, raio)\`
+
+Selecione qualquer tema na barra lateral para ver as descrições completas! 🚀`;
     }
 
     if (q.includes("tema") || q.includes("assunto") || q.includes("escolher")) {
-      return `### 🗺️ Escolha o seu Tema de Estudo!
-      
-No Orbe Kids, incentivamos a nobreza intelectual. Você escolhe o tema de estudo clicando nos botões na barra lateral esquerda:
-1. **Criação de Jogos 🎮**
-2. **Inteligência Artificial 🤖**
-3. **Web Design 🌐**
-4. **Ciência de Dados 📊**
-5. **Espaço e Física 🚀**
-      
-Ao mudar o tema, a biblioteca correspondente é importada automaticamente para o seu editor!`;
+      return `🗺️ **Escolha seu Tema de Estudo!**
+
+Você tem 5 trilhas épicas para dominar:
+1. 🎮 **Criação de Jogos** — física, colisões, coordenadas
+2. 🤖 **Inteligência Artificial** — neurônios matemáticos
+3. 🌐 **Web Design** — cores RGB, gradientes, interfaces
+4. 📊 **Ciência de Dados** — arrays, médias, filtros
+5. 🚀 **Espaço e Física** — foguetes, gravidade, órbitas
+
+Clique nos botões da **barra esquerda** para trocar! A biblioteca do tema é importada automaticamente no editor! 💡`;
     }
 
-    if (q.includes("variável") || q.includes("variavel")) {
-      return `### 📦 O que é uma Variável?
-      
-Uma variável é como uma caixa de sapatos etiquetada. Dentro dela, você guarda uma coisa (por exemplo: \`let vidas = 3;\`).
-Toda vez que você fala o nome da caixa, o computador abre e vê o valor lá dentro!`;
+    if (q.includes("variável") || q.includes("variavel") || q.includes("o que é variavel") || q.includes("o que é uma variável")) {
+      return `📦 **Variáveis são caixas mágicas!**
+
+Imagine um armário de gavetas etiquetadas. Cada gaveta tem um nome e guarda um valor:
+
+\`\`\`js
+let vidas = 3;           // gaveta "vidas" guarda 3
+let nome = "DevMirim";   // gaveta "nome" guarda texto
+let ganhou = false;      // gaveta "ganhou" guarda verdadeiro/falso
+\`\`\`
+
+Você pode trocar o conteúdo quando quiser:
+\`\`\`js
+vidas = vidas - 1;  // perdeu uma vida!
+console.log(vidas); // mostra: 2
+\`\`\`
+
+💡 Sem variáveis, o computador esquece TUDO a cada segundo. Elas são a base de qualquer programa!
+
+Quer criar sua primeira variável agora? Escreve no editor e clica Executar! ⚡`;
     }
 
-    if (q.includes("loop") || q.includes("repeti")) {
-      return `### 🔁 O que são Loops?
-      
-Loops repetem coisas para você. Em vez de escrever 100 vezes \`console.log("Olá");\`, você diz ao computador: *"repita isso 100 vezes"* em apenas 3 linhas de código!`;
+    if (q.includes("loop") || q.includes("repeti") || q.includes("for ") || q.includes("while")) {
+      return `🔁 **Loops = o superpoder de não repetir trabalho!**
+
+Imagina gritar "Vai Brasil!" 100 vezes. Com loop:
+
+\`\`\`js
+for (let i = 1; i <= 100; i++) {
+  console.log("Vai Brasil! " + i);
+}
+\`\`\`
+
+O **for** tem 3 partes:
+- 📌 *onde começa* → \`let i = 1\`
+- 🛑 *quando para* → \`i <= 100\`
+- ⬆️ *como avança* → \`i++\` (soma 1 cada vez)
+
+Jogos usam loops 60 vezes por segundo para mover personagens! O Minecraft, o Roblox — todos usam isso! 🎮
+
+Tenta criar um loop que conta de 1 a 10 no editor! 💪`;
     }
 
-    if (q.includes("bug") || q.includes("erro")) {
+    if (q.includes("bug") || q.includes("erro") || q.includes("error")) {
       awardBadge("🐛 Caçador de Bugs");
-      return `### 🐛 O que é um Bug?
-      
-Um \"bug\" é apenas um erro de escrita no código! O termo surgiu em 1947 quando cientistas encontraram um inseto de verdade atrapalhando o funcionamento físico de um computador valvulado.`;
+      return `🐛 **Bugs são erros de escrita — e são normais!**
+
+A palavra "bug" surgiu em 1947 quando a cientista **Grace Hopper** encontrou uma **mariposa de verdade** presa dentro de um computador! 🦋
+
+Erros mais comuns:
+- 🔴 **SyntaxError** — parêntese faltando, letra errada
+- 🟡 **ReferenceError** — usando nome que não existe
+- 🟠 **TypeError** — somando número com texto sem querer
+
+\`\`\`js
+consoel.log("Oi"); // ❌ Bug! "consoel" não existe
+console.log("Oi"); // ✅ Correto!
+\`\`\`
+
+🏆 Você ganhou o badge **Caçador de Bugs** por perguntar isso! Todo grande programador investiga bugs com curiosidade. Me manda o erro que você está vendo! 🔍`;
     }
 
-    if (q.includes("jogo") || q.includes("games") || q.includes("roblox") || q.includes("minecraft")) {
-      return `### 🎮 Criando Jogos!
-      
-Jogos de computador são feitos de milhares de linhas de código organizados.
-Eles usam um **Game Loop** (um laço que roda a cada milissegundo verificando se você apertou teclas, atualizando os personagens e desenhando os gráficos na tela!).`;
+    if (q.includes("jogo") || q.includes("game") || q.includes("roblox") || q.includes("minecraft") || q.includes("fortnite")) {
+      return `🎮 **Jogos são código + física + criatividade!**
+
+Todo jogo roda um **Game Loop** — um loop que executa 60 vezes por SEGUNDO!
+
+\`\`\`js
+// Estrutura de um jogo simples
+let jogadorX = 0;
+let pontos = 0;
+
+function gameLoop() {
+  jogadorX += 1;           // move o jogador
+  if (jogadorX >= 100) {   // chegou ao fim?
+    pontos++;
+    jogadorX = 0;          // reinicia!
+  }
+  console.log("Posição:", jogadorX);
+}
+\`\`\`
+
+Minecraft foi criado por **uma pessoa só** (Notch) antes de virar o jogo mais vendido da história! ⛏️
+
+Usa a biblioteca **EngineJogos** no tema de Jogos para criar colisões de verdade! 🕹️`;
     }
 
-    if (q.includes("python")) {
-      return `### 🐍 Linguagem Python
-      
-Python é uma das linguagens mais amadas do mundo porque ela se parece muito com o inglês falado e tem poucas regras visuais.
-Para escrever algo na tela em Python, você só digita:
-\`print("Olá!")\`
-Mude a opção de linguagem no topo do editor para **Python** para testar!`;
+    if (q.includes("ia") || q.includes("inteligência") || q.includes("inteligencia") || q.includes("neural") || q.includes("neurônio") || q.includes("neuronio") || q.includes("como funciona a ia") || q.includes("como funciona ia")) {
+      return `🤖 **IA é matemática que aprende a pensar!**
+
+Seu cérebro tem neurônios conectados. A IA imita isso com **neurônios matemáticos**!
+
+\`\`\`js
+// Neurônio simples: multiplica entradas por pesos e decide
+function neuronioSimples(entradas, pesos, limite) {
+  let soma = 0;
+  for (let i = 0; i < entradas.length; i++) {
+    soma += entradas[i] * pesos[i];
+  }
+  return soma >= limite ? "SIM ✅" : "NÃO ❌";
+}
+
+// Está quente lá fora? (sol=1, vento=0)
+let resultado = neuronioSimples([1, 0], [0.8, 0.2], 0.5);
+console.log(resultado); // SIM ✅
+\`\`\`
+
+O ChatGPT tem **175 bilhões** desses neurônios! 🤯
+
+Usa a biblioteca **IA** no tema de Inteligência Artificial para treinar o seu! 🧠`;
     }
 
-    if (q.includes("desafio") || q.includes("quest") || q.includes("acad")) {
-      return `### 🏆 Desafios Acadêmicos!
-      
-Cada tema de estudo tem desafios que ajudam você a desenvolver pensamento acadêmico e de engenharia!
-Escolha um tema à esquerda e selecione um desafio para carregar as instruções e o código inicial!`;
+    if (q.includes("python") || q.includes("piton")) {
+      return `🐍 **Python é a linguagem mais amada do mundo!**
+
+Criada em 1991, inspirada no grupo de humor **Monty Python**. O criador queria diversão e simplicidade!
+
+\`\`\`python
+# Python parece inglês!
+nome = "DevMirim"
+idade = 10
+print(f"Olá, {nome}! Você tem {idade} anos.")
+
+# Loop em Python é simples:
+for i in range(5):
+    print("⭐" * (i + 1))
+\`\`\`
+
+Python é usado na **NASA**, no **YouTube**, no **Instagram** e em quase toda IA do planeta! 🚀
+
+Seleciona **Python (Simulado)** no seletor do editor e experimenta! 🐍`;
     }
 
-    if (q.includes("olá") || q.includes("ola") || q.includes("oi") || q.includes("oi techy")) {
-      return `🤖 **Olá, jovem programador!** Estou animado para aprender com você. Pergunte-me algo como *"O que é uma variável?"* ou escolha um tema de estudo na lateral!`;
+    if (q.includes("desafio") || q.includes("quest") || q.includes("acadêmico") || q.includes("academico") || q.includes("exercício") || q.includes("exercicio")) {
+      return `🏆 **Desafios Acadêmicos te transformam em dev de verdade!**
+
+Cada tema tem desafios de 3 níveis:
+- 🟢 **Iniciante** — aprender a função básica
+- 🔵 **Explorador** — combinar conceitos
+- 🔴 **Criador** — criar algo real
+
+Para aceitar um desafio:
+1. Escolhe um **tema** na lateral esquerda 👈
+2. Clica em um dos **desafios** listados
+3. O código inicial aparece no editor
+4. Modifica e clica **Executar ⚡**
+5. Se acertar, você ganha **XP e Emblemas**!
+
+Qual tema você quer desafiar? 💪`;
     }
 
-    return `🤖 **Excelente pergunta!**
-    
-Para te ajudar melhor a entender sobre tecnologia:
-- Clique em qualquer **Tema** à esquerda para ver o **Conhecimento Livre** e as funções da **Biblioteca**.
-- Modifique o código do desafio e clique em **Executar Código ⚡**.
-- Digite uma palavra chave como **Variáveis, Loops, ou Bibliotecas** para eu explicar!`;
+    if (q.includes("olá") || q.includes("ola") || q.startsWith("oi") || q === "oi techy" || q === "oi") {
+      const greetings = [
+        `🤖 **Ei, programador do futuro!** Estou aqui e animadíssimo! Pergunte sobre **variáveis, loops, bugs, jogos, IA** — ou qualquer coisa de tecnologia! 🚀`,
+        `⚡ **Olá, gênio em construção!** Bem-vindo ao Orbe Kids! Escolhe um tema na lateral e vamos criar coisas incríveis juntos! 🎮`,
+        `🌟 **Oi! Que bom te ver!** Sou o Techy, seu parceiro de código! Me manda uma pergunta sobre programação e vou te ensinar de um jeito que nunca vai esquecer! 💡`
+      ];
+      return greetings[Math.floor(Math.random() * greetings.length)];
+    }
+
+    if (q.includes("web") || q.includes("site") || q.includes("html") || q.includes("css") || q.includes("cor") || q.includes("design")) {
+      return `🌐 **A Web conecta 5 bilhões de pessoas — e você pode construir isso!**
+
+Cores digitais usam o sistema **RGB** (Vermelho, Verde, Azul) de 0 a 255:
+
+\`\`\`js
+// RGB para Hexadecimal
+let hexVerde = WebDesign.rgbParaHex(0, 255, 0);
+console.log(hexVerde); // #00ff00
+
+// Gradiente CSS moderno
+let grad = WebDesign.gerarCSSGradiente("#8b5cf6", "#06b6d4");
+console.log(grad); // linear-gradient(to right, ...)
+\`\`\`
+
+Instagram, YouTube, TikTok — todos foram feitos por programadores que aprenderam exatamente o que você está aprendendo agora! 🎨
+
+Usa o tema **Web Design** para praticar com cores! 🌈`;
+    }
+
+    if (q.includes("espaço") || q.includes("espaco") || q.includes("foguete") || q.includes("nasa") || q.includes("planeta") || q.includes("newton")) {
+      return `🚀 **Foguetes voam por causa da 3ª Lei de Newton!**
+
+*"Para toda ação há uma reação igual e oposta"* — Isaac Newton, 1687.
+
+\`\`\`js
+// Simula lançamento de foguete por 4 segundos
+let altura = FisicaEspacial.simularLancamento(25000, 1200, 4);
+console.log("Altitude final:", altura, "metros!");
+\`\`\`
+
+Para escapar da Terra um foguete precisa atingir **40.000 km/h**! ⚡
+Os foguetes da SpaceX usam exatamente esses cálculos!
+
+Acessa o tema **Espaço e Física** e lança seu foguete! 🛸`;
+    }
+
+    if (q.includes("dado") || q.includes("data") || q.includes("média") || q.includes("media") || q.includes("array") || q.includes("lista")) {
+      return `📊 **Ciência de Dados = encontrar histórias escondidas em números!**
+
+Netflix, Spotify, iFood — todos usam análise de dados para te recomendar coisas!
+
+\`\`\`js
+// Média das notas da turma
+let media = DataScience.calcularMedia([7, 8, 9, 10]);
+// Mostra: Média calculada da lista: 8.5
+
+// Só os alunos acima de 8
+let destaque = DataScience.filtrarAcimaDe([6, 7, 9, 10, 8], 8);
+// Mostra: Itens acima de 8: [9, 10]
+\`\`\`
+
+Um cientista de dados no Brasil ganha entre **R$ 8.000 e R$ 25.000** por mês! 💰
+
+Pratica com a biblioteca **DataScience** no tema de Dados! 📈`;
+    }
+
+    if (q.includes("funç") || q.includes("func") || q.includes("função") || q.includes("function")) {
+      return `⚡ **Funções são feitiços que você cria!**
+
+Um feitiço tem nome, você lança quando quiser, e faz a mesma coisa toda vez!
+
+\`\`\`js
+// Criando o feitiço "atacar"
+function atacar(dano, alvo) {
+  console.log(alvo + " recebeu " + dano + " de dano! 💥");
+  return dano * 2; // dano crítico!
+}
+
+// Usando o feitiço:
+atacár(15, "Dragão");  // Dragão recebeu 15 de dano!
+atacár(30, "Goblin");  // Goblin recebeu 30 de dano!
+\`\`\`
+
+Você escreve **uma vez** e usa **infinitas vezes** — isso é o poder das funções! 🧙‍♂️
+
+Tenta criar uma função no editor e chamar ela! 💪`;
+    }
+
+    // Generic — vary responses
+    const generics = [
+      `🤖 **Boa pergunta, futuro dev!**\n\nEstou aqui para ensinar tudo sobre tecnologia! Pergunta sobre:\n- 📦 **Variáveis** — como guardar dados\n- 🔁 **Loops** — como repetir ações\n- ⚡ **Funções** — como criar seus próprios comandos\n- 🐛 **Bugs** — como resolver erros\n- 🎮 **Jogos, 🤖 IA, 🌐 Web, 📊 Dados, 🚀 Espaço**\n\nOu escolhe um tema na lateral e clica num desafio! Qual você quer dominar? 🚀`,
+      `💡 **Pergunta interessante!** Para te ajudar melhor: você está com algum **erro no código**, quer entender um **conceito**, ou quer ver um **exemplo prático**?\n\nMe conta mais! Sou especialista em todos os 5 temas do studio! 🎯`,
+      `⚡ **Vamos aprender juntos!** Escolhe um tema na barra esquerda e clica num **Desafio** — eu comento o código, te dou dicas e celebro cada vitória! 🏆\n\nOu me faz uma pergunta específica: \'O que é variável?\' \'Como funciona IA?\' \'O que é bug?\' 😄`
+    ];
+    return generics[Math.floor(Math.random() * generics.length)];
   };
 
   const handleSelectTheme = (themeId: string) => {
