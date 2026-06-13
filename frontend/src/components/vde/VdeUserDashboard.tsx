@@ -4,7 +4,8 @@ import React, { useState, useEffect } from 'react';
 import {
   ShieldCheck, Zap, RefreshCw, Server, Cpu, Database,
   AlertTriangle, CheckCircle, Play, FileJson, Clock, Loader2, ArrowRight,
-  FileText, Download, Code, Sparkles, Sliders, Scissors, FileCode, Check
+  FileText, Download, Code, Sparkles, Sliders, Scissors, FileCode, Check,
+  Link2Off, WifiOff, Bot
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import type { Repository } from '@/types/repository';
@@ -197,6 +198,7 @@ function TelemetrySparkline({ data }: { data: number[] }) {
 export default function VdeUserDashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'webhooks' | 'tools' | 'repos' | 'events'>('overview');
+  const [apiFailed, setApiFailed] = useState<boolean>(false);
   
   // Test Events States
   const [testEvents, setTestEvents] = useState<any[]>([]);
@@ -249,6 +251,26 @@ export default function VdeUserDashboard() {
   const [compressHistory, setCompressHistory] = useState<number[]>([100, 85, 70, 52]);
   const [burstTrigger, setBurstTrigger] = useState<number>(0);
 
+  // Manual Reconnect Function
+  const handleManualReconnect = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/projects`);
+      if (res.ok) {
+        setApiFailed(false);
+        fetchData();
+        fetchRepos();
+        playCyberBeep(900, 0.08, 'sine');
+      } else {
+        playCyberBeep(200, 0.2, 'sawtooth');
+      }
+    } catch {
+      playCyberBeep(200, 0.2, 'sawtooth');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Fetch repositories
   const fetchRepos = async () => {
     setReposLoading(true);
@@ -257,9 +279,15 @@ export default function VdeUserDashboard() {
       if (res.ok) {
         const data = await res.json();
         setRepos(data);
+        setApiFailed(false);
+      } else {
+        if (res.status >= 500) {
+          setApiFailed(true);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch repos:', err);
+      setApiFailed(true);
     } finally {
       setReposLoading(false);
     }
@@ -277,9 +305,15 @@ export default function VdeUserDashboard() {
         if (props.length > 0) {
           setSelectedPropId(props[0].id);
         }
+        setApiFailed(false);
+      } else {
+        if (res.status >= 500) {
+          setApiFailed(true);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch property list:', err);
+      setApiFailed(true);
     } finally {
       setLoading(false);
     }
@@ -296,9 +330,15 @@ export default function VdeUserDashboard() {
       if (res.ok) {
         const data = await res.json();
         setTestEvents(data);
+        setApiFailed(false);
+      } else {
+        if (res.status >= 500) {
+          setApiFailed(true);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch test events:', err);
+      setApiFailed(true);
     } finally {
       setEventsLoading(false);
     }
@@ -753,9 +793,13 @@ export default function VdeUserDashboard() {
       {/* Main Panel Content */}
       <div className="flex-1 p-4 md:p-6 overflow-y-auto min-h-0 space-y-6">
         
-        {/* TAB: Overview */}
-        {activeTab === 'overview' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {apiFailed && activeTab !== 'tools' ? (
+          <GracefulFailureView onReconnect={handleManualReconnect} isReconnecting={loading} />
+        ) : (
+          <>
+            {/* TAB: Overview */}
+            {activeTab === 'overview' && (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* User Profile Card */}
             <div className="lg:col-span-1 bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
@@ -820,15 +864,15 @@ export default function VdeUserDashboard() {
               {/* System Components Status Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {[
-                  { name: 'API Gateway', status: 'ON', desc: 'FastAPI / main.py' },
-                  { name: 'Reputation Engine', status: 'ON', desc: 'Calculadora de Score' },
-                  { name: 'Suite de Utilidades', status: 'ON', desc: 'DocGen & Conversor' }
+                  { name: 'API Gateway', status: apiFailed ? 'OFFLINE' : 'ON', desc: 'FastAPI / main.py' },
+                  { name: 'Reputation Engine', status: apiFailed ? 'OFFLINE' : 'ON', desc: 'Calculadora de Score' },
+                  { name: 'Suite de Utilidades', status: 'ON', desc: 'DocGen & Conversor (Offline Mode)' }
                 ].map((srv, idx) => (
                   <div key={idx} className="bg-white/2 border border-white/5 rounded-xl p-4">
                     <div className="flex justify-between items-center">
                       <span className="font-mono text-xs font-semibold text-white">{srv.name}</span>
                       <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${
-                        srv.status === 'ON' ? 'bg-neon-green/15 text-neon-green' : 'bg-yellow-500/15 text-yellow-500'
+                        srv.status === 'ON' ? 'bg-neon-green/15 text-neon-green' : 'bg-red-500/15 text-red-400'
                       }`}>{srv.status}</span>
                     </div>
                     <p className="font-mono text-[10px] text-terminal-muted mt-2">{srv.desc}</p>
@@ -1507,9 +1551,192 @@ export default function VdeUserDashboard() {
               </div>
             </div>
           </div>
+            )}
+
+          </>
         )}
 
       </div>
     </div>
   );
 }
+
+// ── Helper Components for Graceful Failure Design ────────────────────────────
+
+function BrokenLattice() {
+  return (
+    <div className="relative w-full h-48 flex items-center justify-center overflow-hidden">
+      <svg width="240" height="180" viewBox="0 0 240 180" className="overflow-visible">
+        <defs>
+          <filter id="glow-cyan" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+          <filter id="glow-magenta" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Fractured Orb */}
+        <g transform="translate(120, 90)">
+          {/* Left half */}
+          <path
+            d="M -35,0 C -35,-20 -20,-35 0,-35 L -2,-10 L 5,5 L -5,12 L 2,35 C -20,35 -35,20 -35,0 Z"
+            fill="none"
+            stroke="#00f2fe"
+            strokeWidth="2"
+            filter="url(#glow-cyan)"
+            className="animate-pulse"
+          />
+          {/* Right half slightly offset to show fracture */}
+          <path
+            d="M 35,0 C 35,-20 20,-35 0,-35 L -2,-10 L 5,5 L -5,12 L 2,35 C 20,35 35,20 35,0 Z"
+            fill="none"
+            stroke="#ff007f"
+            strokeWidth="2"
+            filter="url(#glow-magenta)"
+            transform="translate(8, 4) rotate(5)"
+            className="animate-pulse"
+          />
+        </g>
+
+        {/* Network lattice lines - fragmented */}
+        <line x1="40" y1="50" x2="80" y2="70" stroke="#00f2fe" strokeWidth="1" strokeDasharray="3 3" opacity="0.4" />
+        <line x1="200" y1="50" x2="160" y2="75" stroke="#ff007f" strokeWidth="1" strokeDasharray="2 2" opacity="0.4" />
+        <line x1="50" y1="130" x2="90" y2="110" stroke="#00f2fe" strokeWidth="1" opacity="0.3" />
+        <line x1="190" y1="130" x2="150" y2="115" stroke="#ff007f" strokeWidth="1" opacity="0.3" />
+
+        {/* Broken links indicators */}
+        <circle cx="80" cy="70" r="3" fill="#ff007f" filter="url(#glow-magenta)" />
+        <circle cx="160" cy="75" r="3" fill="#00f2fe" filter="url(#glow-cyan)" />
+        
+        {/* Floating particles escaping */}
+        <circle cx="100" cy="45" r="2" fill="#00f2fe" opacity="0.8" className="animate-bounce" style={{ animationDuration: '3s' }} />
+        <circle cx="145" cy="50" r="1.5" fill="#ff007f" opacity="0.6" className="animate-ping" style={{ animationDuration: '2.5s' }} />
+        <circle cx="75" cy="100" r="2" fill="#00f2fe" opacity="0.7" />
+        <circle cx="165" cy="105" r="1" fill="#ff007f" opacity="0.5" />
+        <circle cx="120" cy="140" r="2.5" fill="#00f2fe" opacity="0.9" className="animate-pulse" />
+      </svg>
+    </div>
+  );
+}
+
+interface GracefulFailureViewProps {
+  onReconnect: () => void;
+  isReconnecting: boolean;
+}
+
+function GracefulFailureView({ onReconnect, isReconnecting }: GracefulFailureViewProps) {
+  return (
+    <div className="relative min-h-[500px] w-full flex flex-col lg:flex-row items-center justify-center gap-8 py-8 px-4 bg-[#0a0c10]/40 rounded-xl overflow-hidden">
+      {/* Background stars / cosmic dust */}
+      <div className="absolute inset-0 bg-radial-gradient from-purple-900/10 via-transparent to-transparent pointer-events-none opacity-40" />
+
+      {/* Side Panel: CODEX ORBE */}
+      <div className="w-full lg:w-64 bg-[#161b22]/50 border border-white/5 rounded-xl p-5 font-mono text-xs flex flex-col justify-between h-auto lg:h-[380px] shrink-0">
+        <div>
+          <div className="flex items-center gap-2 text-neon-cyan border-b border-white/5 pb-2 mb-4">
+            <span className="font-bold tracking-wider">CODEX ORBE</span>
+          </div>
+          <div className="space-y-4 text-terminal-muted leading-relaxed">
+            <div>
+              <span className="text-white/40 block text-[9px] uppercase">Protocolo Ativo</span>
+              <span className="text-white font-semibold">STANZA II</span>
+            </div>
+            <div>
+              <span className="text-white/40 block text-[9px] uppercase">Estado de Rede</span>
+              <span className="text-red-400 font-semibold uppercase flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                Desconectado
+              </span>
+            </div>
+            <div>
+              <span className="text-white/40 block text-[9px] uppercase">Modo de Operação</span>
+              <span className="text-yellow-500 font-bold uppercase">MODO CONTINGÊNCIA</span>
+            </div>
+          </div>
+        </div>
+        <div className="text-[10px] text-white/20 mt-6 lg:mt-0 leading-relaxed border-t border-white/5 pt-3">
+          As ferramentas locais na aba "Suite de Utilidades" continuam operacionais através do processamento offline.
+        </div>
+      </div>
+
+      {/* Central Card: Gracioso Data Fracture */}
+      <div 
+        className="flex-1 max-w-xl bg-[#0d1117]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8 flex flex-col items-center text-center relative overflow-hidden"
+        style={{
+          boxShadow: '0 0 30px rgba(0, 242, 254, 0.03), 0 0 30px rgba(255, 0, 127, 0.03)',
+          borderImage: 'linear-gradient(to bottom right, rgba(0, 242, 254, 0.3), rgba(255, 0, 127, 0.3)) 1'
+        }}
+      >
+        {/* Glowing border overlays */}
+        <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-neon-purple/50 to-transparent" />
+
+        {/* Top left card indicator inside the card */}
+        <div className="absolute top-4 left-4 flex items-center gap-2">
+          <Link2Off className="text-neon-purple animate-pulse" size={16} />
+          <span className="font-mono text-[9px] text-white/45 tracking-widest">ERROR_CODE: 0x500_CORS</span>
+        </div>
+
+        {/* Fragmented Satellites Hologram */}
+        <BrokenLattice />
+
+        {/* Info */}
+        <div className="space-y-3 mt-4">
+          <h2 className="font-mono text-base md:text-lg font-bold text-white tracking-wider uppercase flex items-center justify-center gap-2">
+            CONEXÃO ORBE: SINAL INTERROMPIDO
+          </h2>
+          <p className="font-mono text-xs text-neon-purple font-semibold tracking-wide">
+            Integridade do Backend: Falha (HTTP 500/CORS)
+          </p>
+          <p className="font-sans text-xs text-terminal-muted max-w-md mx-auto leading-relaxed">
+            Tentando reconexão automática. Funcionalidades offline ativas no seu terminal.
+          </p>
+        </div>
+
+        {/* Manual Reconnect Button */}
+        <div className="mt-8 w-full max-w-xs">
+          <button
+            onClick={onReconnect}
+            disabled={isReconnecting}
+            className="w-full py-3 bg-gradient-to-r from-neon-cyan/10 to-neon-purple/10 hover:from-neon-cyan/20 hover:to-neon-purple/20 border border-neon-cyan/40 hover:border-neon-purple/60 rounded-xl font-mono text-xs font-bold text-[#00f2fe] tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(0,242,254,0.1)] hover:shadow-[0_0_25px_rgba(255,0,127,0.2)] flex items-center justify-center gap-2"
+          >
+            {isReconnecting ? (
+              <>
+                <Loader2 size={13} className="animate-spin text-[#00f2fe]" />
+                RECONECTANDO...
+              </>
+            ) : (
+              <>
+                <RefreshCw size={13} className="text-[#00f2fe]" style={{ animation: 'spin 8s linear infinite' }} />
+                TENTAR RECONEXÃO MANUAL (OPCIONAL)
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Orbe Assistant chat bubble in corner */}
+      <div className="absolute bottom-4 right-4 max-w-xs bg-[#161b22] border border-neon-cyan/35 rounded-xl p-4 shadow-[0_4px_12px_rgba(0,242,254,0.08)] flex gap-3 items-start animate-fade-in">
+        <div className="w-8 h-8 rounded-lg bg-neon-cyan/10 border border-neon-cyan/30 flex items-center justify-center shrink-0">
+          <Bot className="text-neon-cyan" size={16} />
+        </div>
+        <div className="font-mono text-[11px] leading-relaxed">
+          <div className="text-white/40 text-[9px] uppercase font-bold tracking-wider">Orbe Assistant</div>
+          <p className="text-white/95 mt-1 font-sans">
+            "Perda de sinal detectada. Estou monitorando, Rafael."
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+

@@ -178,8 +178,8 @@ Os hashes SHA-256 abaixo atestam a integridade e conformidade de cada componente
 | `frontend/src/components/Header.tsx` | `8412c5aa06d89b9df4400f50ac708cff2297d203d95bc0b43e0b23cff315b82e` |
 | `frontend/src/app/(categories)/cyber-security/page.tsx` | `7ed0416a6acabe088a6b3c9b06882e87d8e70d1811589ea42508383d538d86d7` |
 | `SECURITY_PROTOCOL.md` | `239e3d3e17c9e36001ab1c620213950d5d8cb105a3084771df98d38fd6076951` |
-| `ORGANIZACAO_ATIVOS.md` | `fe82111e9ad53d5505ac5591e5fa20cb556dc6e30a43ff83c8cfacfc2a531edc` |
-| `NORMATIZACAO_JURIDICO_TECNICA.md` | `c28faea7fc216f84997d210178ff2af89ce5377789843b605da3c11aa9dcdc63` |
+| `ORGANIZACAO_ATIVOS.md` | `4b190aacb5ed492d9287595416c3598cc3c9f880b168b197f4583687d63fd715` |
+| `NORMATIZACAO_JURIDICO_TECNICA.md` | `29d2bbdd43ed6cd117280f51fcef0e86400ffc2fe71ad2cc9f4788e5e7f9f6f7` |
 | `backend/imortal/ai.py` | `0b073a6bd398c1401fe5d1e622f4b710bb1d50b140499c61becc66d409dd68ea` |
 | `backend/imortal/compiler.py` | `5ffa3f4b08f91c9ff371623e489ee44ab4fee4e0e4e3362b456915eb5edfc4a2` |
 | `backend/imortal/prover.py` | `f507a9caf1d43352b21e365ca354b596c9abed0cb14892bb603201a597109744` |

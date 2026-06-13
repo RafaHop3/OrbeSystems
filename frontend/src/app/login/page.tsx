@@ -96,7 +96,7 @@ export default function LoginPage() {
             emit(`[TPM]  Identidade extraída do userHandle: ${decoded.substring(0,4)}****`);
           } else {
             emit("[SYS]  userHandle ausente — usando credentialId para lookup.");
-            resolvedEmail = btoa(String.fromCharCode(...new Uint8Array(assertion.rawId))).substring(0, 32);
+            resolvedEmail = btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(assertion.rawId)))).substring(0, 32);
           }
           emit("[OK]   Assinatura criptográfica verificada pelo hardware local.");
         } else {

@@ -111,7 +111,7 @@ Os hashes a seguir atestam a integridade absoluta da arquitetura IMORTAL no ecos
 | `frontend/src/app/api/ping-backend/route.ts` | Rota do Next.js para manter o backend ativo via requisições de cron externas | `b741c200f77eccffbe5404ab61a3696d946e2a251f54ce7411ac68487288b6d5` |
 | `frontend/vercel.json` | Configuração do Vercel Cron Job para automação de pings de keep-alive | `ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356` |
 | `SECURITY_PROTOCOL.md` | Protocolo Geral de Cibersegurança e DevSecOps da Orbe | `239e3d3e17c9e36001ab1c620213950d5d8cb105a3084771df98d38fd6076951` |
-| `NORMATIZACAO_JURIDICO_TECNICA.md` | Este termo de normatização técnico-legal | `c28faea7fc216f84997d210178ff2af89ce5377789843b605da3c11aa9dcdc63` |
+| `NORMATIZACAO_JURIDICO_TECNICA.md` | Este termo de normatização técnico-legal | `29d2bbdd43ed6cd117280f51fcef0e86400ffc2fe71ad2cc9f4788e5e7f9f6f7` |
 
 ---
 
