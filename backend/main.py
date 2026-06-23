@@ -284,8 +284,6 @@ app.include_router(imobverse_router, prefix="/api", tags=["imobverse"])
 app.include_router(powershell_bot_router, prefix="/api", tags=["PowerShell Bot"])
 from routes.suite_inteligente import router as suite_inteligente_router
 app.include_router(suite_inteligente_router)
-from routes.test_events import router as test_events_router
-app.include_router(test_events_router)
 from routes.offline_agent import router as offline_agent_router
 app.include_router(offline_agent_router)
 
