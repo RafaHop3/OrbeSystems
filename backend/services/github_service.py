@@ -19,7 +19,7 @@ def _build_headers() -> dict:
         "X-GitHub-Api-Version": "2022-11-28",
     }
     token = settings.GITHUB_TOKEN
-    if token and token != "token_de_fallback_inseguro":
+    if token and token != "token_de_fallback_inseguro" and token != "":
         headers["Authorization"] = f"Bearer {token}"
     return headers
 
@@ -63,11 +63,13 @@ async def fetch_single_repo(repo_name: str, owner: str = None) -> Optional[dict]
                 message = error_data.get("message", "")
                 if "rate limit" in message.lower():
                     print(f"[GitHub API] Rate limit exceeded: {message}")
-                    raise HTTPException(
-                        status_code=429,
-                        detail="GitHub API rate limit exceeded. Please try again later or configure a GITHUB_TOKEN."
-                    )
+                    return None
                 print(f"[GitHub API] Access forbidden: {message}")
+                return None
+
+            if response.status_code == 401:
+                print(f"[GitHub API] Unauthorized — GITHUB_TOKEN may be expired or invalid.")
+                return None
 
             response.raise_for_status()
             data = response.json()
@@ -76,10 +78,10 @@ async def fetch_single_repo(repo_name: str, owner: str = None) -> Optional[dict]
 
         except httpx.HTTPStatusError as e:
             print(f"[GitHub API] HTTP error: {e.response.status_code} - {e.response.text[:200]}")
-            raise
+            return None
         except Exception as e:
             print(f"[GitHub API] Unexpected error: {str(e)}")
-            raise
+            return None
 
 
 async def fetch_repositories() -> list[Repository]:
@@ -105,25 +107,28 @@ async def fetch_repositories() -> list[Repository]:
             message = error_data.get("message", "Access forbidden")
             if "rate limit" in message.lower():
                 print(f"[GitHub API] Rate limit exceeded on repos list: {message}")
-                raise HTTPException(
-                    status_code=429,
-                    detail="GitHub API rate limit exceeded. Backend is using cached data."
-                )
+                # Return empty list to trigger fallback in routes
+                return []
             print(f"[GitHub API] Access forbidden on repos list: {message}")
-            raise HTTPException(status_code=403, detail=f"GitHub API access forbidden: {message}")
+            # Return empty list to trigger fallback in routes
+            return []
         
         if response.status_code == 401:
             print(f"[GitHub API] Unauthorized — GITHUB_TOKEN may be expired or invalid.")
-            raise HTTPException(status_code=401, detail="GitHub token expired or invalid. Contact admin.")
+            # Return empty list to trigger fallback in routes
+            return []
+        
+        if response.status_code == 404:
+            print(f"[GitHub API] User '{GITHUB_USERNAME}' not found (404)")
+            # Return empty list to trigger fallback in routes
+            return []
         
         try:
             response.raise_for_status()
         except Exception as e:
             print(f"[GitHub API] HTTP error fetching repos list: {response.status_code} — {response.text[:200]}")
-            raise HTTPException(
-                status_code=502,
-                detail=f"GitHub API returned {response.status_code}. Service may be temporarily unavailable."
-            )
+            # Return empty list to trigger fallback in routes
+            return []
         
         raw_repos: list[dict] = response.json()
 
