@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi import APIRouter, Request, Depends, HTTPException, Response
 from datetime import datetime, timezone
 import uuid
 from routes.auth import limiter
@@ -6,6 +6,11 @@ from services.analytics_service import get_geoip, save_visit_log, get_recent_vis
 from security.auth import get_current_admin_user
 
 router = APIRouter()
+
+@router.options("/log")
+async def options_log():
+    """CORS preflight handler for /log endpoint"""
+    return Response(status_code=204)
 
 @router.post("/log")
 @limiter.limit("30/minute")
