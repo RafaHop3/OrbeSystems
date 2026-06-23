@@ -1,6 +1,5 @@
 'use client';
 
-
 import React, { useState, useEffect } from 'react';
 import {
   Search, GitBranch, Star, Eye, ExternalLink, ShieldCheck,
@@ -22,8 +21,14 @@ export default function RepositoriesPage() {
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'featured' | 'all' | 'security' | 'tools' | 'platforms'>('featured');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function loadProjects() {
+    if (!mounted) return;
     setStatus('loading');
     setErrorMsg('');
     try {
@@ -41,8 +46,10 @@ export default function RepositoriesPage() {
   }
 
   useEffect(() => {
-    loadProjects();
-  }, []);
+    if (mounted) {
+      loadProjects();
+    }
+  }, [mounted]);
 
   const handleCopyInstall = (name: string) => {
     const cmd = `npm install @orbesystems/${name.toLowerCase()}-sdk`;
