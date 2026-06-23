@@ -35,7 +35,6 @@ import models.math_matrices  # Import to register math_matrices table
 import models.audit_log    # Import to register audit_log table
 import models.imobverse   # Import to register imob_* tables
 import models.repository_db # Import to register github_repositories table
-import models.test_event  # Import to register test_events table
 
 
 def run_migrations():
