@@ -52,8 +52,7 @@ class Settings(BaseSettings):
             raise ValueError("ADMIN_PASSWORD_HASH é obrigatório")
         if not self.ADMIN_USERNAME:
             raise ValueError("ADMIN_USERNAME é obrigatório")
-        if not self.GITHUB_TOKEN:
-            raise ValueError("GITHUB_TOKEN é obrigatório")
+        # GITHUB_TOKEN é opcional - o código tem fallback robusto sem ele
         
         # Validar Stripe se configurado
         if self.STRIPE_SECRET_KEY or self.STRIPE_WEBHOOK_SECRET or self.STRIPE_PREMIUM_PRICE_ID:
