@@ -21,6 +21,7 @@ export default function RepositoriesPage() {
   const [filterLang, setFilterLang] = useState('Todos');
   const [selectedRepo, setSelectedRepo] = useState<Repository | null>(null);
   const [copied, setCopied] = useState(false);
+  const [activeTab, setActiveTab] = useState<'featured' | 'all' | 'security' | 'tools' | 'platforms'>('featured');
 
   async function loadProjects() {
     setStatus('loading');
@@ -53,12 +54,20 @@ export default function RepositoriesPage() {
   // Extract all unique languages
   const languages = ['Todos', ...Array.from(new Set(repos.map(r => r.language).filter((l): l is string => typeof l === 'string')))];
 
-  // Filter repositories
+  // Filter repositories by tab, search, and language
   const filteredRepos = repos.filter(repo => {
+    // Tab filtering
+    if (activeTab === 'featured' && !repo.is_featured) return false;
+    if (activeTab === 'security' && !repo.topics?.includes('security')) return false;
+    if (activeTab === 'tools' && !repo.topics?.includes('tool')) return false;
+    if (activeTab === 'platforms' && !repo.topics?.includes('platform')) return false;
+    
+    // Search filtering
     const matchesSearch = 
       repo.name.toLowerCase().includes(search.toLowerCase()) ||
       (repo.description || '').toLowerCase().includes(search.toLowerCase());
     
+    // Language filtering
     const matchesLang = filterLang === 'Todos' || repo.language === filterLang;
     
     return matchesSearch && matchesLang;
@@ -87,6 +96,60 @@ export default function RepositoriesPage() {
           <p className="font-serif text-sm md:text-base text-renaissance-muted max-w-3xl leading-relaxed italic">
             Coleção completa de bibliotecas, engines de cálculo lógico e auditorias de segurança estruturadas em divina proporção pela Officina d'Orbe.
           </p>
+        </div>
+
+        {/* Category Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          <button
+            onClick={() => setActiveTab('featured')}
+            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
+              activeTab === 'featured'
+                ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+                : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+            }`}
+          >
+            Capolavori (Destaques)
+          </button>
+          <button
+            onClick={() => setActiveTab('all')}
+            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
+              activeTab === 'all'
+                ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+                : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+            }`}
+          >
+            Tutti (Todos)
+          </button>
+          <button
+            onClick={() => setActiveTab('security')}
+            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
+              activeTab === 'security'
+                ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+                : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+            }`}
+          >
+            Sicurezza (Segurança)
+          </button>
+          <button
+            onClick={() => setActiveTab('tools')}
+            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
+              activeTab === 'tools'
+                ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+                : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+            }`}
+          >
+            Strumenti (Ferramentas)
+          </button>
+          <button
+            onClick={() => setActiveTab('platforms')}
+            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
+              activeTab === 'platforms'
+                ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+                : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+            }`}
+          >
+            Piattaforme (Plataformas)
+          </button>
         </div>
 
         {/* Search & Filters */}
