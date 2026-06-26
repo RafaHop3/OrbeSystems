@@ -7,7 +7,6 @@ import { colorMap } from '@/lib/utils';
 const skills = [
   { icon: Code2, label: 'Software Engineering', color: 'cyan', href: '/software-engineering' },
   { icon: Database, label: 'Database Architecture', color: 'green', href: '/database-architecture' },
-  { icon: Shield, label: 'Cyber Safety', color: 'purple', href: '/cyber-security' },
   { icon: Zap, label: 'Automation', color: 'cyan', href: '/automation' },
 ];
 
@@ -27,18 +26,18 @@ export default function HeroSection() {
 
         <h1 className="font-sans text-4xl md:text-6xl font-light mb-6 leading-tight tracking-tight text-white/95">
           O terminal é a sua{' '}
-          <span className="font-medium text-navy-glow">arma.</span>
+          <span className="font-medium text-navy-glow">ferramenta.</span>
           <span className="block text-white/50 text-xl md:text-2xl mt-4 font-light">
             A IA é a sua inteligência.
           </span>
         </h1>
 
         <p className="font-sans text-base md:text-lg text-navy-mist/75 max-w-2xl mx-auto mb-4 leading-relaxed font-light">
-          Consultoria, automação e auditoria de infraestrutura — leveza operacional e cyber safety
+          Consultoria, automação e auditoria de infraestrutura — leveza operacional
           direto no ambiente do seu time.
         </p>
         <p className="font-mono text-[10px] text-navy-shine/50 mb-12 tracking-widest uppercase">
-          role para ver o núcleo se formar
+          role para ver o conteúdo
         </p>
 
         <div className="flex flex-wrap justify-center gap-3 mb-10">

@@ -1648,7 +1648,7 @@ function GracefulFailureView({ onReconnect, isReconnecting }: GracefulFailureVie
           <div className="space-y-4 text-terminal-muted leading-relaxed">
             <div>
               <span className="text-white/40 block text-[9px] uppercase">Protocolo Ativo</span>
-              <span className="text-white font-semibold">STANZA II</span>
+              <span className="text-white font-semibold">Protocolo II</span>
             </div>
             <div>
               <span className="text-white/40 block text-[9px] uppercase">Estado de Rede</span>

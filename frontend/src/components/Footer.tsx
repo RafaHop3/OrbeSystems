@@ -75,10 +75,10 @@ export default function Footer() {
         {/* Bottom row */}
         <div className="mt-10 pt-6 border-t border-renaissance-border/55 flex flex-col md:flex-row items-center justify-between gap-2">
           <p className="font-serif text-xs text-renaissance-muted/60">
-            &copy; {year} Bottega d'Orbe Systems. Tutti i diritti riservati.
+            &copy; {year} Orbe Systems. Todos os direitos reservados.
           </p>
           <p className="font-cinzel text-[10px] tracking-widest text-renaissance-gold/50">
-            Laus Deo · orbesystems.com.br
+            orbesystems.com.br
           </p>
         </div>
       </div>

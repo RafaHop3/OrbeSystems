@@ -137,10 +137,10 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
 
           {/* Telemetry logs */}
           <div className="text-[9px] text-renaissance-muted italic">
-            {scanProgress < 30 && `> Preparando la tela virtuale: ORBE://${repo.name.toUpperCase()}`}
-            {scanProgress >= 30 && scanProgress < 60 && `> Restaurando il chiaroscuro: delineando i contorni`}
-            {scanProgress >= 60 && scanProgress < 90 && `> Analisi della materia: [${repo.language ? repo.language.toUpperCase() : 'DOCUMENTAZIONE'}]`}
-            {scanProgress >= 90 && `> Finito: Capolavoro svelato all'esposizione.`}
+            {scanProgress < 30 && `> Preparando: ORBE://${repo.name.toUpperCase()}`}
+            {scanProgress >= 30 && scanProgress < 60 && `> Processando: delineando contornos`}
+            {scanProgress >= 60 && scanProgress < 90 && `> Analisando: [${repo.language ? repo.language.toUpperCase() : 'DOCUMENTAÇÃO'}]`}
+            {scanProgress >= 90 && `> Concluído: projeto revelado.`}
           </div>
         </div>
       )}
@@ -182,17 +182,17 @@ export default function ProjectCard({ repo, index }: ProjectCardProps) {
           <p className="font-serif text-xs text-[#dfd2b8]/75 leading-relaxed flex-1 line-clamp-3 italic">
             {repo.custom_description || repo.description || (
               <span className="italic text-renaissance-muted/50">
-                # Il codice stesso narra la propria perfezione.
+                # O código conta sua própria história.
               </span>
             )}
           </p>
 
-          {/* Cartellino dell'Opera */}
+          {/* Info do Projeto */}
           <div className="cartellino mt-1 select-none">
-            <div className="text-[8px] font-cinzel tracking-widest text-[#52141a] uppercase font-bold">Cartellino d'Esposizione</div>
+            <div className="text-[8px] font-cinzel tracking-widest text-[#52141a] uppercase font-bold">Info do Projeto</div>
             <div className="text-[11px] font-serif font-bold text-[#1c130d] mt-0.5">{repo.name}</div>
             <div className="text-[10px] font-serif italic text-[#1c130d]/85 leading-none mt-1">
-              Materia: <span className="font-bold">{repo.language || 'Codice Logico'}</span> su Silicio · c. 1502 / {formatDateYear(repo.updated_at)}
+              Linguagem: <span className="font-bold">{repo.language || 'Código'}</span> · {formatDateYear(repo.updated_at)}
             </div>
           </div>
 

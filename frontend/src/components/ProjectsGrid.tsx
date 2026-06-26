@@ -77,7 +77,7 @@ export default function ProjectsGrid() {
         <div className="flex items-center gap-3 mb-4">
           <div className="flex-1 h-px bg-gradient-to-r from-renaissance-gold/30 to-transparent" />
           <span className="font-cinzel text-xs text-renaissance-gold tracking-widest uppercase">
-            STANZA II · EXPOSITIO CAPOLAVORI
+            Galeria de Projetos
           </span>
           <div className="flex-1 h-px bg-gradient-to-l from-renaissance-gold/30 to-transparent" />
         </div>
@@ -85,7 +85,7 @@ export default function ProjectsGrid() {
           Galeria de <span className="text-renaissance-gold italic font-serif normal-case font-normal">Repositórios</span>
         </h2>
         <p className="font-serif text-sm text-renaissance-muted text-center mt-3 italic">
-          Bottega d'Orbe · Códigos, engines e arquiteturas públicas expostas à visitação.
+          Orbe Systems · Códigos, engines e arquiteturas públicas.
         </p>
       </div>
 

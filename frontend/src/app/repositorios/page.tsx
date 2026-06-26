@@ -89,19 +89,19 @@ export default function RepositoriesPage() {
         <div className="flex items-center gap-2 font-cinzel text-[10px] tracking-wider uppercase text-renaissance-muted">
           <Link href="/" className="hover:text-renaissance-gold flex items-center gap-1 transition-colors">
             <ArrowLeft size={10} className="text-renaissance-gold" />
-            Galleria d'Orbe
+            Galeria de Projetos
           </Link>
           <span className="text-white/25">/</span>
-          <span className="text-renaissance-gold">expositio repositorium</span>
+          <span className="text-renaissance-gold">repositórios</span>
         </div>
 
         {/* Section Header */}
         <div className="space-y-4">
           <h1 className="font-cinzel text-3xl md:text-5xl font-semibold tracking-wide text-white/95">
-            Ecosistema di <span className="text-renaissance-gold italic font-serif normal-case font-normal">Capolavori</span>
+            Ecossistema de <span className="text-renaissance-gold italic font-serif normal-case font-normal">Projetos</span>
           </h1>
           <p className="font-serif text-sm md:text-base text-renaissance-muted max-w-3xl leading-relaxed italic">
-            Coleção completa de bibliotecas, engines de cálculo lógico e auditorias de segurança estruturadas em divina proporção pela Officina d'Orbe.
+            Coleção completa de bibliotecas, engines de cálculo lógico e auditorias de segurança estruturadas pela Orbe Systems.
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export default function RepositoriesPage() {
                 : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
             }`}
           >
-            Capolavori (Destaques)
+            Destaques
           </button>
           <button
             onClick={() => setActiveTab('all')}
@@ -125,7 +125,7 @@ export default function RepositoriesPage() {
                 : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
             }`}
           >
-            Tutti (Todos)
+            Todos
           </button>
           <button
             onClick={() => setActiveTab('security')}
@@ -135,7 +135,7 @@ export default function RepositoriesPage() {
                 : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
             }`}
           >
-            Sicurezza (Segurança)
+            Segurança
           </button>
           <button
             onClick={() => setActiveTab('tools')}
@@ -145,7 +145,7 @@ export default function RepositoriesPage() {
                 : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
             }`}
           >
-            Strumenti (Ferramentas)
+            Ferramentas
           </button>
           <button
             onClick={() => setActiveTab('platforms')}
@@ -155,7 +155,7 @@ export default function RepositoriesPage() {
                 : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
             }`}
           >
-            Piattaforme (Plataformas)
+            Plataformas
           </button>
         </div>
 
@@ -267,12 +267,12 @@ export default function RepositoriesPage() {
                   </p>
                 </div>
 
-                {/* Cartellino info plate */}
+                {/* Info plate */}
                 <div className="mx-5 my-3 relative z-10 cartellino">
-                  <div className="text-[7.5px] font-cinzel tracking-widest text-[#52141a] uppercase font-bold">Cartellino</div>
+                  <div className="text-[7.5px] font-cinzel tracking-widest text-[#52141a] uppercase font-bold">Info</div>
                   <div className="text-[10px] font-serif font-bold text-[#1c130d] truncate mt-0.5">{repo.name}</div>
                   <div className="text-[9px] font-serif italic text-[#1c130d]/85 mt-0.5 leading-none">
-                    Materia: {repo.language || 'Codice Logico'} su Silicio
+                    Linguagem: {repo.language || 'Código'}
                   </div>
                 </div>
 
@@ -319,20 +319,20 @@ export default function RepositoriesPage() {
                       {selectedRepo.name}
                     </h3>
                     <p className="font-serif text-[11px] text-renaissance-burgundy/80 italic mt-1 font-bold">
-                      {selectedRepo.language || 'Logical Scroll'} su Silicio
+                      {selectedRepo.language || 'Código'}
                     </p>
                   </div>
                   <button
                     onClick={() => setSelectedRepo(null)}
                     className="text-renaissance-muted hover:text-renaissance-burgundy font-cinzel text-[10px] uppercase tracking-widest transition-colors"
                   >
-                    chiudere [esc]
+                    fechar [esc]
                   </button>
                 </div>
 
                 {/* Description */}
                 <div className="space-y-2">
-                  <h4 className="font-cinzel text-[9px] text-[#52141a] font-bold tracking-wider uppercase">Descrizione Generale</h4>
+                  <h4 className="font-cinzel text-[9px] text-[#52141a] font-bold tracking-wider uppercase">Descrição</h4>
                   <p className="font-serif text-xs text-[#2b1d16] leading-relaxed italic">
                     {selectedRepo.description || 'Este projeto faz parte do ecossistema tecnológico da Orbe Systems, cobrindo automação inteligente, verificação rigorosa de software e arquiteturas descentralizadas.'}
                   </p>
@@ -340,7 +340,7 @@ export default function RepositoriesPage() {
 
                 {/* SDK Installation Command */}
                 <div className="space-y-2">
-                  <h4 className="font-cinzel text-[9px] text-[#52141a] font-bold tracking-wider uppercase">Instalação / SDK</h4>
+                  <h4 className="font-cinzel text-[9px] text-[#52141a] font-bold tracking-wider uppercase">Instalação</h4>
                   <div className="flex items-center justify-between bg-[#181310] border border-renaissance-border rounded p-3 font-mono text-xs text-[#dfd2b8] shadow-inner select-all">
                     <span>npm install @orbesystems/{selectedRepo.name.toLowerCase()}-sdk</span>
                     <button
