@@ -23,21 +23,19 @@ export default function MouseAtomTrail() {
       
       // The leading dot is the main cursor dot
       if (i === 0) {
-        dot.className += ' w-2.5 h-2.5 bg-white z-[10000]';
-        dot.style.boxShadow = '0 0 10px #ffffff, 0 0 20px #c5a059';
+        dot.className += ' w-2 h-2 bg-navy-glow z-[10000]';
+        dot.style.boxShadow = '0 0 10px rgba(126, 184, 224, 0.5)';
       } else if (i === 1) {
-        // Second dot is the main glowing ring
-        dot.className += ' w-8 h-8 border border-[#c5a059] z-[9999]';
-        dot.style.boxShadow = '0 0 12px rgba(197, 160, 89, 0.3)';
+        dot.className += ' w-7 h-7 border border-navy-shine/50 z-[9999]';
+        dot.style.boxShadow = '0 0 10px rgba(90, 143, 181, 0.25)';
       } else {
-        // Trailing particles
-        const size = 6 - (i * 0.5);
+        const size = 5 - i * 0.4;
         dot.className += ' z-[9998]';
         dot.style.width = `${size}px`;
         dot.style.height = `${size}px`;
-        dot.style.backgroundColor = i % 2 === 0 ? '#c5a059' : '#00fff5';
-        dot.style.opacity = String(1.0 - i / dotsCount);
-        dot.style.boxShadow = i % 2 === 0 ? '0 0 8px #c5a059' : '0 0 8px #00fff5';
+        dot.style.backgroundColor = '#5a8fb5';
+        dot.style.opacity = String(0.9 - i / dotsCount);
+        dot.style.boxShadow = '0 0 6px rgba(126, 184, 224, 0.3)';
       }
 
       container.appendChild(dot);

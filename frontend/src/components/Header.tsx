@@ -3,8 +3,7 @@
 import { useState } from 'react';
 import { Menu, X, FileText, LayoutGrid, Mail, LogIn, LogOut, Crown, Zap, Building2, ChevronDown, Monitor, Terminal, Sparkles, Cpu } from 'lucide-react';
 import Link from 'next/link';
-import OrbeLogo from './OrbeLogo';
-import SupernovaAnimation from './SupernovaAnimation';
+import MetallicNavyCanvas from './MetallicNavyCanvas';
 import { useAuth } from '@/hooks/useAuth';
 import { logoutAction } from '@/lib/auth-actions';
 
@@ -24,15 +23,14 @@ export default function Header() {
   const { user, loading } = useAuth();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 backdrop-blur-md bg-black/85 shadow-md">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo area */}
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-navy-metallic/20 backdrop-blur-md bg-black/70">
+      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 group z-50">
-          <div className="relative w-10 h-10">
-            <SupernovaAnimation thumbnail={true} className="w-full h-full" />
+          <div className="relative w-9 h-9 rounded-full overflow-hidden">
+            <MetallicNavyCanvas variant="mini" className="w-full h-full" />
           </div>
-          <span className="font-cinzel text-sm font-bold tracking-widest text-white/80 group-hover:text-blue-400 transition-colors uppercase">
-            ORBE<span className="text-blue-400">SYSTEMS</span>
+          <span className="font-sans text-sm font-medium tracking-wide text-white/85 group-hover:text-navy-glow transition-colors">
+            ORBE<span className="text-navy-glow">SYSTEMS</span>
           </span>
         </Link>
 
@@ -42,7 +40,7 @@ export default function Header() {
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-1.5 font-cinzel text-[11px] uppercase tracking-widest text-white/60 hover:text-blue-400 transition-all duration-200 group"
+              className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-navy-mist/70 hover:text-navy-glow transition-all duration-200 group"
             >
               <Icon size={12} className="group-hover:scale-110 transition-transform text-blue-400/80" />
               <span>{label}</span>

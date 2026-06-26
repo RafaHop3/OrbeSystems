@@ -3,8 +3,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import AtomParticleField from './AtomParticleField';
-import OrbLottieLayer from './OrbLottieLayer';
+import MetallicNavyCanvas from './MetallicNavyCanvas';
 import { updateNarrativeFromScroll } from '@/lib/narrative-state';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -61,61 +60,55 @@ export default function ScrollNarrativeEngine({ children }: Props) {
           if (hudBar) hudBar.style.width = `${progress * 100}%`;
           
           if (progress < 0.28) {
-            if (hudLoc) hudLoc.innerText = 'STANZA_I';
+            if (hudLoc) hudLoc.innerText = 'CH_01';
             if (hudMod) {
               hudMod.innerText = 'INGRESSO';
-              hudMod.style.color = '#c5a059'; // gold
+              hudMod.style.color = '#7eb8e0';
             }
-            if (hudTel) hudTel.innerText = `COHESIO: ${(Math.min(100, progress * 4.5 * 100)).toFixed(0)}%`;
+            if (hudTel) hudTel.innerText = `COHESION: ${(Math.min(100, progress * 4.5 * 100)).toFixed(0)}%`;
           } else if (progress < 0.65) {
-            if (hudLoc) hudLoc.innerText = 'STANZA_II';
+            if (hudLoc) hudLoc.innerText = 'CH_02';
             if (hudMod) {
-              hudMod.innerText = 'OFFICINA_VDE';
-              hudMod.style.color = '#c5a059';
+              hudMod.innerText = 'WORKSPACE';
+              hudMod.style.color = '#7eb8e0';
             }
-            if (hudTel) hudTel.innerText = `PERSPECTIVA: ${(Math.min(100, (progress - 0.28) / (0.65 - 0.28) * 100)).toFixed(0)}%`;
+            if (hudTel) hudTel.innerText = `SYNC: ${(Math.min(100, (progress - 0.28) / (0.65 - 0.28) * 100)).toFixed(0)}%`;
           } else {
-            if (hudLoc) hudLoc.innerText = 'STANZA_III';
+            if (hudLoc) hudLoc.innerText = 'CH_03';
             if (hudMod) {
-              hudMod.innerText = 'CAPOLAVORI';
-              hudMod.style.color = '#52141a'; // burgundy
+              hudMod.innerText = 'PROJECTS';
+              hudMod.style.color = '#5a8fb5';
             }
-            if (hudTel) hudTel.innerText = `SVELATO: EXPONERE`;
+            if (hudTel) hudTel.innerText = `EXPOSE: READY`;
           }
 
-          // Generate automatic technical logs based on scroll progress delta
           const container = document.getElementById('hud-logs-container');
           if (container) {
             const currentScrollPos = window.scrollY;
-            const lastScrollPos = (container as any).lastScrollPos || 0;
+            const lastScrollPos = (container as HTMLElement & { lastScrollPos?: number }).lastScrollPos || 0;
             const delta = Math.abs(currentScrollPos - lastScrollPos);
-            
-            if (delta > 35) { // every 35px of scroll delta
-              (container as any).lastScrollPos = currentScrollPos;
-              
+
+            if (delta > 35) {
+              (container as HTMLElement & { lastScrollPos?: number }).lastScrollPos = currentScrollPos;
+
               const logPool = [
-                `COMPVTANDO: DATAFLOW EST STABILIS`,
-                `PROBATOR_Z3: LOGICA PROVATA (SAT)`,
-                `COGNITIO: GEMINI_IA OPERATING`,
-                `ORBE_CORE: HARMONIA COHESIONIS`,
-                `SEC_SHIELD: RLS REGVLA ENFORCED`,
-                `VDE_DESKTOP: OFFICINA PROSPETTIVA`,
-                `EXPOSITIO: CAPOLAVORI PLACED`,
-                `NET_GATEWAY: PORTA COMMVNICATIONIS`,
-                `TELEMETRIA: EFFLVSVS GOLDEN DVST`,
-                `SISTEMA: ENTROPIA REDVCTA`,
+                'RLS lockdown verified',
+                'PostgREST deny-all active',
+                'Metallic navy canvas synced',
+                'Orb cohesion stable',
+                'API gateway operational',
+                'Cyber safety posture OK',
               ];
               const randomLog = logPool[Math.floor(Math.random() * logPool.length)];
-              
+
               const newLine = document.createElement('span');
               newLine.innerText = `> ${randomLog}`;
-              newLine.className = 'text-[#52141a]/95 text-[8.5px] font-serif tracking-tight truncate italic';
-              
+              newLine.className = 'text-navy-glow/80 text-[8px] font-mono truncate';
+
               container.appendChild(newLine);
-              if (container.children.length > 6) {
+              if (container.children.length > 5) {
                 container.removeChild(container.children[0]);
               }
-              // auto-scroll to bottom
               container.scrollTop = container.scrollHeight;
             }
           }
@@ -278,53 +271,48 @@ export default function ScrollNarrativeEngine({ children }: Props) {
         className="fixed inset-0 z-[1] pointer-events-none overflow-hidden"
         aria-hidden="true"
       >
-        <AtomParticleField />
-        <OrbLottieLayer />
+        <MetallicNavyCanvas variant="full" className="absolute inset-0 w-full h-full" />
       </div>
 
       <div className="relative z-10">{children}</div>
 
       {/* Floating HUD: Codex Orbe Scroll diary */}
-      <div 
-        id="scroll-hud" 
-        className="fixed right-8 top-[35%] -translate-y-1/2 z-[40] hidden xl:flex flex-col w-64 bg-[#f1e7d0] border-2 border-[#c5a059] rounded p-4 font-serif text-[10px] text-[#2b1d16] space-y-3 opacity-0 transition-opacity duration-300 pointer-events-none"
-        style={{ boxShadow: '2px 10px 30px rgba(0,0,0,0.65)' }}
+      <div
+        id="scroll-hud"
+        className="fixed right-6 top-[35%] -translate-y-1/2 z-[40] hidden xl:flex flex-col w-56 glass-navy rounded-lg p-4 font-mono text-[10px] text-navy-mist space-y-3 opacity-0 transition-opacity duration-300 pointer-events-none"
       >
-        <div className="flex items-center justify-between border-b border-[#2b1d16]/20 pb-2">
-          <span className="font-cinzel text-xs text-[#52141a] font-bold tracking-wider uppercase">CODEX ORBE</span>
-          <span className="w-1.5 h-1.5 rounded-full bg-[#52141a] animate-pulse" />
+        <div className="flex items-center justify-between border-b border-navy-metallic/30 pb-2">
+          <span className="text-xs text-navy-glow font-medium tracking-wider uppercase">Orbe HUD</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-navy-glow animate-pulse" />
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 text-navy-mist/80">
           <div className="flex justify-between">
-            <span>STANZA:</span>
-            <span id="hud-location" className="font-cinzel text-[#1c130d] font-bold">STANZA_I</span>
+            <span>CH:</span>
+            <span id="hud-location" className="text-white/90 font-medium">CH_01</span>
           </div>
           <div className="flex justify-between">
-            <span>DISPOSITIO:</span>
-            <span id="hud-module" className="font-serif italic font-bold">INGRESSO</span>
+            <span>MOD:</span>
+            <span id="hud-module" className="text-navy-glow font-medium">INGRESSO</span>
           </div>
           <div className="flex justify-between">
-            <span>PROPORTIO:</span>
-            <span id="hud-telemetry" className="font-serif">PROPORZIONE AUREA</span>
+            <span>TELEM:</span>
+            <span id="hud-telemetry" className="text-navy-shine">—</span>
           </div>
         </div>
         <div className="space-y-1">
-          <div className="flex justify-between text-[9px] opacity-75">
-            <span>SCRITTVRA:</span>
-            <span id="hud-progress-pct" className="font-mono">0.0%</span>
+          <div className="flex justify-between text-[9px] opacity-60">
+            <span>SCROLL</span>
+            <span id="hud-progress-pct">0.0%</span>
           </div>
-          {/* Scroll progress bar */}
-          <div className="h-1 w-full bg-[#2b1d16]/10 border border-[#2b1d16]/20 rounded-full overflow-hidden">
-            <div id="hud-progress-bar" className="h-full bg-[#52141a] transition-all duration-75" style={{ width: '0%' }} />
+          <div className="h-0.5 w-full bg-navy-steel/40 rounded-full overflow-hidden">
+            <div id="hud-progress-bar" className="h-full bg-navy-glow transition-all duration-75" style={{ width: '0%' }} />
           </div>
         </div>
-        <div 
-          id="hud-logs-container" 
-          className="border-t border-[#2b1d16]/20 pt-2 text-[8.5px] text-[#2b1d16]/75 flex flex-col gap-0.5 h-20 overflow-hidden font-serif italic"
-          style={{ scrollBehavior: 'smooth' }}
+        <div
+          id="hud-logs-container"
+          className="border-t border-navy-metallic/25 pt-2 text-[8px] flex flex-col gap-0.5 h-16 overflow-hidden"
         >
-          <span className="text-[#52141a]/95">&gt; Incipit Codex Orbe v1.2.0...</span>
-          <span className="text-[#52141a]/95">&gt; Stanza prima inizializzata.</span>
+          <span className="text-navy-glow/70">&gt; navy canvas online</span>
         </div>
       </div>
 

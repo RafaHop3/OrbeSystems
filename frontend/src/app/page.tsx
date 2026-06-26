@@ -9,7 +9,7 @@ import KidsPromoSection from '@/components/KidsPromoSection';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-terminal-bg">
+    <main className="min-h-screen bg-transparent">
       <Header />
       <ScrollNarrativeEngine>
         <HeroSection />
