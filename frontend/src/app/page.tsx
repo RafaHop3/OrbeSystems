@@ -1,5 +1,6 @@
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
+import ProjectsGrid from '@/components/ProjectsGrid';
 import Footer from '@/components/Footer';
 import ScrollNarrativeEngine from '@/components/ScrollNarrativeEngine';
 import VdePreview from '@/components/vde/VdePreview';
@@ -13,6 +14,7 @@ export default function HomePage() {
         <HeroSection />
         <VdePreview />
         <FreedomSection />
+        <ProjectsGrid />
       </ScrollNarrativeEngine>
       <Footer />
     </main>

@@ -11,7 +11,6 @@ import {
   Database, 
   LineChart, 
   Binary, 
-  Sparkles, 
   ChevronRight, 
   Atom, 
   CheckCircle2, 
@@ -19,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export default function InovacoesPage() {
-  const [activeTab, setActiveTab] = useState<'imortal' | 'kids' | 'infra'>('imortal');
+  const [activeTab, setActiveTab] = useState<'imortal' | 'infra'>('imortal');
 
   return (
     <main className="min-h-screen bg-[#07040d] text-gray-100 selection:bg-cyan-500 selection:text-black">
@@ -55,16 +54,6 @@ export default function InovacoesPage() {
             }`}
           >
             <ShieldCheck size={16} /> IMORTAL Premium
-          </button>
-          <button
-            onClick={() => setActiveTab('kids')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 ${
-              activeTab === 'kids'
-                ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-cyan-500/30 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.15)]'
-                : 'border border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5'
-            }`}
-          >
-            <Sparkles size={16} /> Kids Studio
           </button>
           <button
             onClick={() => setActiveTab('infra')}
@@ -161,78 +150,7 @@ export default function InovacoesPage() {
           </div>
         )}
 
-        {/* PANEL 2: KIDS STUDIO */}
-        {activeTab === 'kids' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            {/* Visual simulation block */}
-            <div className="lg:col-span-5 bg-black/50 border border-white/5 rounded-3xl p-6 relative overflow-hidden backdrop-blur-md">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl" />
-              <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-4 font-mono text-[10px] text-gray-400">
-                <span className="flex items-center gap-1.5"><Sparkles size={10} className="text-purple-400" /> kids_runtime.js</span>
-                <span className="text-purple-400">THEME: ESPAÇO</span>
-              </div>
-              <div className="space-y-4 font-mono text-xs text-gray-300">
-                <div className="bg-black/30 p-3 rounded-lg border border-white/5 space-y-1">
-                  <span className="text-gray-500">// Biblioteca Injetada em Background</span><br />
-                  <span className="text-emerald-400">const</span> FisicaEspacial = &#123;<br />
-                  &nbsp;&nbsp;simularLancamento: <span className="text-blue-400">function</span>(empuxo, massa) &#123;...&#125;<br />
-                  &#125;
-                </div>
-                <div className="bg-purple-500/10 p-3 rounded-lg border border-purple-500/20 text-purple-300 text-[11px] leading-relaxed">
-                  <strong>Engine Acadêmica de Kids:</strong> As bibliotecas temáticas são injetadas em tempo de execução no escopo do editor, oferecendo ferramentas reais para ensinar física, IA e matemática.
-                </div>
-              </div>
-            </div>
-
-            {/* Explanation details */}
-            <div className="lg:col-span-7 space-y-6">
-              <div className="inline-block bg-purple-500/10 text-purple-300 border border-purple-500/30 text-[10px] uppercase font-bold tracking-widest px-2.5 py-0.5 rounded-md">
-                Gamificação & Aprendizado Nobre
-              </div>
-              <h2 className="text-3xl font-black text-white">TechBot Kids Studio</h2>
-              <p className="text-sm text-gray-400 leading-relaxed font-light">
-                O TechBot Kids Studio é o nosso portal educacional interativo. Projetado com estética cyberpunk, ele remove a barreira de conceitos científicos complexos e os apresenta como ferramentas mecânicas práticas.
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 bg-white/5 border border-white/5 rounded-2xl space-y-2">
-                  <div className="flex items-center gap-2 text-cyan-400 font-bold text-sm">
-                    <Binary size={16} /> Injeção de Contexto Temático
-                  </div>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Auto-carregamento de pacotes Javascript complexos. Permite à criança chamar funções científicas avançadas e renderizar simulações gráficas no console.
-                  </p>
-                </div>
-                <div className="p-4 bg-white/5 border border-white/5 rounded-2xl space-y-2">
-                  <div className="flex items-center gap-2 text-pink-400 font-bold text-sm">
-                    <Sparkles size={16} /> API AI Tutor (Techy)
-                  </div>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Alimentado por Gemini 2.0 Flash via rotas customizadas, atuando como tutor amigável que explica bugs, código e encoraja o progresso com lógica lúdica.
-                  </p>
-                </div>
-                <div className="p-4 bg-white/5 border border-white/5 rounded-2xl space-y-2">
-                  <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
-                    <Atom size={16} /> Síntese Sonora Web Audio
-                  </div>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Uso de osciladores de áudio nativos do navegador para sonorização de sucessos e erros, sem carregar arquivos pesados de mp3.
-                  </p>
-                </div>
-                <div className="p-4 bg-white/5 border border-white/5 rounded-2xl space-y-2">
-                  <div className="flex items-center gap-2 text-yellow-400 font-bold text-sm">
-                    <ShieldCheck size={16} /> Canal de Apoio Embutido
-                  </div>
-                  <p className="text-xs text-gray-400 leading-relaxed">
-                    Lógica de suporte social discreto com acesso imediato ao Disque 100 (Conselho Tutelar), 190 e suporte emocional.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* PANEL 3: INFRA */}
+        {/* PANEL 2: INFRA */}
         {activeTab === 'infra' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Visual simulation block */}
@@ -244,13 +162,12 @@ export default function InovacoesPage() {
               </div>
               <div className="space-y-4 font-mono text-xs text-gray-300">
                 <div className="bg-black/30 p-3 rounded-lg border border-white/5 space-y-1">
-                  <span className="text-gray-500"># Custos de Infraestrutura IA</span><br />
-                  <span>Gemini API (REST): <span className="text-emerald-400">Gratuito</span></span><br />
+                  <span className="text-gray-500"># Custos de Infraestrutura</span><br />
                   <span>Next.js Frontend: <span className="text-emerald-400">Gratuito</span></span><br />
                   <span>PostgreSQL + Vector: <span className="text-emerald-400">Gratuito</span></span>
                 </div>
                 <div className="bg-pink-500/10 p-3 rounded-lg border border-pink-500/20 text-pink-300 text-[11px] leading-relaxed">
-                  <strong>Eficiência Econômica:</strong> Escalabilidade sem custos fixos de execução de LLMs, usando canais de API otimizados e renderização de layout zero-dependency.
+                  <strong>Eficiência Econômica:</strong> Escalabilidade sem custos fixos, usando canais de API otimizados e renderização de layout zero-dependency.
                 </div>
               </div>
             </div>
