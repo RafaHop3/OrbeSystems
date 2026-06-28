@@ -39,7 +39,7 @@ export default function Footer() {
               </span>
             </div>
             <p className="font-serif text-xs italic text-renaissance-muted">
-              L’Architettura dell’Informazione &amp; Ingegneria di Codice
+              Arquitetura de Informacao & Engenharia de Codigo
             </p>
           </div>
 

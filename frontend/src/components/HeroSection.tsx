@@ -28,7 +28,7 @@ export default function HeroSection() {
           O terminal é a sua{' '}
           <span className="font-medium text-navy-glow">ferramenta.</span>
           <span className="block text-white/50 text-xl md:text-2xl mt-4 font-light">
-            A IA é a sua inteligência.
+            A tecnologia é o seu poder.
           </span>
         </h1>
 

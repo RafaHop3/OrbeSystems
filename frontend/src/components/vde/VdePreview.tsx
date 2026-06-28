@@ -15,7 +15,7 @@ export default function VdePreview() {
           Workspace no navegador
         </h2>
         <p className="font-sans text-sm text-navy-mist/70 mt-3 max-w-xl mx-auto font-light">
-          Terminal, WebIDE e assistente Orbe — integrados, leves e seguros.
+          Terminal e WebIDE — integrados, leves e seguros.
         </p>
       </div>
 

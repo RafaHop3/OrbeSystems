@@ -9,10 +9,8 @@ import { logoutAction } from '@/lib/auth-actions';
 
 const NAV_LINKS = [
   { label: 'Workspace', href: '/workspace', icon: Monitor },
-  { label: 'Repositórios', href: '/repositorios', icon: FileText },
   { label: 'Skills', href: '/skills', icon: LayoutGrid },
   { label: 'Inovações 🔬', href: '/inovacoes', icon: Cpu },
-  { label: 'Kids 🚀', href: '/kids', icon: Sparkles },
   { label: 'Contato', href: '/#contact', icon: Mail },
 ];
 
