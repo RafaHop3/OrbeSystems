@@ -25,7 +25,7 @@ class AnalyticsPayload(BaseModel):
     page: Optional[str] = Field(default=None, max_length=200)
     referrer: Optional[str] = Field(default=None, max_length=200)
     # Honeypot: bots fill this, humans don't
-    _hp: Optional[str] = Field(default=None, max_length=0)
+    hp_field: Optional[str] = Field(default=None, max_length=0)
 
     @field_validator("event_type")
     @classmethod
@@ -50,7 +50,7 @@ async def log_visit(request: Request, payload: Optional[AnalyticsPayload] = None
     Rejects requests with honeypot field filled (bot detection).
     """
     # Bot honeypot check
-    if payload and payload._hp:
+    if payload and payload.hp_field:
         # Silently accept but discard — don't reveal detection logic
         return {"status": "captured"}
 
