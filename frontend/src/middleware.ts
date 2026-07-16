@@ -11,6 +11,13 @@
  *
  * PERFORMANCE: Zero consultas ao banco de dados por clique.
  * O role e is_premium já estão no payload do JWT.
+ *
+ * SECURITY NOTE [L2]: This middleware is a UX guard ONLY.
+ * It decodes the JWT payload with atob() without verifying the HMAC
+ * signature — signature verification happens on EVERY backend API call.
+ * An attacker with a tampered token may see the HTML of a premium page,
+ * but ALL data endpoints will return 401/403 from the backend.
+ * The max-age sanity check below provides an additional layer of defence.
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -28,7 +35,8 @@ interface JWTPayload {
   sub: string;        // email
   role: string;       // "user" | "premium"
   is_premium: boolean;
-  exp: number;
+  exp: number;        // expiry (unix timestamp)
+  iat?: number;       // issued-at (unix timestamp) — used for max-age check
 }
 
 function decodeJwtPayload(token: string): JWTPayload | null {
@@ -46,7 +54,14 @@ function decodeJwtPayload(token: string): JWTPayload | null {
 }
 
 function isTokenExpired(payload: JWTPayload): boolean {
-  return Date.now() / 1000 > payload.exp;
+  const now = Date.now() / 1000;
+  // Standard exp check
+  if (now > payload.exp) return true;
+  // [L2] Max-age sanity check: reject tokens older than 7 days even if exp is valid.
+  // This limits the window for token replay attacks with a forged iat.
+  const MAX_TOKEN_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
+  if (payload.iat && now - payload.iat > MAX_TOKEN_AGE_SECONDS) return true;
+  return false;
 }
 
 // ── Middleware Logic ──────────────────────────────────────────────────────────

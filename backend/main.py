@@ -227,13 +227,16 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    """Global handler: logs full traceback server-side, returns the real error message to clients."""
+    """Global handler: logs full traceback server-side, returns a GENERIC message to clients.
+    
+    Security [M4]: Never expose str(exc) to clients — it may contain DB schema names,
+    file paths, or internal stack context. Full detail stays in server logs only.
+    """
     err_msg = traceback.format_exc()
     print(f"CRITICAL UNHANDLED ERROR: {err_msg}")
-    # Return the real error detail to help debug api/repo issues.
     return JSONResponse(
         status_code=500,
-        content={"detail": f"Internal Server Error: {str(exc)}"}
+        content={"detail": "Internal Server Error. Please try again later."}
     )
 
 # ── Rate Limiting (SlowAPI) ───────────────────────────────────────────────────
@@ -309,9 +312,9 @@ async def health_check():
     return {
         "status": "operational",
         "service": "orbe-systems-api",
-        "version": "1.3.1",
+        # Security [L1]: version and deployed_at removed to prevent fingerprinting.
+        # Correlating version strings with CVE databases is a common recon step.
         "database": db_status,
-        "deployed_at": datetime.utcnow().isoformat()
     }
 
 
