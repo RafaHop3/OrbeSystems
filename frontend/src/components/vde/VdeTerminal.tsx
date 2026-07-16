@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Volume2, VolumeX, Terminal, Loader2, Sparkles, Shield, Cpu, Database, HelpCircle, User } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { API_BASE_URL } from '@/lib/api';
+import { PROXY_BASE_URL } from '@/lib/api';
 
 interface TerminalLine {
   text: React.ReactNode;
@@ -54,7 +54,7 @@ export default function VdeTerminal() {
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
-  
+
   // Tab Autocomplete state
   const [autocompleteHint, setAutocompleteHint] = useState('');
 
@@ -76,12 +76,12 @@ export default function VdeTerminal() {
       const ctx = new AudioCtx();
       const osc = ctx.createOscillator();
       const gainNode = ctx.createGain();
-      
+
       osc.type = type;
       osc.frequency.setValueAtTime(freq, ctx.currentTime);
       gainNode.gain.setValueAtTime(0.006, ctx.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-      
+
       osc.connect(gainNode);
       gainNode.connect(ctx.destination);
       osc.start();
@@ -98,7 +98,7 @@ export default function VdeTerminal() {
 
     const tick = () => {
       if (cancelled || i >= BOOT_LINES.length) return;
-      
+
       let type: TerminalLine['type'] = 'info';
       if (BOOT_LINES[i].startsWith('[OK]')) type = 'success';
       if (BOOT_LINES[i].startsWith('login:')) type = 'warning';
@@ -201,7 +201,7 @@ export default function VdeTerminal() {
       setInput('');
       setAutocompleteHint('');
       setHistoryIndex(-1);
-      
+
       if (cmd.trim()) {
         setHistory((prev) => [...prev, cmd]);
       }
@@ -213,7 +213,7 @@ export default function VdeTerminal() {
   // Command Execution Engine
   const handleCommand = async (rawCmd: string) => {
     const trimmed = rawCmd.trim();
-    
+
     // 1. Wizard interceptor
     if (wizard) {
       playBeep(850, 0.04, 'sine');
@@ -240,7 +240,7 @@ export default function VdeTerminal() {
         setWizard(null);
 
         try {
-          const res = await fetch(`${API_BASE_URL}/api/suite-inteligente/convert`, {
+          const res = await fetch(`${PROXY_BASE_URL}/api/suite-inteligente/convert`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ mode, content: trimmed }),
@@ -469,7 +469,7 @@ export default function VdeTerminal() {
 
         setIsProcessing(true);
         try {
-          const res = await fetch(`${API_BASE_URL}/api/suite-inteligente/compress`, {
+          const res = await fetch(`${PROXY_BASE_URL}/api/suite-inteligente/compress`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ content: args, max_dict_size: 4096 }),
@@ -478,7 +478,7 @@ export default function VdeTerminal() {
           if (res.ok) {
             const data = await res.json();
             const { original_size_bytes, compressed_size_bytes, compression_ratio, saving_percentage, buffer_preview } = data.telemetry;
-            
+
             // Build ASCII chart representation
             const savingPctNum = parseFloat(saving_percentage.replace('%', ''));
             const filledWidth = Math.round((savingPctNum / 100) * 20);
@@ -505,7 +505,7 @@ export default function VdeTerminal() {
           const words = args.split(/(\s+)/);
           const outputArr: string[] = [];
           let count = 0;
-          
+
           words.forEach(w => {
             if (w.length > 3 && !dict.has(w)) {
               dict.set(w, count++);
@@ -520,7 +520,7 @@ export default function VdeTerminal() {
           const compLen = compStr.length;
           const ratio = (origLen / compLen).toFixed(2);
           const saving = Math.max(0, ((1 - compLen / origLen) * 100));
-          
+
           const filledWidth = Math.round((saving / 100) * 20);
           const emptyWidth = 20 - filledWidth;
           const bar = `[${'█'.repeat(filledWidth)}${'░'.repeat(emptyWidth)}] ${saving.toFixed(1)}%`;
@@ -551,7 +551,7 @@ export default function VdeTerminal() {
       case 'audit':
         setIsProcessing(true);
         setLines((prev) => [...prev, { text: 'Iniciando auditoria completa de infraestrutura...', type: 'info' }]);
-        
+
         setTimeout(() => {
           setLines((prev) => [
             ...prev,
@@ -573,7 +573,7 @@ export default function VdeTerminal() {
       case 'imortal':
         setIsProcessing(true);
         setLines((prev) => [...prev, { text: 'Iniciando pipeline de Prova Formal Z3 + Stochastic Fuzzing...', type: 'info' }]);
-        
+
         // Progress stage simulation
         const stages = [
           { label: 'Gerando Intermediate Representation (IR)...', freq: 400 },
@@ -657,7 +657,7 @@ export default function VdeTerminal() {
   };
 
   return (
-    <div 
+    <div
       onClick={handleTerminalClick}
       className="flex-1 m-2 md:m-3 rounded-lg overflow-hidden border border-terminal-border flex flex-col bg-[#0d1117] select-text cursor-text relative scanlines"
     >
@@ -716,11 +716,11 @@ export default function VdeTerminal() {
         {/* Command line prompt input field */}
         <div className="flex items-center text-white mt-2 relative">
           <span className="text-neon-green select-none mr-2 font-bold">
-            {wizard 
+            {wizard
               ? (wizard.step === 'mode' ? 'mode?' : 'data?')
               : 'rafael@orbe-vde:~$'}
           </span>
-          
+
           <div className="flex-1 relative flex items-center">
             {/* Input display layer */}
             <span className="z-10 whitespace-pre">{input}</span>

@@ -6,7 +6,7 @@ import {
   FileText, Sparkles, Trash2, ChevronDown, ChevronUp,
   Activity, Copy, Check, TerminalSquare, Zap, BrainCircuit
 } from 'lucide-react';
-import { API_BASE_URL } from '@/lib/api';
+import { PROXY_BASE_URL } from '@/lib/api';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -283,7 +283,7 @@ export default function VdeAssistant() {
       const token = typeof window !== 'undefined'
         ? (localStorage.getItem('orbe_admin_token') || localStorage.getItem('orbe_auth_token'))
         : null;
-      const res = await fetch(`${API_BASE_URL}/api/offline-agent/jobs`, {
+      const res = await fetch(`${PROXY_BASE_URL}/api/offline-agent/jobs`, {
         headers: { 'Authorization': token ? `Bearer ${token}` : '' }
       });
       if (res.ok) {
@@ -294,7 +294,7 @@ export default function VdeAssistant() {
           return next;
         });
       }
-    } catch (_) {}
+    } catch (_) { }
   }, []);
 
   useEffect(() => {
@@ -320,7 +320,7 @@ export default function VdeAssistant() {
 
     try {
       const token = getToken();
-      const res = await fetch(`${API_BASE_URL}/api/offline-agent/submit`, {
+      const res = await fetch(`${PROXY_BASE_URL}/api/offline-agent/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -341,9 +341,9 @@ export default function VdeAssistant() {
         setMessages(prev => [...prev, reply]);
         fetchJobs();
       } else {
-        const isLocal = typeof window !== 'undefined' && 
+        const isLocal = typeof window !== 'undefined' &&
           (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-        
+
         const errMsg = isLocal
           ? `⚠️ Backend offline não respondeu (status ${res.status}). Verifique se a API está rodando.`
           : `⚠️ O servidor de processamento remoto da Orbe Systems não respondeu adequadamente (status ${res.status}). Se o serviço estiver inicializando do modo de repouso, a operação deve ser restabelecida em 1-2 minutos.`;
@@ -355,7 +355,7 @@ export default function VdeAssistant() {
         }]);
       }
     } catch {
-      const isLocal = typeof window !== 'undefined' && 
+      const isLocal = typeof window !== 'undefined' &&
         (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
       const errMsg = isLocal

@@ -3,14 +3,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { 
-  Terminal, Shield, Zap, Copy, Check, Play, AlertTriangle, 
+import {
+  Terminal, Shield, Zap, Copy, Check, Play, AlertTriangle,
   ArrowRight, Lock, Crown, Download, FileCode, CheckCircle, HelpCircle, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { API_BASE_URL } from '@/lib/api';
+import { PROXY_BASE_URL } from '@/lib/api';
 
-const API_URL = API_BASE_URL;
+const API_URL = PROXY_BASE_URL;
 
 interface ChatMessage {
   sender: 'user' | 'bot';
@@ -24,7 +24,7 @@ export default function PowerShellBotPage() {
   const [activeTab, setActiveTab] = useState<'chat' | 'analyzer' | 'library'>('chat');
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState('');
-  
+
   // Tab 1: Chat Input & History
   const [chatInput, setChatInput] = useState('');
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
@@ -34,7 +34,7 @@ export default function PowerShellBotPage() {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
-  
+
   // Tab 2: Code Analyzer Input
   const [analyzerInput, setAnalyzerInput] = useState('');
   const [analysisResult, setAnalysisResult] = useState<any>(null);
@@ -42,7 +42,7 @@ export default function PowerShellBotPage() {
   // Active generated script file type tab
   const [activeScriptFormat, setActiveScriptFormat] = useState<'ps1' | 'bat' | 'sh' | 'json' | 'yml' | 'md'>('ps1');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  
+
   // Active output data (for displaying in the file panel)
   const [currentOutputData, setCurrentOutputData] = useState<any>(null);
 
@@ -98,7 +98,7 @@ export default function PowerShellBotPage() {
 
     try {
       const data = await callApi('/chat', { prompt: promptToSend });
-      
+
       const botMsg: ChatMessage = {
         sender: 'bot',
         text: data.explanation || 'Análise concluída com sucesso.',
@@ -187,10 +187,10 @@ export default function PowerShellBotPage() {
       <Header />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 pt-24 pb-16 flex flex-col lg:flex-row gap-6">
-        
+
         {/* Left Column: Control Panel and Navigation */}
         <aside className="w-full lg:w-72 flex-shrink-0 flex flex-col gap-4">
-          
+
           {/* Logo & Identity Widget */}
           <div className="bg-terminal-surface/90 border border-terminal-border rounded-lg p-5 flex flex-col gap-3">
             <div className="flex items-center gap-3 mb-2 border-b border-terminal-border pb-3">
@@ -203,11 +203,11 @@ export default function PowerShellBotPage() {
               </div>
             </div>
 
-            <button 
+            <button
               onClick={() => setActiveTab('chat')}
               className={`flex items-center gap-3 w-full py-2.5 px-3 rounded font-mono text-[11px] uppercase tracking-wider transition-all duration-200 text-left
-                ${activeTab === 'chat' 
-                  ? 'bg-neon-cyan/10 border border-neon-cyan/40 text-neon-cyan' 
+                ${activeTab === 'chat'
+                  ? 'bg-neon-cyan/10 border border-neon-cyan/40 text-neon-cyan'
                   : 'text-terminal-muted hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
             >
@@ -215,11 +215,11 @@ export default function PowerShellBotPage() {
               <span>Console Assistente</span>
             </button>
 
-            <button 
+            <button
               onClick={() => setActiveTab('analyzer')}
               className={`flex items-center gap-3 w-full py-2.5 px-3 rounded font-mono text-[11px] uppercase tracking-wider transition-all duration-200 text-left
-                ${activeTab === 'analyzer' 
-                  ? 'bg-neon-purple/10 border border-neon-purple/40 text-neon-purple' 
+                ${activeTab === 'analyzer'
+                  ? 'bg-neon-purple/10 border border-neon-purple/40 text-neon-purple'
                   : 'text-terminal-muted hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
             >
@@ -227,11 +227,11 @@ export default function PowerShellBotPage() {
               <span>Analisador SAST</span>
             </button>
 
-            <button 
+            <button
               onClick={() => setActiveTab('library')}
               className={`flex items-center gap-3 w-full py-2.5 px-3 rounded font-mono text-[11px] uppercase tracking-wider transition-all duration-200 text-left
-                ${activeTab === 'library' 
-                  ? 'bg-neon-green/10 border border-neon-green/40 text-neon-green' 
+                ${activeTab === 'library'
+                  ? 'bg-neon-green/10 border border-neon-green/40 text-neon-green'
                   : 'text-terminal-muted hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
             >
@@ -266,15 +266,15 @@ export default function PowerShellBotPage() {
               <span className="text-red-400 font-bold">SIM</span>
             </div>
           </div>
-          
+
         </aside>
 
         {/* Center/Right Column: Main Work Area */}
         <section className="flex-1 flex flex-col gap-6">
-          
+
           {/* Main Content Area Container */}
           <div className="bg-terminal-surface/90 border border-terminal-border rounded-lg overflow-hidden flex flex-col shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)] flex-1 min-h-[500px]">
-            
+
             {/* Terminal Tab Header */}
             <div className="bg-[#161b22] border-b border-terminal-border px-5 py-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -293,21 +293,20 @@ export default function PowerShellBotPage() {
 
             {/* Content Switcher */}
             <div className="p-6 flex-1 flex flex-col">
-              
+
               {/* TAB 1: CONSOLE ASSISTENTE */}
               {activeTab === 'chat' && (
                 <div className="flex-1 flex flex-col justify-between gap-4 h-full">
-                  
+
                   {/* Chat Message Logs */}
                   <div className="flex-1 overflow-y-auto max-h-[380px] space-y-4 pr-2 scrollbar-thin scrollbar-thumb-neon-cyan/10">
                     {chatHistory.map((msg, idx) => (
-                      <div 
-                        key={idx} 
-                        className={`flex gap-3 p-4 rounded-lg border leading-relaxed ${
-                          msg.sender === 'user'
+                      <div
+                        key={idx}
+                        className={`flex gap-3 p-4 rounded-lg border leading-relaxed ${msg.sender === 'user'
                             ? 'bg-neon-cyan/5 border-neon-cyan/20 ml-12'
                             : 'bg-black/30 border-terminal-border/40 mr-12'
-                        }`}
+                          }`}
                       >
                         <div className="flex-shrink-0">
                           {msg.sender === 'user' ? (
@@ -328,17 +327,16 @@ export default function PowerShellBotPage() {
                             </span>
                             <span>{msg.timestamp}</span>
                           </div>
-                          
+
                           <p className="text-white whitespace-pre-wrap">{msg.text}</p>
-                          
+
                           {/* If message has security data, render safety report inline */}
                           {msg.data && (
                             <div className="border border-terminal-border/30 rounded mt-3 overflow-hidden bg-black/40">
-                              
+
                               {/* Header safety title */}
-                              <div className={`p-2 font-bold text-[10px] uppercase flex justify-between items-center border-b border-terminal-border/30 ${
-                                msg.data.is_safe ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
-                              }`}>
+                              <div className={`p-2 font-bold text-[10px] uppercase flex justify-between items-center border-b border-terminal-border/30 ${msg.data.is_safe ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+                                }`}>
                                 <div className="flex items-center gap-1.5">
                                   {msg.data.is_safe ? <CheckCircle size={12} /> : <AlertTriangle size={12} />}
                                   <span>Avaliação de Risco Operacional</span>
@@ -365,7 +363,7 @@ export default function PowerShellBotPage() {
                                     <span className="text-[9px] text-neon-cyan/80 font-bold uppercase tracking-wider">Comando Consolidado Seguro:</span>
                                     <div className="flex items-center justify-between gap-3 bg-black/50 border border-neon-cyan/20 p-2 rounded text-[10px] text-neon-cyan overflow-x-auto">
                                       <code className="whitespace-nowrap font-mono">{msg.data.secured_command}</code>
-                                      <button 
+                                      <button
                                         onClick={() => copyToClipboard(msg.data.secured_command, `sec-${idx}`)}
                                         className="text-terminal-muted hover:text-neon-cyan flex-shrink-0"
                                       >
@@ -380,7 +378,7 @@ export default function PowerShellBotPage() {
                         </div>
                       </div>
                     ))}
-                    
+
                     {loading && (
                       <div className="flex gap-3 p-4 rounded-lg bg-black/30 border border-terminal-border/40 mr-12 animate-pulse">
                         <div className="w-6 h-6 rounded-full bg-black flex items-center justify-center font-mono text-[10px] text-neon-cyan font-bold border border-neon-cyan/20 animate-spin">
@@ -397,8 +395,8 @@ export default function PowerShellBotPage() {
 
                   {/* Input form */}
                   <div className="flex gap-2 border-t border-terminal-border/40 pt-4 mt-2">
-                    <input 
-                      type="text" 
+                    <input
+                      type="text"
                       value={chatInput}
                       onChange={(e) => setChatInput(e.target.value)}
                       onKeyDown={(e) => {
@@ -408,7 +406,7 @@ export default function PowerShellBotPage() {
                       className="flex-1 bg-black/40 border border-terminal-border/60 focus:border-neon-cyan focus:outline-none px-4 py-3 font-mono text-xs rounded text-white"
                       disabled={loading}
                     />
-                    <button 
+                    <button
                       onClick={() => handleSendPrompt()}
                       disabled={loading || !chatInput.trim()}
                       className="flex items-center gap-2 font-mono text-xs font-bold tracking-wider uppercase bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/40 hover:bg-neon-cyan/25 hover:border-neon-cyan px-6 py-3 rounded transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
@@ -435,7 +433,7 @@ export default function PowerShellBotPage() {
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <textarea 
+                    <textarea
                       value={analyzerInput}
                       onChange={(e) => setAnalyzerInput(e.target.value)}
                       rows={6}
@@ -443,7 +441,7 @@ export default function PowerShellBotPage() {
                       className="w-full bg-black/40 border border-terminal-border/60 hover:border-neon-purple/50 focus:border-neon-purple focus:outline-none p-4 font-mono text-xs rounded transition-colors text-white leading-relaxed"
                     />
                     <div className="flex justify-end">
-                      <button 
+                      <button
                         onClick={handleAnalyzeScript}
                         disabled={loading || !analyzerInput.trim()}
                         className="flex items-center gap-2 font-mono text-xs font-bold tracking-wider uppercase bg-neon-purple/15 text-neon-purple border border-neon-purple/40 hover:bg-neon-purple/25 hover:border-neon-purple px-6 py-2.5 rounded transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
@@ -457,7 +455,7 @@ export default function PowerShellBotPage() {
                   {/* Analysis Output Result */}
                   {analysisResult && (
                     <div className="border border-terminal-border/40 bg-black/20 rounded-lg p-5 space-y-4 animate-fade-in-up">
-                      
+
                       {/* Health Gauge & Score */}
                       <div className="flex flex-col sm:flex-row gap-5 justify-between items-start sm:items-center border-b border-terminal-border/20 pb-4">
                         <div className="space-y-1">
@@ -467,18 +465,16 @@ export default function PowerShellBotPage() {
                         <div className="flex items-center gap-3">
                           <div className="text-right">
                             <div className="font-mono text-[10px] text-terminal-muted">RISCO DE SEGURANÇA</div>
-                            <div className={`font-mono text-sm font-bold ${
-                              analysisResult.risk_level === 'CRITICAL' || analysisResult.risk_level === 'HIGH' ? 'text-red-400' : 
-                              analysisResult.risk_level === 'MEDIUM' ? 'text-yellow-400' : 'text-green-400'
-                            }`}>
+                            <div className={`font-mono text-sm font-bold ${analysisResult.risk_level === 'CRITICAL' || analysisResult.risk_level === 'HIGH' ? 'text-red-400' :
+                                analysisResult.risk_level === 'MEDIUM' ? 'text-yellow-400' : 'text-green-400'
+                              }`}>
                               NÍVEL: {analysisResult.risk_level}
                             </div>
                           </div>
-                          <div className={`w-14 h-14 rounded-full border-2 flex items-center justify-center font-mono text-base font-bold ${
-                            analysisResult.security_score >= 80 ? 'border-green-500 text-green-400 bg-green-500/10' : 
-                            analysisResult.security_score >= 55 ? 'border-yellow-500 text-yellow-400 bg-yellow-500/10' :
-                            'border-red-500 text-red-400 bg-red-500/10'
-                          }`}>
+                          <div className={`w-14 h-14 rounded-full border-2 flex items-center justify-center font-mono text-base font-bold ${analysisResult.security_score >= 80 ? 'border-green-500 text-green-400 bg-green-500/10' :
+                              analysisResult.security_score >= 55 ? 'border-yellow-500 text-yellow-400 bg-yellow-500/10' :
+                                'border-red-500 text-red-400 bg-red-500/10'
+                            }`}>
                             {analysisResult.security_score}
                           </div>
                         </div>
@@ -495,12 +491,11 @@ export default function PowerShellBotPage() {
                                   <span className="text-[10px] text-neon-purple font-bold bg-neon-purple/10 border border-neon-purple/30 px-1.5 py-0.5 rounded">
                                     {f.rule}
                                   </span>
-                                  <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded border ${
-                                    f.severity === 'CRITICAL' ? 'bg-red-500/10 text-red-400 border-red-500/30' :
-                                    f.severity === 'HIGH' ? 'bg-orange-500/10 text-orange-400 border-orange-500/30' :
-                                    f.severity === 'MEDIUM' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
-                                    'bg-green-500/10 text-green-400 border-green-500/30'
-                                  }`}>
+                                  <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded border ${f.severity === 'CRITICAL' ? 'bg-red-500/10 text-red-400 border-red-500/30' :
+                                      f.severity === 'HIGH' ? 'bg-orange-500/10 text-orange-400 border-orange-500/30' :
+                                        f.severity === 'MEDIUM' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
+                                          'bg-green-500/10 text-green-400 border-green-500/30'
+                                    }`}>
                                     {f.severity}
                                   </span>
                                 </div>
@@ -540,8 +535,8 @@ export default function PowerShellBotPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {templateLibrary.map((item, idx) => (
-                      <div 
-                        key={idx} 
+                      <div
+                        key={idx}
                         className="bg-[#12161f]/40 border border-terminal-border hover:border-neon-green/40 p-4 rounded-lg flex flex-col justify-between gap-3 group transition-all duration-300"
                       >
                         <div className="space-y-1.5">
@@ -552,7 +547,7 @@ export default function PowerShellBotPage() {
                             {item.description}
                           </p>
                         </div>
-                        <button 
+                        <button
                           onClick={() => {
                             setActiveTab('chat');
                             handleSendPrompt(item.prompt);
@@ -576,7 +571,7 @@ export default function PowerShellBotPage() {
           {/* RIGHT/BOTTOM FILE VIEWING DASHBOARD (Dynamic output panel) */}
           {currentOutputData && currentOutputData.scripts && (
             <div className="bg-[#0d1117] border border-terminal-border rounded-lg overflow-hidden flex flex-col shadow-[0_20px_50px_-10px_rgba(0,0,0,0.7)] animate-fade-in-up">
-              
+
               {/* Output Tab Header */}
               <div className="bg-[#161b22] border-b border-terminal-border px-4 py-2.5 flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
@@ -585,7 +580,7 @@ export default function PowerShellBotPage() {
                     PAINEL DE ARQUIVOS GERADOS
                   </span>
                 </div>
-                
+
                 {/* Format selection */}
                 <div className="flex gap-1.5 font-mono text-[9px]">
                   {Object.keys(currentOutputData.scripts).map((key) => {
@@ -594,11 +589,10 @@ export default function PowerShellBotPage() {
                       <button
                         key={key}
                         onClick={() => setActiveScriptFormat(key as any)}
-                        className={`px-2.5 py-1 rounded border transition-colors ${
-                          activeScriptFormat === key
+                        className={`px-2.5 py-1 rounded border transition-colors ${activeScriptFormat === key
                             ? 'bg-neon-cyan/10 border-neon-cyan text-neon-cyan'
                             : 'border-terminal-border text-terminal-muted hover:text-white bg-white/5'
-                        }`}
+                          }`}
                       >
                         .{ext}
                       </button>
@@ -613,7 +607,7 @@ export default function PowerShellBotPage() {
                   <span>FORMATO DE ARQUIVO: .{activeScriptFormat.toUpperCase()}</span>
                   <div className="flex gap-3">
                     {/* Copy button */}
-                    <button 
+                    <button
                       onClick={() => copyToClipboard(currentOutputData.scripts[activeScriptFormat], 'editor')}
                       className="flex items-center gap-1 hover:text-neon-cyan transition-colors"
                     >
@@ -630,14 +624,14 @@ export default function PowerShellBotPage() {
                       )}
                     </button>
                     {/* Download button */}
-                    <button 
+                    <button
                       onClick={() => handleDownloadFile(
                         activeScriptFormat === 'md' ? 'README_MANUAL.md' :
-                        activeScriptFormat === 'json' ? 'config.json' :
-                        activeScriptFormat === 'yml' ? 'pipeline.yml' :
-                        activeScriptFormat === 'bat' ? 'run_wrapper.bat' :
-                        activeScriptFormat === 'sh' ? 'unix_run.sh' :
-                        'Secure-Command.ps1', 
+                          activeScriptFormat === 'json' ? 'config.json' :
+                            activeScriptFormat === 'yml' ? 'pipeline.yml' :
+                              activeScriptFormat === 'bat' ? 'run_wrapper.bat' :
+                                activeScriptFormat === 'sh' ? 'unix_run.sh' :
+                                  'Secure-Command.ps1',
                         currentOutputData.scripts[activeScriptFormat]
                       )}
                       className="flex items-center gap-1 hover:text-neon-cyan transition-colors"

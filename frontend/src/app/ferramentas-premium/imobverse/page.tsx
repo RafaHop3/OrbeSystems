@@ -10,9 +10,9 @@ import {
   ShieldCheck, TrendingUp, X, Send, ChevronDown
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { API_BASE_URL } from '@/lib/api';
+import { PROXY_BASE_URL } from '@/lib/api';
 
-const API_URL = API_BASE_URL;
+const API_URL = PROXY_BASE_URL;
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 interface Property {
@@ -50,7 +50,7 @@ const formatCurrency = (value: number) =>
 const ReputationBadge = ({ score }: { score: number }) => {
   const color = score >= 4.0
     ? '#10b981' : score >= 3.2
-    ? '#f59e0b' : '#ef4444';
+      ? '#f59e0b' : '#ef4444';
   const label = score >= 4.0 ? 'Excelente' : score >= 3.2 ? 'Atenção' : 'Insalubre';
   return (
     <span style={{
@@ -753,7 +753,7 @@ export default function ImobversePage() {
                 {matchResults.map((result: any) => {
                   const prop = result.property;
                   const matchColor = result.match_percentage >= 85 ? '#10b981' : result.match_percentage >= 60 ? '#f59e0b' : '#ef4444';
-                  
+
                   return (
                     <div
                       key={prop.id}

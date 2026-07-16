@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { AlertTriangle, RefreshCw, Terminal } from 'lucide-react';
 import type { Repository } from '@/types/repository';
 import ProjectCard from './ProjectCard';
-import { API_BASE_URL as API_URL } from '@/lib/api';
+import { PROXY_BASE_URL as API_URL } from '@/lib/api';
 
 function LoadingSkeleton() {
   return (

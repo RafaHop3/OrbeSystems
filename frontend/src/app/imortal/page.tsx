@@ -3,15 +3,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { 
-  Terminal, Shield, Zap, Globe, BarChart2, PieChart, Users, 
+import {
+  Terminal, Shield, Zap, Globe, BarChart2, PieChart, Users,
   Sparkles, RefreshCw, Copy, Check, Play, AlertTriangle, ArrowRight, Lock,
   Crown, Download
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { API_BASE_URL } from '@/lib/api';
+import { PROXY_BASE_URL } from '@/lib/api';
 
-const API_URL = API_BASE_URL;
+const API_URL = PROXY_BASE_URL;
 
 export default function ImortalPage() {
   const { user, loading: authLoading } = useAuth();
@@ -64,7 +64,7 @@ export default function ImortalPage() {
     setLoading(true);
     setLoadingStep(0);
     const msgs = ['Analisando infraestrutura...', 'Avaliando vetores de ataque...', 'Mapeando diretrizes OWASP...', 'Gerando relatório...'];
-    
+
     // Simulate loading steps
     const timer = setInterval(() => {
       setLoadingStep(s => Math.min(s + 1, 3));
@@ -85,7 +85,7 @@ export default function ImortalPage() {
     if (!marketingInput.trim()) return;
     setLoading(true);
     setLoadingStep(0);
-    
+
     const timer = setInterval(() => {
       setLoadingStep(s => Math.min(s + 1, 3));
     }, 1000);
@@ -105,7 +105,7 @@ export default function ImortalPage() {
     if (!demographicInput.trim()) return;
     setLoading(true);
     setLoadingStep(0);
-    
+
     const timer = setInterval(() => {
       setLoadingStep(s => Math.min(s + 1, 3));
     }, 1000);
@@ -137,7 +137,7 @@ export default function ImortalPage() {
       setLoadingStep(0); // AI generation
       const genData = await callApi('/generate', { prompt: avrInput });
       const ir = genData.ir;
-      
+
       setVerificationSteps(prev => [...prev, {
         step: 'AI Parser Engine',
         status: 'PASSED',
@@ -202,7 +202,7 @@ export default function ImortalPage() {
       setHexCode(compileRes.hex);
       setCompilerLog(compileRes.log);
       setAvrData({ success: true });
-      
+
     } catch (e: any) {
       alert(e.message || 'Erro ao rodar pipeline de compilação.');
     } finally {
@@ -283,12 +283,12 @@ export default function ImortalPage() {
       const angle = (i * 2 * Math.PI) / 8 - Math.PI / 2;
       const xMax = center + rMax * Math.cos(angle);
       const yMax = center + rMax * Math.sin(angle);
-      
+
       // Axis Line
       axes.push(
-        <line 
-          key={`axis-${i}`} 
-          x1={center} y1={center} x2={xMax} y2={yMax} 
+        <line
+          key={`axis-${i}`}
+          x1={center} y1={center} x2={xMax} y2={yMax}
           className="stroke-terminal-border/40" strokeWidth="1"
         />
       );
@@ -298,10 +298,10 @@ export default function ImortalPage() {
       const xLabel = center + rMax * offsetFactor * Math.cos(angle);
       const yLabel = center + rMax * offsetFactor * Math.sin(angle);
       axes.push(
-        <text 
-          key={`label-${i}`} 
-          x={xLabel} y={yLabel} 
-          className="fill-terminal-muted font-mono text-[9px]" 
+        <text
+          key={`label-${i}`}
+          x={xLabel} y={yLabel}
+          className="fill-terminal-muted font-mono text-[9px]"
           textAnchor="middle" alignmentBaseline="middle"
         >
           {item.name}
@@ -326,9 +326,9 @@ export default function ImortalPage() {
         rPoints.push(`${x},${y}`);
       }
       return (
-        <polygon 
-          key={`grid-${i}`} 
-          points={rPoints.join(' ')} 
+        <polygon
+          key={`grid-${i}`}
+          points={rPoints.join(' ')}
           className="fill-none stroke-terminal-border/20" strokeWidth="0.8"
         />
       );
@@ -338,8 +338,8 @@ export default function ImortalPage() {
       <svg viewBox="0 0 200 200" className="w-full h-full max-h-[220px]">
         {gridRings}
         {axes}
-        <polygon 
-          points={points.join(' ')} 
+        <polygon
+          points={points.join(' ')}
           className="fill-neon-cyan/15 stroke-neon-cyan" strokeWidth="1.5"
         />
       </svg>
@@ -378,9 +378,9 @@ export default function ImortalPage() {
         {[0, 0.25, 0.5, 0.75, 1].map((f, i) => {
           const y = padding + f * (h - 2 * padding);
           return (
-            <line 
-              key={`grid-${i}`} 
-              x1={padding} y1={y} x2={w - padding} y2={y} 
+            <line
+              key={`grid-${i}`}
+              x1={padding} y1={y} x2={w - padding} y2={y}
               className="stroke-terminal-border/20" strokeWidth="0.8" strokeDasharray="3,3"
             />
           );
@@ -388,17 +388,17 @@ export default function ImortalPage() {
         {/* Fill Area */}
         <polygon points={areaPoints.join(' ')} fill="url(#areaGrad)" />
         {/* Line */}
-        <path 
-          d={`M ${points.join(' L ')}`} 
+        <path
+          d={`M ${points.join(' L ')}`}
           className="fill-none stroke-neon-purple" strokeWidth="2"
         />
         {/* Dots */}
         {points.map((pt, i) => {
           const [x, y] = pt.split(',');
           return (
-            <circle 
-              key={`dot-${i}`} 
-              cx={x} cy={y} r="3" 
+            <circle
+              key={`dot-${i}`}
+              cx={x} cy={y} r="3"
               className="fill-neon-purple stroke-white" strokeWidth="1"
             />
           );
@@ -412,7 +412,7 @@ export default function ImortalPage() {
       <Header />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 pt-24 pb-16 flex flex-col md:flex-row gap-6">
-        
+
         {/* Sidebar Nav */}
         <aside className="w-full md:w-64 flex-shrink-0 flex flex-col gap-4">
           <div className="bg-terminal-surface/90 border border-terminal-border rounded-lg p-5 flex flex-col gap-3">
@@ -426,11 +426,11 @@ export default function ImortalPage() {
               </div>
             </div>
 
-            <button 
+            <button
               onClick={() => setActiveTab('cyber')}
               className={`flex items-center gap-3 w-full py-2.5 px-3 rounded font-mono text-[11px] uppercase tracking-wider transition-all duration-200 text-left
-                ${activeTab === 'cyber' 
-                  ? 'bg-neon-cyan/10 border border-neon-cyan/40 text-neon-cyan' 
+                ${activeTab === 'cyber'
+                  ? 'bg-neon-cyan/10 border border-neon-cyan/40 text-neon-cyan'
                   : 'text-terminal-muted hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
             >
@@ -438,11 +438,11 @@ export default function ImortalPage() {
               <span>Cyber Intelligence</span>
             </button>
 
-            <button 
+            <button
               onClick={() => setActiveTab('marketing')}
               className={`flex items-center gap-3 w-full py-2.5 px-3 rounded font-mono text-[11px] uppercase tracking-wider transition-all duration-200 text-left
-                ${activeTab === 'marketing' 
-                  ? 'bg-neon-purple/10 border border-neon-purple/40 text-neon-purple' 
+                ${activeTab === 'marketing'
+                  ? 'bg-neon-purple/10 border border-neon-purple/40 text-neon-purple'
                   : 'text-terminal-muted hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
             >
@@ -450,11 +450,11 @@ export default function ImortalPage() {
               <span>Marketing Analytics</span>
             </button>
 
-            <button 
+            <button
               onClick={() => setActiveTab('demographic')}
               className={`flex items-center gap-3 w-full py-2.5 px-3 rounded font-mono text-[11px] uppercase tracking-wider transition-all duration-200 text-left
-                ${activeTab === 'demographic' 
-                  ? 'bg-neon-green/10 border border-neon-green/40 text-neon-green' 
+                ${activeTab === 'demographic'
+                  ? 'bg-neon-green/10 border border-neon-green/40 text-neon-green'
                   : 'text-terminal-muted hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
             >
@@ -462,11 +462,11 @@ export default function ImortalPage() {
               <span>Demographic Intel</span>
             </button>
 
-            <button 
+            <button
               onClick={() => setActiveTab('avr')}
               className={`flex items-center gap-3 w-full py-2.5 px-3 rounded font-mono text-[11px] uppercase tracking-wider transition-all duration-200 text-left
-                ${activeTab === 'avr' 
-                  ? 'bg-yellow-500/10 border border-yellow-500/40 text-yellow-500' 
+                ${activeTab === 'avr'
+                  ? 'bg-yellow-500/10 border border-yellow-500/40 text-yellow-500'
                   : 'text-terminal-muted hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
             >
@@ -539,7 +539,7 @@ export default function ImortalPage() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <textarea 
+                  <textarea
                     value={cyberInput}
                     onChange={(e) => setCyberInput(e.target.value)}
                     rows={4}
@@ -549,20 +549,20 @@ export default function ImortalPage() {
                   <div className="flex justify-between items-center gap-4">
                     <div className="flex flex-wrap gap-1.5">
                       <span className="font-mono text-[9px] text-terminal-muted pt-1">EXEMPLOS:</span>
-                      <button 
+                      <button
                         onClick={() => setCyberInput('API REST Laravel sem rate limit, chaves do Stripe expostas no commit do github, conexões HTTP permitidas.')}
                         className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-neon-cyan hover:border-neon-cyan/40 bg-white/5 transition-colors"
                       >
                         API Vulnerável
                       </button>
-                      <button 
+                      <button
                         onClick={() => setCyberInput('App React Native para fintech, chaves criptográficas armazenadas em localStorage no dispositivo, APIs de transações sem validação de token CSRF.')}
                         className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-neon-cyan hover:border-neon-cyan/40 bg-white/5 transition-colors"
                       >
                         Mobile App
                       </button>
                     </div>
-                    <button 
+                    <button
                       onClick={handleAnalyzeCyber}
                       disabled={loading || !cyberInput.trim()}
                       className="flex items-center gap-2 font-mono text-xs font-bold tracking-wider uppercase bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/40 hover:bg-neon-cyan/25 hover:border-neon-cyan px-5 py-2.5 rounded transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
@@ -575,7 +575,7 @@ export default function ImortalPage() {
 
                 {cyberData && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-terminal-border/40 animate-fade-in-up">
-                    
+
                     {/* Executive Summary & Ring */}
                     <div className="bg-[#12161f]/60 border border-terminal-border/40 rounded-lg p-5 flex gap-5 items-center col-span-2">
                       <div className="flex-1 space-y-1.5">
@@ -583,7 +583,7 @@ export default function ImortalPage() {
                         <h4 className="font-mono text-sm font-semibold text-white">Análise Concluída com Sucesso</h4>
                         <p className="font-mono text-xs text-terminal-muted leading-relaxed">{cyberData.summary}</p>
                       </div>
-                      
+
                       {/* Risk Circle */}
                       <div className="flex flex-col items-center gap-1.5 justify-center flex-shrink-0 bg-black/30 border border-terminal-border/30 p-4 rounded-lg w-28 text-center">
                         <span className="font-mono text-[9px] text-terminal-muted tracking-widest uppercase">RISCO</span>
@@ -669,7 +669,7 @@ export default function ImortalPage() {
                         {cyberData.recommendations?.map((r: any, i: number) => (
                           <div key={i} className="bg-black/20 border border-terminal-border/20 p-3 rounded flex justify-between items-center gap-3">
                             <div className="flex items-center gap-3">
-                              <span className="font-mono text-[9px] bg-white/5 border border-terminal-border px-1.5 py-0.5 rounded text-terminal-muted">#{i+1}</span>
+                              <span className="font-mono text-[9px] bg-white/5 border border-terminal-border px-1.5 py-0.5 rounded text-terminal-muted">#{i + 1}</span>
                               <p className="font-mono text-xs text-white">{r.action}</p>
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
@@ -707,7 +707,7 @@ export default function ImortalPage() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <textarea 
+                  <textarea
                     value={marketingInput}
                     onChange={(e) => setMarketingInput(e.target.value)}
                     rows={4}
@@ -717,20 +717,20 @@ export default function ImortalPage() {
                   <div className="flex justify-between items-center gap-4">
                     <div className="flex flex-wrap gap-1.5">
                       <span className="font-mono text-[9px] text-terminal-muted pt-1">EXEMPLOS:</span>
-                      <button 
+                      <button
                         onClick={() => setMarketingInput('E-commerce de roupas sustentáveis focado em mulheres de 22-35 anos no Instagram. Ticket médio R$180, orçamento de marketing de R$5.000/mês.')}
                         className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-neon-purple hover:border-neon-purple/40 bg-white/5 transition-colors"
                       >
                         Loja D2C
                       </button>
-                      <button 
+                      <button
                         onClick={() => setMarketingInput('Consultoria de segurança de redes empresariais focando em grandes corporações do setor financeiro. Contratos médios de R$50.000, vendas B2B offline.')}
                         className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-neon-purple hover:border-neon-purple/40 bg-white/5 transition-colors"
                       >
                         B2B Enterprise
                       </button>
                     </div>
-                    <button 
+                    <button
                       onClick={handleAnalyzeMarketing}
                       disabled={loading || !marketingInput.trim()}
                       className="flex items-center gap-2 font-mono text-xs font-bold tracking-wider uppercase bg-neon-purple/15 text-neon-purple border border-neon-purple/40 hover:bg-neon-purple/25 hover:border-neon-purple px-5 py-2.5 rounded transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
@@ -743,7 +743,7 @@ export default function ImortalPage() {
 
                 {marketingData && (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-terminal-border/40 animate-fade-in-up">
-                    
+
                     {/* KPI Trio */}
                     <div className="bg-[#12161f]/40 border border-terminal-border/30 rounded-lg p-4 text-center">
                       <span className="font-mono text-[9px] text-terminal-muted tracking-widest uppercase">ROI PROJETADO</span>
@@ -752,7 +752,7 @@ export default function ImortalPage() {
                       </div>
                       <span className="font-mono text-[8px] text-terminal-muted/60 uppercase">Em {marketingData.financial_metrics?.roi?.timeframe}</span>
                     </div>
-                    
+
                     <div className="bg-[#12161f]/40 border border-terminal-border/30 rounded-lg p-4 text-center">
                       <span className="font-mono text-[9px] text-terminal-muted tracking-widest uppercase">VALOR LTV</span>
                       <div className="font-mono text-2xl font-bold text-white mt-1">
@@ -863,7 +863,7 @@ export default function ImortalPage() {
                       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         {marketingData.insights?.map((ins: string, i: number) => (
                           <div key={i} className="bg-black/30 border border-terminal-border/40 p-4 rounded flex flex-col gap-2">
-                            <span className="font-mono text-xl font-black text-neon-purple/40">0{i+1}</span>
+                            <span className="font-mono text-xl font-black text-neon-purple/40">0{i + 1}</span>
                             <p className="font-mono text-[10px] text-terminal-muted leading-relaxed">{ins}</p>
                           </div>
                         ))}
@@ -889,7 +889,7 @@ export default function ImortalPage() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <textarea 
+                  <textarea
                     value={demographicInput}
                     onChange={(e) => setDemographicInput(e.target.value)}
                     rows={4}
@@ -899,20 +899,20 @@ export default function ImortalPage() {
                   <div className="flex justify-between items-center gap-4">
                     <div className="flex flex-wrap gap-1.5">
                       <span className="font-mono text-[9px] text-terminal-muted pt-1">EXEMPLOS:</span>
-                      <button 
+                      <button
                         onClick={() => setDemographicInput('Cursos online de desenvolvimento de software e inteligência artificial para transição de carreira de jovens adultos no Brasil.')}
                         className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-neon-green hover:border-neon-green/40 bg-white/5 transition-colors"
                       >
                         Educação Online
                       </button>
-                      <button 
+                      <button
                         onClick={() => setDemographicInput('Alimentos congelados e marmitas fitness focados em profissionais urbanos de 28-45 anos em grandes metrópoles como São Paulo.')}
                         className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-neon-green hover:border-neon-green/40 bg-white/5 transition-colors"
                       >
                         Marmitas Saudáveis
                       </button>
                     </div>
-                    <button 
+                    <button
                       onClick={handleAnalyzeDemographic}
                       disabled={loading || !demographicInput.trim()}
                       className="flex items-center gap-2 font-mono text-xs font-bold tracking-wider uppercase bg-neon-green/15 text-neon-green border border-neon-green/40 hover:bg-neon-green/25 hover:border-neon-green px-5 py-2.5 rounded transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
@@ -925,7 +925,7 @@ export default function ImortalPage() {
 
                 {demographicData && (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-terminal-border/40 animate-fade-in-up">
-                    
+
                     {/* TAM SAM SOM */}
                     <div className="bg-[#12161f]/40 border border-terminal-border/30 rounded-lg p-5 col-span-3 grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="bg-black/30 border border-terminal-border/40 p-4 rounded text-center">
@@ -1066,7 +1066,7 @@ export default function ImortalPage() {
                 </div>
 
                 <div className="flex flex-col gap-3">
-                  <textarea 
+                  <textarea
                     value={avrInput}
                     onChange={(e) => setAvrInput(e.target.value)}
                     rows={4}
@@ -1076,26 +1076,26 @@ export default function ImortalPage() {
                   <div className="flex justify-between items-center gap-4">
                     <div className="flex flex-wrap gap-1.5">
                       <span className="font-mono text-[9px] text-terminal-muted pt-1">EXEMPLOS:</span>
-                      <button 
+                      <button
                         onClick={() => setAvrInput('Pino invalido: Declarar pino LED no pino 25 (inválido no ATMega328P) e piscar a cada 500ms.')}
                         className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-yellow-500 hover:border-yellow-500/40 bg-white/5 transition-colors"
                       >
                         Provocar Erro de Pino (Z3)
                       </button>
-                      <button 
+                      <button
                         onClick={() => setAvrInput('Divisão por zero: Ler sensor analógico A0, dividir 100 por esse valor e imprimir no Serial.')}
                         className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-yellow-500 hover:border-yellow-500/40 bg-white/5 transition-colors"
                       >
                         Provocar Divisão Zero (Z3)
                       </button>
-                      <button 
+                      <button
                         onClick={() => setAvrInput('Ler potenciometro no pino A0, mapear o valor para delay de 0 a 1000 e piscar LED no pino 13.')}
                         className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-yellow-500 hover:border-yellow-500/40 bg-white/5 transition-colors"
                       >
                         Blink Regulável Seguro
                       </button>
                     </div>
-                    <button 
+                    <button
                       onClick={handleCompileAVR}
                       disabled={loading || !avrInput.trim()}
                       className="flex items-center gap-2 font-mono text-xs font-bold tracking-wider uppercase bg-yellow-500/15 text-yellow-500 border border-yellow-500/40 hover:bg-yellow-500/25 hover:border-yellow-500 px-5 py-2.5 rounded transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
@@ -1147,7 +1147,7 @@ export default function ImortalPage() {
                 {/* Compiled AVR Data */}
                 {avrData && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in-up">
-                    
+
                     {/* Proved properties list */}
                     <div className="bg-[#12161f]/30 border border-terminal-border/30 rounded-lg p-5 flex flex-col gap-4 col-span-2">
                       <div className="border-b border-terminal-border/40 pb-2 flex items-center gap-2">
@@ -1172,14 +1172,14 @@ export default function ImortalPage() {
                           <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">Código C++ Gerado</h3>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <button 
+                          <button
                             onClick={() => copyToClipboard(cppCode)}
                             className="text-terminal-muted hover:text-white transition-colors p-1"
                             title="Copiar código"
                           >
                             {isCopied ? <Check size={14} className="text-neon-green" /> : <Copy size={14} />}
                           </button>
-                          <button 
+                          <button
                             onClick={() => handleDownloadFile('firmware.cpp', cppCode)}
                             className="text-terminal-muted hover:text-white transition-colors p-1"
                             title="Baixar arquivo C++"
@@ -1199,7 +1199,7 @@ export default function ImortalPage() {
                         <Users size={14} className="text-yellow-500" />
                         <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">HITL - Aprovação Humana para Gravação</h3>
                       </div>
-                      
+
                       <div className="bg-black/30 border border-terminal-border/40 p-4 rounded flex flex-col gap-3 font-mono text-xs text-terminal-muted leading-relaxed">
                         <p>
                           De acordo com as diretrizes do **IMORTAL Hardware Protocol**, nenhuma gravação em circuito físico ATMega328P deve ser gerada sem a aprovação humana explícita (*Human-In-The-Loop*).
@@ -1209,8 +1209,8 @@ export default function ImortalPage() {
                           <button
                             onClick={() => setHitlApproved(!hitlApproved)}
                             className={`px-4 py-1.5 rounded font-bold uppercase tracking-wider border text-[10px] transition-all duration-300
-                              ${hitlApproved 
-                                ? 'bg-neon-green/10 border-neon-green/50 text-neon-green' 
+                              ${hitlApproved
+                                ? 'bg-neon-green/10 border-neon-green/50 text-neon-green'
                                 : 'bg-white/5 border-terminal-border text-terminal-muted hover:text-white'
                               }`}
                           >
@@ -1226,7 +1226,7 @@ export default function ImortalPage() {
                               <Lock size={12} className="text-neon-green" />
                               <h4 className="font-mono text-[10px] font-bold text-white uppercase tracking-widest">Código Máquina (Intel HEX)</h4>
                             </div>
-                            <button 
+                            <button
                               onClick={() => handleDownloadFile('firmware.hex', hexCode)}
                               className="text-terminal-muted hover:text-white transition-colors p-1"
                               title="Baixar arquivo HEX"

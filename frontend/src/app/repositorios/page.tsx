@@ -10,7 +10,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import type { Repository } from '@/types/repository';
 
-import { API_BASE_URL as API_URL } from '@/lib/api';
+import { PROXY_BASE_URL as API_URL } from '@/lib/api';
 
 export default function RepositoriesPage() {
   const [repos, setRepos] = useState<Repository[]>([]);
@@ -68,15 +68,15 @@ export default function RepositoriesPage() {
     if (activeTab === 'security' && !repo.topics?.includes('security')) return false;
     if (activeTab === 'tools' && !repo.topics?.includes('tool')) return false;
     if (activeTab === 'platforms' && !repo.topics?.includes('platform')) return false;
-    
+
     // Search filtering
-    const matchesSearch = 
+    const matchesSearch =
       repo.name.toLowerCase().includes(search.toLowerCase()) ||
       (repo.description || '').toLowerCase().includes(search.toLowerCase());
-    
+
     // Language filtering
     const matchesLang = filterLang === 'Todos' || repo.language === filterLang;
-    
+
     return matchesSearch && matchesLang;
   });
 
@@ -109,51 +109,46 @@ export default function RepositoriesPage() {
         <div className="flex gap-2 overflow-x-auto pb-2">
           <button
             onClick={() => setActiveTab('featured')}
-            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
-              activeTab === 'featured'
+            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === 'featured'
                 ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
                 : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
-            }`}
+              }`}
           >
             Destaques
           </button>
           <button
             onClick={() => setActiveTab('all')}
-            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
-              activeTab === 'all'
+            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === 'all'
                 ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
                 : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
-            }`}
+              }`}
           >
             Todos
           </button>
           <button
             onClick={() => setActiveTab('security')}
-            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
-              activeTab === 'security'
+            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === 'security'
                 ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
                 : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
-            }`}
+              }`}
           >
             Segurança
           </button>
           <button
             onClick={() => setActiveTab('tools')}
-            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
-              activeTab === 'tools'
+            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === 'tools'
                 ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
                 : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
-            }`}
+              }`}
           >
             Ferramentas
           </button>
           <button
             onClick={() => setActiveTab('platforms')}
-            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
-              activeTab === 'platforms'
+            className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === 'platforms'
                 ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
                 : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
-            }`}
+              }`}
           >
             Plataformas
           </button>
@@ -179,11 +174,10 @@ export default function RepositoriesPage() {
               <button
                 key={lang}
                 onClick={() => setFilterLang(lang)}
-                className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${
-                  filterLang === lang
+                className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${filterLang === lang
                     ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
                     : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
-                }`}
+                  }`}
               >
                 {lang}
               </button>
@@ -303,14 +297,14 @@ export default function RepositoriesPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
             {/* Backdrop */}
             <div className="absolute inset-0 bg-[#0c0a08]/95 backdrop-blur-sm" onClick={() => setSelectedRepo(null)} />
-            
+
             {/* Modal Body */}
             <div className="relative z-10 w-full max-w-lg bg-[#f1e7d0] border-4 border-double border-[#c5a059] rounded overflow-hidden shadow-2xl animate-fade-in-up">
               {/* Top Banner */}
               <div className="h-2 bg-gradient-to-r from-renaissance-gold to-renaissance-burgundy" />
-              
+
               <div className="p-6 space-y-6">
-                
+
                 {/* Header */}
                 <div className="flex justify-between items-start">
                   <div>

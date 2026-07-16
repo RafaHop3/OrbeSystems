@@ -5,25 +5,22 @@ import { useEffect } from 'react';
 /**
  * AnalyticsTracker: Invisible component that pings the backend on page load.
  * Placed in the RootLayout to capture all navigation events.
+ *
+ * Security [A3]: Uses relative /api/proxy path — backend URL never exposed to browser.
  */
 export default function AnalyticsTracker() {
   useEffect(() => {
-    // Only run this on the client
     const logVisit = async () => {
       try {
-        const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-fuc5.vercel.app';
-        const API_URL = rawUrl.trim().replace(/\/$/, '');
-        
-        // Fire-and-forget ping to the analytics endpoint
-        await fetch(`${API_URL}/api/analytics/log`, {
+        // Relative URL — routes through Next.js proxy server-side.
+        // The real backend URL (BACKEND_URL) never reaches the client bundle.
+        await fetch('/api/proxy/api/analytics/log', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          }
+          headers: { 'Content-Type': 'application/json' },
         });
-      } catch (err) {
+      } catch {
         // Silently fail to avoid impacting user experience
-        console.warn("[ORBE_ANALYTICS] Signal lost - check connection.");
+        console.warn('[ORBE_ANALYTICS] Signal lost - check connection.');
       }
     };
 

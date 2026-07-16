@@ -10,9 +10,9 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import type { Repository } from '@/types/repository';
 
-import { API_BASE_URL } from '@/lib/api';
+import { PROXY_BASE_URL } from '@/lib/api';
 
-const API_URL = API_BASE_URL;
+const API_URL = PROXY_BASE_URL;
 
 interface InspectionItem {
   id: string;
@@ -32,24 +32,24 @@ const playCyberBeep = (freq = 800, duration = 0.05, type: OscillatorType = 'sine
   // Respect user prefers-reduced-motion / accessibility limits
   const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (prefersReduced) return; // Silent mode if reduced motion/sensory is preferred
-  
+
   try {
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
     const osc = ctx.createOscillator();
     const gainNode = ctx.createGain();
-    
+
     osc.type = type;
     osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    
+
     // Low volume (-20dB to -30dB target for subtle click / high frequency chirp)
     gainNode.gain.setValueAtTime(0.008, ctx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-    
+
     osc.connect(gainNode);
     gainNode.connect(ctx.destination);
-    
+
     osc.start();
     osc.stop(ctx.currentTime + duration);
   } catch (e) {
@@ -166,12 +166,12 @@ function TelemetrySparkline({ data }: { data: number[] }) {
           </feMerge>
         </filter>
       </defs>
-      
+
       {/* Background guide line */}
-      <line 
-        x1={0} y1={height/2} x2={width} y2={height/2} 
-        stroke="rgba(255,255,255,0.05)" 
-        strokeWidth="1" 
+      <line
+        x1={0} y1={height / 2} x2={width} y2={height / 2}
+        stroke="rgba(255,255,255,0.05)"
+        strokeWidth="1"
         strokeDasharray="2 4"
       />
 
@@ -199,7 +199,7 @@ export default function VdeUserDashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'webhooks' | 'tools' | 'repos' | 'events'>('overview');
   const [apiFailed, setApiFailed] = useState<boolean>(false);
-  
+
   // Test Events States
   const [testEvents, setTestEvents] = useState<any[]>([]);
   const [eventsLoading, setEventsLoading] = useState<boolean>(false);
@@ -211,7 +211,7 @@ export default function VdeUserDashboard() {
     status: 'success',
     message: 'User triggered test event from dashboard'
   });
-  
+
   // Imobverse States
   const [properties, setProperties] = useState<any[]>([]);
   const [inspections, setInspections] = useState<InspectionItem[]>([]);
@@ -219,16 +219,16 @@ export default function VdeUserDashboard() {
   const [selectedItemId, setSelectedItemId] = useState<string>('');
   const [checkoutUrl, setCheckoutUrl] = useState<string>('');
   const [customCheckout, setCustomCheckout] = useState<boolean>(false);
-  
+
   // Simulator state
   const [simLoading, setSimLoading] = useState<boolean>(false);
   const [simLogs, setSimLogs] = useState<string[]>([]);
   const [aiResponse, setAiResponse] = useState<any | null>(null);
-  
+
   // Repositories state
   const [repos, setRepos] = useState<Repository[]>([]);
   const [reposLoading, setReposLoading] = useState<boolean>(false);
-  
+
   // Loading & seed states
   const [loading, setLoading] = useState<boolean>(false);
   const [seeding, setSeeding] = useState<boolean>(false);
@@ -474,7 +474,7 @@ export default function VdeUserDashboard() {
     setSimLoading(true);
     setAiResponse(null);
     const time = () => new Date().toLocaleTimeString();
-    
+
     setSimLogs([
       `[${time()}] 🚀 Iniciando simulação de submissão de checkout...`,
       `[${time()}] Enviando payload de Checkout para /api/imobverse/inspections/checkout...`,
@@ -503,20 +503,20 @@ export default function VdeUserDashboard() {
 
       let attempts = 0;
       const maxAttempts = 15;
-      
+
       const poll = setInterval(async () => {
         attempts++;
         setSimLogs(prev => [...prev, `[${time()}] [Sondagem #${attempts}] Verificando status do item de vistoria no banco...`]);
-        
+
         try {
           const checkRes = await fetch(`${API_URL}/api/imobverse/properties/${selectedPropId}/inspections`, { credentials: 'include' });
           if (checkRes.ok) {
             const data = await checkRes.json();
             const updatedItem = data.find((x: any) => x.id === selectedItemId);
-            
+
             if (updatedItem && updatedItem.status !== 'pending') {
               clearInterval(poll);
-              
+
               setSimLogs(prev => [
                 ...prev,
                 `[${time()}] 🎯 Análise automatizada integrada com sucesso!`,
@@ -524,7 +524,7 @@ export default function VdeUserDashboard() {
                 `[${time()}] Grau de deterioração detectado pela IA: ${updatedItem.deterioration_grade?.toUpperCase()}`,
                 `[${time()}] Justificativa da IA: "${updatedItem.analysis_log}"`
               ]);
-              
+
               setAiResponse({
                 inspection_item_id: updatedItem.id,
                 status: updatedItem.status,
@@ -533,7 +533,7 @@ export default function VdeUserDashboard() {
                 justificativa: updatedItem.analysis_log,
                 updated_at: updatedItem.updated_at
               });
-              
+
               setSimLoading(false);
               fetchData();
             }
@@ -624,7 +624,7 @@ export default function VdeUserDashboard() {
 
   const downloadDoc = () => {
     const element = document.createElement("a");
-    const file = new Blob([docContent], {type: 'text/markdown'});
+    const file = new Blob([docContent], { type: 'text/markdown' });
     element.href = URL.createObjectURL(file);
     element.download = `${docTemplate}_documento.md`;
     document.body.appendChild(element);
@@ -712,8 +712,8 @@ export default function VdeUserDashboard() {
         setCompressOutput(JSON.stringify(data.compressed_tokens));
         const origLen = compressInput.length;
         const compLen = JSON.stringify(data.compressed_tokens).length;
-        const ratio = origLen > compLen 
-          ? `${((1 - compLen / origLen) * 100).toFixed(1)}%` 
+        const ratio = origLen > compLen
+          ? `${((1 - compLen / origLen) * 100).toFixed(1)}%`
           : '0.0% (Texto muito pequeno para compressão de dicionário)';
         setCompressRatio(ratio);
         return;
@@ -727,7 +727,7 @@ export default function VdeUserDashboard() {
     let words = compressInput.split(/(\s+)/);
     let outputArr: string[] = [];
     let count = 0;
-    
+
     words.forEach(w => {
       if (w.length > 3 && !dict.has(w)) {
         dict.set(w, count++);
@@ -741,12 +741,12 @@ export default function VdeUserDashboard() {
 
     const dictStr = JSON.stringify(Object.fromEntries(dict));
     const compressedStr = `${dictStr}|||${outputArr.join('')}`;
-    
+
     setCompressOutput(compressedStr);
     const origLen = compressInput.length;
     const compLen = compressedStr.length;
-    const ratio = origLen > compLen 
-      ? `${((1 - compLen / origLen) * 100).toFixed(1)}%` 
+    const ratio = origLen > compLen
+      ? `${((1 - compLen / origLen) * 100).toFixed(1)}%`
       : '0.0% (Texto muito pequeno para compressão de dicionário)';
     setCompressRatio(ratio);
   };
@@ -761,7 +761,7 @@ export default function VdeUserDashboard() {
             Painel do Usuário Orbe Systems
           </span>
         </div>
-        
+
         {/* Navigation Tabs */}
         <div className="flex gap-2">
           {[
@@ -776,11 +776,10 @@ export default function VdeUserDashboard() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded font-mono text-[10px] uppercase tracking-wider transition-all border ${
-                  activeTab === tab.id
+                className={`flex items-center gap-1.5 px-3 py-1 rounded font-mono text-[10px] uppercase tracking-wider transition-all border ${activeTab === tab.id
                     ? 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/35'
                     : 'text-terminal-muted hover:text-white border-transparent'
-                }`}
+                  }`}
               >
                 <Icon size={12} />
                 {tab.label}
@@ -792,7 +791,7 @@ export default function VdeUserDashboard() {
 
       {/* Main Panel Content */}
       <div className="flex-1 p-4 md:p-6 overflow-y-auto min-h-0 space-y-6">
-        
+
         {apiFailed && activeTab !== 'tools' ? (
           <GracefulFailureView onReconnect={handleManualReconnect} isReconnecting={loading} />
         ) : (
@@ -800,757 +799,752 @@ export default function VdeUserDashboard() {
             {/* TAB: Overview */}
             {activeTab === 'overview' && (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            {/* User Profile Card */}
-            <div className="lg:col-span-1 bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
-              <h3 className="font-mono text-sm font-bold text-white border-b border-white/5 pb-2 uppercase tracking-wide">
-                Identidade Técnica
-              </h3>
-              
-              <div className="space-y-3 font-mono text-xs text-terminal-muted">
-                <div>
-                  <div className="text-[10px] text-white/40 uppercase">E-mail de Acesso</div>
-                  <div className="text-white font-semibold mt-0.5">{user?.email || 'anonimo@orbesystems.com.br'}</div>
-                </div>
-                <div>
-                  <div className="text-[10px] text-white/40 uppercase">Nível de Acesso</div>
-                  <div className="flex items-center gap-1.5 mt-0.5">
-                    {user?.role === 'premium' ? (
-                      <span className="text-neon-purple font-bold flex items-center gap-1">
-                        <Zap size={12} /> PREMIUM ADMIN
-                      </span>
-                    ) : (
-                      <span className="text-white/60">CONTA STANDARD</span>
-                    )}
-                  </div>
-                </div>
-                <div>
-                  <div className="text-[10px] text-white/40 uppercase">Créditos de Processamento IA</div>
-                  <div className="text-neon-green font-bold mt-0.5">10 / 10 Ciclos</div>
-                </div>
-                <div>
-                  <div className="text-[10px] text-white/40 uppercase">Região da Gateway</div>
-                  <div className="text-white mt-0.5">sa-east-1 (São Paulo)</div>
-                </div>
-              </div>
 
-              {user?.role !== 'premium' && (
-                <a
-                  href="/assinar"
-                  className="block text-center w-full py-2 bg-gradient-to-r from-neon-purple to-neon-blue text-white rounded-lg font-mono text-xs font-bold hover:shadow-neon-purple transition-all"
-                >
-                  Adquirir Licença Premium
-                </a>
-              )}
-            </div>
+                {/* User Profile Card */}
+                <div className="lg:col-span-1 bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
+                  <h3 className="font-mono text-sm font-bold text-white border-b border-white/5 pb-2 uppercase tracking-wide">
+                    Identidade Técnica
+                  </h3>
 
-            {/* Quick Stats & System Health */}
-            <div className="lg:col-span-2 space-y-6">
-              
-              {/* Info Banner */}
-              <div className="bg-neon-cyan/5 border border-neon-cyan/20 rounded-xl p-4 flex gap-3.5 items-start">
-                <ShieldCheck className="text-neon-cyan shrink-0 mt-0.5" size={20} />
-                <div>
-                  <h4 className="font-mono text-xs font-bold text-white uppercase tracking-wide">
-                    Ambiente Virtual Operacional
-                  </h4>
-                  <p className="font-sans text-xs text-terminal-muted mt-1 leading-relaxed">
-                    Sua conta Orbe está conectada à nossa infraestrutura de IA e microsserviços. 
-                    Navegue nas abas para gerenciar modelos, testar webhooks ou explorar repositórios.
-                  </p>
-                </div>
-              </div>
-
-              {/* System Components Status Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {[
-                  { name: 'API Gateway', status: apiFailed ? 'OFFLINE' : 'ON', desc: 'FastAPI / main.py' },
-                  { name: 'Reputation Engine', status: apiFailed ? 'OFFLINE' : 'ON', desc: 'Calculadora de Score' },
-                  { name: 'Suite de Utilidades', status: 'ON', desc: 'DocGen & Conversor (Offline Mode)' }
-                ].map((srv, idx) => (
-                  <div key={idx} className="bg-white/2 border border-white/5 rounded-xl p-4">
-                    <div className="flex justify-between items-center">
-                      <span className="font-mono text-xs font-semibold text-white">{srv.name}</span>
-                      <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${
-                        srv.status === 'ON' ? 'bg-neon-green/15 text-neon-green' : 'bg-red-500/15 text-red-400'
-                      }`}>{srv.status}</span>
-                    </div>
-                    <p className="font-mono text-[10px] text-terminal-muted mt-2">{srv.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* TAB: Webhooks & LLM Simulator */}
-        {activeTab === 'webhooks' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              {/* Controller Block */}
-              <div className="bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
-                <h3 className="font-mono text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
-                  <Cpu size={16} className="text-neon-cyan" />
-                  Simular Vistoria com LLM
-                </h3>
-                <p className="font-sans text-xs text-terminal-muted leading-relaxed">
-                  Envie fotos de check-out de componentes para que nossa IA as analise e aplique 
-                  penalidades automáticas na engine de reputação de imóveis.
-                </p>
-
-                {properties.length === 0 ? (
-                  <div className="text-center py-6 border border-dashed border-white/10 rounded-lg">
-                    <AlertTriangle className="text-yellow-500 mx-auto mb-2" size={24} />
-                    <p className="font-mono text-xs text-terminal-muted mb-3">Nenhum imóvel cadastrado no Imobverse.</p>
-                    <button
-                      onClick={handleSeed}
-                      disabled={seeding}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 border border-neon-cyan/40 text-neon-cyan hover:bg-neon-cyan/35 text-xs font-bold font-mono rounded transition-all"
-                    >
-                      {seeding ? (
-                        <Loader2 size={12} className="animate-spin" />
-                      ) : (
-                        <Play size={12} />
-                      )}
-                      Auto-Configurar Imóvel Demo
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Imóvel Selector */}
+                  <div className="space-y-3 font-mono text-xs text-terminal-muted">
                     <div>
-                      <label className="block font-mono text-[10px] text-terminal-muted uppercase mb-1.5">Imóvel</label>
-                      <select
-                        value={selectedPropId}
-                        onChange={e => setSelectedPropId(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 font-mono text-xs text-white outline-none"
-                      >
-                        {properties.map(p => (
-                          <option key={p.id} value={p.id} className="bg-[#111118]">
-                            {p.title} (Score: {p.reputation_score.toFixed(1)})
-                          </option>
-                        ))}
-                      </select>
+                      <div className="text-[10px] text-white/40 uppercase">E-mail de Acesso</div>
+                      <div className="text-white font-semibold mt-0.5">{user?.email || 'anonimo@orbesystems.com.br'}</div>
                     </div>
-
-                    {/* Component Selector */}
                     <div>
-                      <label className="block font-mono text-[10px] text-terminal-muted uppercase mb-1.5">Componente / Item de Vistoria</label>
-                      {inspections.length === 0 ? (
-                        <div className="text-xs font-mono text-red-400">Nenhum componente cadastrado neste imóvel.</div>
-                      ) : (
-                        <select
-                          value={selectedItemId}
-                          onChange={e => setSelectedItemId(e.target.value)}
-                          className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 font-mono text-xs text-white outline-none"
-                        >
-                          {inspections.map(i => (
-                            <option key={i.id} value={i.id} className="bg-[#111118]">
-                              {i.component_name} (Status: {i.status})
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                    </div>
-
-                    {/* Checkout Photo Presets */}
-                    <div>
-                      <label className="block font-mono text-[10px] text-terminal-muted uppercase mb-1.5">Foto de Checkout</label>
-                      <div className="grid grid-cols-2 gap-2 mb-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCheckoutUrl('https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=800');
-                            setCustomCheckout(false);
-                          }}
-                          className={`py-2 px-3 rounded font-mono text-[10px] border text-center transition-all ${
-                            !customCheckout && checkoutUrl.includes('dirty') === false
-                              ? 'bg-neon-green/15 text-neon-green border-neon-green/30'
-                              : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
-                          }`}
-                        >
-                          Sem Defeitos
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCheckoutUrl('https://images.unsplash.com/photo-1544725176-7c40e5a71c5e-dirty?w=800');
-                            setCustomCheckout(false);
-                          }}
-                          className={`py-2 px-3 rounded font-mono text-[10px] border text-center transition-all ${
-                            !customCheckout && checkoutUrl.includes('dirty')
-                              ? 'bg-red-500/15 text-red-400 border-red-500/30'
-                              : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
-                          }`}
-                        >
-                          Deteriorada (Erro)
-                        </button>
+                      <div className="text-[10px] text-white/40 uppercase">Nível de Acesso</div>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        {user?.role === 'premium' ? (
+                          <span className="text-neon-purple font-bold flex items-center gap-1">
+                            <Zap size={12} /> PREMIUM ADMIN
+                          </span>
+                        ) : (
+                          <span className="text-white/60">CONTA STANDARD</span>
+                        )}
                       </div>
-                      
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCustomCheckout(true);
-                          setCheckoutUrl('');
-                        }}
-                        className={`w-full py-1.5 rounded font-mono text-[10px] border text-center transition-all ${
-                          customCheckout
-                            ? 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/30'
-                            : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
-                        }`}
-                      >
-                        URL Customizada
-                      </button>
-
-                      {customCheckout && (
-                        <input
-                          value={checkoutUrl}
-                          onChange={e => setCheckoutUrl(e.target.value)}
-                          placeholder="https://exemplo.com/foto.jpg"
-                          className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 mt-2 font-mono text-xs text-white outline-none"
-                        />
-                      )}
                     </div>
-
-                    {/* Trigger Button */}
-                    <button
-                      onClick={handleSimulate}
-                      disabled={simLoading || !selectedItemId}
-                      className="w-full py-2.5 bg-gradient-to-r from-neon-cyan to-neon-blue text-white rounded-lg font-mono text-xs font-bold hover:shadow-neon-cyan transition-all flex items-center justify-center gap-2 disabled:opacity-55 disabled:cursor-not-allowed"
-                    >
-                      {simLoading ? (
-                        <>
-                          <Loader2 size={12} className="animate-spin" />
-                          Processando com LLM...
-                        </>
-                      ) : (
-                        <>
-                          <Play size={12} />
-                          Enviar Foto & Analisar via IA
-                        </>
-                      )}
-                    </button>
+                    <div>
+                      <div className="text-[10px] text-white/40 uppercase">Créditos de Processamento IA</div>
+                      <div className="text-neon-green font-bold mt-0.5">10 / 10 Ciclos</div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-white/40 uppercase">Região da Gateway</div>
+                      <div className="text-white mt-0.5">sa-east-1 (São Paulo)</div>
+                    </div>
                   </div>
-                )}
-              </div>
 
-              {/* Log Monitor Block */}
-              <div className="bg-black border border-white/10 rounded-xl p-5 flex flex-col min-h-[300px] font-mono text-xs">
-                <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
-                  <span className="text-white/80 font-bold uppercase tracking-wider text-[10px] flex items-center gap-1.5">
-                    <Clock size={12} className="text-neon-cyan" />
-                    Monitor de Eventos e Payloads
-                  </span>
-                  <span className="text-[10px] text-neon-cyan">LIVE LOGS</span>
-                </div>
-
-                <div className="flex-1 overflow-y-auto space-y-2 leading-relaxed max-h-[260px] pr-2">
-                  {simLogs.length === 0 ? (
-                    <div className="text-white/20 italic py-12 text-center">
-                      Aguardando início de simulação...
-                    </div>
-                  ) : (
-                    simLogs.map((log, idx) => (
-                      <div key={idx} className={
-                        log.includes('✅') || log.includes('🎯')
-                          ? 'text-neon-green'
-                          : log.includes('❌') || log.includes('⚠️')
-                          ? 'text-red-400'
-                          : log.includes('Response:') || log.includes('payload')
-                          ? 'text-neon-cyan/90'
-                          : 'text-white/50'
-                      }>
-                        {log}
-                      </div>
-                    ))
+                  {user?.role !== 'premium' && (
+                    <a
+                      href="/assinar"
+                      className="block text-center w-full py-2 bg-gradient-to-r from-neon-purple to-neon-blue text-white rounded-lg font-mono text-xs font-bold hover:shadow-neon-purple transition-all"
+                    >
+                      Adquirir Licença Premium
+                    </a>
                   )}
                 </div>
 
-                {/* Final AI Output JSON display */}
-                {aiResponse && (
-                  <div className="mt-4 border-t border-white/10 pt-3">
-                    <div className="text-[10px] text-white/40 uppercase mb-2 flex items-center gap-1">
-                      <FileJson size={10} /> Payload do Webhook Processado:
-                    </div>
-                    <pre className="p-3 bg-white/2 border border-white/5 rounded-lg text-[10px] text-neon-green overflow-x-auto max-h-[120px]">
-                      {JSON.stringify(aiResponse, null, 2)}
-                    </pre>
-                  </div>
-                )}
-              </div>
+                {/* Quick Stats & System Health */}
+                <div className="lg:col-span-2 space-y-6">
 
-            </div>
-          </div>
-        )}
-
-        {/* TAB: Suite Inteligente (DocGen & Conversor & Compactador) */}
-        {activeTab === 'tools' && (
-          <div className="space-y-6">
-            
-            {/* Top Grid: DocGen & Converter */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              
-              {/* Document Generator */}
-              <div className="bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
-                <h3 className="font-mono text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
-                  <FileText size={16} className="text-neon-cyan" />
-                  Gerador de Documentos Smart
-                </h3>
-                <p className="font-sans text-xs text-terminal-muted leading-relaxed">
-                  Crie documentações estruturadas e relatórios de auditoria prontos para uso através de templates otimizados.
-                </p>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="block font-mono text-[9px] text-terminal-muted uppercase mb-1">Modelo de Template</label>
-                    <select
-                      value={docTemplate}
-                      onChange={e => setDocTemplate(e.target.value as any)}
-                      className="w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none"
-                    >
-                      <option value="contract" className="bg-[#111118]">Contrato de Licenciamento</option>
-                      <option value="audit" className="bg-[#111118]">Relatório de Auditoria RLS</option>
-                      <option value="leads" className="bg-[#111118]">Relatório de Leads IMOB</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block font-mono text-[9px] text-terminal-muted uppercase mb-1">Nome da Contraparte (Variável)</label>
-                    <input
-                      value={docClientName}
-                      onChange={e => setDocClientName(e.target.value)}
-                      placeholder="Empresa / Auditor"
-                      className="w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
-                    />
-                  </div>
-
-                  <button
-                    onClick={generateDocument}
-                    className="w-full py-2 bg-neon-cyan/20 border border-neon-cyan/40 text-neon-cyan rounded font-mono text-xs font-bold hover:bg-neon-cyan/35 transition-all flex items-center justify-center gap-1.5"
-                  >
-                    <Sparkles size={13} />
-                    Gerar Documento
-                  </button>
-                </div>
-
-                {docStatus === 'generated' && (
-                  <div className="mt-4 border-t border-white/5 pt-4 space-y-3">
-                    <pre className="p-3 bg-black/40 border border-white/5 rounded-lg text-[10px] text-white/95 overflow-y-auto max-h-[140px] font-mono leading-relaxed whitespace-pre-wrap">
-                      {docContent}
-                    </pre>
-                    <button
-                      onClick={downloadDoc}
-                      className="w-full py-1.5 bg-neon-green/10 border border-neon-green/30 text-neon-green hover:bg-neon-green/20 rounded font-mono text-xs transition-all flex items-center justify-center gap-1.5"
-                    >
-                      <Download size={13} />
-                      Exportar em Markdown (.md)
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Advanced Converter */}
-              <div className="bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
-                <h3 className="font-mono text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
-                  <Sliders size={16} className="text-neon-cyan" />
-                  Conversor de Estruturas
-                </h3>
-                <p className="font-sans text-xs text-terminal-muted leading-relaxed">
-                  Traduza formatos de dados instantaneamente para interações rápidas com APIs.
-                </p>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="block font-mono text-[9px] text-terminal-muted uppercase mb-1">Operação</label>
-                    <select
-                      value={convertMode}
-                      onChange={e => setConvertMode(e.target.value as any)}
-                      className="w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none"
-                    >
-                      <option value="json2csv" className="bg-[#111118]">JSON para CSV</option>
-                      <option value="csv2json" className="bg-[#111118]">CSV para JSON</option>
-                      <option value="md2html" className="bg-[#111118]">Markdown para HTML</option>
-                    </select>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
+                  {/* Info Banner */}
+                  <div className="bg-neon-cyan/5 border border-neon-cyan/20 rounded-xl p-4 flex gap-3.5 items-start">
+                    <ShieldCheck className="text-neon-cyan shrink-0 mt-0.5" size={20} />
                     <div>
-                      <label className="block font-mono text-[9px] text-white/30 uppercase mb-1">Entrada</label>
-                      <textarea
-                        value={convertInput}
-                        onChange={e => setConvertInput(e.target.value)}
-                        className="w-full h-32 bg-black/45 border border-white/10 rounded p-2 font-mono text-[10px] text-white outline-none resize-none"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-mono text-[9px] text-white/30 uppercase mb-1">Saída</label>
-                      <textarea
-                        value={convertOutput}
-                        readOnly
-                        placeholder="Resultado da conversão..."
-                        className="w-full h-32 bg-black/75 border border-white/10 rounded p-2 font-mono text-[10px] text-neon-green outline-none resize-none"
-                      />
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={handleConvert}
-                    className="w-full py-2 bg-neon-cyan/20 border border-neon-cyan/40 text-neon-cyan rounded font-mono text-xs font-bold hover:bg-neon-cyan/35 transition-all flex items-center justify-center gap-1.5"
-                  >
-                    <Code size={13} />
-                    Executar Conversão
-                  </button>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Bottom Section: Dictionary Compressor */}
-            <div className="bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
-              <h3 className="font-mono text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
-                <Scissors size={16} className="text-neon-cyan" />
-                Compactador de Texto & Código de Alta Performance
-              </h3>
-              <p className="font-sans text-xs text-terminal-muted leading-relaxed">
-                Algoritmo de compressão baseado em dicionário estático-dinâmico LZW otimizado para scripts e códigos de configuração.
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block font-mono text-[9px] text-white/30 uppercase mb-1.5">Código / Texto Original</label>
-                  <textarea
-                    value={compressInput}
-                    onChange={e => setCompressInput(e.target.value)}
-                    className="w-full h-24 bg-black/35 border border-white/10 rounded p-2.5 font-mono text-[10px] text-white outline-none resize-none"
-                  />
-                </div>
-                <div>
-                  <label className="block font-mono text-[9px] text-white/30 uppercase mb-1.5">Buffer Compactado</label>
-                  <textarea
-                    value={compressOutput}
-                    readOnly
-                    placeholder="Buffer compactado..."
-                    className="w-full h-24 bg-black/75 border border-white/10 rounded p-2.5 font-mono text-[10px] text-neon-purple outline-none resize-none"
-                  />
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/5 pt-4">
-                <div className="flex gap-4 text-xs font-mono">
-                  <div>
-                    <span className="text-white/40">Tamanho Original:</span>{' '}
-                    <span className="text-white font-bold">{compressInput.length} B</span>
-                  </div>
-                  <div>
-                    <span className="text-white/40">Tamanho Compactado:</span>{' '}
-                    <span className="text-white font-bold">{compressOutput.length} B</span>
-                  </div>
-                  <div>
-                    <span className="text-neon-green font-bold">Taxa de Compressão: {compressRatio}</span>
-                  </div>
-                </div>
-
-                <button
-                  onClick={handleCompress}
-                  className="px-6 py-2 bg-gradient-to-r from-neon-cyan to-neon-blue text-white rounded font-mono text-xs font-bold hover:shadow-neon-cyan transition-all"
-                >
-                  Compactar Arquivo
-                </button>
-              </div>
-            </div>
-
-          </div>
-        )}
-
-        {/* TAB: Repositories list */}
-        {activeTab === 'repos' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wide">
-                Repositórios Orbe Systems
-              </h3>
-              <button
-                onClick={fetchRepos}
-                disabled={reposLoading}
-                className="p-1.5 hover:bg-white/5 rounded text-terminal-muted hover:text-white"
-                title="Sincronizar"
-              >
-                <RefreshCw size={14} className={reposLoading ? 'animate-spin' : ''} />
-              </button>
-            </div>
-
-            {reposLoading ? (
-              <div className="text-center py-12 text-terminal-muted font-mono text-xs">
-                Carregando repositórios...
-              </div>
-            ) : repos.length === 0 ? (
-              <div className="text-center py-12 text-terminal-muted border border-dashed border-white/10 rounded-xl font-mono text-xs">
-                Nenhum repositório de projeto cadastrado no banco de dados.
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {repos.map(repo => (
-                  <div key={repo.id} className="bg-white/3 border border-white/8 rounded-xl p-4 flex flex-col justify-between hover:border-neon-cyan/30 transition-all">
-                    <div>
-                      <div className="flex justify-between items-start mb-2">
-                        <span className="font-mono text-xs font-bold text-white truncate max-w-[70%]">
-                          {repo.name}
-                        </span>
-                        {repo.is_featured && (
-                          <span className="font-mono text-[9px] text-neon-purple px-1.5 py-0.5 rounded border border-neon-purple/20 bg-neon-purple/5">
-                            DESTAQUE
-                           </span>
-                        )}
-                      </div>
-                      
-                      <p className="font-sans text-[11px] text-terminal-muted line-clamp-3 mb-4 leading-relaxed">
-                        {repo.description || 'Sem descrição cadastrada para este projeto.'}
+                      <h4 className="font-mono text-xs font-bold text-white uppercase tracking-wide">
+                        Ambiente Virtual Operacional
+                      </h4>
+                      <p className="font-sans text-xs text-terminal-muted mt-1 leading-relaxed">
+                        Sua conta Orbe está conectada à nossa infraestrutura de IA e microsserviços.
+                        Navegue nas abas para gerenciar modelos, testar webhooks ou explorar repositórios.
                       </p>
                     </div>
-
-                    <div className="flex items-center justify-between border-t border-white/5 pt-3">
-                      <span className="font-mono text-[10px] text-neon-cyan">
-                        {repo.language || 'Codebase'}
-                      </span>
-                      {repo.html_url && (
-                        <a
-                          href={repo.html_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="font-mono text-[10px] text-white hover:text-neon-cyan flex items-center gap-1 transition-all"
-                        >
-                          Ver no GitHub <ArrowRight size={10} />
-                        </a>
-                      )}
-                    </div>
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
-        {/* TAB: Test Events List & Dispatcher */}
-        {activeTab === 'events' && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
-              <div>
-                <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wide">
-                  Console de Monitoramento de Eventos
-                </h3>
-                <p className="font-sans text-xs text-terminal-muted mt-0.5">
-                  Visualização em tempo real de logs de teste, prova matemática do IMORTAL, e auditoria de segurança.
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={fetchTestEvents}
-                  disabled={eventsLoading}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded font-mono text-[10px] uppercase text-white hover:bg-white/10 transition-all"
-                >
-                  <RefreshCw size={11} className={eventsLoading ? 'animate-spin' : ''} />
-                  Atualizar
-                </button>
-                <button
-                  onClick={handleClearTestEvents}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 border border-red-500/30 rounded font-mono text-[10px] uppercase text-red-400 hover:bg-red-500/20 transition-all"
-                >
-                  Limpar Logs
-                </button>
-              </div>
-            </div>
-
-            {/* Filter Bar */}
-            <div className="flex flex-wrap gap-4 bg-white/2 border border-white/5 rounded-lg p-3.5">
-              <div className="flex items-center gap-2">
-                <label className="font-mono text-[10px] text-white/40 uppercase">Filtrar Serviço:</label>
-                <select
-                  value={eventFilterService}
-                  onChange={e => setEventFilterService(e.target.value)}
-                  className="bg-black/40 border border-white/10 rounded px-2.5 py-1 font-mono text-xs text-white outline-none"
-                >
-                  <option value="">Todos os Serviços</option>
-                  <option value="gateway">Gateway API</option>
-                  <option value="imobverse">Imobverse</option>
-                  <option value="imortal">IMORTAL</option>
-                  <option value="powershell_bot">PowerShell Bot</option>
-                  <option value="suite_inteligente">Suite Inteligente</option>
-                  <option value="dashboard">Dashboard VDE</option>
-                </select>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <label className="font-mono text-[10px] text-white/40 uppercase">Status:</label>
-                <select
-                  value={eventFilterStatus}
-                  onChange={e => setEventFilterStatus(e.target.value)}
-                  className="bg-black/40 border border-white/10 rounded px-2.5 py-1 font-mono text-xs text-white outline-none"
-                >
-                  <option value="">Todos</option>
-                  <option value="success">Sucesso</option>
-                  <option value="failed">Falha</option>
-                  <option value="warning">Aviso</option>
-                  <option value="info">Informação</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Event list */}
-              <div className="lg:col-span-2 space-y-3">
-                <div className="bg-black/30 border border-white/5 rounded-xl overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-white/5 border-b border-white/5 font-mono text-[10px] text-white/40 uppercase">
-                          <th className="p-3">Data/Hora</th>
-                          <th className="p-3">Serviço</th>
-                          <th className="p-3">Tipo</th>
-                          <th className="p-3">Status</th>
-                          <th className="p-3">Mensagem</th>
-                        </tr>
-                      </thead>
-                      <tbody className="font-mono text-xs text-white/80 divide-y divide-white/5">
-                        {eventsLoading ? (
-                          <tr>
-                            <td colSpan={5} className="p-8 text-center text-terminal-muted">
-                              Buscando registros na tabela...
-                            </td>
-                          </tr>
-                        ) : testEvents.length === 0 ? (
-                          <tr>
-                            <td colSpan={5} className="p-8 text-center text-terminal-muted">
-                              Nenhum evento registrado com os filtros ativos.
-                            </td>
-                          </tr>
-                        ) : (
-                          testEvents.map(evt => {
-                            const isSuccess = evt.status === 'success';
-                            const isFailed = evt.status === 'failed';
-                            const isWarning = evt.status === 'warning';
-                            return (
-                              <React.Fragment key={evt.id}>
-                                <tr className="hover:bg-white/2 transition-colors">
-                                  <td className="p-3 text-[10px] text-white/45">
-                                    {new Date(evt.created_at).toLocaleString('pt-BR')}
-                                  </td>
-                                  <td className="p-3">
-                                    <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">
-                                      {evt.service}
-                                    </span>
-                                  </td>
-                                  <td className="p-3 text-[10px] uppercase font-semibold text-neon-cyan">
-                                    {evt.event_type}
-                                  </td>
-                                  <td className="p-3">
-                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${
-                                      isSuccess ? 'bg-neon-green/15 text-neon-green' :
-                                      isFailed ? 'bg-red-500/15 text-red-400' :
-                                      isWarning ? 'bg-yellow-500/15 text-yellow-400' :
-                                      'bg-neon-cyan/15 text-neon-cyan'
-                                    }`}>
-                                      {evt.status.toUpperCase()}
-                                    </span>
-                                  </td>
-                                  <td className="p-3 max-w-[200px] truncate" title={evt.message}>
-                                    {evt.message}
-                                  </td>
-                                </tr>
-                                {evt.details && (
-                                  <tr className="bg-black/60">
-                                    <td colSpan={5} className="p-3 text-[10px] text-terminal-muted border-t border-b border-white/5">
-                                      <div className="flex gap-2 items-start pl-4">
-                                        <span className="text-neon-purple font-bold">PAYLOAD:</span>
-                                        <pre className="text-neon-green/90 whitespace-pre-wrap leading-relaxed max-w-full overflow-x-auto">
-                                          {JSON.stringify(evt.details)}
-                                        </pre>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                )}
-                              </React.Fragment>
-                            );
-                          })
-                        )}
-                      </tbody>
-                    </table>
+                  {/* System Components Status Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                      { name: 'API Gateway', status: apiFailed ? 'OFFLINE' : 'ON', desc: 'FastAPI / main.py' },
+                      { name: 'Reputation Engine', status: apiFailed ? 'OFFLINE' : 'ON', desc: 'Calculadora de Score' },
+                      { name: 'Suite de Utilidades', status: 'ON', desc: 'DocGen & Conversor (Offline Mode)' }
+                    ].map((srv, idx) => (
+                      <div key={idx} className="bg-white/2 border border-white/5 rounded-xl p-4">
+                        <div className="flex justify-between items-center">
+                          <span className="font-mono text-xs font-semibold text-white">{srv.name}</span>
+                          <span className={`font-mono text-[10px] px-1.5 py-0.5 rounded ${srv.status === 'ON' ? 'bg-neon-green/15 text-neon-green' : 'bg-red-500/15 text-red-400'
+                            }`}>{srv.status}</span>
+                        </div>
+                        <p className="font-mono text-[10px] text-terminal-muted mt-2">{srv.desc}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
+
               </div>
+            )}
 
-              {/* Creator Form */}
-              <div className="lg:col-span-1">
+            {/* TAB: Webhooks & LLM Simulator */}
+            {activeTab === 'webhooks' && (
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                  {/* Controller Block */}
+                  <div className="bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
+                    <h3 className="font-mono text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
+                      <Cpu size={16} className="text-neon-cyan" />
+                      Simular Vistoria com LLM
+                    </h3>
+                    <p className="font-sans text-xs text-terminal-muted leading-relaxed">
+                      Envie fotos de check-out de componentes para que nossa IA as analise e aplique
+                      penalidades automáticas na engine de reputação de imóveis.
+                    </p>
+
+                    {properties.length === 0 ? (
+                      <div className="text-center py-6 border border-dashed border-white/10 rounded-lg">
+                        <AlertTriangle className="text-yellow-500 mx-auto mb-2" size={24} />
+                        <p className="font-mono text-xs text-terminal-muted mb-3">Nenhum imóvel cadastrado no Imobverse.</p>
+                        <button
+                          onClick={handleSeed}
+                          disabled={seeding}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-neon-cyan/20 border border-neon-cyan/40 text-neon-cyan hover:bg-neon-cyan/35 text-xs font-bold font-mono rounded transition-all"
+                        >
+                          {seeding ? (
+                            <Loader2 size={12} className="animate-spin" />
+                          ) : (
+                            <Play size={12} />
+                          )}
+                          Auto-Configurar Imóvel Demo
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Imóvel Selector */}
+                        <div>
+                          <label className="block font-mono text-[10px] text-terminal-muted uppercase mb-1.5">Imóvel</label>
+                          <select
+                            value={selectedPropId}
+                            onChange={e => setSelectedPropId(e.target.value)}
+                            className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 font-mono text-xs text-white outline-none"
+                          >
+                            {properties.map(p => (
+                              <option key={p.id} value={p.id} className="bg-[#111118]">
+                                {p.title} (Score: {p.reputation_score.toFixed(1)})
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Component Selector */}
+                        <div>
+                          <label className="block font-mono text-[10px] text-terminal-muted uppercase mb-1.5">Componente / Item de Vistoria</label>
+                          {inspections.length === 0 ? (
+                            <div className="text-xs font-mono text-red-400">Nenhum componente cadastrado neste imóvel.</div>
+                          ) : (
+                            <select
+                              value={selectedItemId}
+                              onChange={e => setSelectedItemId(e.target.value)}
+                              className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 font-mono text-xs text-white outline-none"
+                            >
+                              {inspections.map(i => (
+                                <option key={i.id} value={i.id} className="bg-[#111118]">
+                                  {i.component_name} (Status: {i.status})
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+
+                        {/* Checkout Photo Presets */}
+                        <div>
+                          <label className="block font-mono text-[10px] text-terminal-muted uppercase mb-1.5">Foto de Checkout</label>
+                          <div className="grid grid-cols-2 gap-2 mb-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCheckoutUrl('https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?w=800');
+                                setCustomCheckout(false);
+                              }}
+                              className={`py-2 px-3 rounded font-mono text-[10px] border text-center transition-all ${!customCheckout && checkoutUrl.includes('dirty') === false
+                                  ? 'bg-neon-green/15 text-neon-green border-neon-green/30'
+                                  : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
+                                }`}
+                            >
+                              Sem Defeitos
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCheckoutUrl('https://images.unsplash.com/photo-1544725176-7c40e5a71c5e-dirty?w=800');
+                                setCustomCheckout(false);
+                              }}
+                              className={`py-2 px-3 rounded font-mono text-[10px] border text-center transition-all ${!customCheckout && checkoutUrl.includes('dirty')
+                                  ? 'bg-red-500/15 text-red-400 border-red-500/30'
+                                  : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
+                                }`}
+                            >
+                              Deteriorada (Erro)
+                            </button>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setCustomCheckout(true);
+                              setCheckoutUrl('');
+                            }}
+                            className={`w-full py-1.5 rounded font-mono text-[10px] border text-center transition-all ${customCheckout
+                                ? 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/30'
+                                : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
+                              }`}
+                          >
+                            URL Customizada
+                          </button>
+
+                          {customCheckout && (
+                            <input
+                              value={checkoutUrl}
+                              onChange={e => setCheckoutUrl(e.target.value)}
+                              placeholder="https://exemplo.com/foto.jpg"
+                              className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 mt-2 font-mono text-xs text-white outline-none"
+                            />
+                          )}
+                        </div>
+
+                        {/* Trigger Button */}
+                        <button
+                          onClick={handleSimulate}
+                          disabled={simLoading || !selectedItemId}
+                          className="w-full py-2.5 bg-gradient-to-r from-neon-cyan to-neon-blue text-white rounded-lg font-mono text-xs font-bold hover:shadow-neon-cyan transition-all flex items-center justify-center gap-2 disabled:opacity-55 disabled:cursor-not-allowed"
+                        >
+                          {simLoading ? (
+                            <>
+                              <Loader2 size={12} className="animate-spin" />
+                              Processando com LLM...
+                            </>
+                          ) : (
+                            <>
+                              <Play size={12} />
+                              Enviar Foto & Analisar via IA
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Log Monitor Block */}
+                  <div className="bg-black border border-white/10 rounded-xl p-5 flex flex-col min-h-[300px] font-mono text-xs">
+                    <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-3">
+                      <span className="text-white/80 font-bold uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                        <Clock size={12} className="text-neon-cyan" />
+                        Monitor de Eventos e Payloads
+                      </span>
+                      <span className="text-[10px] text-neon-cyan">LIVE LOGS</span>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto space-y-2 leading-relaxed max-h-[260px] pr-2">
+                      {simLogs.length === 0 ? (
+                        <div className="text-white/20 italic py-12 text-center">
+                          Aguardando início de simulação...
+                        </div>
+                      ) : (
+                        simLogs.map((log, idx) => (
+                          <div key={idx} className={
+                            log.includes('✅') || log.includes('🎯')
+                              ? 'text-neon-green'
+                              : log.includes('❌') || log.includes('⚠️')
+                                ? 'text-red-400'
+                                : log.includes('Response:') || log.includes('payload')
+                                  ? 'text-neon-cyan/90'
+                                  : 'text-white/50'
+                          }>
+                            {log}
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Final AI Output JSON display */}
+                    {aiResponse && (
+                      <div className="mt-4 border-t border-white/10 pt-3">
+                        <div className="text-[10px] text-white/40 uppercase mb-2 flex items-center gap-1">
+                          <FileJson size={10} /> Payload do Webhook Processado:
+                        </div>
+                        <pre className="p-3 bg-white/2 border border-white/5 rounded-lg text-[10px] text-neon-green overflow-x-auto max-h-[120px]">
+                          {JSON.stringify(aiResponse, null, 2)}
+                        </pre>
+                      </div>
+                    )}
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+            {/* TAB: Suite Inteligente (DocGen & Conversor & Compactador) */}
+            {activeTab === 'tools' && (
+              <div className="space-y-6">
+
+                {/* Top Grid: DocGen & Converter */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                  {/* Document Generator */}
+                  <div className="bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
+                    <h3 className="font-mono text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
+                      <FileText size={16} className="text-neon-cyan" />
+                      Gerador de Documentos Smart
+                    </h3>
+                    <p className="font-sans text-xs text-terminal-muted leading-relaxed">
+                      Crie documentações estruturadas e relatórios de auditoria prontos para uso através de templates otimizados.
+                    </p>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block font-mono text-[9px] text-terminal-muted uppercase mb-1">Modelo de Template</label>
+                        <select
+                          value={docTemplate}
+                          onChange={e => setDocTemplate(e.target.value as any)}
+                          className="w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none"
+                        >
+                          <option value="contract" className="bg-[#111118]">Contrato de Licenciamento</option>
+                          <option value="audit" className="bg-[#111118]">Relatório de Auditoria RLS</option>
+                          <option value="leads" className="bg-[#111118]">Relatório de Leads IMOB</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[9px] text-terminal-muted uppercase mb-1">Nome da Contraparte (Variável)</label>
+                        <input
+                          value={docClientName}
+                          onChange={e => setDocClientName(e.target.value)}
+                          placeholder="Empresa / Auditor"
+                          className="w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
+                        />
+                      </div>
+
+                      <button
+                        onClick={generateDocument}
+                        className="w-full py-2 bg-neon-cyan/20 border border-neon-cyan/40 text-neon-cyan rounded font-mono text-xs font-bold hover:bg-neon-cyan/35 transition-all flex items-center justify-center gap-1.5"
+                      >
+                        <Sparkles size={13} />
+                        Gerar Documento
+                      </button>
+                    </div>
+
+                    {docStatus === 'generated' && (
+                      <div className="mt-4 border-t border-white/5 pt-4 space-y-3">
+                        <pre className="p-3 bg-black/40 border border-white/5 rounded-lg text-[10px] text-white/95 overflow-y-auto max-h-[140px] font-mono leading-relaxed whitespace-pre-wrap">
+                          {docContent}
+                        </pre>
+                        <button
+                          onClick={downloadDoc}
+                          className="w-full py-1.5 bg-neon-green/10 border border-neon-green/30 text-neon-green hover:bg-neon-green/20 rounded font-mono text-xs transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <Download size={13} />
+                          Exportar em Markdown (.md)
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Advanced Converter */}
+                  <div className="bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
+                    <h3 className="font-mono text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
+                      <Sliders size={16} className="text-neon-cyan" />
+                      Conversor de Estruturas
+                    </h3>
+                    <p className="font-sans text-xs text-terminal-muted leading-relaxed">
+                      Traduza formatos de dados instantaneamente para interações rápidas com APIs.
+                    </p>
+
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block font-mono text-[9px] text-terminal-muted uppercase mb-1">Operação</label>
+                        <select
+                          value={convertMode}
+                          onChange={e => setConvertMode(e.target.value as any)}
+                          className="w-full bg-white/5 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none"
+                        >
+                          <option value="json2csv" className="bg-[#111118]">JSON para CSV</option>
+                          <option value="csv2json" className="bg-[#111118]">CSV para JSON</option>
+                          <option value="md2html" className="bg-[#111118]">Markdown para HTML</option>
+                        </select>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block font-mono text-[9px] text-white/30 uppercase mb-1">Entrada</label>
+                          <textarea
+                            value={convertInput}
+                            onChange={e => setConvertInput(e.target.value)}
+                            className="w-full h-32 bg-black/45 border border-white/10 rounded p-2 font-mono text-[10px] text-white outline-none resize-none"
+                          />
+                        </div>
+                        <div>
+                          <label className="block font-mono text-[9px] text-white/30 uppercase mb-1">Saída</label>
+                          <textarea
+                            value={convertOutput}
+                            readOnly
+                            placeholder="Resultado da conversão..."
+                            className="w-full h-32 bg-black/75 border border-white/10 rounded p-2 font-mono text-[10px] text-neon-green outline-none resize-none"
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleConvert}
+                        className="w-full py-2 bg-neon-cyan/20 border border-neon-cyan/40 text-neon-cyan rounded font-mono text-xs font-bold hover:bg-neon-cyan/35 transition-all flex items-center justify-center gap-1.5"
+                      >
+                        <Code size={13} />
+                        Executar Conversão
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+
+                {/* Bottom Section: Dictionary Compressor */}
                 <div className="bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
-                  <h4 className="font-mono text-xs font-bold text-white uppercase tracking-wide border-b border-white/5 pb-2">
-                    Disparar Evento de Teste
-                  </h4>
-                  <form onSubmit={handleCreateTestEvent} className="space-y-4">
-                    <div>
-                      <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Tipo do Evento</label>
-                      <input
-                        value={newEventForm.event_type}
-                        onChange={e => setNewEventForm(prev => ({ ...prev, event_type: e.target.value }))}
-                        className="w-full bg-black/40 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
-                        required
-                        placeholder="e.g. simulation_run"
-                      />
-                    </div>
+                  <h3 className="font-mono text-sm font-bold text-white flex items-center gap-2 uppercase tracking-wide">
+                    <Scissors size={16} className="text-neon-cyan" />
+                    Compactador de Texto & Código de Alta Performance
+                  </h3>
+                  <p className="font-sans text-xs text-terminal-muted leading-relaxed">
+                    Algoritmo de compressão baseado em dicionário estático-dinâmico LZW otimizado para scripts e códigos de configuração.
+                  </p>
 
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Serviço</label>
-                      <select
-                        value={newEventForm.service}
-                        onChange={e => setNewEventForm(prev => ({ ...prev, service: e.target.value }))}
-                        className="w-full bg-black/40 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
-                      >
-                        <option value="dashboard">Dashboard VDE</option>
-                        <option value="gateway">Gateway API</option>
-                        <option value="imobverse">Imobverse</option>
-                        <option value="imortal">IMORTAL</option>
-                        <option value="powershell_bot">PowerShell Bot</option>
-                        <option value="suite_inteligente">Suite Inteligente</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Status</label>
-                      <select
-                        value={newEventForm.status}
-                        onChange={e => setNewEventForm(prev => ({ ...prev, status: e.target.value }))}
-                        className="w-full bg-black/40 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
-                      >
-                        <option value="success">Sucesso (success)</option>
-                        <option value="failed">Falha (failed)</option>
-                        <option value="warning">Aviso (warning)</option>
-                        <option value="info">Informação (info)</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Mensagem descritiva</label>
+                      <label className="block font-mono text-[9px] text-white/30 uppercase mb-1.5">Código / Texto Original</label>
                       <textarea
-                        value={newEventForm.message}
-                        onChange={e => setNewEventForm(prev => ({ ...prev, message: e.target.value }))}
-                        className="w-full h-20 bg-black/40 border border-white/10 rounded p-2 font-mono text-xs text-white outline-none focus:border-neon-cyan/50 resize-none"
-                        required
-                        placeholder="Descreva o que ocorreu no teste..."
+                        value={compressInput}
+                        onChange={e => setCompressInput(e.target.value)}
+                        className="w-full h-24 bg-black/35 border border-white/10 rounded p-2.5 font-mono text-[10px] text-white outline-none resize-none"
                       />
+                    </div>
+                    <div>
+                      <label className="block font-mono text-[9px] text-white/30 uppercase mb-1.5">Buffer Compactado</label>
+                      <textarea
+                        value={compressOutput}
+                        readOnly
+                        placeholder="Buffer compactado..."
+                        className="w-full h-24 bg-black/75 border border-white/10 rounded p-2.5 font-mono text-[10px] text-neon-purple outline-none resize-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t border-white/5 pt-4">
+                    <div className="flex gap-4 text-xs font-mono">
+                      <div>
+                        <span className="text-white/40">Tamanho Original:</span>{' '}
+                        <span className="text-white font-bold">{compressInput.length} B</span>
+                      </div>
+                      <div>
+                        <span className="text-white/40">Tamanho Compactado:</span>{' '}
+                        <span className="text-white font-bold">{compressOutput.length} B</span>
+                      </div>
+                      <div>
+                        <span className="text-neon-green font-bold">Taxa de Compressão: {compressRatio}</span>
+                      </div>
                     </div>
 
                     <button
-                      type="submit"
-                      className="w-full py-2 bg-gradient-to-r from-neon-cyan to-neon-blue text-white rounded font-mono text-xs font-bold hover:shadow-neon-cyan transition-all flex items-center justify-center gap-1.5"
+                      onClick={handleCompress}
+                      className="px-6 py-2 bg-gradient-to-r from-neon-cyan to-neon-blue text-white rounded font-mono text-xs font-bold hover:shadow-neon-cyan transition-all"
                     >
-                      <Play size={12} />
-                      Disparar Evento
+                      Compactar Arquivo
                     </button>
-                  </form>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {/* TAB: Repositories list */}
+            {activeTab === 'repos' && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wide">
+                    Repositórios Orbe Systems
+                  </h3>
+                  <button
+                    onClick={fetchRepos}
+                    disabled={reposLoading}
+                    className="p-1.5 hover:bg-white/5 rounded text-terminal-muted hover:text-white"
+                    title="Sincronizar"
+                  >
+                    <RefreshCw size={14} className={reposLoading ? 'animate-spin' : ''} />
+                  </button>
+                </div>
+
+                {reposLoading ? (
+                  <div className="text-center py-12 text-terminal-muted font-mono text-xs">
+                    Carregando repositórios...
+                  </div>
+                ) : repos.length === 0 ? (
+                  <div className="text-center py-12 text-terminal-muted border border-dashed border-white/10 rounded-xl font-mono text-xs">
+                    Nenhum repositório de projeto cadastrado no banco de dados.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {repos.map(repo => (
+                      <div key={repo.id} className="bg-white/3 border border-white/8 rounded-xl p-4 flex flex-col justify-between hover:border-neon-cyan/30 transition-all">
+                        <div>
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-mono text-xs font-bold text-white truncate max-w-[70%]">
+                              {repo.name}
+                            </span>
+                            {repo.is_featured && (
+                              <span className="font-mono text-[9px] text-neon-purple px-1.5 py-0.5 rounded border border-neon-purple/20 bg-neon-purple/5">
+                                DESTAQUE
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="font-sans text-[11px] text-terminal-muted line-clamp-3 mb-4 leading-relaxed">
+                            {repo.description || 'Sem descrição cadastrada para este projeto.'}
+                          </p>
+                        </div>
+
+                        <div className="flex items-center justify-between border-t border-white/5 pt-3">
+                          <span className="font-mono text-[10px] text-neon-cyan">
+                            {repo.language || 'Codebase'}
+                          </span>
+                          {repo.html_url && (
+                            <a
+                              href={repo.html_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="font-mono text-[10px] text-white hover:text-neon-cyan flex items-center gap-1 transition-all"
+                            >
+                              Ver no GitHub <ArrowRight size={10} />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB: Test Events List & Dispatcher */}
+            {activeTab === 'events' && (
+              <div className="space-y-6">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
+                  <div>
+                    <h3 className="font-mono text-sm font-bold text-white uppercase tracking-wide">
+                      Console de Monitoramento de Eventos
+                    </h3>
+                    <p className="font-sans text-xs text-terminal-muted mt-0.5">
+                      Visualização em tempo real de logs de teste, prova matemática do IMORTAL, e auditoria de segurança.
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={fetchTestEvents}
+                      disabled={eventsLoading}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 border border-white/10 rounded font-mono text-[10px] uppercase text-white hover:bg-white/10 transition-all"
+                    >
+                      <RefreshCw size={11} className={eventsLoading ? 'animate-spin' : ''} />
+                      Atualizar
+                    </button>
+                    <button
+                      onClick={handleClearTestEvents}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-red-500/10 border border-red-500/30 rounded font-mono text-[10px] uppercase text-red-400 hover:bg-red-500/20 transition-all"
+                    >
+                      Limpar Logs
+                    </button>
+                  </div>
+                </div>
+
+                {/* Filter Bar */}
+                <div className="flex flex-wrap gap-4 bg-white/2 border border-white/5 rounded-lg p-3.5">
+                  <div className="flex items-center gap-2">
+                    <label className="font-mono text-[10px] text-white/40 uppercase">Filtrar Serviço:</label>
+                    <select
+                      value={eventFilterService}
+                      onChange={e => setEventFilterService(e.target.value)}
+                      className="bg-black/40 border border-white/10 rounded px-2.5 py-1 font-mono text-xs text-white outline-none"
+                    >
+                      <option value="">Todos os Serviços</option>
+                      <option value="gateway">Gateway API</option>
+                      <option value="imobverse">Imobverse</option>
+                      <option value="imortal">IMORTAL</option>
+                      <option value="powershell_bot">PowerShell Bot</option>
+                      <option value="suite_inteligente">Suite Inteligente</option>
+                      <option value="dashboard">Dashboard VDE</option>
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <label className="font-mono text-[10px] text-white/40 uppercase">Status:</label>
+                    <select
+                      value={eventFilterStatus}
+                      onChange={e => setEventFilterStatus(e.target.value)}
+                      className="bg-black/40 border border-white/10 rounded px-2.5 py-1 font-mono text-xs text-white outline-none"
+                    >
+                      <option value="">Todos</option>
+                      <option value="success">Sucesso</option>
+                      <option value="failed">Falha</option>
+                      <option value="warning">Aviso</option>
+                      <option value="info">Informação</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {/* Event list */}
+                  <div className="lg:col-span-2 space-y-3">
+                    <div className="bg-black/30 border border-white/5 rounded-xl overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse">
+                          <thead>
+                            <tr className="bg-white/5 border-b border-white/5 font-mono text-[10px] text-white/40 uppercase">
+                              <th className="p-3">Data/Hora</th>
+                              <th className="p-3">Serviço</th>
+                              <th className="p-3">Tipo</th>
+                              <th className="p-3">Status</th>
+                              <th className="p-3">Mensagem</th>
+                            </tr>
+                          </thead>
+                          <tbody className="font-mono text-xs text-white/80 divide-y divide-white/5">
+                            {eventsLoading ? (
+                              <tr>
+                                <td colSpan={5} className="p-8 text-center text-terminal-muted">
+                                  Buscando registros na tabela...
+                                </td>
+                              </tr>
+                            ) : testEvents.length === 0 ? (
+                              <tr>
+                                <td colSpan={5} className="p-8 text-center text-terminal-muted">
+                                  Nenhum evento registrado com os filtros ativos.
+                                </td>
+                              </tr>
+                            ) : (
+                              testEvents.map(evt => {
+                                const isSuccess = evt.status === 'success';
+                                const isFailed = evt.status === 'failed';
+                                const isWarning = evt.status === 'warning';
+                                return (
+                                  <React.Fragment key={evt.id}>
+                                    <tr className="hover:bg-white/2 transition-colors">
+                                      <td className="p-3 text-[10px] text-white/45">
+                                        {new Date(evt.created_at).toLocaleString('pt-BR')}
+                                      </td>
+                                      <td className="p-3">
+                                        <span className="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-[10px]">
+                                          {evt.service}
+                                        </span>
+                                      </td>
+                                      <td className="p-3 text-[10px] uppercase font-semibold text-neon-cyan">
+                                        {evt.event_type}
+                                      </td>
+                                      <td className="p-3">
+                                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${isSuccess ? 'bg-neon-green/15 text-neon-green' :
+                                            isFailed ? 'bg-red-500/15 text-red-400' :
+                                              isWarning ? 'bg-yellow-500/15 text-yellow-400' :
+                                                'bg-neon-cyan/15 text-neon-cyan'
+                                          }`}>
+                                          {evt.status.toUpperCase()}
+                                        </span>
+                                      </td>
+                                      <td className="p-3 max-w-[200px] truncate" title={evt.message}>
+                                        {evt.message}
+                                      </td>
+                                    </tr>
+                                    {evt.details && (
+                                      <tr className="bg-black/60">
+                                        <td colSpan={5} className="p-3 text-[10px] text-terminal-muted border-t border-b border-white/5">
+                                          <div className="flex gap-2 items-start pl-4">
+                                            <span className="text-neon-purple font-bold">PAYLOAD:</span>
+                                            <pre className="text-neon-green/90 whitespace-pre-wrap leading-relaxed max-w-full overflow-x-auto">
+                                              {JSON.stringify(evt.details)}
+                                            </pre>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )}
+                                  </React.Fragment>
+                                );
+                              })
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Creator Form */}
+                  <div className="lg:col-span-1">
+                    <div className="bg-white/3 border border-white/8 rounded-xl p-5 space-y-4">
+                      <h4 className="font-mono text-xs font-bold text-white uppercase tracking-wide border-b border-white/5 pb-2">
+                        Disparar Evento de Teste
+                      </h4>
+                      <form onSubmit={handleCreateTestEvent} className="space-y-4">
+                        <div>
+                          <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Tipo do Evento</label>
+                          <input
+                            value={newEventForm.event_type}
+                            onChange={e => setNewEventForm(prev => ({ ...prev, event_type: e.target.value }))}
+                            className="w-full bg-black/40 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
+                            required
+                            placeholder="e.g. simulation_run"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Serviço</label>
+                          <select
+                            value={newEventForm.service}
+                            onChange={e => setNewEventForm(prev => ({ ...prev, service: e.target.value }))}
+                            className="w-full bg-black/40 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
+                          >
+                            <option value="dashboard">Dashboard VDE</option>
+                            <option value="gateway">Gateway API</option>
+                            <option value="imobverse">Imobverse</option>
+                            <option value="imortal">IMORTAL</option>
+                            <option value="powershell_bot">PowerShell Bot</option>
+                            <option value="suite_inteligente">Suite Inteligente</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Status</label>
+                          <select
+                            value={newEventForm.status}
+                            onChange={e => setNewEventForm(prev => ({ ...prev, status: e.target.value }))}
+                            className="w-full bg-black/40 border border-white/10 rounded px-2.5 py-1.5 font-mono text-xs text-white outline-none focus:border-neon-cyan/50"
+                          >
+                            <option value="success">Sucesso (success)</option>
+                            <option value="failed">Falha (failed)</option>
+                            <option value="warning">Aviso (warning)</option>
+                            <option value="info">Informação (info)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block font-mono text-[9px] text-white/40 uppercase mb-1">Mensagem descritiva</label>
+                          <textarea
+                            value={newEventForm.message}
+                            onChange={e => setNewEventForm(prev => ({ ...prev, message: e.target.value }))}
+                            className="w-full h-20 bg-black/40 border border-white/10 rounded p-2 font-mono text-xs text-white outline-none focus:border-neon-cyan/50 resize-none"
+                            required
+                            placeholder="Descreva o que ocorreu no teste..."
+                          />
+                        </div>
+
+                        <button
+                          type="submit"
+                          className="w-full py-2 bg-gradient-to-r from-neon-cyan to-neon-blue text-white rounded font-mono text-xs font-bold hover:shadow-neon-cyan transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <Play size={12} />
+                          Disparar Evento
+                        </button>
+                      </form>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
             )}
 
           </>
@@ -1616,7 +1610,7 @@ function BrokenLattice() {
         {/* Broken links indicators */}
         <circle cx="80" cy="70" r="3" fill="#ff007f" filter="url(#glow-magenta)" />
         <circle cx="160" cy="75" r="3" fill="#00f2fe" filter="url(#glow-cyan)" />
-        
+
         {/* Floating particles escaping */}
         <circle cx="100" cy="45" r="2" fill="#00f2fe" opacity="0.8" className="animate-bounce" style={{ animationDuration: '3s' }} />
         <circle cx="145" cy="50" r="1.5" fill="#ff007f" opacity="0.6" className="animate-ping" style={{ animationDuration: '2.5s' }} />
@@ -1669,7 +1663,7 @@ function GracefulFailureView({ onReconnect, isReconnecting }: GracefulFailureVie
       </div>
 
       {/* Central Card: Gracioso Data Fracture */}
-      <div 
+      <div
         className="flex-1 max-w-xl bg-[#0d1117]/80 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8 flex flex-col items-center text-center relative overflow-hidden"
         style={{
           boxShadow: '0 0 30px rgba(0, 242, 254, 0.03), 0 0 30px rgba(255, 0, 127, 0.03)',
