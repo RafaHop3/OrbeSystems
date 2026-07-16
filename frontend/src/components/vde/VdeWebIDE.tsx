@@ -3,125 +3,176 @@
 import { useState, useRef, useEffect } from 'react';
 import { Play, Save, FolderOpen, Terminal, Code2, RefreshCw, ChevronRight, ChevronDown, File, Folder } from 'lucide-react';
 
-import { API_BASE_URL } from '@/lib/api';
+import { PROXY_BASE_URL } from '@/lib/api';
 
-const API_URL = API_BASE_URL;
+// Security [A3]: all browser fetches route through /api/proxy — backend URL never exposed.
+const API_URL = PROXY_BASE_URL;
 
 // ── File system tree ──────────────────────────────────────────────────────────
 type FileNode = { name: string; type: 'file' | 'dir'; lang?: string; content?: string; children?: FileNode[] };
 
+// Security [M2]: FILE_TREE content is generic educational code.
+// No real business logic, thresholds, class names, or internal routes are exposed here.
 const FILE_TREE: FileNode[] = [
   {
     name: 'backend', type: 'dir', children: [
-      { name: 'main.py', type: 'file', lang: 'python', content: `from fastapi import FastAPI
-from routes.imobverse import router as imobverse_router
-from routes.imortal import router as imortal_router
-from database import engine, Base
+      {
+        name: 'main.py', type: 'file', lang: 'python', content: `# main.py — FastAPI Application Entry Point
+# ════════════════════════════════════════════
+# FastAPI auto-generates OpenAPI docs at /docs (protected)
+# and provides async lifecycle hooks via @asynccontextmanager.
 
-app = FastAPI(title="Orbe Systems API", version="1.3.0")
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-@app.on_event("startup")
-async def startup():
-    Base.metadata.create_all(bind=engine)
-    print("[Orbe] ✅ Infraestrutura inicializada")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: initialise DB tables, run migrations
+    print("[App] Starting up...")
+    yield
+    # Shutdown: close connections, flush queues
+    print("[App] Shutting down.")
 
-app.include_router(imobverse_router, prefix="/api")
-app.include_router(imortal_router, prefix="/api")
+app = FastAPI(
+    title="My API",
+    version="1.0.0",
+    docs_url=None,   # Disable public docs
+    redoc_url=None,
+    lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://myapp.com"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/health")
 async def health():
-    return {"status": "operational", "service": "orbe-systems-api"}
+    return {"status": "ok"}
 ` },
-      { name: 'services', type: 'dir', children: [
-        { name: 'reputation_engine.py', type: 'file', lang: 'python', content: `"""
-Motor de Reputação Imobverse
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Regras:
-  • Deterioração "critico" → penaliza -1.5 no score
-  • score < 3.2            → status = UNHEALTHY (limbo)
-"""
+      {
+        name: 'services', type: 'dir', children: [
+          {
+            name: 'scoring_service.py', type: 'file', lang: 'python', content: `# scoring_service.py — Example Scoring Service
+# ════════════════════════════════════════════════
+# Demonstrates a simple scoring pattern with
+# configurable thresholds loaded from environment.
 
-UNHEALTHY_THRESHOLD = 3.2
-CRITICAL_PENALTY    = 1.5
+from dataclasses import dataclass
+from typing import Protocol
 
-class ReputationEngineService:
-    @staticmethod
-    def process_checkout_analysis(db, analysis):
-        item = db.query(ImobInspectionItem).filter_by(
-            id=analysis.inspection_item_id
-        ).first()
 
-        if analysis.divergencia_detectada and \\
-           analysis.grau_de_deterioracao == "critico":
-            prop = item.property
-            prop.reputation_score = max(
-                0.0,
-                round(prop.reputation_score - CRITICAL_PENALTY, 2)
-            )
-            if prop.reputation_score < UNHEALTHY_THRESHOLD:
-                prop.status = "unhealthy"
+class ScorableItem(Protocol):
+    score: float
+    status: str
 
-        db.commit()
-        return {"status": item.status, "score": item.property.reputation_score}
+
+@dataclass
+class ScoringConfig:
+    unhealthy_threshold: float
+    penalty_amount: float
+
+
+class ScoringService:
+    def __init__(self, config: ScoringConfig):
+        self.config = config
+
+    def apply_penalty(self, item: ScorableItem, reason: str) -> dict:
+        """Deducts penalty and updates status if below threshold."""
+        item.score = max(0.0, round(item.score - self.config.penalty_amount, 2))
+        if item.score < self.config.unhealthy_threshold:
+            item.status = "review_required"
+        return {"score": item.score, "status": item.status, "reason": reason}
 ` },
-      ]},
-      { name: 'routes', type: 'dir', children: [
-        { name: 'imobverse.py', type: 'file', lang: 'python', content: `from fastapi import APIRouter, Depends, BackgroundTasks
-from services.reputation_engine import run_automated_analysis
-from database import SessionLocal
+        ]
+      },
+      {
+        name: 'routes', type: 'dir', children: [
+          {
+            name: 'items.py', type: 'file', lang: 'python', content: `# routes/items.py — Example CRUD Router
+# ════════════════════════════════════════
+# Demonstrates a standard FastAPI router pattern
+# with dependency injection and background tasks.
 
-router = APIRouter(prefix="/imobverse", tags=["imobverse"])
+from fastapi import APIRouter, Depends, BackgroundTasks, status
+from sqlalchemy.orm import Session
+from database import get_db
+from security.auth import require_authenticated_user
 
-@router.post("/inspections/checkout")
-def submit_checkout_photo(
-    payload: CheckoutPhotoSubmit,
+router = APIRouter(prefix="/items", tags=["items"])
+
+
+@router.get("/", status_code=status.HTTP_200_OK)
+def list_items(db: Session = Depends(get_db)):
+    """Returns a paginated list of items."""
+    return {"items": [], "total": 0}
+
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
+def create_item(
+    payload: dict,
     background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_premium),
+    user=Depends(require_authenticated_user),
 ):
-    """
-    1. Salva checkout_url no banco
-    2. Dispara análise LLM em background (Gemini → Ollama → Heurística)
-    3. LLM retorna JSON → ReputationEngine aplica penalidades
-    """
-    result = ReputationEngineService.submit_checkout_photo(
-        db, payload, tenant_user_id=current_user.id
-    )
-    background_tasks.add_task(
-        run_automated_analysis, result["id"], SessionLocal
-    )
-    return result
+    """Creates a new item and queues a background analysis task."""
+    # background_tasks.add_task(run_analysis, item_id)
+    return {"id": "new-item-id", "status": "created"}
 ` },
-      ]},
+        ]
+      },
     ],
   },
   {
     name: 'frontend', type: 'dir', children: [
-      { name: 'src', type: 'dir', children: [
-        { name: 'components', type: 'dir', children: [
-          { name: 'vde', type: 'dir', children: [
-            { name: 'VdeUserDashboard.tsx', type: 'file', lang: 'tsx', content: `'use client';
-// Painel interativo do usuário Orbe Systems
-// Abas: Geral | Orquestrador IA | Repositórios
+      {
+        name: 'src', type: 'dir', children: [
+          {
+            name: 'components', type: 'dir', children: [
+              {
+                name: 'vde', type: 'dir', children: [
+                  {
+                    name: 'Dashboard.tsx', type: 'file', lang: 'tsx', content: `'use client';
+// Dashboard.tsx — Example interactive dashboard component
+// Uses React state and Server Actions for data fetching.
 
-export default function VdeUserDashboard() {
+import { useState, useEffect } from 'react';
+
+interface DashboardProps {
+  userId: string;
+}
+
+export default function Dashboard({ userId }: DashboardProps) {
+  const [data, setData] = useState<null | { score: number }>(null);
+
+  useEffect(() => {
+    // Fetches go through /api/proxy — backend URL stays server-side
+    fetch('/api/proxy/items')
+      .then(r => r.json())
+      .then(setData);
+  }, [userId]);
+
   return (
-    <div className="flex-1 bg-[#0d1117] rounded-lg border border-terminal-border">
-      {/* Header */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-terminal-border">
-        <span className="w-2.5 h-2.5 rounded-full bg-neon-cyan animate-pulse" />
-        <span className="font-mono text-xs font-bold text-white uppercase">
-          Painel do Usuário Orbe Systems
-        </span>
-      </div>
-      {/* Content rendered by sub-tabs */}
+    <div className="p-4 rounded-lg border border-white/10 bg-black/30">
+      <h2 className="font-mono text-neon-cyan text-sm mb-2">Dashboard</h2>
+      {data ? (
+        <pre className="text-white/70 text-xs">{JSON.stringify(data, null, 2)}</pre>
+      ) : (
+        <span className="text-white/30 text-xs">Loading...</span>
+      )}
     </div>
   );
 }
 ` },
-          ]},
-        ]},
-      ]},
+                ]
+              },
+            ]
+          },
+        ]
+      },
     ],
   },
 ];
@@ -206,10 +257,10 @@ function FileTree({ nodes, depth = 0, onSelect, selected }: { nodes: FileNode[];
 
 // ── API Runner panel ──────────────────────────────────────────────────────────
 const QUICK_REQUESTS = [
-  { label: 'GET /health',           method: 'GET',  path: '/health' },
-  { label: 'GET /api/projects',     method: 'GET',  path: '/api/projects' },
+  { label: 'GET /health', method: 'GET', path: '/health' },
+  { label: 'GET /api/projects', method: 'GET', path: '/api/projects' },
   { label: 'GET /api/imobverse/properties', method: 'GET', path: '/api/imobverse/properties' },
-  { label: 'GET /health (ping)',    method: 'GET',  path: '/health' },
+  { label: 'GET /health (ping)', method: 'GET', path: '/health' },
 ];
 
 function ApiRunner() {
@@ -260,7 +311,7 @@ function ApiRunner() {
       <div className="flex gap-2 p-3 border-b border-white/5">
         <select value={method} onChange={e => setMethod(e.target.value)}
           className="bg-white/5 border border-white/10 rounded px-2 py-1 text-neon-cyan outline-none">
-          {['GET','POST','PUT','DELETE','PATCH'].map(m => <option key={m} value={m} className="bg-[#0d1117]">{m}</option>)}
+          {['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].map(m => <option key={m} value={m} className="bg-[#0d1117]">{m}</option>)}
         </select>
         <input value={path} onChange={e => setPath(e.target.value)}
           className="flex-1 bg-white/5 border border-white/10 rounded px-3 py-1 text-white outline-none focus:border-neon-cyan/50"
@@ -302,16 +353,16 @@ function ApiRunner() {
 
 // ── Terminal emulator ─────────────────────────────────────────────────────────
 const COMMANDS: Record<string, string> = {
-  help:    '  Comandos: help, ls, status, api, clear, whoami, version',
-  ls:      '  backend/  frontend/  README.md  requirements.txt',
-  status:  '  ✅ FastAPI     → localhost:8000\n  ✅ Next.js     → localhost:3000\n  ⚡ Gemini API  → cloud (production)\n  🟡 Ollama      → localhost:11434 (opcional)',
-  api:     '  Endpoints: /health /api/projects /api/imobverse/properties /api/imortal/analyze',
-  whoami:  '  orbe@workspace — Orbe Systems VDE v1.0',
+  help: '  Comandos: help, ls, status, api, clear, whoami, version',
+  ls: '  backend/  frontend/  README.md  requirements.txt',
+  status: '  ✅ FastAPI     → localhost:8000\n  ✅ Next.js     → localhost:3000\n  ⚡ Gemini API  → cloud (production)\n  🟡 Ollama      → localhost:11434 (opcional)',
+  api: '  Endpoints: /health /api/projects /api/imobverse/properties /api/imortal/analyze',
+  whoami: '  orbe@workspace — Orbe Systems VDE v1.0',
   version: '  Orbe WebIDE v2.0 | FastAPI 0.115 | Next.js 14.2 | Python 3.11',
 };
 
 function TerminalEmulator() {
-  const [lines, setLines] = useState<{text: string; type: 'input'|'output'|'error'}[]>([
+  const [lines, setLines] = useState<{ text: string; type: 'input' | 'output' | 'error' }[]>([
     { text: 'Orbe Systems WebIDE Terminal v2.0', type: 'output' },
     { text: 'Digite "help" para ver os comandos disponíveis.', type: 'output' },
     { text: '', type: 'output' },
@@ -419,7 +470,7 @@ export default function VdeWebIDE() {
 
         {/* Panel switcher */}
         <div className="flex items-center gap-1">
-          {([['editor','Editor',Code2],['api','API Runner',Play],['terminal','Terminal',Terminal]] as const).map(([id, label, Icon]) => (
+          {([['editor', 'Editor', Code2], ['api', 'API Runner', Play], ['terminal', 'Terminal', Terminal]] as const).map(([id, label, Icon]) => (
             <button key={id} onClick={() => setPanel(id)}
               className={`flex items-center gap-1 px-2 py-1 rounded font-mono text-[10px] transition-all border ${panel === id ? 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/30' : 'text-terminal-muted border-transparent hover:text-white'}`}>
               <Icon size={11} />{label}

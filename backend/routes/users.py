@@ -57,7 +57,7 @@ def _build_token(user: User) -> dict:
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 @router.post("/register", status_code=status.HTTP_201_CREATED)
-@limiter.limit("5/minute")
+@limiter.limit("3/minute")  # Reduced from 5 → 3 to limit account farming
 async def register(
     request: Request,
     data: RegisterSchema,
@@ -75,11 +75,16 @@ async def register(
             detail="Email already registered.",
         )
 
-    # Minimum password strength
+    # Password strength: min 8 chars + at least 1 digit
     if len(data.password) < 8:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Password must be at least 8 characters.",
+        )
+    if not any(c.isdigit() for c in data.password):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Password must contain at least one number.",
         )
 
     new_user = User(
@@ -93,7 +98,10 @@ async def register(
     db.commit()
     db.refresh(new_user)
 
-    print(f"[Users] [OK] New registration: {new_user.email} (id={new_user.id})")
+    # Audit log with requester IP
+    forwarded = request.headers.get("x-forwarded-for", request.client.host if request.client else "Unknown")
+    requester_ip = forwarded.split(",")[0].strip()
+    print(f"[Users] [REGISTER] email={new_user.email} id={new_user.id} ip={requester_ip}")
     return _build_token(new_user)
 
 
@@ -141,27 +149,19 @@ async def passkey_login(
     db: Session = Depends(get_db),
 ):
     """
-    Autentica via WebAuthn Discoverable Credential (FIDO2).
-    O dispositivo envia o userHandle (email) ou o credentialId.
-    Nenhuma senha trafega — o hardware assina o challenge localmente.
+    STUB — WebAuthn FIDO2 challenge verification not yet implemented.
+    This endpoint MUST NOT issue a JWT without verifying a signed WebAuthn assertion.
+    Until the full FIDO2 flow (challenge generation → assertion verification) is built,
+    this endpoint returns 501 to prevent accidental authentication bypass.
+
+    Ref: https://www.w3.org/TR/webauthn-2/#sctn-verifying-assertion
     """
-    user: User | None = None
-
-    if data.email:
-        user = db.query(User).filter(User.email == data.email).first()
-
-    if not user and data.credential_id:
-        # Fallback: credential_id é base64 do rawId — futura tabela de passkeys
-        # Por ora, loga o attempt para auditoria
-        print(f"[Users] [PASSKEY] credential_id lookup: {data.credential_id[:12]}...")
-
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Identidade não encontrada neste dispositivo. Faça login com email/senha uma vez para memorizar.",
-        )
-
-    print(f"[Users] [PASSKEY LOGIN] {user.email} | role={user.role} | device_auth=True")
-    return _build_token(user)
+    # SECURITY: Do NOT issue a JWT here until WebAuthn assertion verification is implemented.
+    # The previous implementation looked up a user by email/credential_id and returned a token
+    # without any cryptographic proof — effectively bypassing authentication.
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Passkey authentication is not yet fully implemented. Please use email/password login.",
+    )
 
 
