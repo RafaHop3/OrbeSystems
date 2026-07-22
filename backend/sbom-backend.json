@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:87bfc6a4-4c01-407e-8a53-544faeb3bc6d",
+  "serialNumber": "urn:uuid:133e2500-6863-44e7-a6b7-3adfdd960567",
   "metadata": {
-    "timestamp": "2026-07-22T20:08:36.025456+00:00",
+    "timestamp": "2026-07-22T20:48:12.336241+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -14,17 +14,92 @@
   "components": [
     {
       "type": "library",
+      "name": "aiohappyeyeballs",
+      "version": "2.7.1",
+      "purl": "pkg:pypi/aiohappyeyeballs@2.7.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "PSF-2.0"
+          }
+        }
+      ],
+      "externalReferences": [],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "ed72dd1add85d8d56f3e7e1ad8cfc65473a3db924751bd94c28f66a5995aab35"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "aiohttp",
+      "version": "3.14.2",
+      "purl": "pkg:pypi/aiohttp@3.14.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0 AND MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/aio-libs/aiohttp"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "6bb4d8965e1efb1a20f723f9e48ac87e2aa323afd03d8e9fec7d9e2826b1889d"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "aiosignal",
+      "version": "1.4.0",
+      "purl": "pkg:pypi/aiosignal@1.4.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache 2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/aio-libs/aiosignal"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "050e6c27c7501739b68bf3dc373ee702db5f25f2d0cdfbfccda68dc3c12411b5"
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "annotated-doc",
       "version": "0.0.4",
       "purl": "pkg:pypi/annotated-doc@0.0.4",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/fastapi/annotated-doc"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -44,7 +119,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/annotated-types/annotated-types"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -55,12 +135,12 @@
     {
       "type": "library",
       "name": "anyio",
-      "version": "4.13.0",
-      "purl": "pkg:pypi/anyio@4.13.0",
+      "version": "4.14.2",
+      "purl": "pkg:pypi/anyio@4.14.2",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
@@ -68,7 +148,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "deeb9f26485c90ab8215e44c98baea0eb2fa2a7b0c42d8b43ca42e32671b4f99"
+          "content": "9050d78a307f7c30a2cc9cb0f08fe971265451b335011f95e732536436419fa0"
         }
       ]
     },
@@ -124,6 +204,26 @@
     },
     {
       "type": "library",
+      "name": "attrs",
+      "version": "26.1.0",
+      "purl": "pkg:pypi/attrs@26.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unknown"
+          }
+        }
+      ],
+      "externalReferences": [],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "44e56d70a67536dfce5a4e3e625826241d4bec67cf7a52503f3b185fff09574c"
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "bcrypt",
       "version": "5.0.0",
       "purl": "pkg:pypi/bcrypt@5.0.0",
@@ -134,7 +234,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pyca/bcrypt/"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -145,8 +250,8 @@
     {
       "type": "library",
       "name": "certifi",
-      "version": "2026.2.25",
-      "purl": "pkg:pypi/certifi@2026.2.25",
+      "version": "2026.7.22",
+      "purl": "pkg:pypi/certifi@2026.7.22",
       "licenses": [
         {
           "license": {
@@ -163,19 +268,19 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "0fecfd16228a906aabf5a85ba1b48abd463abe1ee972b3a719e9b97f3086bbbc"
+          "content": "87d958ce29e9a872bef136d459f259e67931622a31b7b1c3798212b44269ff53"
         }
       ]
     },
     {
       "type": "library",
       "name": "cffi",
-      "version": "2.0.0",
-      "purl": "pkg:pypi/cffi@2.0.0",
+      "version": "2.1.0",
+      "purl": "pkg:pypi/cffi@2.1.0",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
@@ -183,15 +288,15 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "7fae072d9fd1901c92428789f5d951f97240288ba92d703791c01a238fefbd22"
+          "content": "82f10e06d5e45444b37dcd5f1cef41e3f34210f6942dd14410e2578c00d02ee3"
         }
       ]
     },
     {
       "type": "library",
       "name": "charset-normalizer",
-      "version": "3.4.7",
-      "purl": "pkg:pypi/charset-normalizer@3.4.7",
+      "version": "3.4.9",
+      "purl": "pkg:pypi/charset-normalizer@3.4.9",
       "licenses": [
         {
           "license": {
@@ -203,19 +308,19 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "71a76de036905a598ef6b17fbfe50e9518fb400fa2303a3c99e08440b7b47184"
+          "content": "f5b3fc4d3f640dcd16ef9a52d6354be3a0440d4c0cefde2d63beba7aeb95d034"
         }
       ]
     },
     {
       "type": "library",
       "name": "click",
-      "version": "8.3.2",
-      "purl": "pkg:pypi/click@8.3.2",
+      "version": "8.4.2",
+      "purl": "pkg:pypi/click@8.4.2",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
@@ -223,7 +328,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "96b12f888ed3c92804963e395ca39d8574fad7095190c83bb35f49c492fcd5a8"
+          "content": "43d413e934181b5f5120b59e5b6fd67db4d6d25e892805251e4660fddd923b7b"
         }
       ]
     },
@@ -239,7 +344,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://cloudinary.com"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -249,41 +359,26 @@
     },
     {
       "type": "library",
-      "name": "colorama",
-      "version": "0.4.6",
-      "purl": "pkg:pypi/colorama@0.4.6",
-      "licenses": [
-        {
-          "license": {
-            "id": ""
-          }
-        }
-      ],
-      "externalReferences": [],
-      "hashes": [
-        {
-          "alg": "SHA-256",
-          "content": "e91f42fdc36833eb19b14a96d440f3806e500e121b6209b9e068949086cdeaf0"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "cryptography",
-      "version": "46.0.6",
-      "purl": "pkg:pypi/cryptography@46.0.6",
+      "version": "49.0.0",
+      "purl": "pkg:pypi/cryptography@49.0.0",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pyca/cryptography"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "0d2b95212ecb863e270176e69f522028cf07c4983222c2c65a8d5205150cc9ce"
+          "content": "9aaa629b1dd3c9cbbb480d18a66abb6afeb7194feff18c51c0d28d3a94c14a48"
         }
       ]
     },
@@ -314,6 +409,31 @@
     },
     {
       "type": "library",
+      "name": "distro",
+      "version": "1.9.0",
+      "purl": "pkg:pypi/distro@1.9.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache License, Version 2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python-distro/distro"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "24e194c340848192a0a874b1955f67e06df1e50ce9bd977250a7dbcfb9c680a3"
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "dnspython",
       "version": "2.8.0",
       "purl": "pkg:pypi/dnspython@2.8.0",
@@ -324,11 +444,41 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.dnspython.org"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
           "content": "99b84eb8761cc82b50b579fe149372f7ab21955c22d7cca6b1b9e7a13edbe207"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "docstring_parser",
+      "version": "0.16",
+      "purl": "pkg:pypi/docstring_parser@0.16",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/rr-/docstring_parser"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "23528892ffefcfefe68e32b8d92c38b88520aaf9abd897d3ccb5280e21f24990"
         }
       ]
     },
@@ -384,26 +534,6 @@
     },
     {
       "type": "library",
-      "name": "exceptiongroup",
-      "version": "1.3.1",
-      "purl": "pkg:pypi/exceptiongroup@1.3.1",
-      "licenses": [
-        {
-          "license": {
-            "id": ""
-          }
-        }
-      ],
-      "externalReferences": [],
-      "hashes": [
-        {
-          "alg": "SHA-256",
-          "content": "d2a0f44f25bb6aa3dbc89cdcaba4912bbec9cf942402099374f3f9a5384cdfaa"
-        }
-      ]
-    },
-    {
-      "type": "library",
       "name": "fastapi",
       "version": "0.111.0",
       "purl": "pkg:pypi/fastapi@0.111.0",
@@ -414,7 +544,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/tiangolo/fastapi"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -425,12 +560,212 @@
     {
       "type": "library",
       "name": "fastapi-cli",
-      "version": "0.0.24",
-      "purl": "pkg:pypi/fastapi-cli@0.0.24",
+      "version": "0.0.32",
+      "purl": "pkg:pypi/fastapi-cli@0.0.32",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/fastapi/fastapi-cli"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "c421676b974c5d8fa0aaace86c1235a3c1f521ccbadaa8276f270d8a1c8fcf1a"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "frozenlist",
+      "version": "1.8.0",
+      "purl": "pkg:pypi/frozenlist@1.8.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/aio-libs/frozenlist"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "9b2ea0f157db64e15299d74e6a2ed9175fcc79670dad9c095ee786ee489fadb6"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "google-ai-generativelanguage",
+      "version": "0.6.15",
+      "purl": "pkg:pypi/google-ai-generativelanguage@0.6.15",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache 2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/googleapis/google-cloud-python/tree/main/packages/google-ai-generativelanguage"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "4dd2c1762493c2e8ffeaabaa2edc3e07d707973aa8bc424f610536afc4441c2f"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "google-api-core",
+      "version": "2.33.0",
+      "purl": "pkg:pypi/google-api-core@2.33.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache 2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/googleapis/google-cloud-python/tree/main/packages/google-api-core"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "f47025e050baca683bbeb6770bd41103973700bba3dbc17de203b15f3d9a8716"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "google-api-python-client",
+      "version": "2.198.0",
+      "purl": "pkg:pypi/google-api-python-client@2.198.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache 2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/googleapis/google-api-python-client/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "0797b49bd6592dadd47870ea275fa5f78bee58946dac76a560b92e75fe5593e9"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "google-auth",
+      "version": "2.56.2",
+      "purl": "pkg:pypi/google-auth@2.56.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache 2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/googleapis/google-cloud-python/tree/main/packages/google-auth"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "fa2b49d22aacbf1c96ff0ce0da3347be800da058f77378f5d59954b36e681f14"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "google-auth-httplib2",
+      "version": "0.4.0",
+      "purl": "pkg:pypi/google-auth-httplib2@0.4.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache 2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/googleapis/google-cloud-python/packages/google-auth-httplib2"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "d9d93720a9c99672bb1088c4a28f7dc61990ece4542016e14875393ec16b648a"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "google-generativeai",
+      "version": "0.8.6",
+      "purl": "pkg:pypi/google-generativeai@0.8.6",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/google/generative-ai-python"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "27aab302c1dd34d48f1d1a9b5619e38ed893f79421053befbb25990a12479639"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "googleapis-common-protos",
+      "version": "1.75.0",
+      "purl": "pkg:pypi/googleapis-common-protos@1.75.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache 2.0"
           }
         }
       ],
@@ -438,27 +773,82 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "d6cac86f822be2995cab7b24b8504781f36b3a7f35ed3bcac8535930be931210"
+          "content": "a25d80ef790233212798e7975e205e91a877497cf6a652c0487618b3c12fc799"
         }
       ]
     },
     {
       "type": "library",
       "name": "greenlet",
-      "version": "3.5.0",
-      "purl": "pkg:pypi/greenlet@3.5.0",
+      "version": "3.5.4",
+      "purl": "pkg:pypi/greenlet@3.5.4",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://greenlet.readthedocs.io"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "495282ed60b696cbc5b5af435309d94049cd21b3efa30857ee4547df3e5de0cf"
+          "content": "8d27c72b5d9e3848413857351b973b9e0d1c99a0b8b088e137aad2e355fa3642"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "grpcio",
+      "version": "1.82.1",
+      "purl": "pkg:pypi/grpcio@1.82.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unknown"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://grpc.io"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "fbad540d42d167bff17f54c95997e89360a6a29464e2b34ed594dd15c727c782"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "grpcio-status",
+      "version": "1.71.2",
+      "purl": "pkg:pypi/grpcio-status@1.71.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache License 2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://grpc.io"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "2bb0563b0546371ce59a534177c3ac26bf8c6d9c7275defb52836ab0f30b43ff"
         }
       ]
     },
@@ -495,11 +885,16 @@
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.encode.io/httpcore/"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -509,21 +904,51 @@
     },
     {
       "type": "library",
-      "name": "httptools",
-      "version": "0.7.1",
-      "purl": "pkg:pypi/httptools@0.7.1",
+      "name": "httplib2",
+      "version": "0.32.0",
+      "purl": "pkg:pypi/httplib2@0.32.0",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "MIT"
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/httplib2/httplib2"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "e72ed1e666369d79c978e3e02fb4eed5b4ecbaffcf41f7ee7ac9e7e8e88120e5"
+          "content": "5f133446a7ca4d355b53a58fdd3f082b5bccef1aa0596555d5cbc7bd624f67e9"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "httptools",
+      "version": "0.8.0",
+      "purl": "pkg:pypi/httptools@0.8.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unknown"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/MagicStack/httptools"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "906c80c8dcfe18955b8ed187e597ea21cd9fa27cbb49fc0f674704668b9e8007"
         }
       ]
     },
@@ -539,7 +964,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/encode/httpx"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -550,12 +980,12 @@
     {
       "type": "library",
       "name": "idna",
-      "version": "3.11",
-      "purl": "pkg:pypi/idna@3.11",
+      "version": "3.18",
+      "purl": "pkg:pypi/idna@3.18",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
@@ -563,7 +993,32 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "a97c1396ac4c31f3d4432beb94f4f8ef4cbf44cc980a59cf90c8df18363fe002"
+          "content": "1d7c42f54f85a9c2af00d8a5147e3625bf14d357ffba6d30ab863ddcd476a54a"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "instructor",
+      "version": "1.3.4",
+      "purl": "pkg:pypi/instructor@1.3.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/jxnl/instructor"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "24f466fa422a0d386ac634bca413120ae0c70a2fd832da0583730500772da5e1"
         }
       ]
     },
@@ -589,17 +1044,47 @@
     },
     {
       "type": "library",
+      "name": "jiter",
+      "version": "0.4.2",
+      "purl": "pkg:pypi/jiter@0.4.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pydantic/jiter/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "d13deedd2adb677232632579e5a287241db0d0088ed6f6b5cfc3b8b74a5e0081"
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "limits",
       "version": "5.8.0",
       "purl": "pkg:pypi/limits@5.8.0",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://limits.readthedocs.org"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -610,8 +1095,8 @@
     {
       "type": "library",
       "name": "markdown-it-py",
-      "version": "4.0.0",
-      "purl": "pkg:pypi/markdown-it-py@4.0.0",
+      "version": "4.2.0",
+      "purl": "pkg:pypi/markdown-it-py@4.2.0",
       "licenses": [
         {
           "license": {
@@ -619,11 +1104,16 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/executablebooks/markdown-it-py"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "6ccfdac0c41692d1bc2edb2e34c545a95dc1a1c3f1f99c2b6d66521c5210c970"
+          "content": "c273fe8f226454ff23f08fa3cbd69bce2ed76813f2e96a389fe9c6e881f0eb1d"
         }
       ]
     },
@@ -635,7 +1125,7 @@
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
@@ -659,7 +1149,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/executablebooks/mdurl"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -669,13 +1164,63 @@
     },
     {
       "type": "library",
-      "name": "orjson",
-      "version": "3.11.8",
-      "purl": "pkg:pypi/orjson@3.11.8",
+      "name": "multidict",
+      "version": "6.7.1",
+      "purl": "pkg:pypi/multidict@6.7.1",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Apache License 2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/aio-libs/multidict"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "4f9e4e1e6868ac6e955978df0df5609834cd3616bf85c2592bf6910b1f8edb70"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "openai",
+      "version": "1.109.1",
+      "purl": "pkg:pypi/openai@1.109.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/openai/openai-python"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "62067a5ce530d8134b1d471e2be6357e88ce68900ce5be68fdab218c97bdd93a"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "orjson",
+      "version": "3.11.9",
+      "purl": "pkg:pypi/orjson@3.11.9",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unknown"
           }
         }
       ],
@@ -683,19 +1228,19 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "ee3df8736114703ac6745efdc1a98e8f5d29dd0db4122c5d7dfa0530119cb2e8"
+          "content": "b0c135b70ae59f47ec0f7fc3613cb2246d47b063595f8d9a7f85d9935745e4a3"
         }
       ]
     },
     {
       "type": "library",
       "name": "packaging",
-      "version": "26.0",
-      "purl": "pkg:pypi/packaging@26.0",
+      "version": "26.2",
+      "purl": "pkg:pypi/packaging@26.2",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
@@ -703,7 +1248,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "0e55f5302a6ecbb318a1497dff9c4a8d4849803f70c81d1d95a4bfe7063cccfa"
+          "content": "b8170d9797c77a7857f3789ba265c666ec5cc053c0c64debd000eb84a6e7b184"
         }
       ]
     },
@@ -735,12 +1280,12 @@
     {
       "type": "library",
       "name": "pip",
-      "version": "21.2.3",
-      "purl": "pkg:pypi/pip@21.2.3",
+      "version": "26.1.2",
+      "purl": "pkg:pypi/pip@26.1.2",
       "licenses": [
         {
           "license": {
-            "id": "MIT"
+            "id": "Unknown"
           }
         }
       ],
@@ -753,7 +1298,82 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "1062e9f4f6046ee2584a8b8691c468472ca7d721d81bd7abf42c13cc492b5b21"
+          "content": "2c58d830aa0668928937b0728d4050e264feb51a64d458146d50004f3d4abee3"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "propcache",
+      "version": "0.5.2",
+      "purl": "pkg:pypi/propcache@0.5.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/aio-libs/propcache"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "972cbe7eacefd8d45b0bbc95128ad514bb2c2d0131636b0d2b9a53a4d546e75d"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "proto-plus",
+      "version": "1.28.2",
+      "purl": "pkg:pypi/proto-plus@1.28.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache 2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/googleapis/google-cloud-python/tree/main/packages/proto-plus"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "d9b27759f78f40726c4da431c5eeed422d6e1be0945e94025277d281d9d23f1c"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "protobuf",
+      "version": "5.29.6",
+      "purl": "pkg:pypi/protobuf@5.29.6",
+      "licenses": [
+        {
+          "license": {
+            "id": "3-Clause BSD License"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://developers.google.com/protocol-buffers/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "3c434607cfb4f25d4da16442c62d6e5610094c1dc18e1b72471315512ee98d91"
         }
       ]
     },
@@ -785,8 +1405,8 @@
     {
       "type": "library",
       "name": "pyasn1",
-      "version": "0.6.3",
-      "purl": "pkg:pypi/pyasn1@0.6.3",
+      "version": "0.6.4",
+      "purl": "pkg:pypi/pyasn1@0.6.4",
       "licenses": [
         {
           "license": {
@@ -794,11 +1414,41 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pyasn1/pyasn1"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "146ccb2b473d15ea18ccaec8eb321c662995f86a4416f9e49e574d02e3b499e7"
+          "content": "9422bc151b58a9f6cf49c77152c32913831f360364b09b563dd858c1a240d398"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "pyasn1_modules",
+      "version": "0.4.2",
+      "purl": "pkg:pypi/pyasn1_modules@0.4.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pyasn1/pyasn1-modules"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "ded2b83527933e3127fa62c10fa283a1db353b735c5ce1ecf42113309060eedc"
         }
       ]
     },
@@ -810,11 +1460,16 @@
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/eliben/pycparser"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -834,7 +1489,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pydantic/pydantic"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -879,7 +1539,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pydantic/pydantic-settings"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -895,15 +1560,45 @@
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://pygments.org"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
           "content": "c21616aab67873a4df2d1455470e8702f065dbef25e8d94d205805985bf5b430"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "pyparsing",
+      "version": "3.3.2",
+      "purl": "pkg:pypi/pyparsing@3.3.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unknown"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/pyparsing/pyparsing/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "b7af9f49b7dde25209eafaf414b8ba13e8c561b239ebe8b4aa54a4febdde1d7b"
         }
       ]
     },
@@ -969,7 +1664,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/andrew-d/python-multipart"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -1030,8 +1730,8 @@
     {
       "type": "library",
       "name": "requests",
-      "version": "2.34.0",
-      "purl": "pkg:pypi/requests@2.34.0",
+      "version": "2.34.2",
+      "purl": "pkg:pypi/requests@2.34.2",
       "licenses": [
         {
           "license": {
@@ -1043,15 +1743,15 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "42ce89c6fe0ec771b3b0ac6686dcc4d60dae7bdadb9ad0af0d5fd10fc56202e5"
+          "content": "e1331cbc693de13421e9907802b60649d0418543f9fbde2fa2d1d8737fd36966"
         }
       ]
     },
     {
       "type": "library",
       "name": "rich",
-      "version": "14.3.3",
-      "purl": "pkg:pypi/rich@14.3.3",
+      "version": "13.9.4",
+      "purl": "pkg:pypi/rich@13.9.4",
       "licenses": [
         {
           "license": {
@@ -1059,23 +1759,28 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/Textualize/rich"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "4a4d32b587763f378ac41829c8141300dd5a01c779cb9900da95eb52255eee40"
+          "content": "b866a4a33000b463e83e5fd7b10f05abc72033454f0c26e91a2b88d39277de64"
         }
       ]
     },
     {
       "type": "library",
       "name": "rich-toolkit",
-      "version": "0.19.7",
-      "purl": "pkg:pypi/rich-toolkit@0.19.7",
+      "version": "0.20.3",
+      "purl": "pkg:pypi/rich-toolkit@0.20.3",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
@@ -1083,7 +1788,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "cd8cc07bf6fef14dc6265242dad53b37b35d2ef5f12e9150cdab639cec907208"
+          "content": "080a21fef1b43384f372a02fbe99d88573d80cd911b86104efc62aac9fdda988"
         }
       ]
     },
@@ -1099,7 +1804,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://stuvel.eu/rsa"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -1110,25 +1820,20 @@
     {
       "type": "library",
       "name": "setuptools",
-      "version": "57.4.0",
-      "purl": "pkg:pypi/setuptools@57.4.0",
+      "version": "79.0.1",
+      "purl": "pkg:pypi/setuptools@79.0.1",
       "licenses": [
         {
           "license": {
-            "id": "UNKNOWN"
+            "id": ""
           }
         }
       ],
-      "externalReferences": [
-        {
-          "type": "website",
-          "url": "https://github.com/pypa/setuptools"
-        }
-      ],
+      "externalReferences": [],
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "f5e73e54498c2c05ce2632af9162f1cef03e9ff5c75b380659a290cf7c100439"
+          "content": "1d30963fa875da8c1f1cd7be35e33b31a99d7042e382baec38ef459910e8c4dc"
         }
       ]
     },
@@ -1219,7 +1924,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python-trio/sniffio"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -1264,7 +1974,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/encode/starlette"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -1299,98 +2014,88 @@
     },
     {
       "type": "library",
-      "name": "tomli",
-      "version": "2.4.1",
-      "purl": "pkg:pypi/tomli@2.4.1",
+      "name": "tenacity",
+      "version": "8.5.0",
+      "purl": "pkg:pypi/tenacity@8.5.0",
       "licenses": [
         {
           "license": {
-            "id": ""
-          }
-        }
-      ],
-      "externalReferences": [],
-      "hashes": [
-        {
-          "alg": "SHA-256",
-          "content": "fb8f31bb4d1e5d6e88f19868028dbbe4b9f484f250b651660bc606389dbe4545"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "typer",
-      "version": "0.24.1",
-      "purl": "pkg:pypi/typer@0.24.1",
-      "licenses": [
-        {
-          "license": {
-            "id": ""
-          }
-        }
-      ],
-      "externalReferences": [],
-      "hashes": [
-        {
-          "alg": "SHA-256",
-          "content": "d411057a6d11a384f62d10efc539c56cbade14196f8756b827a76a99fd49a048"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "typing_extensions",
-      "version": "4.15.0",
-      "purl": "pkg:pypi/typing_extensions@4.15.0",
-      "licenses": [
-        {
-          "license": {
-            "id": ""
-          }
-        }
-      ],
-      "externalReferences": [],
-      "hashes": [
-        {
-          "alg": "SHA-256",
-          "content": "4fcfd6872c8703e68da1f4384a74d954a4326a707e653d73ac0ed37d6ffcadbf"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "tzdata",
-      "version": "2026.2",
-      "purl": "pkg:pypi/tzdata@2026.2",
-      "licenses": [
-        {
-          "license": {
-            "id": "Apache-2.0"
+            "id": "Apache 2.0"
           }
         }
       ],
       "externalReferences": [
         {
           "type": "website",
-          "url": "https://github.com/python/tzdata"
+          "url": "https://github.com/jd/tenacity"
         }
       ],
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "b648b0090631e6402d5ee3000a6ac2ba9c36d73916cee61d25564e80a65db660"
+          "content": "d492b5b600a8cb0e6f17140d2ef1eaca4a0575521f44f0efe695448466099667"
         }
       ]
     },
     {
       "type": "library",
-      "name": "tzlocal",
-      "version": "5.3.1",
-      "purl": "pkg:pypi/tzlocal@5.3.1",
+      "name": "tqdm",
+      "version": "4.69.0",
+      "purl": "pkg:pypi/tqdm@4.69.0",
       "licenses": [
         {
           "license": {
-            "id": "MIT"
+            "id": "MPL-2.0 AND MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://tqdm.github.io"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "40de6d67c13673cb54176a090b60c5f5e0a4b63601cd1d3890c143feea8fb831"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "typer",
+      "version": "0.27.0",
+      "purl": "pkg:pypi/typer@0.27.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unknown"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/fastapi/typer"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "a23d0d8e5d096adeb5b6696a18a6e0bf312daba1eba998f9b5744f866cbcdd31"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "typing_extensions",
+      "version": "4.16.0",
+      "purl": "pkg:pypi/typing_extensions@4.16.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unknown"
           }
         }
       ],
@@ -1398,19 +2103,39 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "a119f8c9e973a71fb024efb89563f87d0d60f997b6fbe68436a4728bf30b3576"
+          "content": "d487e7a6974fe327808381ef70dd633442f377482fdebefdcd0feea71876f367"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "tzlocal",
+      "version": "5.4.4",
+      "purl": "pkg:pypi/tzlocal@5.4.4",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unknown"
+          }
+        }
+      ],
+      "externalReferences": [],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "0d45f08d61568095344132b6232908bbe6c33d65586763722203439c42c86920"
         }
       ]
     },
     {
       "type": "library",
       "name": "ujson",
-      "version": "5.12.0",
-      "purl": "pkg:pypi/ujson@5.12.0",
+      "version": "5.13.0",
+      "purl": "pkg:pypi/ujson@5.13.0",
       "licenses": [
         {
           "license": {
-            "id": "BSD-3-Clause AND TCL"
+            "id": "Unknown"
           }
         }
       ],
@@ -1423,7 +2148,32 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "68f71767c086d28e9b8efe42e7de713d3cd96bc944340a769e81667d447d3367"
+          "content": "1511165320991b09942dce87113d918142a1e0ed037326c99bd8c6391e748d89"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "uritemplate",
+      "version": "4.2.0",
+      "purl": "pkg:pypi/uritemplate@4.2.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD 3-Clause OR Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://uritemplate.readthedocs.org"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "fb6e3c126cffc5accc2ed27ac6e7fba178ad189c62610f7b2ead240f8ceaf676"
         }
       ]
     },
@@ -1435,7 +2185,7 @@
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
@@ -1459,7 +2209,12 @@
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://www.uvicorn.org/"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
@@ -1469,9 +2224,29 @@
     },
     {
       "type": "library",
+      "name": "uvloop",
+      "version": "0.22.1",
+      "purl": "pkg:pypi/uvloop@0.22.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT License"
+          }
+        }
+      ],
+      "externalReferences": [],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "9c453c4c876925b25a3fea2ebe369000e97bbbca71b0975c0c0ad30d256bd7e2"
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "watchfiles",
-      "version": "1.1.1",
-      "purl": "pkg:pypi/watchfiles@1.1.1",
+      "version": "1.2.0",
+      "purl": "pkg:pypi/watchfiles@1.2.0",
       "licenses": [
         {
           "license": {
@@ -1488,55 +2263,90 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "46de0e87ff725a9f907a6979e9fac71db11bb73d4c2801617a6334f0b27edb97"
+          "content": "f0a3b94cc0da20cc0256c91d89a78aaca6614e6c1f0e13fee92f9106a401a196"
         }
       ]
     },
     {
       "type": "library",
       "name": "websockets",
-      "version": "16.0",
-      "purl": "pkg:pypi/websockets@16.0",
+      "version": "16.1.1",
+      "purl": "pkg:pypi/websockets@16.1.1",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/python-websockets/websockets"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "22f095bdf488dc0fe39cc3f0ea3352451fd1db70c40e9f37dd77f9f93698939f"
+          "content": "8cf88ade5b4103aaf03b529fc96d8f107ae4e1650ddec5b6a1e71e2f0ddea87a"
         }
       ]
     },
     {
       "type": "library",
       "name": "wrapt",
-      "version": "2.1.2",
-      "purl": "pkg:pypi/wrapt@2.1.2",
+      "version": "2.2.2",
+      "purl": "pkg:pypi/wrapt@2.2.2",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
-      "externalReferences": [],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/GrahamDumpleton/wrapt"
+        }
+      ],
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "3dd1471d2fcca7363f987d8e4529a7a5e3acb7eb5cde913f2a1c1308dc651d13"
+          "content": "f4bc4b59045bb28ea2fbce82b06101af9f92558ce4371cd0d6cdf22f3b2a5757"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "yarl",
+      "version": "1.24.5",
+      "purl": "pkg:pypi/yarl@1.24.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/aio-libs/yarl"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "bb570e5e48ee90297f6e91e0f5820481b81f3c61ce4d5b0135640585cdaa741f"
         }
       ]
     },
     {
       "type": "library",
       "name": "z3-solver",
-      "version": "4.16.0.0",
-      "purl": "pkg:pypi/z3-solver@4.16.0.0",
+      "version": "5.0.0.0",
+      "purl": "pkg:pypi/z3-solver@5.0.0.0",
       "licenses": [
         {
           "license": {
@@ -1553,30 +2363,37 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "183e87389416b62b80eaba496f63683ee6908eaf6c1a794e2fed0d572dbd8e17"
+          "content": "07c12226142c52b0f2015c8c0d57c61fcfe714b061beaf10c422803eddd5c197"
         }
       ]
     }
   ],
   "_orbe_meta": {
-    "total_dependencies": 71,
+    "total_dependencies": 98,
     "license_summary": {
-      "": 36,
-      "MIT": 18,
-      "MIT License": 1,
-      "Apache-2.0": 4,
+      "PSF-2.0": 1,
+      "Apache-2.0 AND MIT": 1,
+      "Apache 2.0": 9,
+      "Unknown": 28,
+      "": 12,
+      "MIT": 20,
+      "MIT License": 2,
+      "Apache-2.0": 8,
       "MPL-2.0": 1,
       "Released under the MIT license.": 1,
+      "Apache License, Version 2.0": 1,
       "ISC": 1,
       "Unlicense": 1,
-      "BSD": 1,
+      "Apache License 2.0": 2,
+      "BSD": 2,
+      "3-Clause BSD License": 1,
       "LGPL with exceptions": 1,
       "BSD-2-Clause": 1,
       "BSD-3-Clause": 1,
-      "UNKNOWN": 1,
       "ISC License": 1,
       "MIT OR Apache-2.0": 1,
-      "BSD-3-Clause AND TCL": 1
+      "MPL-2.0 AND MIT": 1,
+      "BSD 3-Clause OR Apache-2.0": 1
     },
     "gpl_flagged": [
       "psycopg2-binary@2.9.9 (LGPL with exceptions)"
