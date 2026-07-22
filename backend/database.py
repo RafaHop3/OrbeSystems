@@ -59,6 +59,55 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 class Base(DeclarativeBase):
     pass
 
+# Auto-initialize database on demand (critical for Vercel Serverless environment where lifespan is not run)
+_db_initialized = False
+
+def init_db():
+    print("[Database] Dynamic database initialization started...")
+    # Import models locally to prevent circular import issues on module load
+    import models.metadata
+    import models.users
+    import models.math_vectors
+    import models.math_matrices
+    import models.audit_log
+    import models.imobverse
+    import models.repository_db
+    import models.test_event
+    import models.analytics
+    import models.security_alert
+    
+    # Create all tables if not exists
+    Base.metadata.create_all(bind=engine)
+    print("[Database] Base tables verified/created.")
+    
+    # Run self-healing schema migrations
+    try:
+        from main import run_migrations
+        run_migrations()
+    except Exception as e:
+        print(f"[Database] Warning: failed to run self-healing migrations: {e}")
+        
+    # Apply Supabase Row-Level Security if applicable
+    try:
+        from security.supabase_rls import ensure_supabase_rls
+        ensure_supabase_rls(engine)
+    except Exception as e:
+        print(f"[Database] Warning: failed to apply Supabase RLS: {e}")
+
+class AppSessionLocal(sessionmaker):
+    def __call__(self, *args, **kwargs):
+        global _db_initialized
+        if not _db_initialized:
+            _db_initialized = True  # Avoid infinite recursion to allow init_db to query database if needed
+            try:
+                init_db()
+            except Exception as e:
+                _db_initialized = False  # Reset on failure
+                print(f"[Database] Error in dynamic database initialization: {e}")
+        return super().__call__(*args, **kwargs)
+
+SessionLocal = AppSessionLocal(autocommit=False, autoflush=False, bind=engine)
+
 def get_db():
     db = SessionLocal()
     try:

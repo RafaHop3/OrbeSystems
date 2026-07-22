@@ -1,0 +1,59 @@
+{
+  "timestamp": "2026-07-22T20:33:04.173497",
+  "total": 10,
+  "passed": 9,
+  "failed": 1,
+  "percent": 90,
+  "results": [
+    {
+      "name": "API: GET /health → 200",
+      "passed": true,
+      "detail": "db=connected"
+    },
+    {
+      "name": "API: POST /api/auth/login → 200 + token",
+      "passed": true,
+      "detail": "token=eyJhbGciOiJIUzI1..."
+    },
+    {
+      "name": "API: GET /api/siem/export?format=json → 200",
+      "passed": true,
+      "detail": "count=0"
+    },
+    {
+      "name": "API: GET /api/siem/export?format=cef → text/plain",
+      "passed": false,
+      "detail": "lines=0"
+    },
+    {
+      "name": "API: GET /api/siem/export?format=leef → text/plain",
+      "passed": true,
+      "detail": "lines=0"
+    },
+    {
+      "name": "API: GET /api/siem/alerts → 200",
+      "passed": true,
+      "detail": "total=0"
+    },
+    {
+      "name": "API: GET /api/siem/alerts/stats → 200",
+      "passed": true,
+      "detail": "open=0"
+    },
+    {
+      "name": "API: POST /api/siem/webhook/test (no URL configured) → 400",
+      "passed": true,
+      "detail": "status=400 — detail={'detail': 'SIEM_WEBHOOK_URL is not configured. Set it in yo"
+    },
+    {
+      "name": "API: GET /api/siem/export (no auth) → 401/403",
+      "passed": true,
+      "detail": "status=401"
+    },
+    {
+      "name": "API: POST /api/analytics/log → 200 + captured/blocked",
+      "passed": true,
+      "detail": "status=captured"
+    }
+  ]
+}

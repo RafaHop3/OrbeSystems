@@ -44,8 +44,8 @@ export default function FreedomSection() {
         <p className="font-serif text-base md:text-lg text-[#dfd2b8]/90 leading-relaxed max-w-3xl mb-10 italic">
           "Acreditamos que o ecossistema da Orbe Systems deve ser, antes de tudo, um território de liberdade — 
           um espaço seguro onde cada indivíduo tem o direito de se expressar e ser quem verdadeiramente é. 
-          Nossa filosofia de <strong className="text-renaissance-gold font-normal not-italic">Zero Trust</strong> não se limita a firewalls ou criptografia; ela se estende à convivência humana. 
-          Temos tolerância zero contra crimes digitais, assédio e cyberbullying. Para garantir a integridade desse ecossistema, 
+          Nossa filosofia de <strong className="text-renaissance-gold font-normal not-italic">Zero Trust</strong> não se limita a sistemas; ela se estende à convivência humana. 
+          Temos tolerância zero contra assédio e comportamentos hostis. Para garantir a integridade desse ecossistema, 
           nosso Departamento de Justiça Digital atua ativamente no suporte a vítimas e na resposta a violações éticas. 
           Projetamos tecnologia não apenas para construir sistemas eficientes, mas para pavimentar o caminho para um mundo digital mais livre, leve e com amor."
         </p>
@@ -89,7 +89,7 @@ export default function FreedomSection() {
         {/* Contact CTA */}
         <div className="flex flex-col items-center gap-3">
           <p className="font-serif text-xs text-[#dfd2b8]/60 italic">
-            Presenciou cyberbullying ou comportamento hostil? Denuncie confidencialmente:
+            Presenciou comportamento hostil? Denuncie confidencialmente:
           </p>
           <button
             onClick={handleCopy}

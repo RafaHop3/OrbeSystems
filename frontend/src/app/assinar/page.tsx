@@ -249,7 +249,7 @@ function AssinarPageContent() {
 
         {/* Security note */}
         <p style={styles.securityNote}>
-          🔒 Pagamento processado com segurança pelo Stripe • PCI DSS Level 1 • Cancele a qualquer momento
+          🔒 Pagamento processado com segurança pelo Stripe • Cancele a qualquer momento
         </p>
       </div>
     </div>

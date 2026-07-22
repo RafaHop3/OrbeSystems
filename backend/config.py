@@ -35,6 +35,18 @@ class Settings(BaseSettings):
     FUZZ_RUNS: int = 150
     FUZZ_LOOP_ITERATIONS: int = 12
 
+    # ── SIEM & Security Governance (Phase 2) ──────────────────────────────────
+    # All empty by default — features are opt-in and disabled until configured.
+    SIEM_WEBHOOK_URL: str = ""     # e.g. Splunk HEC, webhook.site, Slack hook URL
+    SIEM_WEBHOOK_SECRET: str = ""  # HMAC-SHA256 signing secret (shared with receiver)
+    BLOCKED_COUNTRIES: str = ""    # Comma-separated, e.g. "Russia,North Korea" (case-insensitive)
+
+    # ── XFF / Proxy Hardening ──────────────────────────────────────────────────
+    # Number of trusted reverse proxies in front of the API.
+    # Render.com injects 1 proxy. Set to 2 if behind Cloudflare + Render.
+    # Set to 0 for direct exposure (no proxy) — rare in production.
+    NUM_TRUSTED_PROXIES: int = 1
+
     def validate_stripe_config(self) -> None:
         """Valida se as configurações do Stripe estão presentes."""
         if self.STRIPE_SECRET_KEY and not self.STRIPE_SECRET_KEY.startswith("sk_"):

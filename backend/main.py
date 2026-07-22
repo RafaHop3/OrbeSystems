@@ -24,6 +24,9 @@ from routes.webhooks import router as webhooks_router
 from routes.imortal import router as imortal_router
 from routes.imobverse import router as imobverse_router
 from routes.powershell_bot import router as powershell_bot_router
+from routes.siem import router as siem_router
+from routes.audit_chain import router as audit_chain_router
+from routes.sbom import router as sbom_router
 from security.auth import verify_password
 from security.supabase_rls import ensure_supabase_rls
 from sqlalchemy import inspect, text
@@ -35,6 +38,11 @@ import models.math_matrices  # Import to register math_matrices table
 import models.audit_log    # Import to register audit_log table
 import models.imobverse   # Import to register imob_* tables
 import models.repository_db # Import to register github_repositories table
+import models.analytics   # Import to register visit_logs + active_sessions tables
+import models.security_alert  # Import to register security_alerts table
+import models.immutable_audit  # Import to register immutable_audit_chain table
+import models.ip_blocklist     # Import to register ip_blocklist table
+import models.ueba_baseline    # Import to register ueba_baselines table
 
 
 def run_migrations():
@@ -121,6 +129,17 @@ def run_migrations():
         except Exception as e:
             print(f"WARNING: [Migration] Failed to seed initial test events: {e}")
 
+        # ── Phase 2: SIEM columns on visit_logs ────────────────────
+        vl_cols = [col['name'] for col in inspector.get_columns('visit_logs')]
+        for col_name, col_def in [
+            ('risk_score',       'REAL'),
+            ('threat_tags',      'TEXT'),
+            ('session_duration', 'INTEGER'),
+        ]:
+            if col_name not in vl_cols:
+                print(f"INFO: [Migration] Adding '{col_name}' to visit_logs...")
+                conn.execute(text(f"ALTER TABLE visit_logs ADD COLUMN {col_name} {col_def}"))
+
     print("INFO: [Migration] Schema is up to date.")
 
 # Task List:
@@ -173,6 +192,20 @@ async def lifespan(app: FastAPI):
         start_offline_agent()
     except Exception as e:
         print(f"WARNING: [OfflineAgent] Failed to start proactive offline agent: {e}")
+
+    # Start SOAR escalation check (every 5 minutes)
+    try:
+        from apscheduler.schedulers.asyncio import AsyncIOScheduler
+        from services.soar_service import escalation_check_job
+        _soar_scheduler = AsyncIOScheduler()
+        _soar_scheduler.add_job(
+            escalation_check_job, "interval", minutes=5,
+            id="soar_escalation_check", replace_existing=True
+        )
+        _soar_scheduler.start()
+        print(" SOAR escalation scheduler started (every 5 min)")
+    except Exception as e:
+        print(f"WARNING: [SOAR] Failed to start escalation scheduler: {e}")
     
     yield
     
@@ -278,6 +311,9 @@ app.include_router(admin_users_router, prefix="/api/admin", tags=["admin-users"]
 app.include_router(admin_database_router, prefix="/api/admin", tags=["admin-database"])
 app.include_router(analytics_router, prefix="/api/analytics", tags=["analytics"])
 app.include_router(upload_router, prefix="/api/admin", tags=["admin-upload"])
+app.include_router(siem_router, prefix="/api/siem", tags=["siem"])
+app.include_router(audit_chain_router, prefix="/api/audit", tags=["audit-chain"])
+app.include_router(sbom_router, prefix="/api/admin", tags=["admin-sbom"])
 # ── User Domain (RBAC) ───────────────────────────────────────────────────────
 app.include_router(users_router, prefix="/api/users", tags=["users"])
 app.include_router(checkout_router, prefix="/api/users", tags=["users-checkout"])
