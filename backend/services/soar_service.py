@@ -223,6 +223,24 @@ def run_playbook(db: Session, alert) -> None:
         except Exception as e:
             logger.error(f"[SOAR] Failed to write to audit chain: {e}")
 
+        # ── Auto-open IR record (NIST phase: detection) ───────────────────
+        # Every SOAR containment action triggers an Incident Response lifecycle.
+        # The IR record starts at the DETECTION phase and waits for the
+        # Blue Team to advance it through Containment → Post-Incident.
+        try:
+            # Enrich alert context with the playbook that fired for IR
+            if alert.context is None:
+                alert.context = {}
+            alert.context["playbook"]           = playbook_name
+            alert.context["ip_blocked"]         = ("block" in playbook_name)
+            alert.context["session_terminated"] = (session is not None and "path_enum" in playbook_name)
+            db.commit()
+
+            from services.ir_service import open_incident
+            open_incident(db, alert)
+        except Exception as e:
+            logger.error(f"[SOAR] Failed to open IR incident record: {e}")
+
 
 # ── APScheduler job: escalation check ────────────────────────────────────────
 

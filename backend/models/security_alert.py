@@ -45,6 +45,9 @@ class SecurityAlert(Base):
     resolved_at    = Column(DateTime, nullable=True)
     resolved_by    = Column(String(200), nullable=True)  # admin email
 
+    # Link to the IR lifecycle record created when SOAR fires (soft reference)
+    incident_id    = Column(String(36), nullable=True, index=True)
+
     __table_args__ = (
         Index("idx_sec_alert_severity_status", "severity", "status"),
         Index("idx_sec_alert_triggered_at",    "triggered_at"),
@@ -64,4 +67,5 @@ class SecurityAlert(Base):
             "acknowledged_at":  self.acknowledged_at.isoformat() if self.acknowledged_at else None,
             "resolved_at":      self.resolved_at.isoformat() if self.resolved_at else None,
             "resolved_by":      self.resolved_by,
+            "incident_id":      self.incident_id,
         }

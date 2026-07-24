@@ -27,6 +27,7 @@ from routes.powershell_bot import router as powershell_bot_router
 from routes.siem import router as siem_router
 from routes.audit_chain import router as audit_chain_router
 from routes.sbom import router as sbom_router
+from routes.ir import router as ir_router
 from security.auth import verify_password
 from security.supabase_rls import ensure_supabase_rls
 from sqlalchemy import inspect, text
@@ -43,6 +44,7 @@ import models.security_alert  # Import to register security_alerts table
 import models.immutable_audit  # Import to register immutable_audit_chain table
 import models.ip_blocklist     # Import to register ip_blocklist table
 import models.ueba_baseline    # Import to register ueba_baselines table
+import models.incident_report  # Import to register incident_reports table (IR lifecycle)
 
 
 def run_migrations():
@@ -139,6 +141,12 @@ def run_migrations():
             if col_name not in vl_cols:
                 print(f"INFO: [Migration] Adding '{col_name}' to visit_logs...")
                 conn.execute(text(f"ALTER TABLE visit_logs ADD COLUMN {col_name} {col_def}"))
+
+        # ── Phase 3: IR lifecycle columns on security_alerts ───────────────
+        sa_cols = [col['name'] for col in inspector.get_columns('security_alerts')]
+        if 'incident_id' not in sa_cols:
+            print("INFO: [Migration] Adding 'incident_id' to security_alerts...")
+            conn.execute(text("ALTER TABLE security_alerts ADD COLUMN incident_id TEXT"))
 
     print("INFO: [Migration] Schema is up to date.")
 
@@ -314,6 +322,7 @@ app.include_router(upload_router, prefix="/api/admin", tags=["admin-upload"])
 app.include_router(siem_router, prefix="/api/siem", tags=["siem"])
 app.include_router(audit_chain_router, prefix="/api/audit", tags=["audit-chain"])
 app.include_router(sbom_router, prefix="/api/admin", tags=["admin-sbom"])
+app.include_router(ir_router, prefix="/api/ir", tags=["ir"])
 # ── User Domain (RBAC) ───────────────────────────────────────────────────────
 app.include_router(users_router, prefix="/api/users", tags=["users"])
 app.include_router(checkout_router, prefix="/api/users", tags=["users-checkout"])
