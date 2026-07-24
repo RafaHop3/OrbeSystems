@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:133e2500-6863-44e7-a6b7-3adfdd960567",
+  "serialNumber": "urn:uuid:81414045-f497-4783-9c32-2791e501d533",
   "metadata": {
-    "timestamp": "2026-07-22T20:48:12.336241+00:00",
+    "timestamp": "2026-07-24T20:21:15.404389+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -35,8 +35,8 @@
     {
       "type": "library",
       "name": "aiohttp",
-      "version": "3.14.2",
-      "purl": "pkg:pypi/aiohttp@3.14.2",
+      "version": "3.14.3",
+      "purl": "pkg:pypi/aiohttp@3.14.3",
       "licenses": [
         {
           "license": {
@@ -53,7 +53,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "6bb4d8965e1efb1a20f723f9e48ac87e2aa323afd03d8e9fec7d9e2826b1889d"
+          "content": "3e22bbae141fa8ae43302833be99caa9d97aff139507e7fdec99aed4a2747817"
         }
       ]
     },
@@ -110,12 +110,12 @@
     {
       "type": "library",
       "name": "annotated-types",
-      "version": "0.7.0",
-      "purl": "pkg:pypi/annotated-types@0.7.0",
+      "version": "0.8.0",
+      "purl": "pkg:pypi/annotated-types@0.8.0",
       "licenses": [
         {
           "license": {
-            "id": ""
+            "id": "Unknown"
           }
         }
       ],
@@ -128,7 +128,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "20d9452f7f9bb616dd9c6fa59c2638d3bb69f80e4dc538d5635ef4660c9f8884"
+          "content": "137cffb8adab68d937a7412338a7e3d8209ce4c4706bbe47c02dd0dd6d8d922c"
         }
       ]
     },
@@ -805,8 +805,8 @@
     {
       "type": "library",
       "name": "grpcio",
-      "version": "1.82.1",
-      "purl": "pkg:pypi/grpcio@1.82.1",
+      "version": "1.83.0",
+      "purl": "pkg:pypi/grpcio@1.83.0",
       "licenses": [
         {
           "license": {
@@ -823,7 +823,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "fbad540d42d167bff17f54c95997e89360a6a29464e2b34ed594dd15c727c782"
+          "content": "2d395cf1ad9f7ebb3356edc46ee04a2d4c40ad79990fddc6b2e132db64ad64af"
         }
       ]
     },
@@ -2040,8 +2040,8 @@
     {
       "type": "library",
       "name": "tqdm",
-      "version": "4.69.0",
-      "purl": "pkg:pypi/tqdm@4.69.0",
+      "version": "4.69.1",
+      "purl": "pkg:pypi/tqdm@4.69.1",
       "licenses": [
         {
           "license": {
@@ -2058,7 +2058,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "40de6d67c13673cb54176a090b60c5f5e0a4b63601cd1d3890c143feea8fb831"
+          "content": "8934b829340b2e58aa9a24bf7dd58d43b6cf1f0ed0caede920c6b3cdd4a9ab8c"
         }
       ]
     },
@@ -2374,8 +2374,7 @@
       "PSF-2.0": 1,
       "Apache-2.0 AND MIT": 1,
       "Apache 2.0": 9,
-      "Unknown": 28,
-      "": 12,
+      "Unknown": 29,
       "MIT": 20,
       "MIT License": 2,
       "Apache-2.0": 8,
@@ -2384,6 +2383,7 @@
       "Apache License, Version 2.0": 1,
       "ISC": 1,
       "Unlicense": 1,
+      "": 11,
       "Apache License 2.0": 2,
       "BSD": 2,
       "3-Clause BSD License": 1,
