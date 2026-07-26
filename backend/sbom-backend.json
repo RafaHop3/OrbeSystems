@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:b62f2736-7804-4d29-83d2-7ce8dc695ef3",
+  "serialNumber": "urn:uuid:8c7c6aab-53bc-4d36-a02a-fb6a06c52218",
   "metadata": {
-    "timestamp": "2026-07-25T01:47:26.629219+00:00",
+    "timestamp": "2026-07-26T22:25:56.833347+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -1680,8 +1680,8 @@
     {
       "type": "library",
       "name": "pytz",
-      "version": "2026.2",
-      "purl": "pkg:pypi/pytz@2026.2",
+      "version": "2026.3.post1",
+      "purl": "pkg:pypi/pytz@2026.3.post1",
       "licenses": [
         {
           "license": {
@@ -1698,7 +1698,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "325c3e231cc220c31c6ffa47840176c58cf8c66330fc7528f4cf03e295f7a4ce"
+          "content": "f55bcccc7819a81a922e93b97b3a49f071bfd769ba3b746a9c1e53a3a767dd37"
         }
       ]
     },
