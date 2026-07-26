@@ -15,7 +15,7 @@ import type { AuthUser } from "./auth";
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
-const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://orbe-systems-fuc5.vercel.app";
+const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://orbe-systems-api.onrender.com";
 const API_URL = rawUrl.trim().replace(/\/$/, "");
 
 // ── Cookie Management ─────────────────────────────────────────────────────────
@@ -150,7 +150,7 @@ export async function getMeAction(): Promise<{ user?: AuthUser; error?: string }
     if (!res.ok) return { error: "unauthorized" };
 
     const data = await res.json();
-    return { 
+    return {
       user: {
         email: data.email,
         role: data.role,

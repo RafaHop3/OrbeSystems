@@ -13,10 +13,10 @@ interface FileUploaderProps {
  * FileUploader: Handle direct uploads from the PC to Cloudinary via our Backend.
  * Styles follow the Orbe Systems Cyberpunk design language.
  */
-export default function FileUploader({ 
-  onUploadComplete, 
-  label = "UPLINK FILE", 
-  accept = "image/*,video/*" 
+export default function FileUploader({
+  onUploadComplete,
+  label = "UPLINK FILE",
+  accept = "image/*,video/*"
 }: FileUploaderProps) {
   const [status, setStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -30,7 +30,7 @@ export default function FileUploader({
     formData.append('file', file);
 
     const token = localStorage.getItem('orbe_admin_token');
-    const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-fuc5.vercel.app';
+    const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
     const API_URL = rawUrl.trim().replace(/\/$/, '');
 
     try {
@@ -49,10 +49,10 @@ export default function FileUploader({
       }
 
       const data = await response.json();
-      
+
       // Notify parent to update the URL field
       onUploadComplete(data.url);
-      
+
       setStatus('success');
       // Visual feedback reset after success
       setTimeout(() => setStatus('idle'), 3000);
@@ -68,14 +68,14 @@ export default function FileUploader({
 
   return (
     <div className="relative inline-block">
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        className="hidden" 
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
         accept={accept}
         onChange={handleUpload}
       />
-      
+
       <button
         onClick={() => fileInputRef.current?.click()}
         disabled={status === 'uploading'}

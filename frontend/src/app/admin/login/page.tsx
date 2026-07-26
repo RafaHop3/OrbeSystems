@@ -20,7 +20,7 @@ export default function AdminLogin() {
     console.log('[FRONTEND] Sending login:', { username, password: trimmedPassword, passwordLength: trimmedPassword.length });
 
     try {
-      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-fuc5.vercel.app';
+      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
       const API_URL = rawUrl.trim().replace(/\/$/, '');
 
       const res = await fetch(`${API_URL}/api/auth/login`, {
@@ -43,12 +43,12 @@ export default function AdminLogin() {
 
       const data = await res.json();
       localStorage.setItem('orbe_admin_token', data.access_token);
-      
+
       router.push('/admin');
     } catch (err: any) {
-      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-fuc5.vercel.app';
+      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
       const API_URL = rawUrl.trim().replace(/\/$/, '');
-      
+
       // If it's a manual error we threw (like ACCESS DENIED), use that.
       // Otherwise, it's a real Network/CORS failure.
       if (err.message && !err.message.includes('fetch')) {
@@ -56,7 +56,7 @@ export default function AdminLogin() {
       } else {
         setError(`NETWORK/CORS ERROR: LATEST BUILD (1561) UNREACHABLE AT ${API_URL}.`);
       }
-      
+
       console.error("[LOGIN DEBUG]", { API_URL, origin: window.location.origin, err });
     } finally {
       setLoading(false);
@@ -67,7 +67,7 @@ export default function AdminLogin() {
     <div className="min-h-screen flex items-center justify-center p-6 bg-black relative overflow-hidden">
       {/* Scanline effect */}
       <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.25)_50%)] bg-[length:100%_4px]" />
-      
+
       <div className="w-full max-w-md border border-neon-green/30 bg-black p-8 relative z-10 shadow-[0_0_20px_rgba(57,255,20,0.1)]">
         <div className="flex flex-col items-center mb-8 gap-4">
           <Terminal className="text-neon-green w-12 h-12" />

@@ -80,7 +80,7 @@ export default function AdminDashboard() {
   const [injectMsg, setInjectMsg] = useState('');
   const router = useRouter();
 
-  const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-fuc5.vercel.app';
+  const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
   const API_URL = rawUrl.trim().replace(/\/$/, '');
 
   useEffect(() => {
@@ -384,8 +384,8 @@ export default function AdminDashboard() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-3 py-2 text-[10px] uppercase tracking-wider transition-all ${activeTab === tab.id
-                  ? 'text-neon-cyan border-b-2 border-neon-cyan'
-                  : 'text-neon-green/40 hover:text-neon-green'
+                ? 'text-neon-cyan border-b-2 border-neon-cyan'
+                : 'text-neon-green/40 hover:text-neon-green'
                 }`}
             >
               {tab.label}
@@ -843,8 +843,8 @@ export default function AdminDashboard() {
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-sm font-bold text-white">{user.email}</h3>
                         <span className={`text-[9px] px-2 py-0.5 rounded-full ${user.role === 'premium'
-                            ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple/30'
-                            : 'bg-neon-green/20 text-neon-green border border-neon-green/30'
+                          ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple/30'
+                          : 'bg-neon-green/20 text-neon-green border border-neon-green/30'
                           }`}>
                           {user.role.toUpperCase()}
                         </span>
