@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:1c226216-49bb-4560-800b-2a244bd85c09",
+  "serialNumber": "urn:uuid:5034adb9-9200-4ff7-a6d8-3967850c8ba2",
   "metadata": {
-    "timestamp": "2026-07-26T22:46:20.125621+00:00",
+    "timestamp": "2026-07-27T00:01:35.173543+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -1089,6 +1089,31 @@
         {
           "alg": "SHA-256",
           "content": "263e15a7eb4e269ecb441b62a21234d7a68dd3723e8561a4addad8610ec00935"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "mangum",
+      "version": "0.17.0",
+      "purl": "pkg:pypi/mangum@0.17.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://github.com/jordaneremieff/mangum"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "f1defb3eaf0ca432cb4441cef7cb4d84a05aa7f973ad020bb0db6aab21f6b512"
         }
       ]
     },
@@ -2369,13 +2394,13 @@
     }
   ],
   "_orbe_meta": {
-    "total_dependencies": 98,
+    "total_dependencies": 99,
     "license_summary": {
       "PSF-2.0": 1,
       "Apache-2.0 AND MIT": 1,
       "Apache 2.0": 9,
       "Unknown": 29,
-      "MIT": 20,
+      "MIT": 21,
       "MIT License": 2,
       "Apache-2.0": 8,
       "MPL-2.0": 1,
