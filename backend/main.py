@@ -366,3 +366,13 @@ async def health_check():
 
 # SECURITY NOTE: The /debug/github-lookup endpoint has been removed.
 # Debug routes must never be public — use /docs (HTTP Basic protected) for manual testing.
+
+# ── AWS Lambda Handler (Mangum) ───────────────────────────────────────────────
+# This adapter allows FastAPI to run on AWS Lambda via API Gateway.
+# In local dev, uvicorn is used normally — Mangum is only invoked by Lambda.
+try:
+    from mangum import Mangum
+    handler = Mangum(app, lifespan="off")
+except ImportError:
+    pass  # mangum not required for local dev
+

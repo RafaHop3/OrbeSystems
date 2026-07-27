@@ -1,0 +1,34 @@
+# terraform.tfvars.example
+# ════════════════════════════════════════════════════════════════════════
+# Copy this file to `terraform.tfvars` and fill in your values.
+# NEVER commit terraform.tfvars — it contains sensitive secrets.
+# ════════════════════════════════════════════════════════════════════════
+
+# General
+environment = "production"
+aws_region  = "us-east-1"
+
+# Vercel
+vercel_api_token  = "your_vercel_api_token_here"        # Vercel → Settings → Tokens
+vercel_team_id    = ""                                   # Leave empty for personal accounts
+vercel_project_id = "orbe-systems-fuc5"                  # From Vercel project settings
+
+# Admin Auth
+admin_username      = "rafael_admin"
+admin_password_hash = "$2b$12$..."                       # python -c "import bcrypt; print(bcrypt.hashpw(b'YOURPASS', bcrypt.gensalt()).decode())"
+secret_key          = "your_hex_secret_here"             # python -c "import secrets; print(secrets.token_hex(32))"
+
+# Database (Supabase)
+database_url = "postgresql://user:pass@db.xxx.supabase.co:5432/postgres"
+
+# External Services (optional — leave empty to disable)
+github_token            = ""
+cloudinary_url          = "cloudinary://API_KEY:API_SECRET@doxx9wyvw"
+stripe_secret_key       = "sk_live_..."
+stripe_webhook_secret   = "whsec_..."
+stripe_premium_price_id = "price_..."
+gemini_api_key          = ""
+siem_webhook_url        = ""
+
+# URLs
+frontend_url = "https://orbesystems.com.br"
