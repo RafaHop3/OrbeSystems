@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:5034adb9-9200-4ff7-a6d8-3967850c8ba2",
+  "serialNumber": "urn:uuid:6fb9f0dc-6fcc-482c-9cad-479f1295df52",
   "metadata": {
-    "timestamp": "2026-07-27T00:01:35.173543+00:00",
+    "timestamp": "2026-07-28T23:51:49.782423+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -85,8 +85,8 @@
     {
       "type": "library",
       "name": "annotated-doc",
-      "version": "0.0.4",
-      "purl": "pkg:pypi/annotated-doc@0.0.4",
+      "version": "0.0.5",
+      "purl": "pkg:pypi/annotated-doc@0.0.5",
       "licenses": [
         {
           "license": {
@@ -103,7 +103,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "10fa32e5621a2dcf5f90bc8a82080af3434681e984c3d691b481398b82d1bc07"
+          "content": "d1153ad733a6bc8a01297eba649dd38265a6f462dea5c48837b9e5af32f23345"
         }
       ]
     },
@@ -2065,8 +2065,8 @@
     {
       "type": "library",
       "name": "tqdm",
-      "version": "4.69.1",
-      "purl": "pkg:pypi/tqdm@4.69.1",
+      "version": "4.70.0",
+      "purl": "pkg:pypi/tqdm@4.70.0",
       "licenses": [
         {
           "license": {
@@ -2083,7 +2083,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "8934b829340b2e58aa9a24bf7dd58d43b6cf1f0ed0caede920c6b3cdd4a9ab8c"
+          "content": "3067bb685ac35cb26e1c45032b92dbb5665b4791410010fbdb78400e9ea78ed6"
         }
       ]
     },
@@ -2320,8 +2320,8 @@
     {
       "type": "library",
       "name": "wrapt",
-      "version": "2.2.2",
-      "purl": "pkg:pypi/wrapt@2.2.2",
+      "version": "2.3.0",
+      "purl": "pkg:pypi/wrapt@2.3.0",
       "licenses": [
         {
           "license": {
@@ -2338,7 +2338,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "f4bc4b59045bb28ea2fbce82b06101af9f92558ce4371cd0d6cdf22f3b2a5757"
+          "content": "79722ae30f164728d4021ab1f26981d192bd539d390f8f270e61ab3946ce57b1"
         }
       ]
     },
