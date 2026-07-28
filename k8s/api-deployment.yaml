@@ -1,0 +1,63 @@
+###############################################################################
+# k8s/api-deployment.yaml — Orbe Systems Backend
+# Apply: kubectl apply -f k8s/
+###############################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orbe-api
+  labels:
+    app: orbe-api
+    tier: backend
+spec:
+  replicas: 2          # 2 pods for local HA testing (mirrors production intent)
+  selector:
+    matchLabels:
+      app: orbe-api
+  template:
+    metadata:
+      labels:
+        app: orbe-api
+        tier: backend
+    spec:
+      # Security: pods run as non-root (mirrors Dockerfile USER)
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+
+      containers:
+        - name: orbe-api
+          image: orbe-api:latest          # built locally via 'docker build'
+          imagePullPolicy: Never          # use local Minikube image cache
+          ports:
+            - containerPort: 8000
+
+          # Resource limits prevent a single pod from starving others (microsegmentation)
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
+          # All secrets come from a K8s Secret, never baked into the image
+          envFrom:
+            - secretRef:
+                name: orbe-api-secrets
+
+          # Liveness probe: K8s auto-restarts unhealthy pods
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+
+          # Readiness probe: no traffic until pod is ready
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 10

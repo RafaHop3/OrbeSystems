@@ -254,10 +254,6 @@ app.add_middleware(
     allow_origins=[
         "https://orbesystems.com.br",
         "https://www.orbesystems.com.br",
-        "https://orbe-systems.vercel.app",
-        "https://orbe-systems-fuc5.vercel.app",
-        # Allow all Vercel preview deployments
-        "https://orbe-systems-git-main-theorbesystems.vercel.app",
         "http://localhost:3000",
         "http://localhost:8000",
     ],

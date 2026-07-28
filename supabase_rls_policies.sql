@@ -48,6 +48,17 @@ ALTER TABLE IF EXISTS public.sales_orders ENABLE ROW LEVEL SECURITY;
 
 ALTER TABLE IF EXISTS public.alembic_version ENABLE ROW LEVEL SECURITY;
 
+-- ── Tabelas faltantes (segurança, analytics, infra) ───────────────────────────
+
+ALTER TABLE IF EXISTS public.ueba_baselines ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.security_alerts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.github_repositories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.ip_blocklist ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.incident_reports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.immutable_audit_chain ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.visit_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.active_sessions ENABLE ROW LEVEL SECURITY;
+
 -- ── Policies explícitas de negação (defesa em profundidade) ───────────────────
 -- Opcional mas recomendado: documenta a intenção e protege se alguém
 -- criar uma policy permissiva por engano no dashboard.
@@ -62,7 +73,10 @@ DECLARE
     'transactions', 'recurring_transactions', 'scheduled_transactions',
     'advances', 'advance_write_offs', 'cash_registers',
     'accounts', 'bank_statement_entries', 'budgets', 'contracts',
-    'pdv_sales', 'sales_orders', 'alembic_version'
+    'pdv_sales', 'sales_orders', 'alembic_version',
+    'ueba_baselines', 'security_alerts', 'github_repositories',
+    'ip_blocklist', 'incident_reports', 'immutable_audit_chain',
+    'visit_logs', 'active_sessions'
   ];
 BEGIN
   FOREACH tbl IN ARRAY tables LOOP

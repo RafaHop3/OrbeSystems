@@ -87,7 +87,6 @@ resource "aws_apigatewayv2_api" "api" {
     allow_origins = [
       "https://orbesystems.com.br",
       "https://www.orbesystems.com.br",
-      "https://orbe-systems.vercel.app",
       "http://localhost:3000",
     ]
     allow_methods = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]

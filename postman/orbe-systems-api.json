@@ -1,0 +1,249 @@
+{
+    "info": {
+        "name": "Orbe Systems API",
+        "description": "Complete API collection for Orbe Systems backend.\nEnvironments: Local (Minikube), AWS (Production)\n\nSet the {{base_url}} and {{token}} variables in your Postman Environment.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://localhost:8000",
+            "description": "Change to minikube URL (minikube service orbe-api-service --url) or AWS API Gateway URL"
+        },
+        {
+            "key": "token",
+            "value": "",
+            "description": "JWT token obtained from /api/auth/login"
+        }
+    ],
+    "item": [
+        {
+            "name": "🟢 Health",
+            "item": [
+                {
+                    "name": "Health Check",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/health",
+                        "description": "Returns API status and database connectivity."
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🔐 Auth",
+            "item": [
+                {
+                    "name": "Login (get token)",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{base_url}}/api/auth/login",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"username\": \"your_admin_user\",\n  \"password\": \"your_password\"\n}"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "📊 Analytics",
+            "item": [
+                {
+                    "name": "Get Visit Logs",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/analytics",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🛡️ SIEM",
+            "item": [
+                {
+                    "name": "List Alerts",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/siem/alerts?limit=50",
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "50"
+                                },
+                                {
+                                    "key": "status",
+                                    "value": "open",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "severity",
+                                    "value": "HIGH",
+                                    "disabled": true
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "Alert Stats",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/siem/alerts/stats",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "Export SIEM Logs (JSON)",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/api/siem/export?format=json&days=7",
+                            "query": [
+                                {
+                                    "key": "format",
+                                    "value": "json"
+                                },
+                                {
+                                    "key": "days",
+                                    "value": "7"
+                                }
+                            ]
+                        },
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "Acknowledge Alert",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{base_url}}/api/siem/alerts/ALERT_ID_HERE/acknowledge",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🔗 Audit Chain",
+            "item": [
+                {
+                    "name": "Get Audit Chain",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/audit",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "name": "🚨 Incident Response (IR)",
+            "item": [
+                {
+                    "name": "List Incidents",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/ir",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "Create Incident",
+                    "request": {
+                        "method": "POST",
+                        "url": "{{base_url}}/api/ir",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Brute Force Detected\",\n  \"severity\": \"HIGH\",\n  \"description\": \"Multiple failed login attempts from IP 10.0.0.1\"\n}"
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "👤 Admin",
+            "item": [
+                {
+                    "name": "List Users",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/admin/users",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "name": "List Projects",
+                    "request": {
+                        "method": "GET",
+                        "url": "{{base_url}}/api/admin/projects",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

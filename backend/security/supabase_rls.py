@@ -34,6 +34,14 @@ RLS_TABLES = (
     "pdv_sales",
     "sales_orders",
     "alembic_version",
+    "ueba_baselines",
+    "security_alerts",
+    "github_repositories",
+    "ip_blocklist",
+    "incident_reports",
+    "immutable_audit_chain",
+    "visit_logs",
+    "active_sessions",
 )
 
 
