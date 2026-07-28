@@ -14,53 +14,65 @@ export default function AdminLogin() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (loading) return; // Prevent double submission
     setLoading(true);
 
     const trimmedPassword = password.trim();
     console.log('[FRONTEND] Sending login:', { username, password: trimmedPassword, passwordLength: trimmedPassword.length });
 
-    try {
-      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
-      const API_URL = rawUrl.trim().replace(/\/$/, '');
+    let success = false;
+    let attempts = 0;
 
-      const res = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password: trimmedPassword }),
-      });
+    while (!success) {
+      attempts++;
+      try {
+        const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
+        const API_URL = rawUrl.trim().replace(/\/$/, '');
 
-      if (!res.ok) {
-        if (res.status === 401) {
-          throw new Error('ACCESS DENIED. INVALID CREDENTIALS.');
+        const res = await fetch(`${API_URL}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ username, password: trimmedPassword }),
+        });
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error('ACCESS DENIED. INVALID CREDENTIALS.');
+          }
+          if (res.status === 429) {
+            throw new Error('TOO MANY ATTEMPTS. SYSTEM LOCKED TEMPORARILY.');
+          }
+          throw new Error(`SERVER ERROR [${res.status}]: Connection established but access rejected.`);
         }
-        if (res.status === 429) {
-          throw new Error('TOO MANY ATTEMPTS. SYSTEM LOCKED TEMPORARILY.');
+
+        const data = await res.json();
+        localStorage.setItem('orbe_admin_token', data.access_token);
+
+        success = true;
+        router.push('/admin');
+      } catch (err: any) {
+        const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
+        const API_URL = rawUrl.trim().replace(/\/$/, '');
+        console.error("[LOGIN DEBUG]", { API_URL, origin: window.location.origin, err });
+
+        // If it's a manual error we threw (like ACCESS DENIED), break the loop immediately.
+        if (err.message && !err.message.includes('fetch')) {
+          setError(err.message);
+          setLoading(false);
+          return; // Break out of the loop and end process
+        } else {
+          setError(`NETWORK/CORS ERROR: LATEST BUILD UNREACHABLE AT ${API_URL}. RETRYING [ATTEMPT ${attempts}]...`);
+          // Wait 3 seconds before next loop iteration
+          await new Promise(resolve => setTimeout(resolve, 3000));
         }
-        throw new Error(`SERVER ERROR [${res.status}]: Connection established but access rejected.`);
       }
-
-      const data = await res.json();
-      localStorage.setItem('orbe_admin_token', data.access_token);
-
-      router.push('/admin');
-    } catch (err: any) {
-      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
-      const API_URL = rawUrl.trim().replace(/\/$/, '');
-
-      // If it's a manual error we threw (like ACCESS DENIED), use that.
-      // Otherwise, it's a real Network/CORS failure.
-      if (err.message && !err.message.includes('fetch')) {
-        setError(err.message);
-      } else {
-        setError(`NETWORK/CORS ERROR: LATEST BUILD (1561) UNREACHABLE AT ${API_URL}.`);
-      }
-
-      console.error("[LOGIN DEBUG]", { API_URL, origin: window.location.origin, err });
-    } finally {
-      setLoading(false);
     }
+
+    // Note: If success=true, router.push handles navigation; this will just reset loading state cleanly if needed.
+    setLoading(false);
   };
 
   return (
