@@ -440,503 +440,506 @@ export default function AdminDashboard() {
             <VisitorMonitor />
           </div>
 
-          {/* Project Manager Panel */}
-          {activeTab === 'projects' && (
-            <div className="lg:col-span-2 border border-neon-cyan/20 bg-neon-cyan/5 p-5">
-              <h2 className="text-xs font-bold border-b border-neon-cyan/10 pb-3 mb-6 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-neon-cyan uppercase">
-                  <Globe size={14} /> PROJECT RECOGNITION & METADATA
-                </div>
-                <span className="text-[10px] text-neon-cyan/40 px-2 border border-neon-cyan/20 rounded">
-                  {projects.length} RECORDS
-                </span>
-              </h2>
+          {/* Main Content Area (Tabs) */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Project Manager Panel */}
+            {activeTab === 'projects' && (
+              <div className="border border-neon-cyan/20 bg-neon-cyan/5 p-5">
+                <h2 className="text-xs font-bold border-b border-neon-cyan/10 pb-3 mb-6 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-neon-cyan uppercase">
+                    <Globe size={14} /> PROJECT RECOGNITION & METADATA
+                  </div>
+                  <span className="text-[10px] text-neon-cyan/40 px-2 border border-neon-cyan/20 rounded">
+                    {projects.length} RECORDS
+                  </span>
+                </h2>
 
-              <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-neon-cyan/20">
-                {projects.map(project => (
-                  <div
-                    key={project.id}
-                    className={`border transition-all ${editingId === project.id ? 'border-neon-cyan bg-neon-cyan/10 shadow-[0_0_15px_rgba(0,255,245,0.1)]' : 'border-neon-green/10 hover:border-neon-cyan/40 bg-black/40'}`}
-                  >
-                    <div className="p-4">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="text-sm font-bold text-white tracking-wider flex items-center gap-2 italic">
-                            <span className="text-neon-green">#</span> {project.name}
-                          </h3>
-                          <p className="text-[9px] text-neon-green/40 mt-1 uppercase">{project.full_name}</p>
+                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-neon-cyan/20">
+                  {projects.map(project => (
+                    <div
+                      key={project.id}
+                      className={`border transition-all ${editingId === project.id ? 'border-neon-cyan bg-neon-cyan/10 shadow-[0_0_15px_rgba(0,255,245,0.1)]' : 'border-neon-green/10 hover:border-neon-cyan/40 bg-black/40'}`}
+                    >
+                      <div className="p-4">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h3 className="text-sm font-bold text-white tracking-wider flex items-center gap-2 italic">
+                              <span className="text-neon-green">#</span> {project.name}
+                            </h3>
+                            <p className="text-[9px] text-neon-green/40 mt-1 uppercase">{project.full_name}</p>
+                          </div>
+
+                          {editingId !== project.id ? (
+                            <button
+                              onClick={() => startEditing(project)}
+                              className="p-2 border border-neon-cyan/30 text-neon-cyan/60 hover:text-neon-cyan hover:border-neon-cyan transition-all"
+                            >
+                              <Edit3 size={12} />
+                            </button>
+                          ) : (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => saveProject(project.id)}
+                                disabled={saving}
+                                className="p-2 border border-neon-green/50 text-neon-green/70 hover:text-neon-green hover:border-neon-green transition-all"
+                              >
+                                <Save size={12} />
+                              </button>
+                              <button
+                                onClick={() => setEditingId(null)}
+                                className="p-2 border border-red-500/50 text-red-500/70 hover:text-red-500 hover:border-red-500 transition-all"
+                              >
+                                <X size={12} />
+                              </button>
+                            </div>
+                          )}
                         </div>
 
-                        {editingId !== project.id ? (
-                          <button
-                            onClick={() => startEditing(project)}
-                            className="p-2 border border-neon-cyan/30 text-neon-cyan/60 hover:text-neon-cyan hover:border-neon-cyan transition-all"
-                          >
-                            <Edit3 size={12} />
-                          </button>
+                        {editingId === project.id ? (
+                          <div className="space-y-4 animate-in fade-in duration-300">
+                            <div className="space-y-1">
+                              <label className="text-[9px] text-neon-cyan/60 uppercase">Custom Description</label>
+                              <textarea
+                                className="w-full bg-black/60 border border-neon-cyan/30 p-2 text-xs text-neon-cyan focus:outline-none focus:border-neon-cyan min-h-[80px]"
+                                value={editForm.custom_description}
+                                onChange={e => setEditForm({ ...editForm, custom_description: e.target.value })}
+                              />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-1">
+                                <div className="flex justify-between items-end mb-1">
+                                  <label className="text-[9px] text-neon-cyan/60 uppercase flex items-center gap-2">
+                                    <ImageIcon size={10} /> Image URL
+                                  </label>
+                                  <FileUploader
+                                    onUploadComplete={(url) => setEditForm({ ...editForm, image_url: url })}
+                                    label="IMG_UPLINK"
+                                    accept="image/*"
+                                  />
+                                </div>
+                                <input
+                                  type="text"
+                                  className="w-full bg-black/60 border border-neon-cyan/30 p-2 text-[10px] text-neon-cyan focus:outline-none focus:border-neon-cyan"
+                                  value={editForm.image_url}
+                                  onChange={e => setEditForm({ ...editForm, image_url: e.target.value })}
+                                  placeholder="https://..."
+                                />
+                                {/* Live image preview */}
+                                {editForm.image_url && (
+                                  <img
+                                    src={editForm.image_url}
+                                    alt="preview"
+                                    className="mt-1 w-full h-20 object-cover border border-neon-cyan/20 bg-black/40"
+                                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                    onLoad={(e) => { (e.target as HTMLImageElement).style.display = 'block'; }}
+                                  />
+                                )}
+                              </div>
+                              <div className="space-y-1">
+                                <div className="flex justify-between items-end mb-1">
+                                  <label className="text-[9px] text-neon-cyan/60 uppercase flex items-center gap-2">
+                                    <Video size={10} /> Video URL (MP4)
+                                  </label>
+                                  <FileUploader
+                                    onUploadComplete={(url) => setEditForm({ ...editForm, video_url: url })}
+                                    label="VID_UPLINK"
+                                    accept="video/*"
+                                  />
+                                </div>
+                                <input
+                                  type="text"
+                                  className="w-full bg-black/60 border border-neon-cyan/30 p-2 text-[10px] text-neon-cyan focus:outline-none focus:border-neon-cyan"
+                                  value={editForm.video_url}
+                                  onChange={e => setEditForm({ ...editForm, video_url: e.target.value })}
+                                  placeholder="https://..."
+                                />
+                              </div>
+                            </div>
+
+                            {/* Production Link Input */}
+                            <div className="space-y-1">
+                              <label className="text-[9px] text-neon-purple/70 uppercase flex items-center gap-2">
+                                <Globe size={10} /> Production URL (Deploy)
+                              </label>
+                              <input
+                                type="text"
+                                className="w-full bg-black/60 border border-neon-purple/30 p-2 text-[10px] text-neon-purple focus:outline-none focus:border-neon-purple"
+                                value={editForm.deploy_url}
+                                onChange={e => setEditForm({ ...editForm, deploy_url: e.target.value })}
+                                placeholder="https://sua-app-live.com"
+                              />
+                            </div>
+
+                            {/* Premium-only Toggle */}
+                            <div className="flex items-center justify-between p-3 border border-neon-purple/30 bg-neon-purple/5 rounded">
+                              <label className="text-[9px] text-neon-purple/70 uppercase flex items-center gap-2 cursor-pointer">
+                                <Crown size={12} /> Premium Exclusive
+                              </label>
+                              <input
+                                type="checkbox"
+                                checked={editForm.is_premium_only}
+                                onChange={e => setEditForm({ ...editForm, is_premium_only: e.target.checked })}
+                                className="w-4 h-4 accent-neon-purple cursor-pointer"
+                              />
+                            </div>
+                          </div>
                         ) : (
-                          <div className="flex gap-2">
-                            <button
-                              onClick={() => saveProject(project.id)}
-                              disabled={saving}
-                              className="p-2 border border-neon-green/50 text-neon-green/70 hover:text-neon-green hover:border-neon-green transition-all"
-                            >
-                              <Save size={12} />
-                            </button>
-                            <button
-                              onClick={() => setEditingId(null)}
-                              className="p-2 border border-red-500/50 text-red-500/70 hover:text-red-500 hover:border-red-500 transition-all"
-                            >
-                              <X size={12} />
-                            </button>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <p className="text-[10px] text-neon-green/70 leading-relaxed italic border-l border-neon-green/20 pl-3 line-clamp-3">
+                              {project.custom_description || project.description || '# NO METADATA AVAILABLE'}
+                            </p>
+                            <div className="space-y-2">
+                              {/* Image preview thumbnail */}
+                              {project.image_url && (
+                                <div className="flex items-start gap-2">
+                                  <img
+                                    src={project.image_url}
+                                    alt={`${project.name} preview`}
+                                    className="w-16 h-10 object-cover border border-neon-cyan/30 bg-black"
+                                    onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                  />
+                                  <span className="flex items-center gap-1 text-neon-cyan border border-neon-cyan/20 px-2 py-0.5 rounded-full bg-neon-cyan/5 text-[10px]">
+                                    <ImageIcon size={10} /> Visual
+                                  </span>
+                                </div>
+                              )}
+                              <div className="flex flex-wrap gap-2 items-center text-[10px]">
+                                {project.video_url && <span className="flex items-center gap-1 text-neon-purple border border-neon-purple/20 px-2 py-0.5 rounded-full bg-neon-purple/5"><Video size={10} /> Motion</span>}
+                                {project.deploy_url && (
+                                  <a
+                                    href={project.deploy_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-1 text-neon-purple border border-neon-purple/50 px-2 py-0.5 rounded-full bg-neon-purple/20 font-bold tracking-tighter hover:bg-neon-purple/40 transition-colors"
+                                    title={project.deploy_url}
+                                  >
+                                    <Globe size={10} /> LIVE ↗
+                                  </a>
+                                )}
+                                {saveSuccess === project.id && (
+                                  <span className="flex items-center gap-1 text-neon-green border border-neon-green/30 px-2 py-0.5 rounded-full bg-neon-green/5 animate-pulse">
+                                    <CheckCircle2 size={10} /> SAVED
+                                  </span>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         )}
                       </div>
-
-                      {editingId === project.id ? (
-                        <div className="space-y-4 animate-in fade-in duration-300">
-                          <div className="space-y-1">
-                            <label className="text-[9px] text-neon-cyan/60 uppercase">Custom Description</label>
-                            <textarea
-                              className="w-full bg-black/60 border border-neon-cyan/30 p-2 text-xs text-neon-cyan focus:outline-none focus:border-neon-cyan min-h-[80px]"
-                              value={editForm.custom_description}
-                              onChange={e => setEditForm({ ...editForm, custom_description: e.target.value })}
-                            />
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="space-y-1">
-                              <div className="flex justify-between items-end mb-1">
-                                <label className="text-[9px] text-neon-cyan/60 uppercase flex items-center gap-2">
-                                  <ImageIcon size={10} /> Image URL
-                                </label>
-                                <FileUploader
-                                  onUploadComplete={(url) => setEditForm({ ...editForm, image_url: url })}
-                                  label="IMG_UPLINK"
-                                  accept="image/*"
-                                />
-                              </div>
-                              <input
-                                type="text"
-                                className="w-full bg-black/60 border border-neon-cyan/30 p-2 text-[10px] text-neon-cyan focus:outline-none focus:border-neon-cyan"
-                                value={editForm.image_url}
-                                onChange={e => setEditForm({ ...editForm, image_url: e.target.value })}
-                                placeholder="https://..."
-                              />
-                              {/* Live image preview */}
-                              {editForm.image_url && (
-                                <img
-                                  src={editForm.image_url}
-                                  alt="preview"
-                                  className="mt-1 w-full h-20 object-cover border border-neon-cyan/20 bg-black/40"
-                                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                                  onLoad={(e) => { (e.target as HTMLImageElement).style.display = 'block'; }}
-                                />
-                              )}
-                            </div>
-                            <div className="space-y-1">
-                              <div className="flex justify-between items-end mb-1">
-                                <label className="text-[9px] text-neon-cyan/60 uppercase flex items-center gap-2">
-                                  <Video size={10} /> Video URL (MP4)
-                                </label>
-                                <FileUploader
-                                  onUploadComplete={(url) => setEditForm({ ...editForm, video_url: url })}
-                                  label="VID_UPLINK"
-                                  accept="video/*"
-                                />
-                              </div>
-                              <input
-                                type="text"
-                                className="w-full bg-black/60 border border-neon-cyan/30 p-2 text-[10px] text-neon-cyan focus:outline-none focus:border-neon-cyan"
-                                value={editForm.video_url}
-                                onChange={e => setEditForm({ ...editForm, video_url: e.target.value })}
-                                placeholder="https://..."
-                              />
-                            </div>
-                          </div>
-
-                          {/* Production Link Input */}
-                          <div className="space-y-1">
-                            <label className="text-[9px] text-neon-purple/70 uppercase flex items-center gap-2">
-                              <Globe size={10} /> Production URL (Deploy)
-                            </label>
-                            <input
-                              type="text"
-                              className="w-full bg-black/60 border border-neon-purple/30 p-2 text-[10px] text-neon-purple focus:outline-none focus:border-neon-purple"
-                              value={editForm.deploy_url}
-                              onChange={e => setEditForm({ ...editForm, deploy_url: e.target.value })}
-                              placeholder="https://sua-app-live.com"
-                            />
-                          </div>
-
-                          {/* Premium-only Toggle */}
-                          <div className="flex items-center justify-between p-3 border border-neon-purple/30 bg-neon-purple/5 rounded">
-                            <label className="text-[9px] text-neon-purple/70 uppercase flex items-center gap-2 cursor-pointer">
-                              <Crown size={12} /> Premium Exclusive
-                            </label>
-                            <input
-                              type="checkbox"
-                              checked={editForm.is_premium_only}
-                              onChange={e => setEditForm({ ...editForm, is_premium_only: e.target.checked })}
-                              className="w-4 h-4 accent-neon-purple cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          <p className="text-[10px] text-neon-green/70 leading-relaxed italic border-l border-neon-green/20 pl-3 line-clamp-3">
-                            {project.custom_description || project.description || '# NO METADATA AVAILABLE'}
-                          </p>
-                          <div className="space-y-2">
-                            {/* Image preview thumbnail */}
-                            {project.image_url && (
-                              <div className="flex items-start gap-2">
-                                <img
-                                  src={project.image_url}
-                                  alt={`${project.name} preview`}
-                                  className="w-16 h-10 object-cover border border-neon-cyan/30 bg-black"
-                                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                                />
-                                <span className="flex items-center gap-1 text-neon-cyan border border-neon-cyan/20 px-2 py-0.5 rounded-full bg-neon-cyan/5 text-[10px]">
-                                  <ImageIcon size={10} /> Visual
-                                </span>
-                              </div>
-                            )}
-                            <div className="flex flex-wrap gap-2 items-center text-[10px]">
-                              {project.video_url && <span className="flex items-center gap-1 text-neon-purple border border-neon-purple/20 px-2 py-0.5 rounded-full bg-neon-purple/5"><Video size={10} /> Motion</span>}
-                              {project.deploy_url && (
-                                <a
-                                  href={project.deploy_url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center gap-1 text-neon-purple border border-neon-purple/50 px-2 py-0.5 rounded-full bg-neon-purple/20 font-bold tracking-tighter hover:bg-neon-purple/40 transition-colors"
-                                  title={project.deploy_url}
-                                >
-                                  <Globe size={10} /> LIVE ↗
-                                </a>
-                              )}
-                              {saveSuccess === project.id && (
-                                <span className="flex items-center gap-1 text-neon-green border border-neon-green/30 px-2 py-0.5 rounded-full bg-neon-green/5 animate-pulse">
-                                  <CheckCircle2 size={10} /> SAVED
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      )}
                     </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* ── INJECT REPO Panel ──────────────────────────────────── */}
-        {activeTab === 'projects' && (
-          <div className="mt-6 border border-neon-purple/30 bg-neon-purple/5 p-5">
-            <h2 className="text-xs font-bold border-b border-neon-purple/10 pb-3 mb-5 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-neon-purple uppercase">
-                <Plus size={14} /> INJECT REPO
-              </div>
-              <span className="text-[10px] text-neon-purple/40 px-2 border border-neon-purple/20 rounded">
-                theorbesystems-sketch/...
-              </span>
-            </h2>
-
-            {/* Input row */}
-            <div className="flex gap-2 mb-4">
-              <div className="flex-1 flex items-center border border-neon-purple/30 bg-black/60">
-                <span className="px-3 text-neon-purple/40 text-[10px] font-mono select-none">~/</span>
-                <input
-                  id="inject-repo-input"
-                  type="text"
-                  placeholder="nome-do-repositorio"
-                  value={injectRepoName}
-                  onChange={e => { setInjectRepoName(e.target.value); setLookupResult(null); setLookupError(''); setInjectStatus('idle'); }}
-                  onKeyDown={e => e.key === 'Enter' && handleLookup()}
-                  className="flex-1 bg-transparent py-2 pr-3 text-[11px] text-neon-purple font-mono focus:outline-none placeholder:text-neon-purple/20"
-                />
-              </div>
-              <button
-                id="inject-lookup-btn"
-                onClick={handleLookup}
-                disabled={lookupLoading || !injectRepoName.trim()}
-                className="flex items-center gap-2 px-4 py-2 border border-neon-purple/50 text-neon-purple/80 text-[10px] uppercase tracking-widest hover:bg-neon-purple/20 hover:text-neon-purple hover:border-neon-purple transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                {lookupLoading
-                  ? <span className="animate-spin inline-block w-3 h-3 border border-neon-purple border-t-transparent rounded-full" />
-                  : <Search size={12} />}
-                LOOKUP
-              </button>
-            </div>
-
-            {/* Lookup error */}
-            {lookupError && (
-              <div className="flex items-center gap-2 text-red-400 text-[10px] font-mono mb-4 border border-red-500/20 bg-red-500/5 px-3 py-2">
-                <AlertCircle size={12} />
-                {lookupError}
+                  ))}
+                </div>
               </div>
             )}
 
-            {/* Preview card */}
-            {lookupResult && (
-              <div className="border border-neon-purple/40 bg-black/40 p-4 mb-4 space-y-4 animate-in fade-in duration-300">
-                {/* Repo header */}
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-white font-bold text-sm tracking-wide">
-                      <span className="text-neon-purple/50">#</span> {lookupResult.name}
-                    </p>
-                    <p className="text-[9px] text-neon-purple/40 mt-0.5 uppercase">{lookupResult.full_name}</p>
+            {/* ── INJECT REPO Panel ──────────────────────────────────── */}
+            {activeTab === 'projects' && (
+              <div className="mt-6 border border-neon-purple/30 bg-neon-purple/5 p-5">
+                <h2 className="text-xs font-bold border-b border-neon-purple/10 pb-3 mb-5 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-neon-purple uppercase">
+                    <Plus size={14} /> INJECT REPO
                   </div>
-                  <div className="flex gap-3 text-[10px] text-neon-purple/60 font-mono">
-                    {lookupResult.language && <span>{lookupResult.language}</span>}
-                    <span>★ {lookupResult.stargazers_count}</span>
-                    <span>⑂ {lookupResult.forks_count}</span>
+                  <span className="text-[10px] text-neon-purple/40 px-2 border border-neon-purple/20 rounded">
+                    theorbesystems-sketch/...
+                  </span>
+                </h2>
+
+                {/* Input row */}
+                <div className="flex gap-2 mb-4">
+                  <div className="flex-1 flex items-center border border-neon-purple/30 bg-black/60">
+                    <span className="px-3 text-neon-purple/40 text-[10px] font-mono select-none">~/</span>
+                    <input
+                      id="inject-repo-input"
+                      type="text"
+                      placeholder="nome-do-repositorio"
+                      value={injectRepoName}
+                      onChange={e => { setInjectRepoName(e.target.value); setLookupResult(null); setLookupError(''); setInjectStatus('idle'); }}
+                      onKeyDown={e => e.key === 'Enter' && handleLookup()}
+                      className="flex-1 bg-transparent py-2 pr-3 text-[11px] text-neon-purple font-mono focus:outline-none placeholder:text-neon-purple/20"
+                    />
                   </div>
+                  <button
+                    id="inject-lookup-btn"
+                    onClick={handleLookup}
+                    disabled={lookupLoading || !injectRepoName.trim()}
+                    className="flex items-center gap-2 px-4 py-2 border border-neon-purple/50 text-neon-purple/80 text-[10px] uppercase tracking-widest hover:bg-neon-purple/20 hover:text-neon-purple hover:border-neon-purple transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    {lookupLoading
+                      ? <span className="animate-spin inline-block w-3 h-3 border border-neon-purple border-t-transparent rounded-full" />
+                      : <Search size={12} />}
+                    LOOKUP
+                  </button>
                 </div>
-                {lookupResult.description && (
-                  <p className="text-[10px] text-neon-green/70 italic border-l border-neon-green/20 pl-3">
-                    {lookupResult.description}
-                  </p>
+
+                {/* Lookup error */}
+                {lookupError && (
+                  <div className="flex items-center gap-2 text-red-400 text-[10px] font-mono mb-4 border border-red-500/20 bg-red-500/5 px-3 py-2">
+                    <AlertCircle size={12} />
+                    {lookupError}
+                  </div>
                 )}
 
-                {/* Optional metadata */}
-                <div className="space-y-3 pt-2 border-t border-neon-purple/10">
-                  <p className="text-[9px] text-neon-purple/50 uppercase tracking-widest">Metadata opcional</p>
-                  <textarea
-                    placeholder="Custom description (opcional)"
-                    value={injectMeta.custom_description}
-                    onChange={e => setInjectMeta(m => ({ ...m, custom_description: e.target.value }))}
-                    className="w-full bg-black/60 border border-neon-purple/20 p-2 text-[10px] text-neon-purple font-mono focus:outline-none focus:border-neon-purple min-h-[56px] resize-none placeholder:text-neon-purple/20"
-                  />
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      placeholder="Image URL (opcional)"
-                      value={injectMeta.image_url}
-                      onChange={e => setInjectMeta(m => ({ ...m, image_url: e.target.value }))}
-                      className="bg-black/60 border border-neon-purple/20 p-2 text-[10px] text-neon-purple font-mono focus:outline-none focus:border-neon-purple placeholder:text-neon-purple/20"
-                    />
-                    <input
-                      type="text"
-                      placeholder="Deploy URL (opcional)"
-                      value={injectMeta.deploy_url}
-                      onChange={e => setInjectMeta(m => ({ ...m, deploy_url: e.target.value }))}
-                      className="bg-black/60 border border-neon-purple/20 p-2 text-[10px] text-neon-purple font-mono focus:outline-none focus:border-neon-purple placeholder:text-neon-purple/20"
-                    />
-                  </div>
-                </div>
-
-                {/* Inject button */}
-                <button
-                  id="inject-confirm-btn"
-                  onClick={handleInject}
-                  disabled={injectStatus === 'loading'}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 border border-neon-purple text-neon-purple text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-neon-purple hover:text-black transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
-                >
-                  {injectStatus === 'loading'
-                    ? <span className="animate-spin inline-block w-3 h-3 border border-current border-t-transparent rounded-full" />
-                    : <Plus size={12} />}
-                  INJECT AS FEATURED
-                </button>
-              </div>
-            )}
-
-            {/* Feedback */}
-            {injectStatus === 'success' && (
-              <div className="flex items-center gap-2 text-neon-green text-[10px] font-mono border border-neon-green/30 bg-neon-green/5 px-3 py-2">
-                <CheckCircle2 size={12} /> {injectMsg}
-              </div>
-            )}
-            {injectStatus === 'error' && (
-              <div className="flex items-center gap-2 text-red-400 text-[10px] font-mono border border-red-500/20 bg-red-500/5 px-3 py-2">
-                <AlertCircle size={12} /> {injectMsg}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* User Management Panel */}
-        {activeTab === 'users' && (
-          <div className="lg:col-span-2 border border-neon-purple/20 bg-neon-purple/5 p-5">
-            <h2 className="text-xs font-bold border-b border-neon-purple/10 pb-3 mb-6 flex items-center justify-between">
-              <div className="flex items-center gap-2 text-neon-purple uppercase">
-                <Crown size={14} /> USER MANAGEMENT
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] text-neon-purple/40 px-2 border border-neon-purple/20 rounded">
-                  {users.length} USERS
-                </span>
-                <button
-                  onClick={() => setShowCreateUserForm(!showCreateUserForm)}
-                  className="text-[10px] text-neon-purple hover:text-white transition-colors"
-                >
-                  + Create User
-                </button>
-              </div>
-            </h2>
-
-            {showCreateUserForm && (
-              <div className="mb-6 p-4 border border-neon-purple/30 bg-black/40 animate-in fade-in duration-300">
-                <h3 className="text-xs font-bold text-neon-purple mb-4">CREATE NEW USER</h3>
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-[9px] text-neon-purple/60 uppercase block mb-1">Email</label>
-                    <input
-                      type="email"
-                      value={newUserEmail}
-                      onChange={(e) => setNewUserEmail(e.target.value)}
-                      className="w-full bg-black/60 border border-neon-purple/30 p-2 text-xs text-neon-purple focus:outline-none focus:border-neon-purple"
-                      placeholder="user@example.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[9px] text-neon-purple/60 uppercase block mb-1">Password (min 8 chars)</label>
-                    <input
-                      type="password"
-                      value={newUserPassword}
-                      onChange={(e) => setNewUserPassword(e.target.value)}
-                      className="w-full bg-black/60 border border-neon-purple/30 p-2 text-xs text-neon-purple focus:outline-none focus:border-neon-purple"
-                      placeholder="••••••••"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-[9px] text-neon-purple/60 uppercase block mb-1">Role</label>
-                    <select
-                      value={newUserRole}
-                      onChange={(e) => setNewUserRole(e.target.value as 'user' | 'premium')}
-                      className="w-full bg-black/60 border border-neon-purple/30 p-2 text-xs text-neon-purple focus:outline-none focus:border-neon-purple"
-                    >
-                      <option value="user">User</option>
-                      <option value="premium">Premium</option>
-                    </select>
-                  </div>
-                  <div className="flex gap-2 pt-2">
-                    <button
-                      onClick={handleCreateUser}
-                      disabled={creatingUser}
-                      className="flex-1 border border-neon-purple/50 text-neon-purple py-2 text-[10px] uppercase tracking-wider hover:bg-neon-purple/10 transition-colors disabled:opacity-50"
-                    >
-                      {creatingUser ? 'Creating...' : 'Create User'}
-                    </button>
-                    <button
-                      onClick={() => {
-                        setShowCreateUserForm(false);
-                        setNewUserEmail('');
-                        setNewUserPassword('');
-                        setNewUserRole('user');
-                      }}
-                      className="flex-1 border border-red-500/30 text-red-500/70 py-2 text-[10px] uppercase tracking-wider hover:bg-red-500/10 transition-colors"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-neon-purple/20">
-              {users.map(user => (
-                <div
-                  key={user.id}
-                  className="border border-neon-purple/10 bg-black/40 p-4 hover:border-neon-purple/30 transition-all"
-                >
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-sm font-bold text-white">{user.email}</h3>
-                        <span className={`text-[9px] px-2 py-0.5 rounded-full ${user.role === 'premium'
-                          ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple/30'
-                          : 'bg-neon-green/20 text-neon-green border border-neon-green/30'
-                          }`}>
-                          {user.role.toUpperCase()}
-                        </span>
+                {/* Preview card */}
+                {lookupResult && (
+                  <div className="border border-neon-purple/40 bg-black/40 p-4 mb-4 space-y-4 animate-in fade-in duration-300">
+                    {/* Repo header */}
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-white font-bold text-sm tracking-wide">
+                          <span className="text-neon-purple/50">#</span> {lookupResult.name}
+                        </p>
+                        <p className="text-[9px] text-neon-purple/40 mt-0.5 uppercase">{lookupResult.full_name}</p>
                       </div>
-                      <div className="text-[9px] text-neon-purple/40 space-y-1">
-                        <div>ID: {user.id}</div>
-                        <div>Status: {user.subscription_status}</div>
-                        <div>Created: {new Date(user.created_at).toLocaleDateString()}</div>
+                      <div className="flex gap-3 text-[10px] text-neon-purple/60 font-mono">
+                        {lookupResult.language && <span>{lookupResult.language}</span>}
+                        <span>★ {lookupResult.stargazers_count}</span>
+                        <span>⑂ {lookupResult.forks_count}</span>
                       </div>
                     </div>
-                    <div className="flex gap-2">
-                      {user.role === 'user' ? (
-                        <button
-                          onClick={() => handleUpdateUserRole(user.id, 'premium')}
-                          className="p-2 border border-neon-purple/30 text-neon-purple/60 hover:text-neon-purple hover:border-neon-purple transition-all"
-                          title="Promote to Premium"
+                    {lookupResult.description && (
+                      <p className="text-[10px] text-neon-green/70 italic border-l border-neon-green/20 pl-3">
+                        {lookupResult.description}
+                      </p>
+                    )}
+
+                    {/* Optional metadata */}
+                    <div className="space-y-3 pt-2 border-t border-neon-purple/10">
+                      <p className="text-[9px] text-neon-purple/50 uppercase tracking-widest">Metadata opcional</p>
+                      <textarea
+                        placeholder="Custom description (opcional)"
+                        value={injectMeta.custom_description}
+                        onChange={e => setInjectMeta(m => ({ ...m, custom_description: e.target.value }))}
+                        className="w-full bg-black/60 border border-neon-purple/20 p-2 text-[10px] text-neon-purple font-mono focus:outline-none focus:border-neon-purple min-h-[56px] resize-none placeholder:text-neon-purple/20"
+                      />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Image URL (opcional)"
+                          value={injectMeta.image_url}
+                          onChange={e => setInjectMeta(m => ({ ...m, image_url: e.target.value }))}
+                          className="bg-black/60 border border-neon-purple/20 p-2 text-[10px] text-neon-purple font-mono focus:outline-none focus:border-neon-purple placeholder:text-neon-purple/20"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Deploy URL (opcional)"
+                          value={injectMeta.deploy_url}
+                          onChange={e => setInjectMeta(m => ({ ...m, deploy_url: e.target.value }))}
+                          className="bg-black/60 border border-neon-purple/20 p-2 text-[10px] text-neon-purple font-mono focus:outline-none focus:border-neon-purple placeholder:text-neon-purple/20"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Inject button */}
+                    <button
+                      id="inject-confirm-btn"
+                      onClick={handleInject}
+                      disabled={injectStatus === 'loading'}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 border border-neon-purple text-neon-purple text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-neon-purple hover:text-black transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      {injectStatus === 'loading'
+                        ? <span className="animate-spin inline-block w-3 h-3 border border-current border-t-transparent rounded-full" />
+                        : <Plus size={12} />}
+                      INJECT AS FEATURED
+                    </button>
+                  </div>
+                )}
+
+                {/* Feedback */}
+                {injectStatus === 'success' && (
+                  <div className="flex items-center gap-2 text-neon-green text-[10px] font-mono border border-neon-green/30 bg-neon-green/5 px-3 py-2">
+                    <CheckCircle2 size={12} /> {injectMsg}
+                  </div>
+                )}
+                {injectStatus === 'error' && (
+                  <div className="flex items-center gap-2 text-red-400 text-[10px] font-mono border border-red-500/20 bg-red-500/5 px-3 py-2">
+                    <AlertCircle size={12} /> {injectMsg}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* User Management Panel */}
+            {activeTab === 'users' && (
+              <div className="border border-neon-purple/20 bg-neon-purple/5 p-5">
+                <h2 className="text-xs font-bold border-b border-neon-purple/10 pb-3 mb-6 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-neon-purple uppercase">
+                    <Crown size={14} /> USER MANAGEMENT
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-neon-purple/40 px-2 border border-neon-purple/20 rounded">
+                      {users.length} USERS
+                    </span>
+                    <button
+                      onClick={() => setShowCreateUserForm(!showCreateUserForm)}
+                      className="text-[10px] text-neon-purple hover:text-white transition-colors"
+                    >
+                      + Create User
+                    </button>
+                  </div>
+                </h2>
+
+                {showCreateUserForm && (
+                  <div className="mb-6 p-4 border border-neon-purple/30 bg-black/40 animate-in fade-in duration-300">
+                    <h3 className="text-xs font-bold text-neon-purple mb-4">CREATE NEW USER</h3>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="text-[9px] text-neon-purple/60 uppercase block mb-1">Email</label>
+                        <input
+                          type="email"
+                          value={newUserEmail}
+                          onChange={(e) => setNewUserEmail(e.target.value)}
+                          className="w-full bg-black/60 border border-neon-purple/30 p-2 text-xs text-neon-purple focus:outline-none focus:border-neon-purple"
+                          placeholder="user@example.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] text-neon-purple/60 uppercase block mb-1">Password (min 8 chars)</label>
+                        <input
+                          type="password"
+                          value={newUserPassword}
+                          onChange={(e) => setNewUserPassword(e.target.value)}
+                          className="w-full bg-black/60 border border-neon-purple/30 p-2 text-xs text-neon-purple focus:outline-none focus:border-neon-purple"
+                          placeholder="••••••••"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-[9px] text-neon-purple/60 uppercase block mb-1">Role</label>
+                        <select
+                          value={newUserRole}
+                          onChange={(e) => setNewUserRole(e.target.value as 'user' | 'premium')}
+                          className="w-full bg-black/60 border border-neon-purple/30 p-2 text-xs text-neon-purple focus:outline-none focus:border-neon-purple"
                         >
-                          <Crown size={12} />
-                        </button>
-                      ) : (
+                          <option value="user">User</option>
+                          <option value="premium">Premium</option>
+                        </select>
+                      </div>
+                      <div className="flex gap-2 pt-2">
                         <button
-                          onClick={() => handleUpdateUserRole(user.id, 'user')}
-                          className="p-2 border border-neon-green/30 text-neon-green/60 hover:text-neon-green hover:border-neon-green transition-all"
-                          title="Demote to User"
+                          onClick={handleCreateUser}
+                          disabled={creatingUser}
+                          className="flex-1 border border-neon-purple/50 text-neon-purple py-2 text-[10px] uppercase tracking-wider hover:bg-neon-purple/10 transition-colors disabled:opacity-50"
                         >
-                          <AlertCircle size={12} />
+                          {creatingUser ? 'Creating...' : 'Create User'}
                         </button>
-                      )}
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="p-2 border border-red-500/30 text-red-500/60 hover:text-red-500 hover:border-red-500 transition-all"
-                        title="Delete User"
-                      >
-                        <X size={12} />
-                      </button>
+                        <button
+                          onClick={() => {
+                            setShowCreateUserForm(false);
+                            setNewUserEmail('');
+                            setNewUserPassword('');
+                            setNewUserRole('user');
+                          }}
+                          className="flex-1 border border-red-500/30 text-red-500/70 py-2 text-[10px] uppercase tracking-wider hover:bg-red-500/10 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
                     </div>
                   </div>
+                )}
+
+                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-neon-purple/20">
+                  {users.map(user => (
+                    <div
+                      key={user.id}
+                      className="border border-neon-purple/10 bg-black/40 p-4 hover:border-neon-purple/30 transition-all"
+                    >
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-sm font-bold text-white">{user.email}</h3>
+                            <span className={`text-[9px] px-2 py-0.5 rounded-full ${user.role === 'premium'
+                              ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple/30'
+                              : 'bg-neon-green/20 text-neon-green border border-neon-green/30'
+                              }`}>
+                              {user.role.toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="text-[9px] text-neon-purple/40 space-y-1">
+                            <div>ID: {user.id}</div>
+                            <div>Status: {user.subscription_status}</div>
+                            <div>Created: {new Date(user.created_at).toLocaleDateString()}</div>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          {user.role === 'user' ? (
+                            <button
+                              onClick={() => handleUpdateUserRole(user.id, 'premium')}
+                              className="p-2 border border-neon-purple/30 text-neon-purple/60 hover:text-neon-purple hover:border-neon-purple transition-all"
+                              title="Promote to Premium"
+                            >
+                              <Crown size={12} />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleUpdateUserRole(user.id, 'user')}
+                              className="p-2 border border-neon-green/30 text-neon-green/60 hover:text-neon-green hover:border-neon-green transition-all"
+                              title="Demote to User"
+                            >
+                              <AlertCircle size={12} />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleDeleteUser(user.id)}
+                            className="p-2 border border-red-500/30 text-red-500/60 hover:text-red-500 hover:border-red-500 transition-all"
+                            title="Delete User"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              </div>
+            )}
 
-        {/* ── Security Tool Panels ──────────────────────────── */}
-        {activeTab === 'siem' && (
-          <div className="border border-neon-green/20 bg-neon-green/5 p-5">
-            <h2 className="text-xs font-bold border-b border-neon-green/10 pb-3 mb-5 flex items-center gap-2 text-neon-cyan uppercase">
-              🛡 SIEM — Security Alerts
-            </h2>
-            <SiemPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
-          </div>
-        )}
+            {/* ── Security Tool Panels ──────────────────────────── */}
+            {activeTab === 'siem' && (
+              <div className="border border-neon-green/20 bg-neon-green/5 p-5">
+                <h2 className="text-xs font-bold border-b border-neon-green/10 pb-3 mb-5 flex items-center gap-2 text-neon-cyan uppercase">
+                  🛡 SIEM — Security Alerts
+                </h2>
+                <SiemPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
+              </div>
+            )}
 
-        {activeTab === 'soar' && (
-          <div className="border border-red-500/20 bg-red-500/5 p-5">
-            <h2 className="text-xs font-bold border-b border-red-500/10 pb-3 mb-5 flex items-center gap-2 text-red-400 uppercase">
-              🚫 SOAR — Automated Defense & IP Blocklist
-            </h2>
-            <SoarPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
-          </div>
-        )}
+            {activeTab === 'soar' && (
+              <div className="border border-red-500/20 bg-red-500/5 p-5">
+                <h2 className="text-xs font-bold border-b border-red-500/10 pb-3 mb-5 flex items-center gap-2 text-red-400 uppercase">
+                  🚫 SOAR — Automated Defense & IP Blocklist
+                </h2>
+                <SoarPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
+              </div>
+            )}
 
-        {activeTab === 'audit' && (
-          <div className="border border-neon-cyan/20 bg-neon-cyan/5 p-5">
-            <h2 className="text-xs font-bold border-b border-neon-cyan/10 pb-3 mb-5 flex items-center gap-2 text-neon-cyan uppercase">
-              ⛓ Audit Chain — Immutable Forensic Log (MCI)
-            </h2>
-            <AuditChainPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
-          </div>
-        )}
+            {activeTab === 'audit' && (
+              <div className="border border-neon-cyan/20 bg-neon-cyan/5 p-5">
+                <h2 className="text-xs font-bold border-b border-neon-cyan/10 pb-3 mb-5 flex items-center gap-2 text-neon-cyan uppercase">
+                  ⛓ Audit Chain — Immutable Forensic Log (MCI)
+                </h2>
+                <AuditChainPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
+              </div>
+            )}
 
-        {activeTab === 'sbom' && (
-          <div className="border border-neon-cyan/20 bg-neon-cyan/5 p-5">
-            <h2 className="text-xs font-bold border-b border-neon-cyan/10 pb-3 mb-5 flex items-center gap-2 text-neon-cyan uppercase">
-              📦 SBOM — Software Bill of Materials
-            </h2>
-            <SbomPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
-          </div>
-        )}
+            {activeTab === 'sbom' && (
+              <div className="border border-neon-cyan/20 bg-neon-cyan/5 p-5">
+                <h2 className="text-xs font-bold border-b border-neon-cyan/10 pb-3 mb-5 flex items-center gap-2 text-neon-cyan uppercase">
+                  📦 SBOM — Software Bill of Materials
+                </h2>
+                <SbomPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
+              </div>
+            )}
 
-        {activeTab === 'ir' && (
-          <div className="border border-orange-500/20 bg-orange-500/5 p-5">
-            <h2 className="text-xs font-bold border-b border-orange-500/10 pb-3 mb-5 flex items-center gap-2 text-orange-400 uppercase">
-              🚨 IR — Incident Response & Vulnerability Management (NIST SP 800-61)
-            </h2>
-            <IrPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
+            {activeTab === 'ir' && (
+              <div className="border border-orange-500/20 bg-orange-500/5 p-5">
+                <h2 className="text-xs font-bold border-b border-orange-500/10 pb-3 mb-5 flex items-center gap-2 text-orange-400 uppercase">
+                  🚨 IR — Incident Response & Vulnerability Management (NIST SP 800-61)
+                </h2>
+                <IrPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Console Footprint */}
         <div className="mt-6 border border-neon-green/20 bg-black/40 p-5">
