@@ -1,0 +1,17 @@
+page.tsx:402 {tab.label}
+page.tsx:184 {">"} {plan.label}
+page.tsx:466 <div style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9' }}>{item.label}</div>
+page.tsx:509 {tab.label}
+page.tsx:845 <span>{score.label}</span>
+page.tsx:975 <span className="text-terminal-muted">{g.label} anos</span>
+page.tsx:995 <span className="text-terminal-muted">{g.label}</span>
+page.tsx:1545 {chip.label}
+page.tsx:236 <label style={styles.label}>
+page.tsx:254 <label style={styles.label}>
+VdeAssistant.tsx:443 onClick={() => send(s.label)}
+VdeAssistant.tsx:447 <span className="truncate">{s.label}</span>
+VdeDesktop.tsx:83 {app.label}
+VdeTerminal.tsx:590 { text: `[${stageIdx + 1}/4] ${stages[stageIdx].label}`, type: 'info' }
+VdeUserDashboard.tsx:785 {tab.label}
+VdeWebIDE.tsx:303 <button key={q.label} onClick={() => { setMethod(q.method); setPath(q.path); }}
+VdeWebIDE.tsx:305 {q.label}

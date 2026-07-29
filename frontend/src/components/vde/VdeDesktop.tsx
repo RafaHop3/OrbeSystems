@@ -76,11 +76,11 @@ export default function VdeDesktop({ onOpenView }: Props) {
                 onClick={() => handleApp(app)}
                 className="group flex flex-col items-center gap-1.5 w-[72px] md:w-[80px] focus:outline-none focus-visible:ring-2 focus-visible:ring-neon-cyan/50 rounded-lg p-1"
               >
-                <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-neon-cyan/10 group-hover:border-neon-cyan/40 transition-all shadow-lg">
-                  <Icon size={26} className="text-neon-cyan/90 group-hover:text-neon-cyan" />
+                <div className="bg-white/10 p-3 rounded-2xl mb-1.5 shadow-[0_0_15px_rgba(255,255,255,0.1)] group-hover:shadow-[0_0_20px_rgba(0,255,245,0.4)] group-hover:scale-105 transition-all text-white">
+                  <Icon size={24} strokeWidth={1.5} />
                 </div>
-                <span className="font-sans text-[10px] md:text-[11px] text-white/90 text-center leading-tight group-hover:text-neon-cyan transition-colors">
-                  {app.label}
+                <span className="font-mono text-[10px] font-bold text-white tracking-widest drop-shadow-md bg-black/40 px-2 py-0.5 rounded">
+                  {app?.label}
                 </span>
               </button>
             );

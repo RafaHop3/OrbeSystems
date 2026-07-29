@@ -46,6 +46,7 @@ import models.immutable_audit  # Import to register immutable_audit_chain table
 import models.ip_blocklist     # Import to register ip_blocklist table
 import models.ueba_baseline    # Import to register ueba_baselines table
 import models.incident_report  # Import to register incident_reports table (IR lifecycle)
+import models.chat_logs        # Import to register ai_chat_logs table
 
 
 def run_migrations():
@@ -334,6 +335,8 @@ from routes.suite_inteligente import router as suite_inteligente_router
 app.include_router(suite_inteligente_router)
 from routes.offline_agent import router as offline_agent_router
 app.include_router(offline_agent_router)
+from routes.chat_logs import router as chat_logs_router
+app.include_router(chat_logs_router)
 
 
 

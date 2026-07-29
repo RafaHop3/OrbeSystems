@@ -587,7 +587,7 @@ export default function VdeTerminal() {
           if (stageIdx < stages.length) {
             setLines((prev) => [
               ...prev,
-              { text: `[${stageIdx + 1}/4] ${stages[stageIdx].label}`, type: 'info' }
+              { text: `[${stageIdx + 1}/4] ${stages[stageIdx]?.label || 'Concluindo...'}`, type: 'info' }
             ]);
             playBeep(stages[stageIdx].freq, 0.05, 'triangle');
             stageIdx++;

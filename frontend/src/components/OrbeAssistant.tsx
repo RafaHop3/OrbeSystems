@@ -68,12 +68,21 @@ export default function OrbeAssistant() {
         body: JSON.stringify({ messages: [{ role: 'user', content: userMessage }] })
       });
 
-      if (!res.ok) throw new Error("Connection failed");
+      let errorMessage = "⚠ Falha de comunicação com o Núcleo principal. O backend pode estar offline ou indisponível localmente.";
+      if (!res.ok) {
+        try {
+          const errorData = await res.json();
+          if (errorData.error) {
+            errorMessage = `⚠️ Erro do Sistema: ${errorData.error}`;
+          }
+        } catch (e) { }
+        throw new Error(errorMessage);
+      }
 
       const data = await res.json();
       setMessages(prev => [...prev, { role: 'bot', text: data.response || "Resposta corrompida. Tente novamente." }]);
-    } catch (error) {
-      setMessages(prev => [...prev, { role: 'bot', text: "⚠ Falha de comunicação com o Núcleo principal. O backend pode estar offline ou indisponível localmente." }]);
+    } catch (error: any) {
+      setMessages(prev => [...prev, { role: 'bot', text: error.message || "⚠ Falha de comunicação." }]);
     } finally {
       setIsThinking(false);
     }

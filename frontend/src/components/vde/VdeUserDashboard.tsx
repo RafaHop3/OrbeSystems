@@ -777,12 +777,12 @@ export default function VdeUserDashboard() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-1.5 px-3 py-1 rounded font-mono text-[10px] uppercase tracking-wider transition-all border ${activeTab === tab.id
-                    ? 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/35'
-                    : 'text-terminal-muted hover:text-white border-transparent'
+                  ? 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/35'
+                  : 'text-terminal-muted hover:text-white border-transparent'
                   }`}
               >
                 <Icon size={12} />
-                {tab.label}
+                {tab?.label}
               </button>
             );
           })}
@@ -964,8 +964,8 @@ export default function VdeUserDashboard() {
                                 setCustomCheckout(false);
                               }}
                               className={`py-2 px-3 rounded font-mono text-[10px] border text-center transition-all ${!customCheckout && checkoutUrl.includes('dirty') === false
-                                  ? 'bg-neon-green/15 text-neon-green border-neon-green/30'
-                                  : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
+                                ? 'bg-neon-green/15 text-neon-green border-neon-green/30'
+                                : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
                                 }`}
                             >
                               Sem Defeitos
@@ -977,8 +977,8 @@ export default function VdeUserDashboard() {
                                 setCustomCheckout(false);
                               }}
                               className={`py-2 px-3 rounded font-mono text-[10px] border text-center transition-all ${!customCheckout && checkoutUrl.includes('dirty')
-                                  ? 'bg-red-500/15 text-red-400 border-red-500/30'
-                                  : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
+                                ? 'bg-red-500/15 text-red-400 border-red-500/30'
+                                : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
                                 }`}
                             >
                               Deteriorada (Erro)
@@ -992,8 +992,8 @@ export default function VdeUserDashboard() {
                               setCheckoutUrl('');
                             }}
                             className={`w-full py-1.5 rounded font-mono text-[10px] border text-center transition-all ${customCheckout
-                                ? 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/30'
-                                : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
+                              ? 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/30'
+                              : 'bg-white/5 text-terminal-muted border-white/10 hover:text-white'
                               }`}
                           >
                             URL Customizada
@@ -1441,9 +1441,9 @@ export default function VdeUserDashboard() {
                                       </td>
                                       <td className="p-3">
                                         <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${isSuccess ? 'bg-neon-green/15 text-neon-green' :
-                                            isFailed ? 'bg-red-500/15 text-red-400' :
-                                              isWarning ? 'bg-yellow-500/15 text-yellow-400' :
-                                                'bg-neon-cyan/15 text-neon-cyan'
+                                          isFailed ? 'bg-red-500/15 text-red-400' :
+                                            isWarning ? 'bg-yellow-500/15 text-yellow-400' :
+                                              'bg-neon-cyan/15 text-neon-cyan'
                                           }`}>
                                           {evt.status.toUpperCase()}
                                         </span>

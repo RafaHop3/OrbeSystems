@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Play, RotateCcw, Send, Trash2, Sparkles, Trophy, BookOpen, 
+import {
+  Play, RotateCcw, Send, Trash2, Sparkles, Trophy, BookOpen,
   Award, Terminal, Code2, RefreshCw, Lightbulb, ChevronRight, HelpCircle,
   Gamepad2, Cpu, Globe, BarChart3, Rocket
 } from 'lucide-react';
@@ -433,7 +433,7 @@ export default function KidsStudioPage() {
   const [badges, setBadges] = useState<string[]>([]);
   const [questionsAsked, setQuestionsAsked] = useState(0);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
-  
+
   // Theme and Challenge Selector States
   const [selectedThemeId, setSelectedThemeId] = useState<string>("jogos");
   const [currentLessonId, setCurrentLessonId] = useState<string>("game_walk");
@@ -464,12 +464,12 @@ export default function KidsStudioPage() {
       const ctx = new AudioContextClass();
       const osc = ctx.createOscillator();
       const gainNode = ctx.createGain();
-      
+
       osc.type = type;
       osc.frequency.setValueAtTime(freq, ctx.currentTime);
       gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-      
+
       osc.connect(gainNode);
       gainNode.connect(ctx.destination);
       osc.start();
@@ -516,7 +516,7 @@ export default function KidsStudioPage() {
     }
 
     setFunFact(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)]);
-    
+
     // Add Welcome message
     const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     setChatHistory([
@@ -550,11 +550,11 @@ export default function KidsStudioPage() {
           const nextLvl = prevLvl + 1;
           playLevelUpSound();
           awardBadge(`⭐ Nível ${nextLvl}`);
-          
+
           setTimeout(() => {
             appendBotMessage(`🎉 **VOCÊ SUBIU DE NÍVEL!** Parabéns, você agora é **Nível ${nextLvl}**! 🚀\n\nSeu cérebro de programador está crescendo de forma nobre! Continue assim!`);
           }, 800);
-          
+
           return nextLvl;
         });
         return newXp - threshold;
@@ -594,7 +594,7 @@ export default function KidsStudioPage() {
   const runJavaScript = () => {
     const logs: string[] = [];
     const originalLog = console.log;
-    
+
     // Redirect console.log
     console.log = (...args) => {
       logs.push(args.map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg).join(" "));
@@ -618,7 +618,7 @@ export default function KidsStudioPage() {
         ]);
         playSuccessSound();
         addXP(15);
-        
+
         // Check current challenge criteria
         checkLessonCompletion(logs.join("\n"));
       } else {
@@ -747,7 +747,7 @@ export default function KidsStudioPage() {
     const text = userMsg;
     setUserMsg("");
     const timeString = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
+
     // Add user message to history
     const updatedHistory = [...chatHistory, { sender: 'user' as const, text, time: timeString }];
     setChatHistory(updatedHistory);
@@ -784,7 +784,7 @@ export default function KidsStudioPage() {
       appendBotMessage(data.response);
       setQuestionsAsked(q => q + 1);
       addXP(10);
-      
+
       // Question badges
       if (questionsAsked + 1 >= 5) awardBadge("💬 Curioso");
       if (questionsAsked + 1 >= 15) awardBadge("🧠 Filósofo Dev");
@@ -795,7 +795,7 @@ export default function KidsStudioPage() {
       appendBotMessage(fallbackReply + "\n\n*(Nota: Rodando em modo offline)*");
       setQuestionsAsked(q => q + 1);
       addXP(10);
-      
+
       if (questionsAsked + 1 >= 5) awardBadge("💬 Curioso");
       if (questionsAsked + 1 >= 15) awardBadge("🧠 Filósofo Dev");
     }
@@ -826,7 +826,7 @@ export default function KidsStudioPage() {
       if (code.includes("if ") || code.includes("else")) {
         exp += `• Vi uma **condicional (se/senão)**. Ela serve para o programa tomar decisões baseadas em regras de verdadeiro ou falso.\n`;
       }
-      
+
       // Check library usage
       if (code.includes("EngineJogos")) {
         exp += `• Você está usando as funções de **Criação de Jogos** (\`EngineJogos\`) para renderizar mapas ou calcular colisões de física!\n`;
@@ -1141,7 +1141,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
         { text: `[Desafio] ${firstChallenge.title}: ${firstChallenge.description}`, type: 'system' }
       ]);
       playTone(587.33, 0.1, 'sine');
-      
+
       // Update chat history with welcome to the theme
       setIsTyping(true);
       setTimeout(() => {
@@ -1160,10 +1160,10 @@ Tenta criar uma função no editor e chamar ela! 💪`;
       { text: `[Desafio] Carregado com sucesso: ${challenge.title}`, type: 'system' },
       { text: `[Objetivo] ${challenge.description}`, type: 'system' }
     ]);
-    
+
     // Play sound
     playTone(587.33, 0.1, 'sine');
-    
+
     // Bot prompt
     setIsTyping(true);
     setTimeout(() => {
@@ -1180,16 +1180,16 @@ Tenta criar uma função no editor e chamar ela! 💪`;
   return (
     <>
       <Header />
-      
+
       {/* Container spacing to clear fixed navbar */}
       <div className="pt-24 min-h-screen bg-[#070311] text-gray-100 flex flex-col font-sans select-none relative overflow-hidden">
-        
+
         {/* Colorful neon ambient glows */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#8b5cf6]/10 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#06b6d4]/10 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="flex-1 max-w-7xl w-full mx-auto p-4 flex flex-col gap-6 z-10">
-          
+
           {/* Header Panel with Level / XP */}
           <div className="bg-[#120b24]/85 border border-[#8b5cf6]/25 rounded-2xl p-4 md:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-[0_8px_32px_rgba(0,0,0,0.5)] backdrop-blur-md">
             <div className="flex items-center gap-4">
@@ -1212,19 +1212,19 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                   <span>EXP: {xp} / {level * 100}</span>
                 </div>
                 <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-                  <div 
-                    className="bg-gradient-to-r from-cyan-400 to-purple-500 h-full rounded-full transition-all duration-500" 
+                  <div
+                    className="bg-gradient-to-r from-cyan-400 to-purple-500 h-full rounded-full transition-all duration-500"
                     style={{ width: `${(xp / (level * 100)) * 100}%` }}
                   />
                 </div>
               </div>
-              
+
               {/* Badges Row */}
               <div className="flex gap-1">
                 {badges.slice(-3).map((bg, idx) => (
-                  <span 
-                    key={idx} 
-                    className="text-lg animate-bounce duration-500 cursor-help" 
+                  <span
+                    key={idx}
+                    className="text-lg animate-bounce duration-500 cursor-help"
                     title={bg}
                   >
                     {bg.split(" ")[0]}
@@ -1239,10 +1239,10 @@ Tenta criar uma função no editor e chamar ela! 💪`;
 
           {/* Main workspace layout split into three sections */}
           <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-6 min-h-[500px]">
-            
+
             {/* 1. Left sidebar: Themes & Challenges Explorer */}
             <aside className="bg-[#120b24]/55 border border-[#8b5cf6]/20 rounded-2xl p-4 flex flex-col gap-4 overflow-y-auto max-h-[85vh]">
-              
+
               {/* Theme Selector */}
               <div className="flex flex-col gap-2">
                 <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-purple-400 flex items-center gap-1">
@@ -1255,11 +1255,10 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                       <button
                         key={theme.id}
                         onClick={() => handleSelectTheme(theme.id)}
-                        className={`w-full text-left p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${
-                          isSelected 
-                            ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md' 
+                        className={`w-full text-left p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${isSelected
+                            ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md'
                             : 'bg-white/5 border-white/10 hover:border-cyan-500/30 hover:text-white text-gray-300'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center gap-2">
                           <span className="text-base">{theme.emoji}</span>
@@ -1318,11 +1317,10 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                         <button
                           key={ch.id}
                           onClick={() => loadChallenge(ch, selectedTheme.id)}
-                          className={`w-full text-left p-3 rounded-xl border text-xs transition-all flex flex-col gap-1 ${
-                            isActive 
-                              ? 'bg-cyan-500/10 border-cyan-400 text-cyan-300 shadow-sm' 
+                          className={`w-full text-left p-3 rounded-xl border text-xs transition-all flex flex-col gap-1 ${isActive
+                              ? 'bg-cyan-500/10 border-cyan-400 text-cyan-300 shadow-sm'
                               : 'bg-white/5 border-white/10 hover:border-cyan-500/50 hover:text-white'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center justify-between font-bold w-full">
                             <span className="truncate">{ch.title}</span>
@@ -1348,7 +1346,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                 <p className="text-[11px] text-gray-300 leading-relaxed italic border-l-2 border-yellow-500/40 pl-2">
                   "{funFact}"
                 </p>
-                <button 
+                <button
                   onClick={getNextFact}
                   className="bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 hover:bg-yellow-500/20 px-3 py-1 rounded-full text-[10px] font-extrabold tracking-widest uppercase self-start transition-colors"
                 >
@@ -1359,7 +1357,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
 
             {/* 2. Middle Editor & Console (Colspan-2) */}
             <section className="lg:col-span-2 bg-[#0b0716] border border-[#8b5cf6]/35 rounded-2xl overflow-hidden flex flex-col shadow-2xl">
-              
+
               {/* Header Editor Controls */}
               <div className="bg-black/40 border-b border-[#8b5cf6]/20 px-4 py-2.5 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -1367,7 +1365,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                     {language === 'js' ? '📄 script.js' : '📄 script.py'}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   <select
                     value={language}
@@ -1438,17 +1436,17 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                     <Terminal size={12} />
                     <span>Console de Saída</span>
                   </span>
-                  <button 
+                  <button
                     onClick={() => setConsoleLogs([])}
                     className="text-white/40 hover:text-white text-[9px] font-bold uppercase tracking-wider bg-transparent border-none outline-none cursor-pointer"
                   >
                     Limpar
                   </button>
                 </div>
-                
+
                 <div className="flex-1 overflow-y-auto p-4 font-mono text-xs flex flex-col gap-1.5 select-text">
                   {consoleLogs.map((log, idx) => (
-                    <div 
+                    <div
                       key={idx}
                       className={`
                         ${log.type === 'error' ? 'text-red-400 font-bold' : ''}
@@ -1471,7 +1469,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
 
             {/* 3. Right: Chatbot Tutor Panel (Techy) */}
             <section className="bg-[#120b24]/55 border border-[#8b5cf6]/20 rounded-2xl overflow-hidden flex flex-col">
-              
+
               {/* Chat Header */}
               <div className="bg-purple-900/10 border-b border-white/5 p-3 flex items-center gap-2.5">
                 <span className="text-2xl animate-pulse">🤖</span>
@@ -1489,18 +1487,17 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                 {chatHistory.map((msg, idx) => {
                   const isBot = msg.sender === 'bot';
                   return (
-                    <div 
+                    <div
                       key={idx}
                       className={`flex gap-2 max-w-[85%] ${isBot ? 'self-start' : 'self-end flex-row-reverse'}`}
                     >
                       <span className="text-base shrink-0 mt-1">{isBot ? '🤖' : '👦'}</span>
                       <div className="flex flex-col gap-1">
-                        <div 
-                          className={`p-3 rounded-2xl text-[12px] leading-relaxed border ${
-                            isBot 
-                              ? 'bg-purple-500/15 border-purple-500/30 text-purple-100 rounded-tl-sm' 
+                        <div
+                          className={`p-3 rounded-2xl text-[12px] leading-relaxed border ${isBot
+                              ? 'bg-purple-500/15 border-purple-500/30 text-purple-100 rounded-tl-sm'
                               : 'bg-gradient-to-r from-purple-500 to-pink-500 border-none text-white rounded-tr-sm shadow-md'
-                          }`}
+                            }`}
                           style={{ whiteSpace: 'pre-wrap' }}
                           dangerouslySetInnerHTML={{ __html: parseMarkdownText(msg.text) }}
                         />
@@ -1523,7 +1520,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                     </div>
                   </div>
                 )}
-                
+
                 <div ref={chatEndRef} />
               </div>
 
@@ -1579,14 +1576,14 @@ Tenta criar uma função no editor e chamar ela! 💪`;
               🌐 **Estúdio de Programação Gratuito:** Servidor patrocinado por parceiros para manter a educação de tecnologia aberta, nobre e gratuita para todas as crianças do Brasil!
             </span>
             <div className="flex items-center gap-3">
-              <button 
+              <button
                 onClick={() => setShowHelpModal(true)}
                 className="text-[10px] text-gray-500 hover:text-red-400 transition-colors uppercase font-mono tracking-wider"
               >
                 Quer ajuda? Clique aqui 🛡️
               </button>
               <span className="text-white/10">|</span>
-              <Link 
+              <Link
                 href="/"
                 className="bg-white/5 border border-white/10 hover:bg-white/10 px-4 py-2 rounded-xl text-gray-300 font-extrabold uppercase tracking-widest text-[10px] shrink-0 transition-colors"
               >
@@ -1609,8 +1606,8 @@ Tenta criar uma função no editor e chamar ela! 💪`;
               Você não está sozinho! Se precisar de ajuda, conselho, estiver passando por dificuldades ou quiser denunciar alguma situação, entre em contato gratuitamente com os órgãos de proteção oficiais:
             </p>
             <div className="flex flex-col gap-2.5 my-2">
-              <a 
-                href="tel:100" 
+              <a
+                href="tel:100"
                 className="flex items-center justify-between p-3 bg-white/5 border border-white/10 hover:border-red-400/50 rounded-xl transition-all"
               >
                 <div className="flex flex-col text-left">
@@ -1619,8 +1616,8 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                 </div>
                 <span className="text-xs font-mono font-bold text-red-400 bg-red-500/10 px-2.5 py-1 rounded-md">Ligar 100</span>
               </a>
-              <a 
-                href="tel:190" 
+              <a
+                href="tel:190"
                 className="flex items-center justify-between p-3 bg-white/5 border border-white/10 hover:border-red-400/50 rounded-xl transition-all"
               >
                 <div className="flex flex-col text-left">
@@ -1629,8 +1626,8 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                 </div>
                 <span className="text-xs font-mono font-bold text-red-400 bg-red-500/10 px-2.5 py-1 rounded-md">Ligar 190</span>
               </a>
-              <a 
-                href="tel:188" 
+              <a
+                href="tel:188"
                 className="flex items-center justify-between p-3 bg-white/5 border border-white/10 hover:border-red-400/50 rounded-xl transition-all"
               >
                 <div className="flex flex-col text-left">
@@ -1640,7 +1637,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                 <span className="text-xs font-mono font-bold text-red-400 bg-red-500/10 px-2.5 py-1 rounded-md">Ligar 188</span>
               </a>
             </div>
-            <button 
+            <button
               onClick={() => setShowHelpModal(false)}
               className="mt-2 w-full bg-white/10 hover:bg-white/15 border border-white/10 text-white font-bold text-xs py-2 rounded-xl transition-colors"
             >
@@ -1658,22 +1655,22 @@ Tenta criar uma função no editor e chamar ela! 💪`;
 // Simple helper to parse basic markdown inside bot speech bubbles
 function parseMarkdownText(text: string): string {
   let html = text;
-  
+
   // Bold
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="text-cyan-400 font-bold">$1</strong>');
-  
+
   // Headers
   html = html.replace(/^### (.*$)/gim, '<div class="text-[13px] font-extrabold text-yellow-400 mb-1 border-b border-white/5 pb-1">$1</div>');
-  
+
   // Code block
   html = html.replace(/```(js|javascript|python)?([\s\S]*?)```/g, '<pre class="bg-black/40 rounded-lg p-2 font-mono text-[10px] text-emerald-300 overflow-x-auto my-1 border border-white/5">$2</pre>');
-  
+
   // Inline code
   html = html.replace(/`(.*?)`/g, '<code class="bg-black/30 px-1 rounded font-mono text-[10px] text-yellow-300">$1</code>');
-  
+
   // Bullet points
   html = html.replace(/^\s*-\s*(.*$)/gim, '<li class="ml-3 my-0.5">$1</li>');
-  
+
   // Line breaks
   html = html.replace(/\n/g, '<br>');
 

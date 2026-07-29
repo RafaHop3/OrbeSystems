@@ -972,7 +972,7 @@ export default function ImortalPage() {
                         {demographicData.demographics?.age_groups?.map((g: any, i: number) => (
                           <div key={i} className="space-y-1">
                             <div className="flex justify-between">
-                              <span className="text-terminal-muted">{g.label} anos</span>
+                              <span className="text-terminal-muted">{g?.label} anos</span>
                               <span className="text-white font-bold">{g.percentage}%</span>
                             </div>
                             <div className="w-full bg-white/5 h-1.5 rounded overflow-hidden">
@@ -992,7 +992,7 @@ export default function ImortalPage() {
                         {demographicData.demographics?.income_groups?.map((g: any, i: number) => (
                           <div key={i} className="space-y-1">
                             <div className="flex justify-between">
-                              <span className="text-terminal-muted">{g.label}</span>
+                              <span className="text-terminal-muted">{g?.label}</span>
                               <span className="text-white font-bold">{g.percentage}%</span>
                             </div>
                             <div className="w-full bg-white/5 h-1.5 rounded overflow-hidden">

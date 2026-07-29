@@ -440,11 +440,11 @@ export default function VdeAssistant() {
           {SUGGESTIONS.map((s, i) => (
             <button
               key={i}
-              onClick={() => send(s.label)}
+              onClick={() => send(s?.label || '')}
               className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg border border-white/8 bg-white/3 hover:bg-white/8 hover:border-neon-cyan/25 text-[10px] text-terminal-muted hover:text-white transition-all text-left gap-x-2"
             >
-              <span className="text-neon-cyan/60 shrink-0">{s.icon}</span>
-              <span className="truncate">{s.label}</span>
+              <span className="text-neon-cyan/60 shrink-0">{s?.icon}</span>
+              <span className="truncate">{s?.label}</span>
             </button>
           ))}
         </div>

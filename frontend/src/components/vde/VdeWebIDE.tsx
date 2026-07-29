@@ -300,9 +300,9 @@ function ApiRunner() {
       {/* Quick requests */}
       <div className="flex flex-wrap gap-1.5 p-3 border-b border-white/5">
         {QUICK_REQUESTS.map(q => (
-          <button key={q.label} onClick={() => { setMethod(q.method); setPath(q.path); }}
+          <button key={q?.label} onClick={() => { setMethod(q.method); setPath(q.path); }}
             className="px-2 py-1 bg-white/5 border border-white/10 rounded text-[10px] text-terminal-muted hover:text-neon-cyan hover:border-neon-cyan/30 transition-all">
-            {q.label}
+            {q?.label}
           </button>
         ))}
       </div>

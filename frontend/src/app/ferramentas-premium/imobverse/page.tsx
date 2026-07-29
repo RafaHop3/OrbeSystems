@@ -463,7 +463,7 @@ export default function ImobversePage() {
             }}>
               {item.icon}
               <div style={{ textAlign: 'left' }}>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9' }}>{item.label}</div>
+                <div style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9' }}>{item?.label}</div>
                 <div style={{ fontSize: '11px', color: '#64748b' }}>{item.desc}</div>
               </div>
             </div>
@@ -506,7 +506,7 @@ export default function ImobversePage() {
               display: 'inline-flex', alignItems: 'center', gap: '6px',
             }}
           >
-            {tab.label}
+            {tab?.label}
             {!tab.public && <Crown size={12} color="#f59e0b" />}
           </button>
         ))}
@@ -842,7 +842,7 @@ export default function ImobversePage() {
                             ].map((score, sIdx) => (
                               <div key={sIdx}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', marginBottom: '4px' }}>
-                                  <span>{score.label}</span>
+                                  <span>{score?.label}</span>
                                   <span style={{ fontWeight: 700, color: score.val >= 70 ? '#10b981' : score.val >= 40 ? '#f59e0b' : '#ef4444' }}>{score.val}%</span>
                                 </div>
                                 <div style={{ height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>

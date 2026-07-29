@@ -15,6 +15,7 @@ import IrPanel from '@/components/admin/IrPanel';
 import Nexus7Panel from '@/components/admin/Nexus7Panel';
 import AuraPanel from '@/components/admin/AuraPanel';
 import ChronosPanel from '@/components/admin/ChronosPanel';
+import AiLogsPanel from '@/components/admin/AiLogsPanel';
 
 /*
 - [x] Install/Add Backend dependency (`cloudinary`)
@@ -67,7 +68,7 @@ export default function AdminDashboard() {
 
   // ── User Management state ─────────────────────────────────────────────────────
   const [users, setUsers] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'projects' | 'users' | 'siem' | 'soar' | 'audit' | 'sbom' | 'ir' | 'nexus7' | 'aura' | 'chronos'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'users' | 'siem' | 'soar' | 'audit' | 'sbom' | 'ir' | 'nexus7' | 'aura' | 'chronos' | 'ai-logs'>('projects');
   const [showCreateUserForm, setShowCreateUserForm] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
@@ -390,6 +391,7 @@ export default function AdminDashboard() {
             { id: 'nexus7', label: '🔮 NEXUS-7' },
             { id: 'aura', label: '🧠 AURA' },
             { id: 'chronos', label: '⏳ CHRONOS' },
+            { id: 'ai-logs', label: '🤖 AI LOGS' },
           ] as const).map(tab => (
             <button
               key={tab.id}
@@ -399,7 +401,7 @@ export default function AdminDashboard() {
                 : 'text-neon-green/40 hover:text-neon-green'
                 }`}
             >
-              {tab.label}
+              {tab?.label}
             </button>
           ))}
         </div>
@@ -454,6 +456,7 @@ export default function AdminDashboard() {
             {activeTab === 'nexus7' && <Nexus7Panel />}
             {activeTab === 'aura' && <AuraPanel />}
             {activeTab === 'chronos' && <ChronosPanel />}
+            {activeTab === 'ai-logs' && <AiLogsPanel />}
 
             {/* Project Manager Panel */}
             {activeTab === 'projects' && (

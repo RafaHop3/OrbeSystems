@@ -181,7 +181,7 @@ function AssinarPageContent() {
               {/* Plan header */}
               <div style={styles.planHeader}>
                 <div style={{ ...styles.planLabel, color: plan.color }}>
-                  {">"} {plan.label}
+                  {">"} {plan?.label}
                 </div>
                 <div style={styles.planPrice}>{plan.price}</div>
                 {plan.id === "premium" && (
