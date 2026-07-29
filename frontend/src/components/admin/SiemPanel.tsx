@@ -23,7 +23,7 @@ export default function SiemPanel({ apiUrl, token }: { apiUrl: string; token: st
                 fetch(`${apiUrl}/api/siem/alerts?status=open&limit=20`, { headers: h }),
             ]);
             if (sRes.ok) setStats(await sRes.json());
-            if (aRes.ok) { const d = await aRes.json(); setAlerts(d.alerts || []); }
+            if (aRes.ok) { const d = await aRes.json(); setAlerts(Array.isArray(d.alerts) ? d.alerts : Array.isArray(d) ? d : []); }
         } finally { setLoading(false); }
     };
 

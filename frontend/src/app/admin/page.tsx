@@ -114,8 +114,8 @@ export default function AdminDashboard() {
         const usersData = await usersRes.json();
 
         setStatus(statusData);
-        setProjects(projectsData);
-        setUsers(usersData.users || usersData);
+        setProjects(Array.isArray(projectsData) ? projectsData : projectsData?.projects || []);
+        setUsers(Array.isArray(usersData?.users) ? usersData.users : Array.isArray(usersData) ? usersData : []);
       } catch (err) {
         console.error('Core data sync failed:', err);
       } finally {
@@ -139,7 +139,8 @@ export default function AdminDashboard() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'X-CSRF-Token': 'csrf-token-placeholder'
         },
         body: JSON.stringify({ role: newRole })
       });
@@ -166,7 +167,10 @@ export default function AdminDashboard() {
     try {
       const res = await fetch(`${API_URL}/api/admin/users/${userId}`, {
         method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'X-CSRF-Token': 'csrf-token-placeholder'
+        }
       });
 
       if (!res.ok) throw new Error('Failed to delete user');
