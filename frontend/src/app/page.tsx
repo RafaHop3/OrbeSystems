@@ -4,7 +4,6 @@ import ProjectsGrid from '@/components/ProjectsGrid';
 import Footer from '@/components/Footer';
 import ScrollNarrativeEngine from '@/components/ScrollNarrativeEngine';
 import VdePreview from '@/components/vde/VdePreview';
-import FreedomSection from '@/components/FreedomSection';
 
 export default function HomePage() {
   return (
@@ -14,7 +13,6 @@ export default function HomePage() {
         <HeroSection />
         <ProjectsGrid />
         <VdePreview />
-        <FreedomSection />
       </ScrollNarrativeEngine>
       <Footer />
     </main>

@@ -8,11 +8,11 @@ import { useAuth } from '@/hooks/useAuth';
 import { logoutAction } from '@/lib/auth-actions';
 
 const NAV_LINKS = [
-  { label: 'Workspace', href: '/workspace', icon: Monitor },
-  { label: 'Repositórios', href: '/repositorios', icon: FileText },
-  { label: 'Skills', href: '/skills', icon: LayoutGrid },
-  { label: 'Inovações 🔬', href: '/inovacoes', icon: Cpu },
-  { label: 'Contato', href: '/#contact', icon: Mail },
+  { label: 'Workspace', href: '/workspace' },
+  { label: 'Repositórios', href: '/repositorios' },
+  { label: 'Skills', href: '/skills' },
+  { label: 'Inovações', href: '/inovacoes' },
+  { label: 'Contato', href: '/#contact' },
 ];
 
 
@@ -157,14 +157,14 @@ export default function Header() {
       {/* Mobile Nav Overlay */}
       {isMobileMenuOpen && (
         <nav className="md:hidden absolute top-full left-0 right-0 border-b border-white/10 bg-black/95 backdrop-blur-md flex flex-col px-6 py-4 gap-4 animate-fade-in-up">
-          {NAV_LINKS.map(({ label, href, icon: Icon }) => (
+          {NAV_LINKS.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
               onClick={() => setIsMobileMenuOpen(false)}
               className="flex items-center gap-3 font-mono text-xs text-white/60 hover:text-blue-400 transition-colors duration-200 tracking-wider py-3 border-b border-white/5 last:border-none"
             >
-              <Icon size={16} />
+              <Cpu size={16} className="opacity-40" />
               {label}
             </Link>
           ))}
