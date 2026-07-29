@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY;
-const HF_API_URL = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2";
+const HF_API_URL = "https://router.huggingface.co/hf-inference/v1/chat/completions";
 
 const SYSTEM_CONTEXT = `Você é o Orbe Assistant, o assistente de IA da Orbe Systems — uma empresa de engenharia de software de alto nível.
 Fale de forma profissional em português. Seja extremamente conciso.
@@ -24,8 +24,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Formato inválido.' }, { status: 400 });
     }
 
-    const lastMessage = messages[messages.length - 1].content;
-    const prompt = `<s>[INST] ${SYSTEM_CONTEXT}\n\nUsuário: ${lastMessage} [/INST]`;
+    const payloadMessages = [
+      { role: 'system', content: SYSTEM_CONTEXT },
+      ...messages
+    ];
 
     const response = await fetch(HF_API_URL, {
       method: 'POST',
@@ -34,8 +36,10 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        inputs: prompt,
-        parameters: { max_new_tokens: 250, temperature: 0.7 }
+        model: "mistralai/Mistral-7B-Instruct-v0.2",
+        messages: payloadMessages,
+        max_tokens: 250,
+        temperature: 0.7
       })
     });
 
@@ -46,12 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
-    let text = data[0]?.generated_text || '';
-
-    // Mistral returns the prompt + generated text. We must slice out the prompt.
-    if (text.includes('[/INST]')) {
-      text = text.split('[/INST]')[1].trim();
-    }
+    const text = data.choices?.[0]?.message?.content || '';
 
     return NextResponse.json({ response: text });
   } catch (err) {
