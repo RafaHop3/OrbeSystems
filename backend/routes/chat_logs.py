@@ -6,7 +6,7 @@ from models.chat_logs import ChatLog
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-from security.auth import require_admin, require_premium
+from security.auth import get_current_admin_user, require_premium
 
 router = APIRouter(prefix="/api/admin/chat-logs", tags=["admin-chat-logs"])
 
@@ -68,5 +68,5 @@ def get_chat_log_stats(days: int = 14, db: Session = Depends(get_db)):
 
 # Restricted read route for the admin panel
 @router.get("", response_model=List[ChatLogResponse])
-def get_chat_logs(limit: int = 100, db: Session = Depends(get_db), current_admin = Depends(require_admin)):
+def get_chat_logs(limit: int = 100, db: Session = Depends(get_db), current_admin = Depends(get_current_admin_user)):
     return db.query(ChatLog).order_by(ChatLog.timestamp.desc()).limit(limit).all()
