@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import MouseAtomTrail from '@/components/MouseAtomTrail';
+import dynamic from 'next/dynamic';
+
+const OrbeAssistant = dynamic(() => import('@/components/OrbeAssistant'), { ssr: false });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://orbesystems.com.br'),
@@ -21,6 +24,7 @@ export default function RootLayout({
         <AnalyticsTracker />
         <MouseAtomTrail />
         {children}
+        <OrbeAssistant />
       </body>
     </html>
   );

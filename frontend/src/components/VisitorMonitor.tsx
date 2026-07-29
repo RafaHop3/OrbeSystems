@@ -154,9 +154,9 @@ export default function VisitorMonitor() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 text-[9px] text-neon-green/40 border-t border-neon-green/5 pt-2">
-                  <Server size={10} />
-                  <span className="ml-auto text-neon-cyan/40 text-[8px] italic">{session.ip}</span>
+                <div className="flex justify-between items-center text-[9px] text-neon-green/40 border-t border-neon-green/5 pt-2 mt-1">
+                  <div className="flex items-center gap-1.5"><Server size={10} /></div>
+                  <span className="text-neon-cyan/40 text-[8px] italic truncate">{session.ip}</span>
                 </div>
               </div>
             ))
@@ -187,20 +187,19 @@ export default function VisitorMonitor() {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5 text-[9px] text-neon-green/40 border-t border-neon-green/5 pt-2">
-                <Server size={10} />
-                <span className="truncate opacity-60">{visit.isp}</span>
-                <span className="ml-auto text-neon-cyan/40 text-[8px] italic">{visit.ip}</span>
+              <div className="flex justify-between items-center text-[9px] text-neon-green/40 border-t border-neon-green/5 pt-2 mt-1">
+                <div className="flex items-center gap-1.5"><Server size={10} /><span className="truncate opacity-60 max-w-[80px]">{visit.isp}</span></div>
+                <span className="text-neon-cyan/40 text-[8px] italic truncate">{visit.ip}</span>
               </div>
             </div>
           ))
         )}
       </div>
 
-      <div className="mt-4 pt-3 border-t border-neon-green/10 flex justify-between items-center text-[8px] text-neon-green/30 uppercase tracking-[0.2em]">
-        <span>ORBE ANALYTICS v2.0</span>
-        <span className="flex items-center gap-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-neon-green animate-ping" />
+      <div className="mt-4 pt-3 border-t border-neon-green/10 flex flex-wrap gap-2 justify-between items-center text-[8px] text-neon-green/30 uppercase tracking-[0.2em]">
+        <span className="shrink-0">ORBE ANALYTICS v2.0</span>
+        <span className="flex items-center gap-1.5 whitespace-nowrap">
+          <div className="w-1.5 h-1.5 rounded-full bg-neon-green animate-ping shrink-0" />
           {activeSessions.length} Active Sessions
         </span>
       </div>

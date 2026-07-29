@@ -23,7 +23,10 @@ export default function SiemPanel({ apiUrl, token }: { apiUrl: string; token: st
                 fetch(`${apiUrl}/api/siem/alerts?status=open&limit=20`, { headers: h }),
             ]);
             if (sRes.ok) setStats(await sRes.json());
-            if (aRes.ok) { const d = await aRes.json(); setAlerts(Array.isArray(d.alerts) ? d.alerts : Array.isArray(d) ? d : []); }
+            if (aRes.ok) {
+                const d = await aRes.json();
+                setAlerts(Array.isArray(d?.alerts) ? d.alerts : Array.isArray(d) ? d : []);
+            }
         } finally { setLoading(false); }
     };
 
@@ -35,9 +38,13 @@ export default function SiemPanel({ apiUrl, token }: { apiUrl: string; token: st
         fetchAll();
     };
 
-    useEffect(() => { fetchAll(); }, []);
+    useEffect(() => {
+        fetchAll();
+        const interval = setInterval(fetchAll, 10000);
+        return () => clearInterval(interval);
+    }, []);
 
-    if (loading) return <div className="text-neon-green/40 text-xs animate-pulse">FETCHING SIEM DATA...</div>;
+    if (loading && !stats) return <div className="text-neon-green/40 text-xs animate-pulse">FETCHING SIEM DATA...</div>;
 
     const total = stats ? (stats.critical + stats.high + stats.medium + stats.low) || 1 : 1;
 

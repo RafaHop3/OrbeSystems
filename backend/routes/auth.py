@@ -33,6 +33,14 @@ async def login_for_access_token(request: Request, data: LoginSchema):
         )
     
     # 2. Verify password with safety wrap
+    if not ADMIN_PASSWORD_HASH:
+        print("CRITICAL: Auth system failure - ADMIN_PASSWORD_HASH is not configured in environment.")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="SYSTEM ERROR: Orbe System missing backend auth configuration.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    
     try:
         is_valid = verify_password(data.password, ADMIN_PASSWORD_HASH)
         if not is_valid:

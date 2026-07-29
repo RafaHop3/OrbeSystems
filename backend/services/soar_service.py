@@ -93,11 +93,15 @@ def block_ip(
     hours: int = 1,
     playbook: Optional[str] = None,
     created_by: str = "soar_engine",
-) -> IpBlocklist:
+):
     """
     Block an IP for `hours` hours. Invalidates the in-process cache entry.
     Upserts: if the IP is already blocked, extends the expiry.
     """
+    if ip in ["127.0.0.1", "::1", "localhost", "0.0.0.0"]:
+        logger.info(f"[SOAR] Safe-listed IP skipped from blocklist: {ip}")
+        return None
+
     global _block_cache, _cache_built_at
 
     expiry = datetime.now(timezone.utc) + timedelta(hours=hours)

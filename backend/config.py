@@ -46,6 +46,9 @@ class Settings(BaseSettings):
     # Render.com injects 1 proxy. Set to 2 if behind Cloudflare + Render.
     # Set to 0 for direct exposure (no proxy) — rare in production.
     NUM_TRUSTED_PROXIES: int = 1
+    
+    # ── Hugging Face Chatbot ──────────────────────────────────────────────────
+    HUGGINGFACE_API_KEY: str = ""
 
     def validate_stripe_config(self) -> None:
         """Valida se as configurações do Stripe estão presentes."""

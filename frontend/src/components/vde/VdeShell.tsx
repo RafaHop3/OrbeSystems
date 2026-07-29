@@ -20,7 +20,6 @@ import type { VdeView } from './types';
 import VdeDesktop from './VdeDesktop';
 import VdeTerminal from './VdeTerminal';
 import VdeWebIDE from './VdeWebIDE';
-import VdeAssistant from './VdeAssistant';
 import VdeUserDashboard from './VdeUserDashboard';
 
 function formatClock() {
@@ -43,8 +42,6 @@ const TABS: { id: VdeView; label: string; icon: any }[] = [
 export default function VdeShell() {
   const [view, setView] = useState<VdeView>('desktop');
   const [clock, setClock] = useState('');
-  // Chat panel: hidden on mobile by default, always visible on lg+
-  const [chatOpen, setChatOpen] = useState(false);
 
   useEffect(() => {
     setClock(formatClock());
@@ -71,11 +68,10 @@ export default function VdeShell() {
               key={id}
               type="button"
               onClick={() => setView(id)}
-              className={`flex items-center gap-1.5 px-2 md:px-4 py-1.5 rounded-md font-mono text-[10px] md:text-xs transition-all ${
-                view === id
+              className={`flex items-center gap-1.5 px-2 md:px-4 py-1.5 rounded-md font-mono text-[10px] md:text-xs transition-all ${view === id
                   ? 'bg-neon-blue/20 text-neon-cyan border border-neon-cyan/30'
                   : 'text-terminal-muted hover:text-white'
-              }`}
+                }`}
             >
               <Icon size={14} />
               <span className="hidden xs:inline">{label}</span>
@@ -95,21 +91,6 @@ export default function VdeShell() {
             LIVE
           </span>
 
-          {/* Orbe Assistant toggle — visível em telas menores que lg */}
-          <button
-            type="button"
-            onClick={() => setChatOpen(o => !o)}
-            aria-label="Orbe Assistant"
-            className={`lg:hidden flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg font-mono text-[10px] border transition-all ${
-              chatOpen
-                ? 'bg-neon-cyan/20 border-neon-cyan/40 text-neon-cyan'
-                : 'bg-white/5 border-white/10 text-terminal-muted hover:text-white'
-            }`}
-          >
-            {chatOpen ? <X size={13} /> : <Bot size={13} />}
-            {chatOpen ? 'Fechar' : 'Orbe AI'}
-          </button>
-
           <button type="button" className="hidden md:block p-1.5 text-terminal-muted hover:text-white" aria-label="Idioma">
             <Globe size={16} />
           </button>
@@ -127,30 +108,11 @@ export default function VdeShell() {
 
         {/* Content area */}
         <div className="flex-1 flex flex-col min-h-0 min-w-0">
-          {view === 'desktop'   && <VdeDesktop onOpenView={setView} />}
+          {view === 'desktop' && <VdeDesktop onOpenView={setView} />}
           {view === 'dashboard' && <VdeUserDashboard />}
-          {view === 'terminal'  && <VdeTerminal />}
-          {view === 'webide'    && <VdeWebIDE />}
+          {view === 'terminal' && <VdeTerminal />}
+          {view === 'webide' && <VdeWebIDE />}
         </div>
-
-        {/* Sidebar assistant: always visible on lg, slide-in on mobile */}
-        <div className={`
-          flex-col
-          lg:flex lg:relative lg:w-auto
-          ${chatOpen ? 'flex fixed inset-0 z-50 bg-black/60 backdrop-blur-sm items-end justify-end p-3' : 'hidden'}
-        `}>
-          {/* Backdrop close on mobile */}
-          {chatOpen && (
-            <div
-              className="absolute inset-0 lg:hidden"
-              onClick={() => setChatOpen(false)}
-            />
-          )}
-          <div className="relative z-10 w-full max-w-sm lg:max-w-none lg:w-auto flex-1 lg:flex-none">
-            <VdeAssistant />
-          </div>
-        </div>
-
       </div>
 
       {/* Taskbar */}

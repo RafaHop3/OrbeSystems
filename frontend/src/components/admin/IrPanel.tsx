@@ -25,7 +25,10 @@ export default function IrPanel({ apiUrl, token }: { apiUrl: string; token: stri
                 fetch(`${apiUrl}/api/ir/incidents?status=open&limit=20`, { headers: h }),
             ]);
             if (mRes.ok) setMetrics(await mRes.json());
-            if (iRes.ok) { const d = await iRes.json(); setIncidents(d.incidents || []); }
+            if (iRes.ok) {
+                const d = await iRes.json();
+                setIncidents(Array.isArray(d?.incidents) ? d.incidents : Array.isArray(d) ? d : []);
+            }
         } finally { setLoading(false); }
     };
 
@@ -52,9 +55,13 @@ export default function IrPanel({ apiUrl, token }: { apiUrl: string; token: stri
         fetchAll();
     };
 
-    useEffect(() => { fetchAll(); }, []);
+    useEffect(() => {
+        fetchAll();
+        const interval = setInterval(fetchAll, 10000);
+        return () => clearInterval(interval);
+    }, []);
 
-    if (loading) return <div className="text-neon-green/40 text-xs animate-pulse">LOADING IR MODULE...</div>;
+    if (loading && !metrics) return <div className="text-neon-green/40 text-xs animate-pulse">LOADING IR MODULE...</div>;
 
     return (
         <div className="space-y-4">

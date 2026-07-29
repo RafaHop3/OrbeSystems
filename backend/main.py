@@ -28,6 +28,7 @@ from routes.siem import router as siem_router
 from routes.audit_chain import router as audit_chain_router
 from routes.sbom import router as sbom_router
 from routes.ir import router as ir_router
+from routes.chat import router as chat_router
 from security.auth import verify_password
 from security.supabase_rls import ensure_supabase_rls
 from sqlalchemy import inspect, text
@@ -328,6 +329,7 @@ app.include_router(webhooks_router, prefix="/api", tags=["webhooks"])
 app.include_router(imortal_router, prefix="/api", tags=["imortal"])
 app.include_router(imobverse_router, prefix="/api", tags=["imobverse"])
 app.include_router(powershell_bot_router, prefix="/api", tags=["PowerShell Bot"])
+app.include_router(chat_router, prefix="/api", tags=["chat"])
 from routes.suite_inteligente import router as suite_inteligente_router
 app.include_router(suite_inteligente_router)
 from routes.offline_agent import router as offline_agent_router

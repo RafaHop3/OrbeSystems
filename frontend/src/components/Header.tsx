@@ -99,12 +99,6 @@ export default function Header() {
 
         {/* Right side controls */}
         <div className="flex items-center gap-3 z-50">
-          {/* Status badge */}
-          <div className="hidden sm:flex items-center gap-2 font-cinzel text-[9px] text-blue-400 border border-blue-400/30 rounded px-3 py-1 bg-blue-500/5">
-            <span className="w-1 h-1 rounded-full bg-blue-400 animate-pulse" />
-            <span className="tracking-widest uppercase">GALLERIA APERTA</span>
-          </div>
-
           {/* Login & Premium buttons (desktop) */}
           <div className="hidden md:flex items-center gap-2">
             {!user && (
