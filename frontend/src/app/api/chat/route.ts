@@ -46,7 +46,9 @@ export async function POST(request: NextRequest) {
     if (!response.ok) {
       const err = await response.text();
       console.error('HF Error:', err);
-      return NextResponse.json({ error: 'Erro no Hugging Face' }, { status: 502 });
+      let parsedErr = err;
+      try { parsedErr = JSON.parse(err).error || err; } catch (e) { }
+      return NextResponse.json({ error: `HF Error: ${parsedErr}` }, { status: 502 });
     }
 
     const data = await response.json();
