@@ -35,14 +35,21 @@ export default function Header() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map(({ label, href, icon: Icon }) => (
+          {NAV_LINKS.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
-              className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-wider text-navy-mist/70 hover:text-navy-glow transition-all duration-200 group"
+              className="group flex font-mono text-[11px] uppercase tracking-wider text-navy-mist/70 transition-all duration-300"
             >
-              <Icon size={12} className="group-hover:scale-110 transition-transform text-blue-400/80" />
-              <span>{label}</span>
+              {label.split('').map((char, i) => (
+                <span
+                  key={i}
+                  className="transition-all duration-300 group-hover:text-neon-cyan group-hover:-translate-y-[2px]"
+                  style={{ transitionDelay: `${i * 30}ms` }}
+                >
+                  {char === ' ' ? '\u00A0' : char}
+                </span>
+              ))}
             </Link>
           ))}
 

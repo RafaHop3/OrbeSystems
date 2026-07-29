@@ -71,7 +71,7 @@ export default function HeroSection() {
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-40">
+      <div className="w-full flex flex-col items-center gap-2 opacity-40 mt-16 md:mt-24">
         <span className="font-mono text-[9px] tracking-widest text-navy-shine uppercase">scroll</span>
         <div className="w-px h-8 bg-gradient-to-b from-navy-glow/60 to-transparent" />
       </div>

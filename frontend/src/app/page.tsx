@@ -12,9 +12,9 @@ export default function HomePage() {
       <Header />
       <ScrollNarrativeEngine>
         <HeroSection />
+        <ProjectsGrid />
         <VdePreview />
         <FreedomSection />
-        <ProjectsGrid />
       </ScrollNarrativeEngine>
       <Footer />
     </main>
