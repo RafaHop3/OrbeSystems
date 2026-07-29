@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY;
-const HF_API_URL = "https://router.huggingface.co/hf-inference/v1/chat/completions";
+const HF_API_URL = "https://router.huggingface.co/v1/chat/completions";
 
 const SYSTEM_CONTEXT = `Você é o Orbe Assistant, o assistente de IA da Orbe Systems — uma empresa de engenharia de software de alto nível.
 Fale de forma profissional em português. Seja extremamente conciso.
@@ -36,9 +36,9 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: "mistralai/Mistral-7B-Instruct-v0.2",
+        model: "Qwen/Qwen2.5-72B-Instruct",
         messages: payloadMessages,
-        max_tokens: 250,
+        max_tokens: 350,
         temperature: 0.7
       })
     });
