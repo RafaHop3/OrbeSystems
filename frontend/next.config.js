@@ -40,7 +40,7 @@ const securityHeaders = [
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://ipapi.co https://ipinfo.io",
+      "connect-src 'self' http://localhost:8000 http://127.0.0.1:8000 https://ipapi.co https://ipinfo.io https://*.vercel.app",
       "frame-src 'none'",
       "object-src 'none'",
       "base-uri 'self'",
