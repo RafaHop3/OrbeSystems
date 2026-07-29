@@ -32,13 +32,20 @@ export default function HeroSection() {
           </span>
         </h1>
 
-        <p className="font-sans text-base md:text-lg text-navy-mist/75 max-w-2xl mx-auto mb-4 leading-relaxed font-light">
-          Consultoria, automação e auditoria de infraestrutura — leveza operacional
-          direto no ambiente do seu time.
-        </p>
-        <p className="font-mono text-[10px] text-navy-shine/50 mb-12 tracking-widest uppercase">
-          role para ver o conteúdo
-        </p>
+        <div className="font-sans text-base md:text-lg text-navy-mist/75 max-w-3xl mx-auto mb-8 leading-relaxed font-light space-y-4">
+          <p className="italic border-l border-navy-glow/50 pl-4 text-white/90">
+            "Um sonho que se sonha sozinho é só um sonho, mas um sonho que se sonha junto se torna realidade."
+          </p>
+          <p>
+            Nós somos a <strong className="text-navy-glow font-normal">Orbe Systems</strong>.
+          </p>
+          <p className="text-sm md:text-base opacity-80">
+            Muitos enxergam a tecnologia apenas como linhas de código solitárias e frias. Nós a enxergamos como o grande elo que conecta mentes visionárias. A Orbe não existe para construir sistemas de forma isolada em salas escuras; nós existimos para construir o amanhã, <strong>juntos</strong>.
+          </p>
+          <p className="text-sm md:text-base opacity-80 pb-4">
+            Onde a imaginação encontra a criptografia de ponta. Formamos uma aliança indestrutível entre humanos apaixonados por evolução e arquiteturas digitais imaculadas. O seu projeto é o sonho; a nossa tecnologia é a armadura que garante que esse sonho se torne a mais pura realidade.
+          </p>
+        </div>
 
         <div className="flex flex-wrap justify-center gap-3 mb-10">
           {skills.map(({ icon: Icon, label, href }) => (

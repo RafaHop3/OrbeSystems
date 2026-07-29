@@ -12,6 +12,10 @@ import AuditChainPanel from '@/components/admin/AuditChainPanel';
 import SbomPanel from '@/components/admin/SbomPanel';
 import IrPanel from '@/components/admin/IrPanel';
 
+import Nexus7Panel from '@/components/admin/Nexus7Panel';
+import AuraPanel from '@/components/admin/AuraPanel';
+import ChronosPanel from '@/components/admin/ChronosPanel';
+
 /*
 - [x] Install/Add Backend dependency (`cloudinary`)
 - [x] Update `backend/config.py` with Cloudinary fields
@@ -63,7 +67,7 @@ export default function AdminDashboard() {
 
   // ── User Management state ─────────────────────────────────────────────────────
   const [users, setUsers] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'projects' | 'users' | 'siem' | 'soar' | 'audit' | 'sbom' | 'ir'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'users' | 'siem' | 'soar' | 'audit' | 'sbom' | 'ir' | 'nexus7' | 'aura' | 'chronos'>('projects');
   const [showCreateUserForm, setShowCreateUserForm] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
@@ -383,6 +387,9 @@ export default function AdminDashboard() {
             { id: 'audit', label: '⛓ Audit Chain' },
             { id: 'sbom', label: '📦 SBOM' },
             { id: 'ir', label: '🚨 IR' },
+            { id: 'nexus7', label: '🔮 NEXUS-7' },
+            { id: 'aura', label: '🧠 AURA' },
+            { id: 'chronos', label: '⏳ CHRONOS' },
           ] as const).map(tab => (
             <button
               key={tab.id}
@@ -442,6 +449,12 @@ export default function AdminDashboard() {
 
           {/* Main Content Area (Tabs) */}
           <div className="lg:col-span-2 space-y-6">
+
+            {/* New Ecosystem Pillars (Vision) */}
+            {activeTab === 'nexus7' && <Nexus7Panel />}
+            {activeTab === 'aura' && <AuraPanel />}
+            {activeTab === 'chronos' && <ChronosPanel />}
+
             {/* Project Manager Panel */}
             {activeTab === 'projects' && (
               <div className="border border-neon-cyan/20 bg-neon-cyan/5 p-5">
