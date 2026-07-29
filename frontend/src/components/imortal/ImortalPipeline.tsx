@@ -100,7 +100,7 @@ void loop() {
   return (
     <section id="imortal-pipeline" className="relative py-24 px-6 border-t border-terminal-border/20 bg-[#040608]">
       {/* Background Grid */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none opacity-[0.02]"
         style={{
           backgroundImage: 'linear-gradient(rgba(0,255,245,1) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,245,1) 1px, transparent 1px)',
@@ -109,7 +109,7 @@ void loop() {
       />
 
       <div className="max-w-6xl w-full mx-auto space-y-16 relative z-10">
-        
+
         {/* Section Header */}
         <div className="text-center space-y-3">
           <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-neon-purple bg-neon-purple/5 border border-neon-purple/20 px-3 py-1 rounded-full">
@@ -125,7 +125,7 @@ void loop() {
 
         {/* Responsive Pipeline Flow */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
+
           {/* Step Selector List (Left) */}
           <div className="lg:col-span-5 space-y-3">
             {steps.map((step, idx) => {
@@ -135,16 +135,16 @@ void loop() {
                   key={idx}
                   onClick={() => setActiveStep(idx)}
                   className={`w-full flex items-center justify-between gap-4 p-4 rounded-xl border text-left font-mono transition-all duration-300
-                    ${isSelected 
-                      ? 'bg-terminal-surface border-neon-cyan/30 shadow-[0_0_20px_rgba(0,255,245,0.05)] translate-x-2' 
+                    ${isSelected
+                      ? 'bg-terminal-surface border-neon-cyan/30 shadow-[0_0_20px_rgba(0,255,245,0.05)] translate-x-2'
                       : 'bg-terminal-surface/40 border-terminal-border/40 hover:bg-terminal-surface/60 hover:border-terminal-border/80'
                     }`}
                 >
                   <div className="flex items-center gap-3">
                     {/* Icon container */}
                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all duration-300
-                      ${isSelected 
-                        ? `${step.bgClass} ${step.borderClass} ${step.colorClass}` 
+                      ${isSelected
+                        ? `${step.bgClass} ${step.borderClass} ${step.colorClass}`
                         : 'bg-black/30 border-terminal-border/80 text-terminal-muted'
                       }`}
                     >
@@ -174,7 +174,7 @@ void loop() {
 
           {/* Code & Description Viewer (Right) */}
           <div className="lg:col-span-7 bg-terminal-surface border border-terminal-border/80 rounded-xl overflow-hidden flex flex-col min-h-[350px] shadow-[0_15px_40px_-15px_rgba(0,0,0,0.8)]">
-            
+
             {/* Window bar */}
             <div className="bg-[#12161f] border-b border-terminal-border px-5 py-3.5 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
@@ -182,7 +182,7 @@ void loop() {
                 <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
                 <span className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
                 <span className="font-mono text-[9px] text-terminal-muted uppercase tracking-widest ml-3">
-                  STÁGIO_{steps[activeStep].number} // {steps[activeStep].title.toUpperCase().replace(/ /g, '_')}
+                  STÁGIO_{steps[activeStep].number} {'//'} {steps[activeStep].title.toUpperCase().replace(/ /g, '_')}
                 </span>
               </div>
               <div className="font-mono text-[9px] text-neon-cyan border border-neon-cyan/20 bg-neon-cyan/5 rounded px-2 py-0.5">
