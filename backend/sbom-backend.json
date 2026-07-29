@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:162c8884-537a-4a10-a43c-5814da265fba",
+  "serialNumber": "urn:uuid:bc3cd376-8a4b-426a-b947-9263defc4fbd",
   "metadata": {
-    "timestamp": "2026-07-29T17:27:35.781929+00:00",
+    "timestamp": "2026-07-29T19:01:58.049592+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -2295,8 +2295,8 @@
     {
       "type": "library",
       "name": "websockets",
-      "version": "16.1.1",
-      "purl": "pkg:pypi/websockets@16.1.1",
+      "version": "17.0",
+      "purl": "pkg:pypi/websockets@17.0",
       "licenses": [
         {
           "license": {
@@ -2313,7 +2313,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "8cf88ade5b4103aaf03b529fc96d8f107ae4e1650ddec5b6a1e71e2f0ddea87a"
+          "content": "570c0dc4a67188534cf738169af308f9a93a46c51e8707e92f055ebcdc563ba0"
         }
       ]
     },
