@@ -60,23 +60,18 @@ export default function OrbeAssistant() {
     setIsThinking(true);
 
     try {
-      const isLocal = typeof window !== 'undefined' && window.location.hostname === 'localhost';
-      const fallbackUrl = isLocal ? 'http://localhost:8000' : 'https://orbe-systems-api.onrender.com';
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || fallbackUrl;
-      const cleanUrl = apiUrl.replace(/\/$/, "");
-
-      const res = await fetch(`${cleanUrl}/api/chat`, {
+      const res = await fetch(`/api/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ message: userMessage })
+        body: JSON.stringify({ messages: [{ role: 'user', content: userMessage }] })
       });
 
       if (!res.ok) throw new Error("Connection failed");
 
       const data = await res.json();
-      setMessages(prev => [...prev, { role: 'bot', text: data.reply || "Resposta corrompida. Tente novamente." }]);
+      setMessages(prev => [...prev, { role: 'bot', text: data.response || "Resposta corrompida. Tente novamente." }]);
     } catch (error) {
       setMessages(prev => [...prev, { role: 'bot', text: "⚠ Falha de comunicação com o Núcleo principal. O backend pode estar offline ou indisponível localmente." }]);
     } finally {
@@ -106,8 +101,8 @@ export default function OrbeAssistant() {
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`max-w-[85%] p-3 rounded-md ${m.role === 'user'
-                    ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30 shadow-[0_0_10px_rgba(0,255,204,0.1)]'
-                    : 'bg-white/5 text-gray-300 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.02)]'
+                  ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30 shadow-[0_0_10px_rgba(0,255,204,0.1)]'
+                  : 'bg-white/5 text-gray-300 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.02)]'
                   }`}>
                   {m.text}
                 </div>
