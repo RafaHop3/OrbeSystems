@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Activity, Bot, MessageSquare, Clock } from 'lucide-react';
+import { Activity, Bot, MessageSquare, Clock, BarChart2 } from 'lucide-react';
 
 interface ChatLog {
     id: string;
@@ -11,21 +11,31 @@ interface ChatLog {
     timestamp: string;
 }
 
+interface ChartStat {
+    date: string;
+    count: number;
+}
+
 export default function AiLogsPanel() {
     const [logs, setLogs] = useState<ChatLog[]>([]);
+    const [stats, setStats] = useState<ChartStat[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
-    const fetchLogs = async () => {
+    const fetchData = async () => {
         try {
             const token = localStorage.getItem('orbe_admin_token');
             const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
-            const res = await fetch(`${BACKEND_URL}/api/admin/chat-logs`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (!res.ok) throw new Error('Falha ao carregar logs');
-            const data = await res.json();
-            setLogs(data);
+
+            const [logsRes, statsRes] = await Promise.all([
+                fetch(`${BACKEND_URL}/api/admin/chat-logs`, { headers: { Authorization: `Bearer ${token}` } }),
+                fetch(`${BACKEND_URL}/api/admin/chat-logs/stats?days=14`, { headers: { Authorization: `Bearer ${token}` } })
+            ]);
+
+            if (!logsRes.ok || !statsRes.ok) throw new Error('Falha ao carregar métricas da IA');
+
+            setLogs(await logsRes.json());
+            setStats(await statsRes.json());
         } catch (err: any) {
             setError(err.message || 'Erro de conexão');
         } finally {
@@ -34,8 +44,8 @@ export default function AiLogsPanel() {
     };
 
     useEffect(() => {
-        fetchLogs();
-        const interval = setInterval(fetchLogs, 10000); // refresh every 10s
+        fetchData();
+        const interval = setInterval(fetchData, 10000); // refresh every 10s
         return () => clearInterval(interval);
     }, []);
 
@@ -59,48 +69,88 @@ export default function AiLogsPanel() {
         );
     }
 
+    const maxCount = Math.max(...stats.map(s => s.count), 1); // Avoid division by zero
+
     return (
-        <div className="border border-neon-cyan/20 bg-neon-cyan/5 p-5">
-            <h2 className="text-xs font-bold border-b border-neon-cyan/10 pb-3 mb-6 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-neon-cyan uppercase">
-                    <Bot size={14} /> AI CONVERSATION INTERCEPT
-                </div>
-                <span className="text-[10px] text-neon-cyan/40 px-2 border border-neon-cyan/20 rounded">
-                    {logs.length} RECORDS
-                </span>
-            </h2>
+        <div className="space-y-6">
+            {/* ── CHART PANEL ── */}
+            <div className="border border-neon-cyan/20 bg-neon-cyan/5 p-5">
+                <h2 className="text-xs font-bold border-b border-neon-cyan/10 pb-3 mb-6 flex items-center gap-2 text-neon-cyan uppercase">
+                    <BarChart2 size={14} /> AI USAGE ANALYTICS (14 DAYS)
+                </h2>
 
-            <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-neon-cyan/20">
-                {logs.length === 0 ? (
-                    <div className="text-center py-10 text-neon-cyan/40 text-[10px] font-mono uppercase">
-                        Nenhuma conversa registrada ainda.
-                    </div>
-                ) : (
-                    logs.map(log => (
-                        <div key={log.id} className="border border-neon-cyan/10 bg-black/40 p-4 font-mono">
-                            <div className="flex items-center justify-between mb-3 text-[9px] text-neon-cyan/40 border-b border-neon-cyan/10 pb-2">
-                                <span className="flex items-center gap-1"><Clock size={10} /> {new Date(log.timestamp).toLocaleString()}</span>
-                                <span>ID: {log.id.split('-')[0]}</span>
-                            </div>
-
-                            <div className="space-y-3">
-                                <div className="flex gap-2">
-                                    <MessageSquare size={12} className="text-neon-purple mt-0.5 shrink-0" />
-                                    <div className="text-[11px] text-white/80">
-                                        <span className="text-neon-purple font-bold">User:</span> {log.user_message}
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-2">
-                                    <Bot size={12} className="text-neon-cyan mt-0.5 shrink-0" />
-                                    <div className="text-[11px] text-neon-cyan/80">
-                                        <span className="text-neon-cyan font-bold">AI:</span> {log.ai_response}
-                                    </div>
-                                </div>
-                            </div>
+                <div className="h-40 flex items-end justify-between gap-2 mt-4 px-2">
+                    {stats.length === 0 ? (
+                        <div className="w-full h-full flex items-center justify-center text-neon-cyan/40 text-[10px] uppercase font-mono">
+                            Sem dados suficientes para métricas
                         </div>
-                    ))
-                )}
+                    ) : (
+                        stats.map((stat, i) => {
+                            const rectHeight = (stat.count / maxCount) * 100;
+                            return (
+                                <div key={i} className="flex flex-col items-center flex-1 group h-full justify-end">
+                                    <div className="relative w-full bg-black/40 border-b border-neon-cyan/30 rounded-t-sm h-[80%] flex items-end overflow-hidden group-hover:bg-neon-cyan/10 transition-colors">
+                                        <div
+                                            className="w-full bg-neon-cyan transition-all duration-700 shadow-[0_0_10px_rgba(0,255,245,0.8)]"
+                                            style={{ height: `${rectHeight}%` }}
+                                        />
+                                        <div className="absolute -top-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black border border-neon-cyan/50 text-neon-cyan text-[9px] px-1.5 py-0.5 rounded pointer-events-none z-10 whitespace-nowrap font-bold">
+                                            {stat.count} msg
+                                        </div>
+                                    </div>
+                                    <span className="text-[9px] text-neon-cyan/60 mt-3 font-mono whitespace-nowrap overflow-hidden text-ellipsis w-10 text-center">
+                                        {stat.date.substring(5).replace('-', '/')}
+                                    </span>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+            </div>
+
+            {/* ── LOGS PANEL ── */}
+            <div className="border border-neon-cyan/20 bg-neon-cyan/5 p-5">
+                <h2 className="text-xs font-bold border-b border-neon-cyan/10 pb-3 mb-6 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-neon-cyan uppercase">
+                        <Bot size={14} /> AI CONVERSATION INTERCEPT
+                    </div>
+                    <span className="text-[10px] text-neon-cyan/40 px-2 border border-neon-cyan/20 rounded">
+                        {logs.length} RECORDS
+                    </span>
+                </h2>
+
+                <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-neon-cyan/20">
+                    {logs.length === 0 ? (
+                        <div className="text-center py-10 text-neon-cyan/40 text-[10px] font-mono uppercase">
+                            Nenhuma conversa registrada ainda.
+                        </div>
+                    ) : (
+                        logs.map(log => (
+                            <div key={log.id} className="border border-neon-cyan/10 bg-black/40 p-4 font-mono">
+                                <div className="flex items-center justify-between mb-3 text-[9px] text-neon-cyan/40 border-b border-neon-cyan/10 pb-2">
+                                    <span className="flex items-center gap-1"><Clock size={10} /> {new Date(log.timestamp).toLocaleString()}</span>
+                                    <span>ID: {log.id.split('-')[0]}</span>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="flex gap-2">
+                                        <MessageSquare size={12} className="text-neon-purple mt-0.5 shrink-0" />
+                                        <div className="text-[11px] text-white/80">
+                                            <span className="text-neon-purple font-bold">User:</span> {log.user_message}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-2">
+                                        <Bot size={12} className="text-neon-cyan mt-0.5 shrink-0" />
+                                        <div className="text-[11px] text-neon-cyan/80">
+                                            <span className="text-neon-cyan font-bold">AI:</span> {log.ai_response}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
             </div>
         </div>
     );
