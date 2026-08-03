@@ -341,7 +341,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-black text-neon-green flex flex-col items-center justify-center font-mono gap-4">
+      <div className="min-h-screen bg-transparent text-neon-green flex flex-col items-center justify-center font-mono gap-4">
         <Activity className="animate-spin-slow" />
         <span className="tracking-[0.5em] animate-pulse">ESTABLISHING SECURE CONNECTION_</span>
       </div>
@@ -351,7 +351,7 @@ export default function AdminDashboard() {
   if (!status) return null;
 
   return (
-    <div className="min-h-screen bg-black text-neon-green p-4 md:p-8 relative overflow-hidden font-mono antialiased text-sm">
+    <div className="min-h-screen bg-transparent text-neon-green p-4 md:p-8 relative overflow-hidden font-mono antialiased text-sm">
       {/* Scanline effect */}
       <div className="fixed inset-0 pointer-events-none bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.15)_50%)] bg-[length:100%_4px] z-50 opacity-40" />
 

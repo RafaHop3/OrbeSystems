@@ -4,24 +4,24 @@ import React, { useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
-import { 
-  ShieldCheck, 
-  Cpu, 
-  Terminal, 
-  Database, 
-  LineChart, 
-  Binary, 
-  ChevronRight, 
-  Atom, 
-  CheckCircle2, 
-  AlertTriangle 
+import {
+  ShieldCheck,
+  Cpu,
+  Terminal,
+  Database,
+  LineChart,
+  Binary,
+  ChevronRight,
+  Atom,
+  CheckCircle2,
+  AlertTriangle
 } from 'lucide-react';
 
 export default function InovacoesPage() {
   const [activeTab, setActiveTab] = useState<'imortal' | 'infra'>('imortal');
 
   return (
-    <main className="min-h-screen bg-[#07040d] text-gray-100 selection:bg-cyan-500 selection:text-black">
+    <main className="min-h-screen bg-transparent text-gray-100">
       {/* Background Matrix/Nebula Glows */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
@@ -47,21 +47,19 @@ export default function InovacoesPage() {
         <div className="flex bg-black/40 border border-white/5 p-1.5 rounded-2xl gap-2">
           <button
             onClick={() => setActiveTab('imortal')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 ${
-              activeTab === 'imortal'
+            className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 ${activeTab === 'imortal'
                 ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-cyan-500/30 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.15)]'
                 : 'border border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5'
-            }`}
+              }`}
           >
             <ShieldCheck size={16} /> IMORTAL Premium
           </button>
           <button
             onClick={() => setActiveTab('infra')}
-            className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 ${
-              activeTab === 'infra'
+            className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 ${activeTab === 'infra'
                 ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-cyan-500/30 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.15)]'
                 : 'border border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5'
-            }`}
+              }`}
           >
             <Database size={16} /> Infra & Performance
           </button>

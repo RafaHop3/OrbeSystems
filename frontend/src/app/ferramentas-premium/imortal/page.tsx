@@ -11,7 +11,7 @@ export default function ImortalRedirectPage() {
   }, [router]);
 
   return (
-    <div className="min-h-screen bg-terminal-bg flex items-center justify-center font-mono text-xs text-terminal-muted">
+    <div className="min-h-screen bg-transparent flex items-center justify-center font-mono text-xs text-terminal-muted">
       Redirecionando para /imortal...
     </div>
   );

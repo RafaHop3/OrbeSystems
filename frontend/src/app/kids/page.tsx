@@ -1182,7 +1182,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
       <Header />
 
       {/* Container spacing to clear fixed navbar */}
-      <div className="pt-24 min-h-screen bg-[#070311] text-gray-100 flex flex-col font-sans select-none relative overflow-hidden">
+      <div className="pt-24 min-h-screen bg-transparent text-gray-100 flex flex-col font-sans select-none relative overflow-hidden">
 
         {/* Colorful neon ambient glows */}
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#8b5cf6]/10 rounded-full blur-[120px] pointer-events-none" />
@@ -1256,8 +1256,8 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                         key={theme.id}
                         onClick={() => handleSelectTheme(theme.id)}
                         className={`w-full text-left p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${isSelected
-                            ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md'
-                            : 'bg-white/5 border-white/10 hover:border-cyan-500/30 hover:text-white text-gray-300'
+                          ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md'
+                          : 'bg-white/5 border-white/10 hover:border-cyan-500/30 hover:text-white text-gray-300'
                           }`}
                       >
                         <div className="flex items-center gap-2">
@@ -1318,8 +1318,8 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                           key={ch.id}
                           onClick={() => loadChallenge(ch, selectedTheme.id)}
                           className={`w-full text-left p-3 rounded-xl border text-xs transition-all flex flex-col gap-1 ${isActive
-                              ? 'bg-cyan-500/10 border-cyan-400 text-cyan-300 shadow-sm'
-                              : 'bg-white/5 border-white/10 hover:border-cyan-500/50 hover:text-white'
+                            ? 'bg-cyan-500/10 border-cyan-400 text-cyan-300 shadow-sm'
+                            : 'bg-white/5 border-white/10 hover:border-cyan-500/50 hover:text-white'
                             }`}
                         >
                           <div className="flex items-center justify-between font-bold w-full">
@@ -1495,8 +1495,8 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                       <div className="flex flex-col gap-1">
                         <div
                           className={`p-3 rounded-2xl text-[12px] leading-relaxed border ${isBot
-                              ? 'bg-purple-500/15 border-purple-500/30 text-purple-100 rounded-tl-sm'
-                              : 'bg-gradient-to-r from-purple-500 to-pink-500 border-none text-white rounded-tr-sm shadow-md'
+                            ? 'bg-purple-500/15 border-purple-500/30 text-purple-100 rounded-tl-sm'
+                            : 'bg-gradient-to-r from-purple-500 to-pink-500 border-none text-white rounded-tr-sm shadow-md'
                             }`}
                           style={{ whiteSpace: 'pre-wrap' }}
                           dangerouslySetInnerHTML={{ __html: parseMarkdownText(msg.text) }}

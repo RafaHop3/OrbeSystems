@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function ImortalPage() {
   return (
-    <main className="min-h-screen bg-terminal-bg">
+    <main className="min-h-screen bg-transparent">
       <Header />
       <ImortalHero />
       <ImortalFeatures />

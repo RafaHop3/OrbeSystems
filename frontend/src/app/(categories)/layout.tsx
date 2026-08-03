@@ -15,9 +15,9 @@ export default function CategoryLayout({
   const categoryName = pathname.split('/').pop()?.replace(/-/g, ' ') || 'Untitled Category';
 
   return (
-    <div className="min-h-screen bg-terminal-bg flex flex-col">
+    <div className="min-h-screen bg-transparent flex flex-col">
       <Header />
-      
+
       <main className="flex-1 flex flex-col items-center justify-center p-6 pt-24 pb-16">
         {/* Terminal Window Container */}
         <div className="w-full max-w-5xl bg-terminal-surface/90 border border-terminal-border rounded-lg overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] animate-fade-in-up">
@@ -35,20 +35,20 @@ export default function CategoryLayout({
               </span>
             </div>
             <div className="flex items-center gap-4 text-terminal-muted/40">
-              <button 
-                className="hover:text-terminal-muted transition-colors cursor-pointer outline-none focus:text-terminal-muted" 
+              <button
+                className="hover:text-terminal-muted transition-colors cursor-pointer outline-none focus:text-terminal-muted"
                 title="Minimize"
               >
                 <Minus size={14} />
               </button>
-              <button 
-                className="hover:text-terminal-muted transition-colors cursor-pointer outline-none focus:text-terminal-muted" 
+              <button
+                className="hover:text-terminal-muted transition-colors cursor-pointer outline-none focus:text-terminal-muted"
                 title="Maximize"
               >
                 <Square size={10} />
               </button>
-              <button 
-                onClick={() => router.back()} 
+              <button
+                onClick={() => router.back()}
                 className="hover:text-red-500 transition-colors cursor-pointer outline-none focus:text-red-500"
                 title="Close (Go Back)"
               >

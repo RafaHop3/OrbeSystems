@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "D:\OrbeSystems\orbe-systems\backend\test_app.py", line 4, in <module>
+    from main import app
+  File "D:\OrbeSystems\orbe-systems\backend\main.py", line 338, in <module>
+    from routes.chat_logs import router as chat_logs_router
+  File "D:\OrbeSystems\orbe-systems\backend\routes\chat_logs.py", line 9, in <module>
+    from security.auth import require_admin, require_premium
+ImportError: cannot import name 'require_admin' from 'security.auth' (D:\OrbeSystems\orbe-systems\backend\security\auth.py)

@@ -81,7 +81,7 @@ export default function RepositoriesPage() {
   });
 
   return (
-    <main className="min-h-screen bg-[#0c0a08] text-[#dfd2b8] flex flex-col pt-24 sketch-grid">
+    <main className="min-h-screen bg-transparent text-[#dfd2b8] flex flex-col pt-24 sketch-grid">
       <Header />
 
       <div className="flex-1 max-w-7xl w-full mx-auto px-6 py-12 space-y-12">
@@ -110,8 +110,8 @@ export default function RepositoriesPage() {
           <button
             onClick={() => setActiveTab('featured')}
             className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === 'featured'
-                ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
-                : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+              ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+              : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
               }`}
           >
             Destaques
@@ -119,8 +119,8 @@ export default function RepositoriesPage() {
           <button
             onClick={() => setActiveTab('all')}
             className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === 'all'
-                ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
-                : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+              ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+              : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
               }`}
           >
             Todos
@@ -128,8 +128,8 @@ export default function RepositoriesPage() {
           <button
             onClick={() => setActiveTab('security')}
             className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === 'security'
-                ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
-                : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+              ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+              : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
               }`}
           >
             Segurança
@@ -137,8 +137,8 @@ export default function RepositoriesPage() {
           <button
             onClick={() => setActiveTab('tools')}
             className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === 'tools'
-                ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
-                : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+              ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+              : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
               }`}
           >
             Ferramentas
@@ -146,8 +146,8 @@ export default function RepositoriesPage() {
           <button
             onClick={() => setActiveTab('platforms')}
             className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${activeTab === 'platforms'
-                ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
-                : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+              ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+              : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
               }`}
           >
             Plataformas
@@ -175,8 +175,8 @@ export default function RepositoriesPage() {
                 key={lang}
                 onClick={() => setFilterLang(lang)}
                 className={`px-4 py-2 rounded font-cinzel text-[9px] uppercase tracking-widest transition-all border whitespace-nowrap ${filterLang === lang
-                    ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
-                    : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
+                  ? 'bg-renaissance-gold/25 text-renaissance-gold border-renaissance-gold/65 shadow-gilt'
+                  : 'bg-renaissance-bg text-renaissance-muted border-renaissance-border hover:text-[#dfd2b8] hover:border-renaissance-gold/40'
                   }`}
               >
                 {lang}

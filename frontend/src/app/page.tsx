@@ -3,6 +3,7 @@ import HeroSection from '@/components/HeroSection';
 import ProjectsGrid from '@/components/ProjectsGrid';
 import Footer from '@/components/Footer';
 import ScrollNarrativeEngine from '@/components/ScrollNarrativeEngine';
+import FreedomSection from '@/components/FreedomSection';
 
 export default function HomePage() {
   return (
@@ -12,6 +13,7 @@ export default function HomePage() {
         <HeroSection />
         <ProjectsGrid />
       </ScrollNarrativeEngine>
+      <FreedomSection />
       <Footer />
     </main>
   );

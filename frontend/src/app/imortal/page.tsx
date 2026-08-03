@@ -408,7 +408,7 @@ export default function ImortalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-terminal-bg flex flex-col">
+    <div className="min-h-screen bg-transparent flex flex-col">
       <Header />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 pt-24 pb-16 flex flex-col md:flex-row gap-6">

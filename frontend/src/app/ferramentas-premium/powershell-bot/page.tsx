@@ -183,7 +183,7 @@ export default function PowerShellBotPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-terminal-bg flex flex-col">
+    <div className="min-h-screen bg-transparent flex flex-col">
       <Header />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-6 pt-24 pb-16 flex flex-col lg:flex-row gap-6">
@@ -304,8 +304,8 @@ export default function PowerShellBotPage() {
                       <div
                         key={idx}
                         className={`flex gap-3 p-4 rounded-lg border leading-relaxed ${msg.sender === 'user'
-                            ? 'bg-neon-cyan/5 border-neon-cyan/20 ml-12'
-                            : 'bg-black/30 border-terminal-border/40 mr-12'
+                          ? 'bg-neon-cyan/5 border-neon-cyan/20 ml-12'
+                          : 'bg-black/30 border-terminal-border/40 mr-12'
                           }`}
                       >
                         <div className="flex-shrink-0">
@@ -466,14 +466,14 @@ export default function PowerShellBotPage() {
                           <div className="text-right">
                             <div className="font-mono text-[10px] text-terminal-muted">RISCO DE SEGURANÇA</div>
                             <div className={`font-mono text-sm font-bold ${analysisResult.risk_level === 'CRITICAL' || analysisResult.risk_level === 'HIGH' ? 'text-red-400' :
-                                analysisResult.risk_level === 'MEDIUM' ? 'text-yellow-400' : 'text-green-400'
+                              analysisResult.risk_level === 'MEDIUM' ? 'text-yellow-400' : 'text-green-400'
                               }`}>
                               NÍVEL: {analysisResult.risk_level}
                             </div>
                           </div>
                           <div className={`w-14 h-14 rounded-full border-2 flex items-center justify-center font-mono text-base font-bold ${analysisResult.security_score >= 80 ? 'border-green-500 text-green-400 bg-green-500/10' :
-                              analysisResult.security_score >= 55 ? 'border-yellow-500 text-yellow-400 bg-yellow-500/10' :
-                                'border-red-500 text-red-400 bg-red-500/10'
+                            analysisResult.security_score >= 55 ? 'border-yellow-500 text-yellow-400 bg-yellow-500/10' :
+                              'border-red-500 text-red-400 bg-red-500/10'
                             }`}>
                             {analysisResult.security_score}
                           </div>
@@ -492,9 +492,9 @@ export default function PowerShellBotPage() {
                                     {f.rule}
                                   </span>
                                   <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded border ${f.severity === 'CRITICAL' ? 'bg-red-500/10 text-red-400 border-red-500/30' :
-                                      f.severity === 'HIGH' ? 'bg-orange-500/10 text-orange-400 border-orange-500/30' :
-                                        f.severity === 'MEDIUM' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
-                                          'bg-green-500/10 text-green-400 border-green-500/30'
+                                    f.severity === 'HIGH' ? 'bg-orange-500/10 text-orange-400 border-orange-500/30' :
+                                      f.severity === 'MEDIUM' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
+                                        'bg-green-500/10 text-green-400 border-green-500/30'
                                     }`}>
                                     {f.severity}
                                   </span>
@@ -590,8 +590,8 @@ export default function PowerShellBotPage() {
                         key={key}
                         onClick={() => setActiveScriptFormat(key as any)}
                         className={`px-2.5 py-1 rounded border transition-colors ${activeScriptFormat === key
-                            ? 'bg-neon-cyan/10 border-neon-cyan text-neon-cyan'
-                            : 'border-terminal-border text-terminal-muted hover:text-white bg-white/5'
+                          ? 'bg-neon-cyan/10 border-neon-cyan text-neon-cyan'
+                          : 'border-terminal-border text-terminal-muted hover:text-white bg-white/5'
                           }`}
                       >
                         .{ext}
