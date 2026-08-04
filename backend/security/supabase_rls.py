@@ -1,8 +1,14 @@
 """
 security/supabase_rls.py — PostgREST lockdown via Row Level Security
 ════════════════════════════════════════════════════════════════════
-Ativa RLS e policies deny-all para roles anon/authenticated em tabelas
-sensíveis. O backend (role postgres) bypassa RLS; PostgREST fica bloqueado.
+Ativa RLS e policies deny-all para roles anon/authenticated em TODAS as
+tabelas do schema public. O backend (role postgres) bypassa RLS; PostgREST
+fica completamente bloqueado.
+
+Estratégia (sem lista hardcoded):
+  • Descobre dinamicamente as tabelas em information_schema.tables.
+  • Aplica ENABLE ROW LEVEL SECURITY + policy deny-all em cada uma.
+  • Novas tabelas são protegidas automaticamente no próximo startup.
 """
 
 from sqlalchemy import text
@@ -10,39 +16,10 @@ from sqlalchemy.engine import Engine
 
 from config import settings
 
-RLS_TABLES = (
-    "users",
-    "user_roles",
-    "user_subscriptions",
-    "audit_logs",
-    "projects_metadata",
-    "math_vectors",
-    "math_matrices",
-    "imob_properties",
-    "imob_inspection_items",
-    "imob_leads",
-    "transactions",
-    "recurring_transactions",
-    "scheduled_transactions",
-    "advances",
-    "advance_write_offs",
-    "cash_registers",
-    "accounts",
-    "bank_statement_entries",
-    "budgets",
-    "contracts",
-    "pdv_sales",
-    "sales_orders",
-    "alembic_version",
-    "ueba_baselines",
-    "security_alerts",
-    "github_repositories",
-    "ip_blocklist",
-    "incident_reports",
-    "immutable_audit_chain",
-    "visit_logs",
-    "active_sessions",
-)
+
+# Tabelas a EXCLUIR do lockdown (ex: tabelas de sistema que não devem ser tocadas).
+# Deixe vazio para proteger tudo no schema public.
+_RLS_EXCLUDE: frozenset[str] = frozenset()
 
 
 def is_supabase_postgres() -> bool:
@@ -53,33 +30,48 @@ def is_supabase_postgres() -> bool:
 
 
 def ensure_supabase_rls(engine: Engine) -> None:
-    """Idempotent RLS lockdown — safe to run on every startup."""
+    """
+    Idempotent RLS lockdown — safe to run on every startup.
+
+    Dynamically discovers all tables in the 'public' schema and applies:
+      1. ALTER TABLE ... ENABLE ROW LEVEL SECURITY
+      2. A deny-all policy for roles 'anon' and 'authenticated'
+
+    This approach requires zero maintenance: every new table added to the
+    schema is automatically secured on the next application boot.
+    """
     if not is_supabase_postgres():
         return
 
-    print("INFO: [RLS] Supabase detectado — aplicando lockdown PostgREST...")
+    print("INFO: [RLS] Supabase detectado — aplicando lockdown PostgREST (modo dinâmico)...")
 
     with engine.begin() as conn:
-        existing = {
-            row[0]
-            for row in conn.execute(
-                text(
-                    "SELECT table_name FROM information_schema.tables "
-                    "WHERE table_schema = 'public'"
-                )
+        rows = conn.execute(
+            text(
+                "SELECT table_name FROM information_schema.tables "
+                "WHERE table_schema = 'public' AND table_type = 'BASE TABLE'"
             )
-        }
+        )
+        all_tables: list[str] = [row[0] for row in rows]
 
         enabled = 0
-        for table in RLS_TABLES:
-            if table not in existing:
+        skipped = 0
+        for table in all_tables:
+            if table in _RLS_EXCLUDE:
+                skipped += 1
                 continue
-            conn.execute(text(f"ALTER TABLE public.{table} ENABLE ROW LEVEL SECURITY"))
-            conn.execute(text(f"DROP POLICY IF EXISTS deny_postgrest_access ON public.{table}"))
+
+            # Use format identifier to safely quote the table name
+            conn.execute(
+                text(f'ALTER TABLE public."{table}" ENABLE ROW LEVEL SECURITY')
+            )
+            conn.execute(
+                text(f'DROP POLICY IF EXISTS deny_postgrest_access ON public."{table}"')
+            )
             conn.execute(
                 text(
                     f"""
-                    CREATE POLICY deny_postgrest_access ON public.{table}
+                    CREATE POLICY deny_postgrest_access ON public."{table}"
                       FOR ALL
                       TO anon, authenticated
                       USING (false)
@@ -89,4 +81,6 @@ def ensure_supabase_rls(engine: Engine) -> None:
             )
             enabled += 1
 
-    print(f"INFO: [RLS] Lockdown aplicado em {enabled} tabela(s).")
+    if skipped:
+        print(f"INFO: [RLS] {skipped} tabela(s) excluída(s) do lockdown (lista de exclusão).")
+    print(f"INFO: [RLS] Lockdown dinâmico aplicado em {enabled} tabela(s) públicas.")

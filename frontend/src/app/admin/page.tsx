@@ -16,6 +16,7 @@ import Nexus7Panel from '@/components/admin/Nexus7Panel';
 import AuraPanel from '@/components/admin/AuraPanel';
 import ChronosPanel from '@/components/admin/ChronosPanel';
 import AiLogsPanel from '@/components/admin/AiLogsPanel';
+import AnalyticsPanel from '@/components/admin/AnalyticsPanel';
 
 /*
 - [x] Install/Add Backend dependency (`cloudinary`)
@@ -68,7 +69,7 @@ export default function AdminDashboard() {
 
   // ── User Management state ─────────────────────────────────────────────────────
   const [users, setUsers] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'projects' | 'users' | 'siem' | 'soar' | 'audit' | 'sbom' | 'ir' | 'nexus7' | 'aura' | 'chronos' | 'ai-logs'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'users' | 'siem' | 'soar' | 'audit' | 'sbom' | 'ir' | 'nexus7' | 'aura' | 'chronos' | 'ai-logs' | 'analytics'>('projects');
   const [showCreateUserForm, setShowCreateUserForm] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
@@ -383,6 +384,7 @@ export default function AdminDashboard() {
           {([
             { id: 'projects', label: 'Projects' },
             { id: 'users', label: `Users (${users.length})` },
+            { id: 'analytics', label: '📊 ANALYTICS' },
             { id: 'siem', label: '🛡 SIEM' },
             { id: 'soar', label: '🚫 SOAR' },
             { id: 'audit', label: '⛓ Audit Chain' },
@@ -457,6 +459,7 @@ export default function AdminDashboard() {
             {activeTab === 'aura' && <AuraPanel />}
             {activeTab === 'chronos' && <ChronosPanel />}
             {activeTab === 'ai-logs' && <AiLogsPanel />}
+            {activeTab === 'analytics' && <AnalyticsPanel />}
 
             {/* Project Manager Panel */}
             {activeTab === 'projects' && (

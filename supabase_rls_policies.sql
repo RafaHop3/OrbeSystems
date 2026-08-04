@@ -1,105 +1,62 @@
 -- ════════════════════════════════════════════════════════════════════════════════
--- SUPABASE RLS LOCKDOWN — ORBE SYSTEMS
+-- SUPABASE RLS LOCKDOWN — ORBE SYSTEMS (MODO DINÂMICO)
 -- ════════════════════════════════════════════════════════════════════════════════
 -- Contexto de arquitetura:
 --   • O backend FastAPI conecta como role `postgres` (superuser) → bypassa RLS.
 --   • O frontend NÃO usa @supabase/supabase-js; acesso ao banco é só via API.
 --   • A chave `anon` do Supabase expõe o schema `public` via PostgREST.
 --
--- Estratégia:
---   Ativar RLS em todas as tabelas sensíveis SEM policies para anon/authenticated.
---   Com RLS ativo e zero policies, PostgREST nega todo acesso externo.
---   NÃO use auth.uid() aqui — este projeto usa JWT próprio (FastAPI), não Supabase Auth.
+-- Estratégia (sem lista hardcoded):
+--   Este script itera DINAMICAMENTE sobre todas as tabelas do schema `public`
+--   e aplica ENABLE ROW LEVEL SECURITY + uma policy deny-all para anon/authenticated.
+--   Novas tabelas são protegidas automaticamente sem nenhuma manutenção manual.
 --
 -- Execução:
 --   python run_migration.py "DATABASE_URL" --rls
 -- ════════════════════════════════════════════════════════════════════════════════
 
--- ── Tabelas do Orbe Systems (presentes no código) ─────────────────────────────
-
-ALTER TABLE IF EXISTS public.users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.user_roles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.user_subscriptions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.audit_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.projects_metadata ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.math_vectors ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.math_matrices ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.imob_properties ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.imob_inspection_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.imob_leads ENABLE ROW LEVEL SECURITY;
-
--- ── Tabelas financeiras (se existirem no mesmo projeto Supabase) ───────────────
--- Incluídas porque aparecem desprotegidas no dashboard; IF EXISTS evita erro.
-
-ALTER TABLE IF EXISTS public.transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.recurring_transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.scheduled_transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.advances ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.advance_write_offs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.cash_registers ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.accounts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.bank_statement_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.budgets ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.contracts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.pdv_sales ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.sales_orders ENABLE ROW LEVEL SECURITY;
-
--- ── Infra / migração ──────────────────────────────────────────────────────────
-
-ALTER TABLE IF EXISTS public.alembic_version ENABLE ROW LEVEL SECURITY;
-
--- ── Tabelas faltantes (segurança, analytics, infra) ───────────────────────────
-
-ALTER TABLE IF EXISTS public.ueba_baselines ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.security_alerts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.github_repositories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.ip_blocklist ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.incident_reports ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.immutable_audit_chain ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.visit_logs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE IF EXISTS public.active_sessions ENABLE ROW LEVEL SECURITY;
-
--- ── Policies explícitas de negação (defesa em profundidade) ───────────────────
--- Opcional mas recomendado: documenta a intenção e protege se alguém
--- criar uma policy permissiva por engano no dashboard.
-
 DO $$
 DECLARE
-  tbl TEXT;
-  tables TEXT[] := ARRAY[
-    'users', 'user_roles', 'user_subscriptions', 'audit_logs',
-    'projects_metadata', 'math_vectors', 'math_matrices',
-    'imob_properties', 'imob_inspection_items', 'imob_leads',
-    'transactions', 'recurring_transactions', 'scheduled_transactions',
-    'advances', 'advance_write_offs', 'cash_registers',
-    'accounts', 'bank_statement_entries', 'budgets', 'contracts',
-    'pdv_sales', 'sales_orders', 'alembic_version',
-    'ueba_baselines', 'security_alerts', 'github_repositories',
-    'ip_blocklist', 'incident_reports', 'immutable_audit_chain',
-    'visit_logs', 'active_sessions'
-  ];
+  tbl       TEXT;
+  tbl_count INTEGER := 0;
 BEGIN
-  FOREACH tbl IN ARRAY tables LOOP
-    IF EXISTS (
-      SELECT 1 FROM information_schema.tables
-      WHERE table_schema = 'public' AND table_name = tbl
-    ) THEN
-      EXECUTE format('DROP POLICY IF EXISTS deny_postgrest_access ON public.%I', tbl);
-      EXECUTE format(
-        'CREATE POLICY deny_postgrest_access ON public.%I
-           FOR ALL
-           TO anon, authenticated
-           USING (false)
-           WITH CHECK (false)',
-        tbl
-      );
-    END IF;
+  -- Itera sobre TODAS as tabelas BASE no schema public
+  FOR tbl IN
+    SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
+      AND table_type   = 'BASE TABLE'
+    ORDER BY table_name
+  LOOP
+    -- 1. Ativar Row Level Security
+    EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', tbl);
+
+    -- 2. Remover policy anterior (idempotência)
+    EXECUTE format('DROP POLICY IF EXISTS deny_postgrest_access ON public.%I', tbl);
+
+    -- 3. Criar policy deny-all para anon e authenticated (PostgREST lockdown)
+    EXECUTE format(
+      $policy$
+        CREATE POLICY deny_postgrest_access ON public.%I
+          FOR ALL
+          TO anon, authenticated
+          USING (false)
+          WITH CHECK (false)
+      $policy$,
+      tbl
+    );
+
+    tbl_count := tbl_count + 1;
   END LOOP;
+
+  RAISE NOTICE 'RLS LOCKDOWN: % tabelas protegidas no schema public.', tbl_count;
 END $$;
 
 -- ── Verificação (somente leitura; não altera estado) ─────────────────────────
--- Rode manualmente após aplicar:
+-- Rode manualmente após aplicar para confirmar que rowsecurity = true em todas:
+--
 --   SELECT tablename, rowsecurity
 --   FROM pg_tables
 --   WHERE schemaname = 'public'
 --   ORDER BY tablename;
+
