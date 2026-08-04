@@ -351,9 +351,13 @@ async def get_projects(current_user: User | None = Depends(get_current_user_opti
                 return repos
         except Exception as fallback_exc:
             project_logger.error(f"Failed to execute final database fallback: {fallback_exc}")
-        raise HTTPException(
-            status_code=500,
-            detail="Erro ao obter repositórios. Serviço temporariamente indisponível.",
-        )
+        
+        # Absolute resilient fallback — ensure page NEVER returns HTTP 500
+        project_logger.warning("Using hardcoded fallback repositories as resilient safeguard.")
+        fallback_repos = get_hardcoded_fallback_repositories()
+        is_premium = current_user and current_user.role == ROLE_PREMIUM
+        if not is_premium:
+            fallback_repos = [repo for repo in fallback_repos if not repo.is_premium_only]
+        return fallback_repos
     finally:
         db.close()
