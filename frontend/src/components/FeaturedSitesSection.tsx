@@ -15,14 +15,15 @@ const sites = [
         badge: '🚀 Space Tech',
     },
     {
-        name: 'Lets Party Co',
-        tagline: 'Convites Digitais · Festas & Magia',
-        url: 'https://lets-party.vercel.app/',
-        image: '/featured-letsparty.png',
-        accent: '#ff2a85',
-        accentBg: 'rgba(255, 42, 133, 0.08)',
-        accentBorder: 'rgba(255, 42, 133, 0.25)',
-        badge: '✨ Digital',
+        name: 'Nexus Core',
+        tagline: 'Discover · Connect · Play',
+        url: 'https://nexus-core-discover-connect-play.vercel.app/',
+        image: '/featured-nexuscore.png',
+        accent: '#39ff14',
+        accentBg: 'rgba(57, 255, 20, 0.08)',
+        accentBorder: 'rgba(57, 255, 20, 0.4)',
+        badge: '🕹 Arcade',
+        isAnimated: true,
     },
     {
         name: 'PDF Ever',
@@ -68,7 +69,7 @@ export default function FeaturedSitesSection() {
                         href={site.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group relative flex flex-col overflow-hidden rounded-lg border transition-all duration-500"
+                        className={`group relative flex flex-col overflow-hidden rounded-lg border transition-all duration-500 ${site.isAnimated ? 'hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(57,255,20,0.5)]' : ''}`}
                         style={{
                             borderColor: site.accentBorder,
                             background: `linear-gradient(165deg, ${site.accentBg}, rgba(0,0,0,0.7))`,
@@ -101,15 +102,21 @@ export default function FeaturedSitesSection() {
 
                             {/* Badge chip */}
                             <span
-                                className="absolute top-3 left-3 text-[9px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full"
+                                className="absolute top-3 left-3 text-[9px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full z-30"
                                 style={{
                                     background: `${site.accent}22`,
                                     border: `1px solid ${site.accent}55`,
                                     color: site.accent,
+                                    textShadow: site.isAnimated ? `0 0 5px ${site.accent}` : 'none',
                                 }}
                             >
                                 {site.badge}
                             </span>
+
+                            {/* Arcade styles (Scanlines & Glitch) */}
+                            {site.isAnimated && (
+                                <div className="absolute inset-0 z-20 pointer-events-none opacity-40 mix-blend-screen bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.4)_50%)] bg-[length:100%_4px] group-hover:opacity-75 transition-opacity" />
+                            )}
 
                             {/* Animated pulse dot */}
                             <span className="absolute top-3 right-3 flex h-2 w-2">
