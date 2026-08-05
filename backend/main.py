@@ -206,15 +206,24 @@ async def lifespan(app: FastAPI):
 
     # Start SOAR escalation check (every 5 minutes)
     try:
-        from apscheduler.schedulers.asyncio import AsyncIOScheduler
-        from services.soar_service import escalation_check_job
-        _soar_scheduler = AsyncIOScheduler()
-        _soar_scheduler.add_job(
-            escalation_check_job, "interval", minutes=5,
-            id="soar_escalation_check", replace_existing=True
+        import os
+        _IS_SERVERLESS = bool(
+            os.environ.get("VERCEL") or
+            os.environ.get("AWS_LAMBDA_FUNCTION_NAME") or
+            os.environ.get("VERCEL_ENV")
         )
-        _soar_scheduler.start()
-        print(" SOAR escalation scheduler started (every 5 min)")
+        if _IS_SERVERLESS:
+            print(" SOAR escalation scheduler bypassed (Serverless Environment)")
+        else:
+            from apscheduler.schedulers.asyncio import AsyncIOScheduler
+            from services.soar_service import escalation_check_job
+            _soar_scheduler = AsyncIOScheduler()
+            _soar_scheduler.add_job(
+                escalation_check_job, "interval", minutes=5,
+                id="soar_escalation_check", replace_existing=True
+            )
+            _soar_scheduler.start()
+            print(" SOAR escalation scheduler started (every 5 min)")
     except Exception as e:
         print(f"WARNING: [SOAR] Failed to start escalation scheduler: {e}")
     
