@@ -12,7 +12,7 @@ export default function HomePage() {
       <Header />
       <ScrollNarrativeEngine>
         <HeroSection />
-        <ProjectsGrid />
+        {/* <ProjectsGrid /> */}
       </ScrollNarrativeEngine>
       <FeaturedSitesSection />
       <FreedomSection />
