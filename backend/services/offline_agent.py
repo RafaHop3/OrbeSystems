@@ -35,14 +35,8 @@ logger = logging.getLogger("offline_agent")
 
 # Pydantic models for structured intent classification
 from pydantic import BaseModel, Field
-try:
-    import instructor
-    import google.generativeai as genai
-    from google.generativeai import types
-    INSTRUCTOR_AVAILABLE = True
-except ImportError:
-    INSTRUCTOR_AVAILABLE = False
-    logger.warning("[OfflineAgent] instructor or google-generativeai not fully installed yet. Falling back to manual JSON parsing.")
+INSTRUCTOR_AVAILABLE = False
+# We lazy-import these inside the function to avoid inflating Memory/size limits on Vercel boot.
 
 class OfflineTaskIntent(BaseModel):
     action: str = Field(
@@ -111,9 +105,13 @@ Retorne a resposta estritamente conforme o modelo estruturado.
 
 async def classify_intent_with_llm(user_prompt: str) -> OfflineTaskIntent:
     """Classifica a intenção do usuário usando Gemini (instructor se disponível) ou fallback local."""
-    if INSTRUCTOR_AVAILABLE and GEMINI_API_KEY:
-        try:
-            # Configura o client do instructor com a API do Gemini
+    
+    # Lazy import of heavy LLM wrapper libs
+    try:
+        import instructor
+        import google.generativeai as genai
+        # Verify if api key is present before configuring
+        if GEMINI_API_KEY:
             genai.configure(api_key=GEMINI_API_KEY)
             client = instructor.from_gemini(
                 client=genai.GenerativeModel(model_name=GEMINI_MODEL),
@@ -129,8 +127,10 @@ async def classify_intent_with_llm(user_prompt: str) -> OfflineTaskIntent:
                 temperature=0.1
             )
             return resp
-        except Exception as e:
-            logger.error(f"[OfflineAgent] Erro na classificação estruturada via Gemini: {e}. Usando fallback...")
+    except ImportError:
+        logger.warning("[OfflineAgent] instructor or google-generativeai not fully installed yet.")
+    except Exception as e:
+        logger.error(f"[OfflineAgent] Erro na classificação estruturada via Gemini: {e}. Usando fallback...")
             
     # Fallback Manual de parsing de JSON usando urllib
     import urllib.request
@@ -331,7 +331,16 @@ def _run_event_loop(loop: asyncio.AbstractEventLoop):
     loop.run_forever()
 
 def start_offline_agent():
-    """Inicia o daemon do agente offline em background."""
+    """Inicia o daemon do agente offline em background. (No-op em serverless)"""
+    _IS_SERVERLESS = bool(
+        os.environ.get("VERCEL") or
+        os.environ.get("AWS_LAMBDA_FUNCTION_NAME") or
+        os.environ.get("VERCEL_ENV")
+    )
+    if _IS_SERVERLESS:
+        logger.info("[OfflineAgent] 🚫 Serverless environment detected — offline daemon worker disabled.")
+        return
+
     global _loop, _thread
     if _thread and _thread.is_alive():
         return
