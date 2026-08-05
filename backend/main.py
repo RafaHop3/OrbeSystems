@@ -47,6 +47,7 @@ import models.ip_blocklist     # Import to register ip_blocklist table
 import models.ueba_baseline    # Import to register ueba_baselines table
 import models.incident_report  # Import to register incident_reports table (IR lifecycle)
 import models.chat_logs        # Import to register ai_chat_logs table
+import models.test_event        # Import to register test_events table (required before run_migrations seeds it)
 
 
 def run_migrations():
