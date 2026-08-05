@@ -10,12 +10,10 @@ from typing import Dict, Any
 from security.auth import require_premium
 from models.users import User
 
-from imortal.ir import validate_ir, get_default_ir
-from imortal.ai import generate_ir_from_intent, call_ollama_json
-from imortal.prover import FormalVerifier
-from imortal.sandbox import SandboxFuzzer
-from imortal.compiler import CodeCompiler
-from imortal.visualizer import IRVisualizer
+# NOTE: imortal submodules (prover/z3, sandbox, compiler, visualizer, ai) are imported
+# lazily inside each endpoint function. This is critical for Vercel Serverless compatibility:
+# z3-solver is ~90MB and exceeds Vercel's 50MB Lambda limit when loaded at module level,
+# causing FUNCTION_INVOCATION_FAILED on every cold start.
 from imortal.config import FUZZ_RUNS, FUZZ_LOOP_ITERATIONS, OLLAMA_HIGH_LEVEL_MODEL, OLLAMA_LOW_LEVEL_MODEL, MAX_CONCURRENT_PIPELINES
 
 router = APIRouter(prefix="/imortal", tags=["imortal"])
@@ -228,11 +226,14 @@ async def analyze_demographic(data: GenerateRequest, current_user: User = Depend
 @router.get("/default")
 async def get_default(current_user: User = Depends(require_premium)):
     """Obtém a IR padrão do sistema."""
+    from imortal.ir import get_default_ir
     return get_default_ir()
 
 @router.post("/generate")
 async def generate_ir(data: GenerateRequest, current_user: User = Depends(require_premium)):
     """Gera IR (JSON) a partir de intenção em linguagem natural."""
+    from imortal.ai import generate_ir_from_intent
+    from imortal.visualizer import IRVisualizer
     prompt = data.prompt.strip()
     if not prompt:
         raise HTTPException(status_code=400, detail="Prompt de intenção vazio.")
@@ -258,6 +259,8 @@ async def generate_ir(data: GenerateRequest, current_user: User = Depends(requir
 @router.post("/verify")
 async def verify_ir(data: IRRequest, current_user: User = Depends(require_premium)):
     """Valida a IR formalmente utilizando o Microsoft Z3 Prover."""
+    from imortal.ir import validate_ir
+    from imortal.prover import FormalVerifier
     ir_dict = data.ir
     valid_struct, errs = validate_ir(ir_dict)
     if not valid_struct:
@@ -278,6 +281,7 @@ async def verify_ir(data: IRRequest, current_user: User = Depends(require_premiu
 @router.post("/fuzz")
 async def fuzz_ir(data: IRRequest, current_user: User = Depends(require_premium)):
     """Simula o hardware em Sandbox via fuzzing estocástico."""
+    from imortal.sandbox import SandboxFuzzer
     ir_dict = data.ir
     with pipeline_rate_limit():
         try:
@@ -294,6 +298,7 @@ async def fuzz_ir(data: IRRequest, current_user: User = Depends(require_premium)
 @router.post("/compile")
 async def compile_ir(data: IRRequest, current_user: User = Depends(require_premium)):
     """Compila a IR em código C++ e Intel HEX (ATMega328P)."""
+    from imortal.compiler import CodeCompiler
     ir_dict = data.ir
     with pipeline_rate_limit():
         try:
