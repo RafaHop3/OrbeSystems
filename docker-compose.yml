@@ -31,8 +31,8 @@ services:
       - DATABASE_URL=postgresql://orbe_admin:orbe_password@db:5432/orbesystems
       - REDIS_URL=redis://redis:6379/0
     # Opcional: Se preencher o .env em bash no EC2, remova o comentário abaixo
-    # env_file:
-    #   - ./backend/.env
+    env_file:
+      - ./backend/.env
     ports:
       - "8000:8000"
     depends_on:
