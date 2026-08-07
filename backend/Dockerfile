@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 2: production image
-FROM python:3.12-slim
+FROM python:3.11-slim
 
 WORKDIR /app
 
