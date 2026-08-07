@@ -1,0 +1,171 @@
+##############################################################################
+# cloudfront.tf — Distribuição CloudFront na borda com forwarding de headers
+##############################################################################
+
+# Certificado SSL (deve estar em us-east-1 para CloudFront)
+resource "aws_acm_certificate" "orbe" {
+  provider          = aws.us_east_1
+  domain_name       = var.domain_name
+  validation_method = "DNS"
+
+  subject_alternative_names = [
+    "www.${var.domain_name}",
+    "api.${var.domain_name}",
+  ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  tags = { Name = "orbe-systems-cert" }
+}
+
+# Origin Request Policy — repassa headers essenciais para ALB
+resource "aws_cloudfront_origin_request_policy" "api" {
+  name    = "orbe-api-origin-request-policy"
+  comment = "Repassa Authorization, Content-Type e X-Forwarded-For para o ALB"
+
+  cookies_config {
+    cookie_behavior = "none"
+  }
+
+  headers_config {
+    header_behavior = "whitelist"
+    headers {
+      items = [
+        "Authorization",
+        "Content-Type",
+        "X-Forwarded-For",
+        "X-Real-IP",
+        "Origin",
+      ]
+    }
+  }
+
+  query_strings_config {
+    query_string_behavior = "all"
+  }
+}
+
+# Cache Policy — API routes (sem cache)
+resource "aws_cloudfront_cache_policy" "no_cache" {
+  name        = "orbe-no-cache"
+  comment     = "No caching for API routes"
+  default_ttl = 0
+  max_ttl     = 0
+  min_ttl     = 0
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    cookies_config { cookie_behavior = "none" }
+    headers_config { header_behavior = "none" }
+    query_strings_config { query_string_behavior = "none" }
+    enable_accept_encoding_brotli = false
+    enable_accept_encoding_gzip   = false
+  }
+}
+
+# ALB como origin da API
+locals {
+  alb_origin_id = "orbe-alb-origin"
+}
+
+resource "aws_cloudfront_distribution" "main" {
+  enabled             = true
+  is_ipv6_enabled     = true
+  comment             = "Orbe Systems CDN — borda com WAF"
+  price_class         = "PriceClass_200"  # América + Europa + Ásia
+  aliases             = [var.domain_name, "www.${var.domain_name}"]
+  web_acl_id          = aws_wafv2_web_acl.main.arn
+
+  # ── Origin: ALB (API) ────────────────────────────────────────────────────
+  origin {
+    domain_name = var.alb_dns_name  # Preencher após EKS + ALB Controller provisionar o ALB
+    origin_id   = local.alb_origin_id
+
+    custom_origin_config {
+      http_port              = 80
+      https_port             = 443
+      origin_protocol_policy = "https-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
+
+    custom_header {
+      name  = "X-CloudFront-Secret"
+      value = var.cloudfront_origin_secret  # Valide esse header no ALB para rejeitar bypass direto
+    }
+  }
+
+  # ── Behavior: /api/* — sem cache, repassa tudo para ALB ─────────────────
+  ordered_cache_behavior {
+    path_pattern             = "/api/*"
+    allowed_methods          = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods           = ["GET", "HEAD"]
+    target_origin_id         = local.alb_origin_id
+    viewer_protocol_policy   = "redirect-to-https"
+    cache_policy_id          = aws_cloudfront_cache_policy.no_cache.id
+    origin_request_policy_id = aws_cloudfront_origin_request_policy.api.id
+    compress                 = true
+  }
+
+  # ── Behavior: /webhooks/* — sem cache, cabeçalhos de assinatura preservados
+  ordered_cache_behavior {
+    path_pattern             = "/webhooks/*"
+    allowed_methods          = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods           = ["GET", "HEAD"]
+    target_origin_id         = local.alb_origin_id
+    viewer_protocol_policy   = "redirect-to-https"
+    cache_policy_id          = aws_cloudfront_cache_policy.no_cache.id
+    origin_request_policy_id = aws_cloudfront_origin_request_policy.api.id
+    compress                 = true
+  }
+
+  # ── Default Behavior: raiz (frontend Vercel ou S3 static) ────────────────
+  default_cache_behavior {
+    allowed_methods        = ["GET", "HEAD", "OPTIONS"]
+    cached_methods         = ["GET", "HEAD"]
+    target_origin_id       = local.alb_origin_id
+    viewer_protocol_policy = "redirect-to-https"
+    compress               = true
+
+    forwarded_values {
+      query_string = false
+      cookies { forward = "none" }
+    }
+
+    min_ttl     = 0
+    default_ttl = 3600
+    max_ttl     = 86400
+  }
+
+  restrictions {
+    geo_restriction {
+      restriction_type = "none"
+    }
+  }
+
+  viewer_certificate {
+    acm_certificate_arn      = aws_acm_certificate.orbe.arn
+    ssl_support_method       = "sni-only"
+    minimum_protocol_version = "TLSv1.2_2021"
+  }
+
+  # Logs de acesso do CloudFront
+  logging_config {
+    include_cookies = false
+    bucket          = "${var.cloudfront_log_bucket}.s3.amazonaws.com"
+    prefix          = "cloudfront/"
+  }
+
+  tags = { Name = "orbe-systems-cdn" }
+}
+
+# ── Outputs ──────────────────────────────────────────────────────────────────
+output "cloudfront_domain_name" {
+  description = "CloudFront domain — configure no Route 53 como CNAME"
+  value       = aws_cloudfront_distribution.main.domain_name
+}
+
+output "cloudfront_distribution_id" {
+  description = "ID da distribuição (para cache invalidation no CI/CD)"
+  value       = aws_cloudfront_distribution.main.id
+}

@@ -1,0 +1,229 @@
+##############################################################################
+# waf.tf — AWS WAF v2 (scope CLOUDFRONT — deve ser criado em us-east-1)
+# Sintaxe corrigida para Terraform >= 1.8.x (blocos expandidos)
+##############################################################################
+
+resource "aws_wafv2_web_acl" "main" {
+  provider    = aws.us_east_1
+  name        = "orbe-systems-waf"
+  description = "Orbe Systems WAF — SQLi, XSS, IP Reputation, Rate Limiting"
+  scope       = "CLOUDFRONT"
+
+  default_action {
+    allow {}
+  }
+
+  # ── Regra 1: IP Reputation ───────────────────────────────────────────────
+  rule {
+    name     = "AWSManagedRulesAmazonIpReputationList"
+    priority = 10
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesAmazonIpReputationList"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AWSManagedRulesAmazonIpReputation"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  # ── Regra 2: Core Rule Set (SQLi, XSS, Path Traversal) ──────────────────
+  rule {
+    name     = "AWSManagedRulesCommonRuleSet"
+    priority = 20
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+
+        rule_action_override {
+          name = "SizeRestrictions_BODY"
+          action_to_use {
+            count {}
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AWSManagedRulesCommonRuleSet"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  # ── Regra 3: SQL Injection específico ────────────────────────────────────
+  rule {
+    name     = "AWSManagedRulesSQLiRuleSet"
+    priority = 30
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesSQLiRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AWSManagedRulesSQLi"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  # ── Regra 4: Known Bad Inputs (Log4j, SSRF) ──────────────────────────────
+  rule {
+    name     = "AWSManagedRulesKnownBadInputsRuleSet"
+    priority = 40
+
+    override_action {
+      none {}
+    }
+
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesKnownBadInputsRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "AWSManagedRulesKnownBadInputs"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  # ── Regra 5: Rate Limit por IP — 2000 req / 5 min ────────────────────────
+  rule {
+    name     = "RateBasedByIP"
+    priority = 50
+
+    action {
+      block {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = 2000
+        aggregate_key_type = "IP"
+
+        scope_down_statement {
+          not_statement {
+            statement {
+              byte_match_statement {
+                positional_constraint = "STARTS_WITH"
+                search_string         = "/health"
+
+                field_to_match {
+                  uri_path {}
+                }
+
+                text_transformation {
+                  priority = 0
+                  type     = "NONE"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "RateBasedByIP"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  # ── Regra 6: Rate Limit para /api/chat — 300 req / 5 min ─────────────────
+  rule {
+    name     = "RateLimitAIEndpoints"
+    priority = 60
+
+    action {
+      block {}
+    }
+
+    statement {
+      rate_based_statement {
+        limit              = 300
+        aggregate_key_type = "IP"
+
+        scope_down_statement {
+          byte_match_statement {
+            positional_constraint = "STARTS_WITH"
+            search_string         = "/api/chat"
+
+            field_to_match {
+              uri_path {}
+            }
+
+            text_transformation {
+              priority = 0
+              type     = "LOWERCASE"
+            }
+          }
+        }
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "RateLimitAIEndpoints"
+      sampled_requests_enabled   = true
+    }
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    metric_name                = "orbe-systems-waf"
+    sampled_requests_enabled   = true
+  }
+
+  tags = { Name = "orbe-systems-waf" }
+}
+
+# ── CloudWatch Log Group para WAF ────────────────────────────────────────────
+resource "aws_cloudwatch_log_group" "waf" {
+  provider          = aws.us_east_1
+  name              = "aws-waf-logs-orbe-systems"
+  retention_in_days = 90
+  tags              = { Name = "orbe-waf-logs" }
+}
+
+resource "aws_wafv2_web_acl_logging_configuration" "main" {
+  provider                = aws.us_east_1
+  log_destination_configs = [aws_cloudwatch_log_group.waf.arn]
+  resource_arn            = aws_wafv2_web_acl.main.arn
+
+  redacted_fields {
+    single_header {
+      name = "authorization"
+    }
+  }
+}
+
+output "waf_web_acl_arn" {
+  description = "WAF WebACL ARN (associado ao CloudFront)"
+  value       = aws_wafv2_web_acl.main.arn
+}

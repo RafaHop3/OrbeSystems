@@ -7,8 +7,11 @@
 ```
 orbe-systems/
 ├── backend/    # FastAPI — API Gateway para o GitHub
-└── frontend/   # Next.js — Interface cyberpunk
+├── frontend/   # Next.js — Interface cyberpunk
+└── terraform/  # Infraestrutura AWS Free Tier (Configuração baseada em Custo $0)
 ```
+
+**Diretrizes de Infraestrutura:** Leia as [Regras de Custo Zero (Free Tier)](./DIRETRIZES_AWS_CUSTO_ZERO.md) para detalhes da arquitetura.
 
 ---
 

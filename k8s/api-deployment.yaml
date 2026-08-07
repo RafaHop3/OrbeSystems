@@ -1,16 +1,23 @@
 ###############################################################################
-# k8s/api-deployment.yaml — Orbe Systems Backend
+# k8s/api-deployment.yaml — Orbe Systems Backend (EKS Enterprise Edition)
 # Apply: kubectl apply -f k8s/
 ###############################################################################
+
+# ── Namespace ─────────────────────────────────────────────────────────────────
+# (Criado em calico-network-policy.yaml)
+---
+# ── Deployment ───────────────────────────────────────────────────────────────
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: orbe-api
+  namespace: orbe-prod
   labels:
     app: orbe-api
     tier: backend
+    version: "1.0.0"
 spec:
-  replicas: 2          # 2 pods for local HA testing (mirrors production intent)
+  replicas: 2
   selector:
     matchLabels:
       app: orbe-api
@@ -19,45 +26,154 @@ spec:
       labels:
         app: orbe-api
         tier: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
+        prometheus.io/path: "/metrics"
     spec:
-      # Security: pods run as non-root (mirrors Dockerfile USER)
+      # ServiceAccount com IRSA annotation → acessa Secrets Manager sem credenciais fixas
+      serviceAccountName: orbe-api-sa
+
+      # Pod Security Context
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+
+      # Volume do CSI Driver — monta secrets do Secrets Manager como arquivos
+      volumes:
+        - name: secrets-store
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: orbe-api-secrets
 
       containers:
         - name: orbe-api
-          image: orbe-api:latest          # built locally via 'docker build'
-          imagePullPolicy: Never          # use local Minikube image cache
+          # Substituir ACCOUNT_ID e REGION após terraform apply
+          image: ACCOUNT_ID.dkr.ecr.REGION.amazonaws.com/orbe-systems-api:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
+              name: http
+              protocol: TCP
 
-          # Resource limits prevent a single pod from starving others (microsegmentation)
+          # Container Security Context
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop: ["ALL"]
+
+          # Resource limits (ajustar conforme carga real)
           resources:
             requests:
-              cpu: "100m"
-              memory: "256Mi"
-            limits:
-              cpu: "500m"
+              cpu: "250m"
               memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
 
-          # All secrets come from a K8s Secret, never baked into the image
+          # Secrets do Secrets Manager injetados como variáveis de ambiente
+          # O CSI Driver sincroniza automaticamente para o K8s Secret "orbe-api-secrets"
           envFrom:
             - secretRef:
                 name: orbe-api-secrets
 
-          # Liveness probe: K8s auto-restarts unhealthy pods
+          # Variáveis de ambiente não-sensíveis
+          env:
+            - name: ENVIRONMENT
+              value: "production"
+            - name: LOG_LEVEL
+              value: "INFO"
+            - name: REDIS_HOST
+              value: "REDIS_PRIMARY_ENDPOINT"  # Substituir pelo output Terraform
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_TLS
+              value: "true"
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: DYNAMODB_TABLE_NAME
+              value: "orbe_ai_conversations"
+            # Self-awareness para desabilitar schedulers na borda EKS
+            - name: DEPLOYMENT_ENV
+              value: "eks"
+
+          # Volume mount do CSI Driver (secrets disponíveis também como arquivos)
+          volumeMounts:
+            - name: secrets-store
+              mountPath: "/mnt/secrets"
+              readOnly: true
+
+          # Liveness — reinicia pod travado
           livenessProbe:
             httpGet:
               path: /health
               port: 8000
-            initialDelaySeconds: 15
-            periodSeconds: 20
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
 
-          # Readiness probe: no traffic until pod is ready
+          # Readiness — sem tráfego até estar pronto
           readinessProbe:
             httpGet:
               path: /health
               port: 8000
-            initialDelaySeconds: 10
+            initialDelaySeconds: 15
             periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+
+          # Startup probe — aguarda inicialização lenta do uvicorn
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            failureThreshold: 12
+            periodSeconds: 10
+
+      # Topologia — distribui pods entre AZs para HA
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: orbe-api
+
+---
+# ── Ingress — ALB provisionado pelo AWS Load Balancer Controller ──────────────
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: orbe-api-ingress
+  namespace: orbe-prod
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}, {"HTTP":80}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/certificate-arn: "ACM_CERT_ARN"  # Substituir pelo ARN do certificado
+    alb.ingress.kubernetes.io/healthcheck-path: /health
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "30"
+    # Validar header secret do CloudFront para evitar bypass direto do ALB
+    alb.ingress.kubernetes.io/wafv2-acl-arn: ""  # Opcional: WAF no ALB também
+spec:
+  rules:
+    - host: "api.orbesystems.com.br"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: orbe-api
+                port:
+                  number: 8000

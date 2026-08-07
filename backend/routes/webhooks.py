@@ -10,10 +10,11 @@ SECURITY CRITICAL:
   a premium upgrade. This check is NON-NEGOTIABLE.
 
 Events handled:
-  checkout.session.completed      → role="premium", status="active"
-  customer.subscription.deleted   → role="user",    status="canceled"
-  customer.subscription.paused    → role="user",    status="canceled"
+  checkout.session.completed      → role="premium", status="active"   + Redis cache SET
+  customer.subscription.deleted   → role="user",    status="canceled" + Redis cache INVALIDATE
+  customer.subscription.paused    → role="user",    status="canceled" + Redis cache INVALIDATE
   invoice.payment_failed          → status="past_due" (role unchanged)
+  invoice.payment_succeeded       → status="active"  (renewal)
 """
 
 import stripe
@@ -24,6 +25,8 @@ from config import settings
 from database import get_db
 from models.users import User, UserSubscription
 from utils.logger import webhook_logger
+# ── Redis: atualização imediata da flag is_premium — sem aguardar TTL expirar
+from services.redis_service import set_is_premium, invalidate_premium_cache
 
 router = APIRouter()
 
@@ -84,7 +87,14 @@ async def stripe_webhook(
                 db.commit()
                 webhook_logger.info(f"PREMIUM granted → {user.email}")
 
-                # Provisionar Workspace do AnythingLLM em background (evita lentidão no webhook)
+                # ── Atualizar Redis imediatamente (sem aguardar TTL) —————————
+                try:
+                    await set_is_premium(str(user.id), True)
+                    webhook_logger.info(f"[Redis] is_premium=True cacheado para user_id={user.id}")
+                except Exception as redis_err:
+                    webhook_logger.warning(f"[Redis] Falha ao atualizar cache is_premium: {redis_err}")
+
+                # Provisionar Workspace do AnythingLLM em background
                 try:
                     from services import anythingllm_service
                     import asyncio
@@ -102,6 +112,13 @@ async def stripe_webhook(
             user.subscription_status = "canceled"
             db.commit()
             webhook_logger.info(f"DOWNGRADED to user → {user.email}")
+
+            # ── Invalidar cache Redis imediatamente ————————————————————————
+            try:
+                await invalidate_premium_cache(str(user.id))
+                webhook_logger.info(f"[Redis] Cache is_premium invalidado para user_id={user.id}")
+            except Exception as redis_err:
+                webhook_logger.warning(f"[Redis] Falha ao invalidar cache is_premium: {redis_err}")
 
     elif event_type == "invoice.payment_failed":
         # Payment failed — mark as past_due (role unchanged, grace period)

@@ -1,0 +1,27 @@
+﻿Acquiring state lock. This may take a few moments...
+terraform : 
+No linha:1 caractere:1
++ terraform plan -no-color > 
+tf_plan6.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~
+    + CategoryInfo          : 
+    NotSpecified: (:String)   
+  [], RemoteException
+    + FullyQualifiedErrorId : 
+    NativeCommandError
+ 
+Error: Reference to 
+undeclared resource
+
+  on secrets.tf line 19, in 
+resource "aws_kms_key" "orbe":
+  19:           AWS = "arn:aws
+:iam::${data.aws_caller_identi
+ty.current.account_id}:root"
+
+A data resource 
+"aws_caller_identity" 
+"current" has not been 
+declared in the
+root module.

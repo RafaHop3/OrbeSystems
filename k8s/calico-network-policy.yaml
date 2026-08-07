@@ -1,0 +1,125 @@
+##############################################################################
+# calico-network-policy.yaml — Isolamento de Pods com Kubernetes Network Policies
+#
+# Pré-requisito: Calico instalado no cluster EKS:
+#   kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.0/manifests/calico.yaml
+##############################################################################
+
+# ── Namespace para a aplicação ───────────────────────────────────────────────
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: orbe-prod
+  labels:
+    name: orbe-prod
+
+---
+# ── Policy: Pod de IA (chat) — acesso restrito ───────────────────────────────
+# Permite: Egress para DynamoDB via VPC Endpoint (HTTPS 443) e RDS (5432)
+# Bloqueia: Acesso direto a pods de pagamentos/checkout
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: isolate-ai-pod
+  namespace: orbe-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: orbe-chat-api   # Aplica a pods com label app=orbe-chat-api
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    # Aceitar tráfego do ALB
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: TCP
+          port: 8000
+
+  egress:
+    # Permitir DNS (kube-dns)
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+    # Permitir HTTPS para AWS APIs via VPC Endpoints (DynamoDB, Secrets Manager, ECR, STS)
+    - ports:
+        - protocol: TCP
+          port: 443
+
+    # Permitir conexão com RDS Aurora (PostgreSQL)
+    - ports:
+        - protocol: TCP
+          port: 5432
+
+    # Permitir conexão com Redis (ElastiCache)
+    - ports:
+        - protocol: TCP
+          port: 6379
+
+    # BLOQUEAR: sem egress para pods de pagamentos/checkout dentro do cluster
+    # (Ausência de regra para podSelector checkout = implicitamente bloqueado)
+
+---
+# ── Policy: Pod da API principal — regras de ingress ─────────────────────────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: isolate-api-pod
+  namespace: orbe-prod
+spec:
+  podSelector:
+    matchLabels:
+      app: orbe-api
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    # Aceitar apenas do ALB Controller (kube-system namespace)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: TCP
+          port: 8000
+
+  egress:
+    # DNS
+    - ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+    # HTTPS para AWS APIs
+    - ports:
+        - protocol: TCP
+          port: 443
+    # RDS
+    - ports:
+        - protocol: TCP
+          port: 5432
+    # Redis
+    - ports:
+        - protocol: TCP
+          port: 6379
+
+---
+# ── Default Deny All — bloqueia todo tráfego não explicitamente permitido ─────
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny-all
+  namespace: orbe-prod
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress

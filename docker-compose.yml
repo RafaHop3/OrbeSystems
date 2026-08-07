@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: orbe_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: orbe_admin
+      POSTGRES_PASSWORD: orbe_password
+      POSTGRES_DB: orbesystems
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: orbe_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: orbe_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://orbe_admin:orbe_password@db:5432/orbesystems
+      - REDIS_URL=redis://redis:6379/0
+    # Opcional: Se preencher o .env em bash no EC2, remova o comentário abaixo
+    # env_file:
+    #   - ./backend/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./backend/data:/app/data
+
+volumes:
+  postgres_data:

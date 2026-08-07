@@ -1,6 +1,5 @@
 ##############################################################################
-# main.tf — Orbe Systems Infrastructure
-# Stack: Vercel (frontend) + AWS Lambda (FastAPI backend) + API Gateway HTTP
+# main.tf — Orbe Systems Infrastructure (EC2 Docker $0 Cost Stack)
 ##############################################################################
 
 terraform {
@@ -11,22 +10,15 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.50"
     }
-    vercel = {
-      source  = "vercel/vercel"
-      version = "~> 1.14"
-    }
-    archive = {
-      source  = "hashicorp/archive"
-      version = "~> 2.4"
-    }
   }
 
-  # Uncomment to store state in S3 (recommended for team use)
-  # backend "s3" {
-  #   bucket = "orbe-systems-tfstate"
-  #   key    = "orbe-systems/terraform.tfstate"
-  #   region = "us-east-1"
-  # }
+  backend "s3" {
+    bucket         = "orbe-systems-tfstate"
+    key            = "orbe-systems/production/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "orbe-systems-tf-locks"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
@@ -41,7 +33,15 @@ provider "aws" {
   }
 }
 
-provider "vercel" {
-  api_token = var.vercel_api_token
-  team      = var.vercel_team_id # optional — leave empty if no team
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+
+  default_tags {
+    tags = {
+      Project     = "orbe-systems"
+      ManagedBy   = "terraform"
+      Environment = var.environment
+    }
+  }
 }

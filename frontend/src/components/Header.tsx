@@ -9,7 +9,6 @@ import { logoutAction } from '@/lib/auth-actions';
 
 const NAV_LINKS = [
   { label: 'Workspace', href: '/workspace' },
-  { label: 'Repositórios', href: '/repositorios' },
   { label: 'Skills', href: '/skills' },
   { label: 'Inovações', href: '/inovacoes' },
   { label: 'Contato', href: '/#contact' },
