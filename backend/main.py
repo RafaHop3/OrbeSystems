@@ -67,7 +67,7 @@ def run_migrations():
 
         if 'is_featured' not in columns:
             print("INFO: [Migration] Adding 'is_featured' column...")
-            conn.execute(text("ALTER TABLE projects_metadata ADD COLUMN is_featured BOOLEAN NOT NULL DEFAULT 0"))
+            conn.execute(text("ALTER TABLE projects_metadata ADD COLUMN is_featured BOOLEAN NOT NULL DEFAULT false"))
 
         if 'repo_name' not in columns:
             print("INFO: [Migration] Adding 'repo_name' column...")
@@ -75,7 +75,7 @@ def run_migrations():
 
         if 'is_premium_only' not in columns:
             print("INFO: [Migration] Adding 'is_premium_only' column...")
-            conn.execute(text("ALTER TABLE projects_metadata ADD COLUMN is_premium_only BOOLEAN NOT NULL DEFAULT 0"))
+            conn.execute(text("ALTER TABLE projects_metadata ADD COLUMN is_premium_only BOOLEAN NOT NULL DEFAULT false"))
 
         # Check if index exists
         indices = inspector.get_indexes('projects_metadata')
@@ -93,7 +93,7 @@ def run_migrations():
             print("INFO: [Migration] Registering IMORTAL Premium Project...")
             conn.execute(text(
                 "INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only) "
-                "VALUES ('imortal', 'IMORTAL', 'AI-Powered Formal Verification Toolchain for Embedded Systems (Z3 Solver + Stochastic Fuzzing)', '/imortal', 1, 1)"
+                "VALUES ('imortal', 'IMORTAL', 'AI-Powered Formal Verification Toolchain for Embedded Systems (Z3 Solver + Stochastic Fuzzing)', '/imortal', true, true)"
             ))
         else:
             conn.execute(text(
@@ -106,7 +106,7 @@ def run_migrations():
             print("INFO: [Migration] Registering IMOBVERSE Premium Project...")
             conn.execute(text(
                 "INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only) "
-                "VALUES ('imobverse', 'Imobverse', 'Plataforma Proptech com Motor de Reputacao, Vistoria Fotografica Inteligente e Geracao de Leads', '/ferramentas-premium/imobverse', 1, 1)"
+                "VALUES ('imobverse', 'Imobverse', 'Plataforma Proptech com Motor de Reputacao, Vistoria Fotografica Inteligente e Geracao de Leads', '/ferramentas-premium/imobverse', true, true)"
             ))
 
         # Registrar o PowerShell Bot na tabela de metadados
@@ -115,7 +115,7 @@ def run_migrations():
             print("INFO: [Migration] Registering POWERSHELL-BOT Premium Project...")
             conn.execute(text(
                 "INSERT INTO projects_metadata (id, repo_name, custom_description, deploy_url, is_featured, is_premium_only) "
-                "VALUES ('powershell-bot', 'PowerShell Shield Bot', 'Assistente SecDevOps para geracao de prompts seguros, analise de riscos e scripts PowerShell multi-formato', '/ferramentas-premium/powershell-bot', 1, 1)"
+                "VALUES ('powershell-bot', 'PowerShell Shield Bot', 'Assistente SecDevOps para geracao de prompts seguros, analise de riscos e scripts PowerShell multi-formato', '/ferramentas-premium/powershell-bot', true, true)"
             ))
 
         # Seed initial test events if table is empty
