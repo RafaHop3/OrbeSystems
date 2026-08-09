@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import ScrollNarrativeEngine from '@/components/ScrollNarrativeEngine';
 import FreedomSection from '@/components/FreedomSection';
 import FeaturedSitesSection from '@/components/FeaturedSitesSection';
+import GhostEnginePromo from '@/components/GhostEnginePromo';
 
 export default function HomePage() {
   return (
@@ -13,6 +14,7 @@ export default function HomePage() {
         <HeroSection />
       </ScrollNarrativeEngine>
       <FeaturedSitesSection />
+      <GhostEnginePromo />
       <FreedomSection />
       <Footer />
     </main>

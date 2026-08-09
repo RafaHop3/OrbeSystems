@@ -577,12 +577,12 @@ export default function AdminDashboard() {
 
                             {/* Production Link Input */}
                             <div className="space-y-1">
-                              <label className="text-[9px] text-neon-purple/70 uppercase flex items-center gap-2">
+                              <label className="text-[9px] text-neon-blue/70 uppercase flex items-center gap-2">
                                 <Globe size={10} /> Production URL (Deploy)
                               </label>
                               <input
                                 type="text"
-                                className="w-full bg-black/60 border border-neon-purple/30 p-2 text-[10px] text-neon-purple focus:outline-none focus:border-neon-purple"
+                                className="w-full bg-black/60 border border-neon-blue/30 p-2 text-[10px] text-neon-blue focus:outline-none focus:border-neon-blue"
                                 value={editForm.deploy_url}
                                 onChange={e => setEditForm({ ...editForm, deploy_url: e.target.value })}
                                 placeholder="https://sua-app-live.com"
@@ -590,15 +590,15 @@ export default function AdminDashboard() {
                             </div>
 
                             {/* Premium-only Toggle */}
-                            <div className="flex items-center justify-between p-3 border border-neon-purple/30 bg-neon-purple/5 rounded">
-                              <label className="text-[9px] text-neon-purple/70 uppercase flex items-center gap-2 cursor-pointer">
+                            <div className="flex items-center justify-between p-3 border border-neon-blue/30 bg-neon-blue/5 rounded">
+                              <label className="text-[9px] text-neon-blue/70 uppercase flex items-center gap-2 cursor-pointer">
                                 <Crown size={12} /> Premium Exclusive
                               </label>
                               <input
                                 type="checkbox"
                                 checked={editForm.is_premium_only}
                                 onChange={e => setEditForm({ ...editForm, is_premium_only: e.target.checked })}
-                                className="w-4 h-4 accent-neon-purple cursor-pointer"
+                                className="w-4 h-4 accent-neon-blue cursor-pointer"
                               />
                             </div>
                           </div>
@@ -623,13 +623,13 @@ export default function AdminDashboard() {
                                 </div>
                               )}
                               <div className="flex flex-wrap gap-2 items-center text-[10px]">
-                                {project.video_url && <span className="flex items-center gap-1 text-neon-purple border border-neon-purple/20 px-2 py-0.5 rounded-full bg-neon-purple/5"><Video size={10} /> Motion</span>}
+                                {project.video_url && <span className="flex items-center gap-1 text-neon-blue border border-neon-blue/20 px-2 py-0.5 rounded-full bg-neon-blue/5"><Video size={10} /> Motion</span>}
                                 {project.deploy_url && (
                                   <a
                                     href={project.deploy_url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex items-center gap-1 text-neon-purple border border-neon-purple/50 px-2 py-0.5 rounded-full bg-neon-purple/20 font-bold tracking-tighter hover:bg-neon-purple/40 transition-colors"
+                                    className="flex items-center gap-1 text-neon-blue border border-neon-blue/50 px-2 py-0.5 rounded-full bg-neon-blue/20 font-bold tracking-tighter hover:bg-neon-blue/40 transition-colors"
                                     title={project.deploy_url}
                                   >
                                     <Globe size={10} /> LIVE ↗
@@ -653,20 +653,20 @@ export default function AdminDashboard() {
 
             {/* ── INJECT REPO Panel ──────────────────────────────────── */}
             {activeTab === 'projects' && (
-              <div className="mt-6 border border-neon-purple/30 bg-neon-purple/5 p-5">
-                <h2 className="text-xs font-bold border-b border-neon-purple/10 pb-3 mb-5 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-neon-purple uppercase">
+              <div className="mt-6 border border-neon-blue/30 bg-neon-blue/5 p-5">
+                <h2 className="text-xs font-bold border-b border-neon-blue/10 pb-3 mb-5 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-neon-blue uppercase">
                     <Plus size={14} /> INJECT REPO
                   </div>
-                  <span className="text-[10px] text-neon-purple/40 px-2 border border-neon-purple/20 rounded">
+                  <span className="text-[10px] text-neon-blue/40 px-2 border border-neon-blue/20 rounded">
                     theorbesystems-sketch/...
                   </span>
                 </h2>
 
                 {/* Input row */}
                 <div className="flex gap-2 mb-4">
-                  <div className="flex-1 flex items-center border border-neon-purple/30 bg-black/60">
-                    <span className="px-3 text-neon-purple/40 text-[10px] font-mono select-none">~/</span>
+                  <div className="flex-1 flex items-center border border-neon-blue/30 bg-black/60">
+                    <span className="px-3 text-neon-blue/40 text-[10px] font-mono select-none">~/</span>
                     <input
                       id="inject-repo-input"
                       type="text"
@@ -674,17 +674,17 @@ export default function AdminDashboard() {
                       value={injectRepoName}
                       onChange={e => { setInjectRepoName(e.target.value); setLookupResult(null); setLookupError(''); setInjectStatus('idle'); }}
                       onKeyDown={e => e.key === 'Enter' && handleLookup()}
-                      className="flex-1 bg-transparent py-2 pr-3 text-[11px] text-neon-purple font-mono focus:outline-none placeholder:text-neon-purple/20"
+                      className="flex-1 bg-transparent py-2 pr-3 text-[11px] text-neon-blue font-mono focus:outline-none placeholder:text-neon-blue/20"
                     />
                   </div>
                   <button
                     id="inject-lookup-btn"
                     onClick={handleLookup}
                     disabled={lookupLoading || !injectRepoName.trim()}
-                    className="flex items-center gap-2 px-4 py-2 border border-neon-purple/50 text-neon-purple/80 text-[10px] uppercase tracking-widest hover:bg-neon-purple/20 hover:text-neon-purple hover:border-neon-purple transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    className="flex items-center gap-2 px-4 py-2 border border-neon-blue/50 text-neon-blue/80 text-[10px] uppercase tracking-widest hover:bg-neon-blue/20 hover:text-neon-blue hover:border-neon-blue transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                   >
                     {lookupLoading
-                      ? <span className="animate-spin inline-block w-3 h-3 border border-neon-purple border-t-transparent rounded-full" />
+                      ? <span className="animate-spin inline-block w-3 h-3 border border-neon-blue border-t-transparent rounded-full" />
                       : <Search size={12} />}
                     LOOKUP
                   </button>
@@ -700,16 +700,16 @@ export default function AdminDashboard() {
 
                 {/* Preview card */}
                 {lookupResult && (
-                  <div className="border border-neon-purple/40 bg-black/40 p-4 mb-4 space-y-4 animate-in fade-in duration-300">
+                  <div className="border border-neon-blue/40 bg-black/40 p-4 mb-4 space-y-4 animate-in fade-in duration-300">
                     {/* Repo header */}
                     <div className="flex items-start justify-between">
                       <div>
                         <p className="text-white font-bold text-sm tracking-wide">
-                          <span className="text-neon-purple/50">#</span> {lookupResult.name}
+                          <span className="text-neon-blue/50">#</span> {lookupResult.name}
                         </p>
-                        <p className="text-[9px] text-neon-purple/40 mt-0.5 uppercase">{lookupResult.full_name}</p>
+                        <p className="text-[9px] text-neon-blue/40 mt-0.5 uppercase">{lookupResult.full_name}</p>
                       </div>
-                      <div className="flex gap-3 text-[10px] text-neon-purple/60 font-mono">
+                      <div className="flex gap-3 text-[10px] text-neon-blue/60 font-mono">
                         {lookupResult.language && <span>{lookupResult.language}</span>}
                         <span>★ {lookupResult.stargazers_count}</span>
                         <span>⑂ {lookupResult.forks_count}</span>
@@ -722,13 +722,13 @@ export default function AdminDashboard() {
                     )}
 
                     {/* Optional metadata */}
-                    <div className="space-y-3 pt-2 border-t border-neon-purple/10">
-                      <p className="text-[9px] text-neon-purple/50 uppercase tracking-widest">Metadata opcional</p>
+                    <div className="space-y-3 pt-2 border-t border-neon-blue/10">
+                      <p className="text-[9px] text-neon-blue/50 uppercase tracking-widest">Metadata opcional</p>
                       <textarea
                         placeholder="Custom description (opcional)"
                         value={injectMeta.custom_description}
                         onChange={e => setInjectMeta(m => ({ ...m, custom_description: e.target.value }))}
-                        className="w-full bg-black/60 border border-neon-purple/20 p-2 text-[10px] text-neon-purple font-mono focus:outline-none focus:border-neon-purple min-h-[56px] resize-none placeholder:text-neon-purple/20"
+                        className="w-full bg-black/60 border border-neon-blue/20 p-2 text-[10px] text-neon-blue font-mono focus:outline-none focus:border-neon-blue min-h-[56px] resize-none placeholder:text-neon-blue/20"
                       />
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <input
@@ -736,14 +736,14 @@ export default function AdminDashboard() {
                           placeholder="Image URL (opcional)"
                           value={injectMeta.image_url}
                           onChange={e => setInjectMeta(m => ({ ...m, image_url: e.target.value }))}
-                          className="bg-black/60 border border-neon-purple/20 p-2 text-[10px] text-neon-purple font-mono focus:outline-none focus:border-neon-purple placeholder:text-neon-purple/20"
+                          className="bg-black/60 border border-neon-blue/20 p-2 text-[10px] text-neon-blue font-mono focus:outline-none focus:border-neon-blue placeholder:text-neon-blue/20"
                         />
                         <input
                           type="text"
                           placeholder="Deploy URL (opcional)"
                           value={injectMeta.deploy_url}
                           onChange={e => setInjectMeta(m => ({ ...m, deploy_url: e.target.value }))}
-                          className="bg-black/60 border border-neon-purple/20 p-2 text-[10px] text-neon-purple font-mono focus:outline-none focus:border-neon-purple placeholder:text-neon-purple/20"
+                          className="bg-black/60 border border-neon-blue/20 p-2 text-[10px] text-neon-blue font-mono focus:outline-none focus:border-neon-blue placeholder:text-neon-blue/20"
                         />
                       </div>
                     </div>
@@ -753,7 +753,7 @@ export default function AdminDashboard() {
                       id="inject-confirm-btn"
                       onClick={handleInject}
                       disabled={injectStatus === 'loading'}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 border border-neon-purple text-neon-purple text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-neon-purple hover:text-black transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 border border-neon-blue text-neon-blue text-[10px] uppercase tracking-[0.2em] font-bold hover:bg-neon-blue hover:text-black transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
                     >
                       {injectStatus === 'loading'
                         ? <span className="animate-spin inline-block w-3 h-3 border border-current border-t-transparent rounded-full" />
@@ -779,18 +779,18 @@ export default function AdminDashboard() {
 
             {/* User Management Panel */}
             {activeTab === 'users' && (
-              <div className="border border-neon-purple/20 bg-neon-purple/5 p-5">
-                <h2 className="text-xs font-bold border-b border-neon-purple/10 pb-3 mb-6 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-neon-purple uppercase">
+              <div className="border border-neon-blue/20 bg-neon-blue/5 p-5">
+                <h2 className="text-xs font-bold border-b border-neon-blue/10 pb-3 mb-6 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-neon-blue uppercase">
                     <Crown size={14} /> USER MANAGEMENT
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-neon-purple/40 px-2 border border-neon-purple/20 rounded">
+                    <span className="text-[10px] text-neon-blue/40 px-2 border border-neon-blue/20 rounded">
                       {users.length} USERS
                     </span>
                     <button
                       onClick={() => setShowCreateUserForm(!showCreateUserForm)}
-                      className="text-[10px] text-neon-purple hover:text-white transition-colors"
+                      className="text-[10px] text-neon-blue hover:text-white transition-colors"
                     >
                       + Create User
                     </button>
@@ -798,35 +798,35 @@ export default function AdminDashboard() {
                 </h2>
 
                 {showCreateUserForm && (
-                  <div className="mb-6 p-4 border border-neon-purple/30 bg-black/40 animate-in fade-in duration-300">
-                    <h3 className="text-xs font-bold text-neon-purple mb-4">CREATE NEW USER</h3>
+                  <div className="mb-6 p-4 border border-neon-blue/30 bg-black/40 animate-in fade-in duration-300">
+                    <h3 className="text-xs font-bold text-neon-blue mb-4">CREATE NEW USER</h3>
                     <div className="space-y-3">
                       <div>
-                        <label className="text-[9px] text-neon-purple/60 uppercase block mb-1">Email</label>
+                        <label className="text-[9px] text-neon-blue/60 uppercase block mb-1">Email</label>
                         <input
                           type="email"
                           value={newUserEmail}
                           onChange={(e) => setNewUserEmail(e.target.value)}
-                          className="w-full bg-black/60 border border-neon-purple/30 p-2 text-xs text-neon-purple focus:outline-none focus:border-neon-purple"
+                          className="w-full bg-black/60 border border-neon-blue/30 p-2 text-xs text-neon-blue focus:outline-none focus:border-neon-blue"
                           placeholder="user@example.com"
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] text-neon-purple/60 uppercase block mb-1">Password (min 8 chars)</label>
+                        <label className="text-[9px] text-neon-blue/60 uppercase block mb-1">Password (min 8 chars)</label>
                         <input
                           type="password"
                           value={newUserPassword}
                           onChange={(e) => setNewUserPassword(e.target.value)}
-                          className="w-full bg-black/60 border border-neon-purple/30 p-2 text-xs text-neon-purple focus:outline-none focus:border-neon-purple"
+                          className="w-full bg-black/60 border border-neon-blue/30 p-2 text-xs text-neon-blue focus:outline-none focus:border-neon-blue"
                           placeholder="••••••••"
                         />
                       </div>
                       <div>
-                        <label className="text-[9px] text-neon-purple/60 uppercase block mb-1">Role</label>
+                        <label className="text-[9px] text-neon-blue/60 uppercase block mb-1">Role</label>
                         <select
                           value={newUserRole}
                           onChange={(e) => setNewUserRole(e.target.value as 'user' | 'premium')}
-                          className="w-full bg-black/60 border border-neon-purple/30 p-2 text-xs text-neon-purple focus:outline-none focus:border-neon-purple"
+                          className="w-full bg-black/60 border border-neon-blue/30 p-2 text-xs text-neon-blue focus:outline-none focus:border-neon-blue"
                         >
                           <option value="user">User</option>
                           <option value="premium">Premium</option>
@@ -836,7 +836,7 @@ export default function AdminDashboard() {
                         <button
                           onClick={handleCreateUser}
                           disabled={creatingUser}
-                          className="flex-1 border border-neon-purple/50 text-neon-purple py-2 text-[10px] uppercase tracking-wider hover:bg-neon-purple/10 transition-colors disabled:opacity-50"
+                          className="flex-1 border border-neon-blue/50 text-neon-blue py-2 text-[10px] uppercase tracking-wider hover:bg-neon-blue/10 transition-colors disabled:opacity-50"
                         >
                           {creatingUser ? 'Creating...' : 'Create User'}
                         </button>
@@ -856,24 +856,24 @@ export default function AdminDashboard() {
                   </div>
                 )}
 
-                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-neon-purple/20">
+                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-neon-blue/20">
                   {users.map(user => (
                     <div
                       key={user.id}
-                      className="border border-neon-purple/10 bg-black/40 p-4 hover:border-neon-purple/30 transition-all"
+                      className="border border-neon-blue/10 bg-black/40 p-4 hover:border-neon-blue/30 transition-all"
                     >
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="text-sm font-bold text-white">{user.email}</h3>
                             <span className={`text-[9px] px-2 py-0.5 rounded-full ${user.role === 'premium'
-                              ? 'bg-neon-purple/20 text-neon-purple border border-neon-purple/30'
+                              ? 'bg-neon-blue/20 text-neon-blue border border-neon-blue/30'
                               : 'bg-neon-green/20 text-neon-green border border-neon-green/30'
                               }`}>
                               {user.role.toUpperCase()}
                             </span>
                           </div>
-                          <div className="text-[9px] text-neon-purple/40 space-y-1">
+                          <div className="text-[9px] text-neon-blue/40 space-y-1">
                             <div>ID: {user.id}</div>
                             <div>Status: {user.subscription_status}</div>
                             <div>Created: {new Date(user.created_at).toLocaleDateString()}</div>
@@ -883,7 +883,7 @@ export default function AdminDashboard() {
                           {user.role === 'user' ? (
                             <button
                               onClick={() => handleUpdateUserRole(user.id, 'premium')}
-                              className="p-2 border border-neon-purple/30 text-neon-purple/60 hover:text-neon-purple hover:border-neon-purple transition-all"
+                              className="p-2 border border-neon-blue/30 text-neon-blue/60 hover:text-neon-blue hover:border-neon-blue transition-all"
                               title="Promote to Premium"
                             >
                               <Crown size={12} />

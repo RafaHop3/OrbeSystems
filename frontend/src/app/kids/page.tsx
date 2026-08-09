@@ -1195,16 +1195,16 @@ Tenta criar uma função no editor e chamar ela! 💪`;
             <div className="flex items-center gap-4">
               <div className="text-4xl">🚀</div>
               <div>
-                <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent uppercase tracking-wider font-mono">
+                <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent uppercase tracking-wider font-mono">
                   Orbe Kids Studio
                 </h1>
-                <p className="text-xs text-purple-300 font-semibold tracking-widest uppercase">Escola de Programadores Mirins & Cientistas 🤖</p>
+                <p className="text-xs text-blue-300 font-semibold tracking-widest uppercase">Escola de Programadores Mirins & Cientistas 🤖</p>
               </div>
             </div>
 
             {/* Gamification Bar */}
             <div className="flex items-center gap-4 w-full md:max-w-md bg-white/5 border border-white/10 rounded-full py-2.5 px-4">
-              <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold text-xs px-3 py-1 rounded-full shadow-lg shrink-0">
+              <div className="bg-gradient-to-r from-blue-500 to-pink-500 text-white font-extrabold text-xs px-3 py-1 rounded-full shadow-lg shrink-0">
                 Lvl {level}
               </div>
               <div className="flex-1 flex flex-col gap-1">
@@ -1213,7 +1213,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                 </div>
                 <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden">
                   <div
-                    className="bg-gradient-to-r from-cyan-400 to-purple-500 h-full rounded-full transition-all duration-500"
+                    className="bg-gradient-to-r from-cyan-400 to-blue-500 h-full rounded-full transition-all duration-500"
                     style={{ width: `${(xp / (level * 100)) * 100}%` }}
                   />
                 </div>
@@ -1245,7 +1245,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
 
               {/* Theme Selector */}
               <div className="flex flex-col gap-2">
-                <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-purple-400 flex items-center gap-1">
+                <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-blue-400 flex items-center gap-1">
                   <span>Escolha o Tema de Estudo</span>
                 </h3>
                 <div className="flex flex-col gap-1.5">
@@ -1256,7 +1256,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                         key={theme.id}
                         onClick={() => handleSelectTheme(theme.id)}
                         className={`w-full text-left p-2.5 rounded-xl border text-xs font-bold transition-all flex items-center justify-between ${isSelected
-                          ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md'
+                          ? 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border-cyan-400 text-cyan-300 shadow-md'
                           : 'bg-white/5 border-white/10 hover:border-cyan-500/30 hover:text-white text-gray-300'
                           }`}
                       >
@@ -1326,7 +1326,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                             <span className="truncate">{ch.title}</span>
                             {isDone && <span className="text-emerald-400 text-xs">✅</span>}
                           </div>
-                          <div className="flex justify-between w-full text-[9px] font-extrabold uppercase tracking-wider text-purple-400">
+                          <div className="flex justify-between w-full text-[9px] font-extrabold uppercase tracking-wider text-blue-400">
                             <span>{ch.difficulty}</span>
                             <span>+{ch.xpReward} XP</span>
                           </div>
@@ -1338,7 +1338,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
               )}
 
               {/* Fun Fact card */}
-              <div className="bg-purple-500/5 border border-purple-500/20 rounded-xl p-3.5 flex flex-col gap-2 mt-auto">
+              <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-3.5 flex flex-col gap-2 mt-auto">
                 <h3 className="text-[10px] font-extrabold uppercase tracking-widest text-yellow-400 flex items-center gap-1">
                   <Lightbulb size={12} />
                   <span>Fato Curioso</span>
@@ -1471,7 +1471,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
             <section className="bg-[#120b24]/55 border border-[#8b5cf6]/20 rounded-2xl overflow-hidden flex flex-col">
 
               {/* Chat Header */}
-              <div className="bg-purple-900/10 border-b border-white/5 p-3 flex items-center gap-2.5">
+              <div className="bg-blue-900/10 border-b border-white/5 p-3 flex items-center gap-2.5">
                 <span className="text-2xl animate-pulse">🤖</span>
                 <div className="flex-grow flex flex-col">
                   <span className="text-xs font-extrabold text-white">Techy</span>
@@ -1495,8 +1495,8 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                       <div className="flex flex-col gap-1">
                         <div
                           className={`p-3 rounded-2xl text-[12px] leading-relaxed border ${isBot
-                            ? 'bg-purple-500/15 border-purple-500/30 text-purple-100 rounded-tl-sm'
-                            : 'bg-gradient-to-r from-purple-500 to-pink-500 border-none text-white rounded-tr-sm shadow-md'
+                            ? 'bg-blue-500/15 border-blue-500/30 text-blue-100 rounded-tl-sm'
+                            : 'bg-gradient-to-r from-blue-500 to-pink-500 border-none text-white rounded-tr-sm shadow-md'
                             }`}
                           style={{ whiteSpace: 'pre-wrap' }}
                           dangerouslySetInnerHTML={{ __html: parseMarkdownText(msg.text) }}
@@ -1513,10 +1513,10 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                 {isTyping && (
                   <div className="self-start flex gap-2 items-center">
                     <span className="text-base">🤖</span>
-                    <div className="flex gap-1 bg-purple-500/15 border border-purple-500/30 px-3.5 py-2 rounded-2xl rounded-tl-sm">
-                      <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <div className="flex gap-1 bg-blue-500/15 border border-blue-500/30 px-3.5 py-2 rounded-2xl rounded-tl-sm">
+                      <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                     </div>
                   </div>
                 )}
@@ -1537,7 +1537,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                           setUserMsg(chip.text);
                         }
                       }}
-                      className="bg-purple-500/10 hover:bg-purple-500/25 border border-purple-500/30 text-purple-300 text-[10px] font-bold px-2 py-0.5 rounded-full transition-all"
+                      className="bg-blue-500/10 hover:bg-blue-500/25 border border-blue-500/30 text-blue-300 text-[10px] font-bold px-2 py-0.5 rounded-full transition-all"
                     >
                       {chip.label}
                     </button>
@@ -1559,7 +1559,7 @@ Tenta criar uma função no editor e chamar ela! 💪`;
                   />
                   <button
                     onClick={handleSendChat}
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:scale-[1.05] rounded-xl px-3 flex items-center justify-center text-white transition-all shadow-md"
+                    className="bg-gradient-to-r from-blue-500 to-pink-500 hover:scale-[1.05] rounded-xl px-3 flex items-center justify-center text-white transition-all shadow-md"
                   >
                     <Send size={12} />
                   </button>

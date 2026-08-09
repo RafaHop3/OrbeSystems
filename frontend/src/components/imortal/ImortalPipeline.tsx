@@ -35,9 +35,9 @@ mas nunca use delays superiores a 1 segundo."`
       number: '02',
       title: 'Parser de IA (Gemini)',
       icon: <Sparkles size={18} />,
-      colorClass: 'text-neon-purple',
-      bgClass: 'bg-neon-purple/5',
-      borderClass: 'border-neon-purple/20',
+      colorClass: 'text-neon-blue',
+      bgClass: 'bg-neon-blue/5',
+      borderClass: 'border-neon-blue/20',
       description: 'A inteligência artificial interpreta o prompt, mapeia periféricos, cria as variáveis e gera a Representação Intermediária (IR) em formato JSON.',
       codeSnippet: `{
   "inputs": [{ "pin": "A0", "type": "analog", "name": "temp" }],
@@ -112,7 +112,7 @@ void loop() {
 
         {/* Section Header */}
         <div className="text-center space-y-3">
-          <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-neon-purple bg-neon-purple/5 border border-neon-purple/20 px-3 py-1 rounded-full">
+          <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-neon-blue bg-neon-blue/5 border border-neon-blue/20 px-3 py-1 rounded-full">
             Pipeline de Engenharia
           </span>
           <h2 className="font-mono text-2xl md:text-4xl font-bold text-white tracking-tight">

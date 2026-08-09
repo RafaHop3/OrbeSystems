@@ -11,7 +11,7 @@ export default function KidsPromoSection() {
     >
       {/* Ambient glows inside banner */}
       <div className="absolute -top-32 -left-32 w-80 h-80 bg-cyan-400/10 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-purple-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none" />
 
       {/* Floating particles aesthetic */}
       <div className="absolute top-8 right-12 text-3xl opacity-20 animate-bounce duration-3000">🤖</div>
@@ -29,7 +29,7 @@ export default function KidsPromoSection() {
 
         {/* Title */}
         <h2 className="font-cinzel text-3xl md:text-5xl font-extrabold mb-6 text-white uppercase tracking-wide">
-          Ensine Tecnologia <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(6,182,212,0.25)]">para Crianças</span>
+          Ensine Tecnologia <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(6,182,212,0.25)]">para Crianças</span>
         </h2>
 
         {/* Supporting description */}
@@ -55,9 +55,9 @@ export default function KidsPromoSection() {
           {/* Feature 2 */}
           <div className="border border-[#8b5cf6]/20 rounded-xl p-5 bg-black/30 hover:border-[#8b5cf6]/50 transition-all duration-300">
             <div className="flex justify-center mb-3">
-              <Cpu size={24} className="text-purple-400" />
+              <Cpu size={24} className="text-blue-400" />
             </div>
-            <h3 className="font-cinzel text-xs text-purple-300 uppercase tracking-wider mb-2 font-bold">Tutor de IA Integrado</h3>
+            <h3 className="font-cinzel text-xs text-blue-300 uppercase tracking-wider mb-2 font-bold">Tutor de IA Integrado</h3>
             <p className="font-serif text-[11px] text-gray-400 leading-relaxed">
               O robozinho <strong>Techy</strong> acompanha cada lição tirando dúvidas, ensinando teoria e depurando bugs de escrita na hora.
             </p>
@@ -80,7 +80,7 @@ export default function KidsPromoSection() {
         <div className="flex flex-col items-center gap-3">
           <Link
             href="/kids"
-            className="group flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 text-white font-cinzel text-xs font-bold tracking-widest uppercase px-10 py-4 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all duration-300 hover:scale-[1.05]"
+            className="group flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white font-cinzel text-xs font-bold tracking-widest uppercase px-10 py-4 rounded-xl shadow-[0_0_20px_rgba(6,182,212,0.3)] transition-all duration-300 hover:scale-[1.05]"
           >
             <span>Experimentar Orbe Kids</span>
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />

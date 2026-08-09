@@ -41,11 +41,11 @@ export default function SeoBrokerPage({ params }: { params: { broker: string } }
 
             {/* Hero Troia */}
             <section className="relative px-6 py-20 max-w-5xl mx-auto">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[#bc13fe]/10 blur-[150px] rounded-full pointer-events-none"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[#00f2fe]/10 blur-[150px] rounded-full pointer-events-none"></div>
                 <div className="relative z-10 text-center max-w-3xl mx-auto">
 
                     <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 font-grotesk tracking-wide leading-tight">
-                        {brokerInfo.name}: Como <span className="text-[#bc13fe]">apagar meu nome e CPF</span> sozinhos? (Guia 2026 + Automação)
+                        {brokerInfo.name}: Como <span className="text-[#00f2fe]">apagar meu nome e CPF</span> sozinhos? (Guia 2026 + Automação)
                     </h1>
 
                     <p className="text-lg text-slate-400 mb-8 font-sans">
@@ -117,13 +117,13 @@ export default function SeoBrokerPage({ params }: { params: { broker: string } }
             </section>
 
             {/* A ISCA DE CONVERSÃO - CTA ORBE SYSTEMS (O Pulo do Gato) */}
-            <section className="px-6 py-16 max-w-4xl mx-auto my-12 bg-gradient-to-b from-black to-[#050510] border border-[#bc13fe]/30 rounded-2xl relative shadow-[0_0_50px_rgba(188,19,254,0.1)]">
-                <div className="absolute top-0 right-0 p-8 text-[#bc13fe]/10 pointer-events-none">
+            <section className="px-6 py-16 max-w-4xl mx-auto my-12 bg-gradient-to-b from-black to-[#050510] border border-[#00f2fe]/30 rounded-2xl relative shadow-[0_0_50px_rgba(188,19,254,0.1)]">
+                <div className="absolute top-0 right-0 p-8 text-[#00f2fe]/10 pointer-events-none">
                     <Lock size={120} />
                 </div>
 
                 <div className="relative z-10 max-w-2xl text-left">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#bc13fe]/10 border border-[#bc13fe]/30 rounded-full text-[10px] text-[#bc13fe] uppercase font-bold mb-6 tracking-widest">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#00f2fe]/10 border border-[#00f2fe]/30 rounded-full text-[10px] text-[#00f2fe] uppercase font-bold mb-6 tracking-widest">
                         <MousePointerClick size={12} /> A Orbe Faz Isso Pra Você
                     </div>
                     <h2 className="text-3xl font-bold text-white mb-4 font-grotesk">
@@ -138,7 +138,7 @@ export default function SeoBrokerPage({ params }: { params: { broker: string } }
 
                     <Link
                         href="/assinar"
-                        className="inline-flex items-center gap-3 bg-[#bc13fe] hover:bg-white text-white hover:text-black font-bold uppercase tracking-widest text-sm px-8 py-4 transition-all duration-300 shadow-[0_0_20px_rgba(188,19,254,0.4)]"
+                        className="inline-flex items-center gap-3 bg-[#00f2fe] hover:bg-white text-white hover:text-black font-bold uppercase tracking-widest text-sm px-8 py-4 transition-all duration-300 shadow-[0_0_20px_rgba(188,19,254,0.4)]"
                     >
                         Assine o Portal Premium Orbe <ArrowRight size={18} />
                     </Link>

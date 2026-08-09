@@ -40,7 +40,7 @@ export default function Header() {
               href={href}
               className="group flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-slate-400 transition-all duration-300 hover:text-neon-cyan"
             >
-              <Icon size={14} className="group-hover:animate-pulse-neon text-neon-purple group-hover:text-neon-cyan transition-colors" />
+              <Icon size={14} className="group-hover:animate-pulse-neon text-neon-blue group-hover:text-neon-cyan transition-colors" />
               <div className="flex">
                 {label.split('').map((char, i) => (
                   <span
@@ -83,7 +83,7 @@ export default function Header() {
                     className="flex items-center gap-3 px-3 py-2.5 rounded hover:bg-neon-blue/10 transition-colors"
                     onClick={() => setIsToolsOpen(false)}
                   >
-                    <Building2 size={16} className="text-neon-purple" />
+                    <Building2 size={16} className="text-neon-blue" />
                     <div>
                       <div className="text-[11px] font-bold text-white font-grotesk tracking-wide">Imobverse</div>
                       <div className="text-[10px] text-slate-400 font-mono">Proptech + Reputation Engine</div>
@@ -129,9 +129,9 @@ export default function Header() {
                   await logoutAction();
                   window.location.href = '/';
                 }}
-                className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:text-neon-purple transition-all duration-300 border border-slate-700 rounded px-3 py-1.5 hover:border-glow-purple hover:bg-neon-purple/5"
+                className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:text-neon-blue transition-all duration-300 border border-slate-700 rounded px-3 py-1.5 hover:border-glow-purple hover:bg-neon-blue/5"
               >
-                <LogOut size={12} className="text-neon-purple" />
+                <LogOut size={12} className="text-neon-blue" />
                 <span>Logout</span>
               </button>
             ) : (
@@ -166,7 +166,7 @@ export default function Header() {
               onClick={() => setIsMobileMenuOpen(false)}
               className="flex items-center gap-3 font-mono text-xs text-slate-300 hover:text-neon-cyan transition-colors duration-200 tracking-wider py-3 border-b border-slate-800/50 last:border-none"
             >
-              <Icon size={16} className="text-neon-purple" />
+              <Icon size={16} className="text-neon-blue" />
               {label}
             </Link>
           ))}
@@ -185,7 +185,7 @@ export default function Header() {
                 <Link
                   href="/ferramentas-premium/imobverse"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 font-mono text-xs text-neon-purple hover:text-white transition-colors duration-200 tracking-wider py-3"
+                  className="flex items-center gap-3 font-mono text-xs text-neon-blue hover:text-white transition-colors duration-200 tracking-wider py-3"
                 >
                   <Building2 size={16} />
                   <span>Imobverse</span>
@@ -221,7 +221,7 @@ export default function Header() {
                   await logoutAction();
                   window.location.href = '/';
                 }}
-                className="flex items-center gap-3 font-mono text-xs text-slate-400 hover:text-neon-purple transition-colors duration-200 tracking-wider py-3"
+                className="flex items-center gap-3 font-mono text-xs text-slate-400 hover:text-neon-blue transition-colors duration-200 tracking-wider py-3"
               >
                 <LogOut size={16} />
                 <span>Logout</span>

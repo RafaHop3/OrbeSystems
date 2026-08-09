@@ -815,7 +815,7 @@ export default function VdeUserDashboard() {
                       <div className="text-[10px] text-white/40 uppercase">Nível de Acesso</div>
                       <div className="flex items-center gap-1.5 mt-0.5">
                         {user?.role === 'premium' ? (
-                          <span className="text-neon-purple font-bold flex items-center gap-1">
+                          <span className="text-neon-blue font-bold flex items-center gap-1">
                             <Zap size={12} /> PREMIUM ADMIN
                           </span>
                         ) : (
@@ -836,7 +836,7 @@ export default function VdeUserDashboard() {
                   {user?.role !== 'premium' && (
                     <a
                       href="/assinar"
-                      className="block text-center w-full py-2 bg-gradient-to-r from-neon-purple to-neon-blue text-white rounded-lg font-mono text-xs font-bold hover:shadow-neon-purple transition-all"
+                      className="block text-center w-full py-2 bg-gradient-to-r from-neon-blue to-neon-blue text-white rounded-lg font-mono text-xs font-bold hover:shadow-neon-blue transition-all"
                     >
                       Adquirir Licença Premium
                     </a>
@@ -1227,7 +1227,7 @@ export default function VdeUserDashboard() {
                         value={compressOutput}
                         readOnly
                         placeholder="Buffer compactado..."
-                        className="w-full h-24 bg-black/75 border border-white/10 rounded p-2.5 font-mono text-[10px] text-neon-purple outline-none resize-none"
+                        className="w-full h-24 bg-black/75 border border-white/10 rounded p-2.5 font-mono text-[10px] text-neon-blue outline-none resize-none"
                       />
                     </div>
                   </div>
@@ -1294,7 +1294,7 @@ export default function VdeUserDashboard() {
                               {repo.name}
                             </span>
                             {repo.is_featured && (
-                              <span className="font-mono text-[9px] text-neon-purple px-1.5 py-0.5 rounded border border-neon-purple/20 bg-neon-purple/5">
+                              <span className="font-mono text-[9px] text-neon-blue px-1.5 py-0.5 rounded border border-neon-blue/20 bg-neon-blue/5">
                                 DESTAQUE
                               </span>
                             )}
@@ -1456,7 +1456,7 @@ export default function VdeUserDashboard() {
                                       <tr className="bg-black/60">
                                         <td colSpan={5} className="p-3 text-[10px] text-terminal-muted border-t border-b border-white/5">
                                           <div className="flex gap-2 items-start pl-4">
-                                            <span className="text-neon-purple font-bold">PAYLOAD:</span>
+                                            <span className="text-neon-blue font-bold">PAYLOAD:</span>
                                             <pre className="text-neon-green/90 whitespace-pre-wrap leading-relaxed max-w-full overflow-x-auto">
                                               {JSON.stringify(evt.details)}
                                             </pre>
@@ -1631,7 +1631,7 @@ function GracefulFailureView({ onReconnect, isReconnecting }: GracefulFailureVie
   return (
     <div className="relative min-h-[500px] w-full flex flex-col lg:flex-row items-center justify-center gap-8 py-8 px-4 bg-[#0a0c10]/40 rounded-xl overflow-hidden">
       {/* Background stars / cosmic dust */}
-      <div className="absolute inset-0 bg-radial-gradient from-purple-900/10 via-transparent to-transparent pointer-events-none opacity-40" />
+      <div className="absolute inset-0 bg-radial-gradient from-blue-900/10 via-transparent to-transparent pointer-events-none opacity-40" />
 
       {/* Side Panel: CODEX ORBE */}
       <div className="w-full lg:w-64 bg-[#161b22]/50 border border-white/5 rounded-xl p-5 font-mono text-xs flex flex-col justify-between h-auto lg:h-[380px] shrink-0">
@@ -1672,11 +1672,11 @@ function GracefulFailureView({ onReconnect, isReconnecting }: GracefulFailureVie
       >
         {/* Glowing border overlays */}
         <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-neon-purple/50 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-neon-blue/50 to-transparent" />
 
         {/* Top left card indicator inside the card */}
         <div className="absolute top-4 left-4 flex items-center gap-2">
-          <Link2Off className="text-neon-purple animate-pulse" size={16} />
+          <Link2Off className="text-neon-blue animate-pulse" size={16} />
           <span className="font-mono text-[9px] text-white/45 tracking-widest">ERROR_CODE: 0x500_CORS</span>
         </div>
 
@@ -1688,7 +1688,7 @@ function GracefulFailureView({ onReconnect, isReconnecting }: GracefulFailureVie
           <h2 className="font-mono text-base md:text-lg font-bold text-white tracking-wider uppercase flex items-center justify-center gap-2">
             CONEXÃO ORBE: SINAL INTERROMPIDO
           </h2>
-          <p className="font-mono text-xs text-neon-purple font-semibold tracking-wide">
+          <p className="font-mono text-xs text-neon-blue font-semibold tracking-wide">
             Integridade do Backend: Falha (HTTP 500/CORS)
           </p>
           <p className="font-sans text-xs text-terminal-muted max-w-md mx-auto leading-relaxed">
@@ -1701,7 +1701,7 @@ function GracefulFailureView({ onReconnect, isReconnecting }: GracefulFailureVie
           <button
             onClick={onReconnect}
             disabled={isReconnecting}
-            className="w-full py-3 bg-gradient-to-r from-neon-cyan/10 to-neon-purple/10 hover:from-neon-cyan/20 hover:to-neon-purple/20 border border-neon-cyan/40 hover:border-neon-purple/60 rounded-xl font-mono text-xs font-bold text-[#00f2fe] tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(0,242,254,0.1)] hover:shadow-[0_0_25px_rgba(255,0,127,0.2)] flex items-center justify-center gap-2"
+            className="w-full py-3 bg-gradient-to-r from-neon-cyan/10 to-neon-blue/10 hover:from-neon-cyan/20 hover:to-neon-blue/20 border border-neon-cyan/40 hover:border-neon-blue/60 rounded-xl font-mono text-xs font-bold text-[#00f2fe] tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(0,242,254,0.1)] hover:shadow-[0_0_25px_rgba(255,0,127,0.2)] flex items-center justify-center gap-2"
           >
             {isReconnecting ? (
               <>

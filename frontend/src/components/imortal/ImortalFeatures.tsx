@@ -63,7 +63,7 @@ export default function ImortalFeatures() {
       title: 'Sandbox Fuzzing',
       subtitle: 'Simulação Estocástica',
       description: 'Executa 150 ciclos estocásticos de fuzzing dentro de uma sandbox bare-metal virtualizada para stressar a integridade lógica sob entradas imprevisíveis.',
-      colorClass: 'neon-purple',
+      colorClass: 'neon-blue',
       glowClass: 'shadow-[0_0_30px_rgba(189,0,255,0.1)]',
     },
     {
@@ -96,7 +96,7 @@ export default function ImortalFeatures() {
     <section id="imortal-features" className="relative py-20 px-6 border-t border-terminal-border/20 bg-black/20">
       {/* Background decoration */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-neon-cyan/5 rounded-full filter blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-neon-purple/5 rounded-full filter blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-neon-blue/5 rounded-full filter blur-[100px] pointer-events-none" />
 
       <div className="max-w-6xl w-full mx-auto space-y-12 relative z-10">
         {/* Section Title */}

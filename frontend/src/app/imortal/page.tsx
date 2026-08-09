@@ -390,7 +390,7 @@ export default function ImortalPage() {
         {/* Line */}
         <path
           d={`M ${points.join(' L ')}`}
-          className="fill-none stroke-neon-purple" strokeWidth="2"
+          className="fill-none stroke-neon-blue" strokeWidth="2"
         />
         {/* Dots */}
         {points.map((pt, i) => {
@@ -399,7 +399,7 @@ export default function ImortalPage() {
             <circle
               key={`dot-${i}`}
               cx={x} cy={y} r="3"
-              className="fill-neon-purple stroke-white" strokeWidth="1"
+              className="fill-neon-blue stroke-white" strokeWidth="1"
             />
           );
         })}
@@ -417,12 +417,12 @@ export default function ImortalPage() {
         <aside className="w-full md:w-64 flex-shrink-0 flex flex-col gap-4">
           <div className="bg-terminal-surface/90 border border-terminal-border rounded-lg p-5 flex flex-col gap-3">
             <div className="flex items-center gap-3 mb-2 border-b border-terminal-border pb-3">
-              <div className="w-7 h-7 rounded bg-neon-purple/20 flex items-center justify-center text-neon-purple">
+              <div className="w-7 h-7 rounded bg-neon-blue/20 flex items-center justify-center text-neon-blue">
                 <Crown size={15} />
               </div>
               <div>
                 <h2 className="font-mono text-xs font-bold text-white uppercase tracking-widest">IMORTAL</h2>
-                <p className="font-mono text-[9px] text-neon-purple tracking-widest uppercase">Premium Hub</p>
+                <p className="font-mono text-[9px] text-neon-blue tracking-widest uppercase">Premium Hub</p>
               </div>
             </div>
 
@@ -442,7 +442,7 @@ export default function ImortalPage() {
               onClick={() => setActiveTab('marketing')}
               className={`flex items-center gap-3 w-full py-2.5 px-3 rounded font-mono text-[11px] uppercase tracking-wider transition-all duration-200 text-left
                 ${activeTab === 'marketing'
-                  ? 'bg-neon-purple/10 border border-neon-purple/40 text-neon-purple'
+                  ? 'bg-neon-blue/10 border border-neon-blue/40 text-neon-blue'
                   : 'text-terminal-muted hover:text-white hover:bg-white/5 border border-transparent'
                 }`}
             >
@@ -479,7 +479,7 @@ export default function ImortalPage() {
           <div className="bg-terminal-surface/60 border border-terminal-border/50 rounded-lg p-5 font-mono text-[10px] text-terminal-muted space-y-2">
             <div className="flex justify-between">
               <span>NÍVEL DE ACESSO:</span>
-              <span className="text-neon-purple font-bold">PREMIUM</span>
+              <span className="text-neon-blue font-bold">PREMIUM</span>
             </div>
             <div className="flex justify-between">
               <span>STATUS DA API:</span>
@@ -498,7 +498,7 @@ export default function ImortalPage() {
           <button
             onClick={handleDownloadSDK}
             disabled={downloadingSdk}
-            className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-neon-purple/20 border border-neon-purple/50 rounded font-mono text-[10px] font-bold text-neon-purple hover:bg-neon-purple/35 hover:text-white uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(189,0,255,0.15)] disabled:opacity-50"
+            className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-neon-blue/20 border border-neon-blue/50 rounded font-mono text-[10px] font-bold text-neon-blue hover:bg-neon-blue/35 hover:text-white uppercase tracking-widest transition-all duration-300 shadow-[0_0_15px_rgba(189,0,255,0.15)] disabled:opacity-50"
           >
             <Download size={12} className={downloadingSdk ? "animate-spin" : ""} />
             <span>{downloadingSdk ? "Baixando..." : "Baixar Core SDK"}</span>
@@ -518,7 +518,7 @@ export default function ImortalPage() {
               </span>
             </div>
             <div className="text-[10px] font-mono text-terminal-muted flex items-center gap-1.5 border border-terminal-border rounded px-2.5 py-1">
-              <Lock size={10} className="text-neon-purple" />
+              <Lock size={10} className="text-neon-blue" />
               <span>AES-256 SECURED CONNECTION</span>
             </div>
           </div>
@@ -698,7 +698,7 @@ export default function ImortalPage() {
               <div className="flex flex-col gap-6 animate-fade-in">
                 <div>
                   <h1 className="font-mono text-xl font-bold text-white flex items-center gap-2">
-                    <BarChart2 size={20} className="text-neon-purple" />
+                    <BarChart2 size={20} className="text-neon-blue" />
                     Marketing Analytics &amp; ROI
                   </h1>
                   <p className="text-xs text-terminal-muted mt-1 leading-relaxed">
@@ -712,20 +712,20 @@ export default function ImortalPage() {
                     onChange={(e) => setMarketingInput(e.target.value)}
                     rows={4}
                     placeholder="Ex: SaaS B2B de automação financeira para escritórios de contabilidade no Brasil. Preço da assinatura: R$150/mês. Orçamento mensal planejado para Google e LinkedIn Ads: R$10.000..."
-                    className="w-full bg-black/40 border border-terminal-border/60 hover:border-neon-purple/50 focus:border-neon-purple focus:outline-none p-4 font-mono text-xs rounded transition-colors text-white leading-relaxed"
+                    className="w-full bg-black/40 border border-terminal-border/60 hover:border-neon-blue/50 focus:border-neon-blue focus:outline-none p-4 font-mono text-xs rounded transition-colors text-white leading-relaxed"
                   />
                   <div className="flex justify-between items-center gap-4">
                     <div className="flex flex-wrap gap-1.5">
                       <span className="font-mono text-[9px] text-terminal-muted pt-1">EXEMPLOS:</span>
                       <button
                         onClick={() => setMarketingInput('E-commerce de roupas sustentáveis focado em mulheres de 22-35 anos no Instagram. Ticket médio R$180, orçamento de marketing de R$5.000/mês.')}
-                        className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-neon-purple hover:border-neon-purple/40 bg-white/5 transition-colors"
+                        className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-neon-blue hover:border-neon-blue/40 bg-white/5 transition-colors"
                       >
                         Loja D2C
                       </button>
                       <button
                         onClick={() => setMarketingInput('Consultoria de segurança de redes empresariais focando em grandes corporações do setor financeiro. Contratos médios de R$50.000, vendas B2B offline.')}
-                        className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-neon-purple hover:border-neon-purple/40 bg-white/5 transition-colors"
+                        className="font-mono text-[9px] border border-terminal-border px-2 py-0.5 rounded text-terminal-muted hover:text-neon-blue hover:border-neon-blue/40 bg-white/5 transition-colors"
                       >
                         B2B Enterprise
                       </button>
@@ -733,7 +733,7 @@ export default function ImortalPage() {
                     <button
                       onClick={handleAnalyzeMarketing}
                       disabled={loading || !marketingInput.trim()}
-                      className="flex items-center gap-2 font-mono text-xs font-bold tracking-wider uppercase bg-neon-purple/15 text-neon-purple border border-neon-purple/40 hover:bg-neon-purple/25 hover:border-neon-purple px-5 py-2.5 rounded transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
+                      className="flex items-center gap-2 font-mono text-xs font-bold tracking-wider uppercase bg-neon-blue/15 text-neon-blue border border-neon-blue/40 hover:bg-neon-blue/25 hover:border-neon-blue px-5 py-2.5 rounded transition-all duration-300 disabled:opacity-40 disabled:pointer-events-none"
                     >
                       <Play size={12} />
                       Analisar Mercado
@@ -747,7 +747,7 @@ export default function ImortalPage() {
                     {/* KPI Trio */}
                     <div className="bg-[#12161f]/40 border border-terminal-border/30 rounded-lg p-4 text-center">
                       <span className="font-mono text-[9px] text-terminal-muted tracking-widest uppercase">ROI PROJETADO</span>
-                      <div className="font-mono text-2xl font-bold text-neon-purple mt-1">
+                      <div className="font-mono text-2xl font-bold text-neon-blue mt-1">
                         {marketingData.financial_metrics?.roi?.value}%
                       </div>
                       <span className="font-mono text-[8px] text-terminal-muted/60 uppercase">Em {marketingData.financial_metrics?.roi?.timeframe}</span>
@@ -772,7 +772,7 @@ export default function ImortalPage() {
                     {/* Strategic Analysis */}
                     <div className="bg-[#12161f]/30 border border-terminal-border/30 rounded-lg p-5 col-span-3">
                       <div className="border-b border-terminal-border/40 pb-2 mb-3 flex items-center gap-2">
-                        <Sparkles size={14} className="text-neon-purple" />
+                        <Sparkles size={14} className="text-neon-blue" />
                         <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">Resumo do Diagnóstico Financeiro</h3>
                       </div>
                       <p className="font-mono text-xs text-terminal-muted leading-relaxed">{marketingData.summary}</p>
@@ -781,7 +781,7 @@ export default function ImortalPage() {
                     {/* Table Metrics */}
                     <div className="bg-[#12161f]/30 border border-terminal-border/30 rounded-lg p-5 col-span-1 flex flex-col gap-4">
                       <div className="border-b border-terminal-border/40 pb-2 flex items-center gap-2">
-                        <BarChart2 size={14} className="text-neon-purple" />
+                        <BarChart2 size={14} className="text-neon-blue" />
                         <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">Métricas Detalhadas</h3>
                       </div>
                       <div className="space-y-3 font-mono text-xs">
@@ -811,7 +811,7 @@ export default function ImortalPage() {
                     {/* Channels Allocation */}
                     <div className="bg-[#12161f]/30 border border-terminal-border/30 rounded-lg p-5 col-span-2 flex flex-col gap-4">
                       <div className="border-b border-terminal-border/40 pb-2 flex items-center gap-2">
-                        <PieChart size={14} className="text-neon-purple" />
+                        <PieChart size={14} className="text-neon-blue" />
                         <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">Distribuição de Canais Recomendados</h3>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -819,11 +819,11 @@ export default function ImortalPage() {
                           <div key={i} className="bg-black/30 border border-terminal-border/30 p-3 rounded">
                             <div className="flex justify-between font-mono text-xs mb-1.5">
                               <span className="font-semibold text-white">{chan.name}</span>
-                              <span className="text-neon-purple font-bold">{chan.percentage}%</span>
+                              <span className="text-neon-blue font-bold">{chan.percentage}%</span>
                             </div>
                             {/* Simple Progress Bar */}
                             <div className="w-full bg-white/5 h-1.5 rounded overflow-hidden mb-2">
-                              <div className="bg-neon-purple h-full" style={{ width: `${chan.percentage}%` }} />
+                              <div className="bg-neon-blue h-full" style={{ width: `${chan.percentage}%` }} />
                             </div>
                             <p className="font-mono text-[9px] text-terminal-muted leading-relaxed">{chan.rationale}</p>
                           </div>
@@ -834,7 +834,7 @@ export default function ImortalPage() {
                     {/* Growth Projections */}
                     <div className="bg-[#12161f]/30 border border-terminal-border/30 rounded-lg p-5 col-span-3 flex flex-col gap-4">
                       <div className="border-b border-terminal-border/40 pb-2 flex items-center gap-2">
-                        <BarChart2 size={14} className="text-neon-purple" />
+                        <BarChart2 size={14} className="text-neon-blue" />
                         <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">Curva de Crescimento de Receita (12 Meses)</h3>
                       </div>
                       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
@@ -847,7 +847,7 @@ export default function ImortalPage() {
                             <div key={i} className="flex justify-between border-b border-white/5 py-1">
                               <span className="text-terminal-muted">Mês {g.month}</span>
                               <span className="text-white">R$ {g.revenue.toLocaleString()}</span>
-                              <span className="text-neon-purple">{g.customers} cli</span>
+                              <span className="text-neon-blue">{g.customers} cli</span>
                             </div>
                           ))}
                         </div>
@@ -857,13 +857,13 @@ export default function ImortalPage() {
                     {/* Insights list */}
                     <div className="bg-[#12161f]/30 border border-terminal-border/30 rounded-lg p-5 col-span-3 flex flex-col gap-4">
                       <div className="border-b border-terminal-border/40 pb-2 flex items-center gap-2">
-                        <Sparkles size={14} className="text-neon-purple" />
+                        <Sparkles size={14} className="text-neon-blue" />
                         <h3 className="font-mono text-xs font-bold text-white uppercase tracking-wider">Insights Táticos &amp; Recomendações</h3>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         {marketingData.insights?.map((ins: string, i: number) => (
                           <div key={i} className="bg-black/30 border border-terminal-border/40 p-4 rounded flex flex-col gap-2">
-                            <span className="font-mono text-xl font-black text-neon-purple/40">0{i + 1}</span>
+                            <span className="font-mono text-xl font-black text-neon-blue/40">0{i + 1}</span>
                             <p className="font-mono text-[10px] text-terminal-muted leading-relaxed">{ins}</p>
                           </div>
                         ))}

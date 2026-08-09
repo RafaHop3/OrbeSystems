@@ -23,7 +23,7 @@ export default function InovacoesPage() {
   return (
     <main className="min-h-screen bg-transparent text-gray-100">
       {/* Background Matrix/Nebula Glows */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-1/3 right-1/4 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-10 left-10 w-[300px] h-[300px] bg-pink-500/5 rounded-full blur-[80px] pointer-events-none" />
 
@@ -31,11 +31,11 @@ export default function InovacoesPage() {
 
       {/* Hero Header */}
       <section className="relative pt-24 pb-16 px-4 max-w-6xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-purple-500/30 bg-purple-500/5 text-purple-300 text-xs font-mono font-bold tracking-wider mb-6 animate-pulse uppercase">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full border border-blue-500/30 bg-blue-500/5 text-blue-300 text-xs font-mono font-bold tracking-wider mb-6 animate-pulse uppercase">
           <Atom size={12} className="text-pink-400" /> Engenharia Científica & Formal
         </div>
         <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6 leading-none">
-          Nossas <span className="bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 bg-clip-text text-transparent">Inovações Tecnológicas</span>
+          Nossas <span className="bg-gradient-to-r from-cyan-400 via-blue-400 to-pink-500 bg-clip-text text-transparent">Inovações Tecnológicas</span>
         </h1>
         <p className="text-sm sm:text-lg text-gray-400 max-w-3xl mx-auto leading-relaxed font-light">
           A Orbe Systems opera na fronteira da computação científica e do design premium. Veja como integramos provas matemáticas de hardware, compiladores de linguagem natural e infraestrutura de custo zero.
@@ -48,7 +48,7 @@ export default function InovacoesPage() {
           <button
             onClick={() => setActiveTab('imortal')}
             className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 ${activeTab === 'imortal'
-                ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-cyan-500/30 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.15)]'
+                ? 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-cyan-500/30 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.15)]'
                 : 'border border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5'
               }`}
           >
@@ -57,7 +57,7 @@ export default function InovacoesPage() {
           <button
             onClick={() => setActiveTab('infra')}
             className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs sm:text-sm font-extrabold transition-all duration-300 ${activeTab === 'infra'
-                ? 'bg-gradient-to-r from-purple-500/20 to-cyan-500/20 border border-cyan-500/30 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.15)]'
+                ? 'bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-cyan-500/30 text-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.15)]'
                 : 'border border-transparent text-gray-500 hover:text-gray-300 hover:bg-white/5'
               }`}
           >
@@ -80,14 +80,14 @@ export default function InovacoesPage() {
               </div>
               <div className="space-y-3 font-mono text-xs text-gray-300">
                 <div className="bg-black/30 p-3 rounded-lg border border-white/5">
-                  <span className="text-purple-400"># Z3 Prover Setup</span><br />
+                  <span className="text-blue-400"># Z3 Prover Setup</span><br />
                   <span className="text-blue-400">from</span> z3 <span className="text-blue-400">import</span> *<br />
                   s = Solver()<br />
                   temp = Int(<span className="text-yellow-300">'temp'</span>)<br />
                   valvula = Bool(<span className="text-yellow-300">'valvula'</span>)
                 </div>
                 <div className="bg-black/30 p-3 rounded-lg border border-white/5 space-y-1">
-                  <span className="text-purple-400"># Safety Assertions</span><br />
+                  <span className="text-blue-400"># Safety Assertions</span><br />
                   <div>s.add(temp &gt; 120)</div>
                   <div>s.add(valvula == <span className="text-blue-400">False</span>)</div>
                   <div className="text-red-400 font-bold border-l-2 border-red-500 pl-2 mt-1">
@@ -128,7 +128,7 @@ export default function InovacoesPage() {
                   </p>
                 </div>
                 <div className="p-4 bg-white/5 border border-white/5 rounded-2xl space-y-2">
-                  <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                  <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
                     <Terminal size={16} /> Compilador AVR de Linguagem Natural
                   </div>
                   <p className="text-xs text-gray-400 leading-relaxed">
@@ -198,7 +198,7 @@ export default function InovacoesPage() {
                   </p>
                 </div>
                 <div className="p-4 bg-white/5 border border-white/5 rounded-2xl space-y-2">
-                  <div className="flex items-center gap-2 text-purple-400 font-bold text-sm">
+                  <div className="flex items-center gap-2 text-blue-400 font-bold text-sm">
                     <ShieldCheck size={16} /> Segurança RLS Gateway
                   </div>
                   <p className="text-xs text-gray-400 leading-relaxed">
@@ -229,7 +229,7 @@ export default function InovacoesPage() {
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
             <Link
               href="/kids"
-              className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg hover:scale-[1.03] transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-pink-600 hover:from-blue-500 hover:to-pink-500 text-white font-bold text-sm px-6 py-3 rounded-xl shadow-lg hover:scale-[1.03] transition-all flex items-center justify-center gap-2"
             >
               Ir para o Kids Studio <ChevronRight size={16} />
             </Link>

@@ -23,9 +23,9 @@ export default function AuraPanel() {
     };
 
     return (
-        <div className="border border-neon-purple/20 bg-neon-purple/5 p-5 animate-in fade-in zoom-in duration-500">
-            <h2 className="text-xs font-bold border-b border-neon-purple/10 pb-3 mb-6 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-neon-purple uppercase tracking-widest">
+        <div className="border border-neon-blue/20 bg-neon-blue/5 p-5 animate-in fade-in zoom-in duration-500">
+            <h2 className="text-xs font-bold border-b border-neon-blue/10 pb-3 mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-neon-blue uppercase tracking-widest">
                     <BrainCircuit size={14} /> AURA (Automated Risk Auditor)
                 </div>
             </h2>
@@ -39,27 +39,27 @@ export default function AuraPanel() {
                     <button
                         onClick={startScan}
                         disabled={scanning}
-                        className="w-full py-3 border border-neon-purple text-neon-purple uppercase tracking-widest text-xs font-bold hover:bg-neon-purple hover:text-black transition-all disabled:opacity-50"
+                        className="w-full py-3 border border-neon-blue text-neon-blue uppercase tracking-widest text-xs font-bold hover:bg-neon-blue hover:text-black transition-all disabled:opacity-50"
                     >
                         {scanning ? 'Mapeando Repositórios...' : 'Iniciar Varredura SAST 3D'}
                     </button>
 
                     {scanning && (
                         <div className="space-y-1">
-                            <div className="flex justify-between text-[9px] text-neon-purple/70">
+                            <div className="flex justify-between text-[9px] text-neon-blue/70">
                                 <span>Construindo Matriz Neuronal</span>
                                 <span>{progress}%</span>
                             </div>
-                            <div className="w-full h-0.5 bg-neon-purple/20">
-                                <div className="h-full bg-neon-purple transition-all duration-300" style={{ width: `${progress}%` }} />
+                            <div className="w-full h-0.5 bg-neon-blue/20">
+                                <div className="h-full bg-neon-blue transition-all duration-300" style={{ width: `${progress}%` }} />
                             </div>
                         </div>
                     )}
                 </div>
 
-                <div className="border border-neon-purple/20 bg-black p-4 flex flex-col items-center justify-center relative overflow-hidden min-h-[150px]">
+                <div className="border border-neon-blue/20 bg-black p-4 flex flex-col items-center justify-center relative overflow-hidden min-h-[150px]">
                     {/* Faux 3D visual */}
-                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neon-purple/10 to-transparent" />
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neon-blue/10 to-transparent" />
 
                     <div className="relative z-10 flex flex-col items-center text-center space-y-2">
                         {progress === 100 ? (
@@ -69,11 +69,11 @@ export default function AuraPanel() {
                             </>
                         ) : scanning ? (
                             <>
-                                <ScanSearch size={32} className="text-neon-purple animate-pulse" />
-                                <span className="text-[10px] text-neon-purple/70 tracking-widest animate-pulse">RENDERIZANDO NÓS ESTRUTURAIS...</span>
+                                <ScanSearch size={32} className="text-neon-blue animate-pulse" />
+                                <span className="text-[10px] text-neon-blue/70 tracking-widest animate-pulse">RENDERIZANDO NÓS ESTRUTURAIS...</span>
                             </>
                         ) : (
-                            <span className="text-[10px] text-neon-purple/40 italic">Aguardando inserção de código...</span>
+                            <span className="text-[10px] text-neon-blue/40 italic">Aguardando inserção de código...</span>
                         )}
                     </div>
                 </div>

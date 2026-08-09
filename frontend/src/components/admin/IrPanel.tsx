@@ -106,7 +106,7 @@ export default function IrPanel({ apiUrl, token }: { apiUrl: string; token: stri
                         { label: 'Open', val: metrics.total_open, cls: 'text-orange-400 border-orange-500/30' },
                         { label: 'Closed', val: metrics.total_closed, cls: 'text-neon-green border-neon-green/30' },
                         { label: 'MTTR', val: metrics.avg_mttr_human ?? '—', cls: 'text-neon-cyan border-neon-cyan/30' },
-                        { label: 'Shift-Left Updates', val: metrics.retroalimentacao?.total_shift_left_updates ?? 0, cls: 'text-purple-400 border-purple-500/30' },
+                        { label: 'Shift-Left Updates', val: metrics.retroalimentacao?.total_shift_left_updates ?? 0, cls: 'text-blue-400 border-blue-500/30' },
                     ].map(({ label, val, cls }) => (
                         <div key={label} className={`border p-3 text-center ${cls}`}>
                             <div className="text-xl font-bold">{val}</div>

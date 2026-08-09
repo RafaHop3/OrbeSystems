@@ -4,26 +4,32 @@ import { useState, useRef, useEffect } from 'react';
 import { Send, X, Bot, Activity } from 'lucide-react';
 
 // ── Ultra-Stable CSS Cyberpunk Core ──
-const RobotCoreWidget = ({ isThinking = false }: { isThinking?: boolean }) => {
+const RobotCoreWidget = ({ isOpen, isThinking = false }: { isOpen: boolean; isThinking?: boolean }) => {
   return (
-    <div className={`relative w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center cursor-pointer transition-all duration-300 ${isThinking ? 'scale-110 shadow-[0_0_50px_rgba(255,0,255,0.6)]' : 'hover:scale-105 shadow-[0_0_30px_rgba(0,255,204,0.3)] hover:shadow-[0_0_40px_rgba(0,255,204,0.6)]'}`}>
+    <div className={`group relative w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center cursor-pointer transition-all duration-700 ${isOpen ? 'scale-110' : 'hover:scale-105'}`}>
 
-      {/* Outer Rotating Ring */}
-      <div className={`absolute inset-0 rounded-full border-2 border-dashed ${isThinking ? 'border-neon-purple animate-[spin_2s_linear_infinite]' : 'border-neon-cyan/50 animate-[spin_8s_linear_infinite]'}`} />
+      {/* The Sun (Glowing Backdrop Base) */}
+      <div className={`absolute inset-0 rounded-full bg-neon-cyan shadow-[0_0_20px_rgba(0,242,254,0.3)] transition-all duration-700 ease-in-out
+        ${isOpen ? 'shadow-[0_0_80px_rgba(0,242,254,0.8)] scale-105' : 'group-hover:shadow-[0_0_40px_rgba(0,242,254,0.6)]'}
+      `} />
 
-      {/* Middle Counter-Rotating Ring */}
-      <div className={`absolute inset-2 rounded-full border border-dotted ${isThinking ? 'border-neon-purple animate-[spin_1.5s_linear_reverse_infinite]' : 'border-neon-green/40 animate-[spin_12s_linear_reverse_infinite]'}`} />
-
-      {/* Inner Glowing Core */}
-      <div className={`absolute inset-4 rounded-full bg-black flex items-center justify-center border ${isThinking ? 'border-neon-purple/80' : 'border-neon-cyan/80'}`}>
-        <div className={`w-full h-full rounded-full transition-all duration-300 ${isThinking ? 'bg-neon-purple/40 animate-pulse' : 'bg-neon-cyan/20'} flex items-center justify-center`}>
-          <Activity size={18} className={isThinking ? 'text-neon-purple animate-bounce' : 'text-neon-cyan'} />
-        </div>
+      {/* The Moon (Dark sliding circle) */}
+      <div className={`absolute bg-[#030508] transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] z-10 flex items-center justify-center rounded-full
+        ${isOpen
+          ? 'inset-0 scale-100 border-2 border-neon-cyan/40 shadow-inner'
+          : 'inset-0.5 translate-x-4 -translate-y-2 scale-90 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:scale-95'}
+      `}>
+        {isOpen ? (
+          <Activity size={24} className="text-neon-cyan animate-pulse drop-shadow-[0_0_8px_rgba(0,242,254,1)]" />
+        ) : (
+          <Activity size={18} className="text-neon-cyan/20 opacity-0 group-hover:opacity-100 transition-opacity delay-200 duration-500" />
+        )}
       </div>
 
-      {/* Decorative Sparkles (CSS Ping) */}
-      <div className={`absolute top-0 right-1 w-2 h-2 rounded-full ${isThinking ? 'bg-neon-purple' : 'bg-neon-green'} animate-ping`} />
-      <div className={`absolute bottom-1 left-2 w-1.5 h-1.5 rounded-full ${isThinking ? 'bg-neon-purple' : 'bg-neon-cyan'} animate-ping`} style={{ animationDelay: '500ms' }} />
+      {/* Corona / Flare Effect (Activates on total eclipse) */}
+      <div className={`absolute inset-[-12px] rounded-full border border-neon-cyan/0 transition-all duration-700 pointer-events-none
+        ${isOpen ? 'animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] border-neon-cyan/60' : 'group-hover:border-neon-cyan/10 group-hover:scale-110'}
+      `} />
     </div>
   );
 };
@@ -119,12 +125,12 @@ export default function OrbeAssistant() {
             ))}
             {isThinking && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] p-3 rounded-md bg-white/5 text-neon-purple border border-neon-purple/30 flex items-center gap-2 italic">
+                <div className="max-w-[85%] p-3 rounded-md bg-white/5 text-neon-blue border border-neon-blue/30 flex items-center gap-2 italic">
                   <span className="animate-pulse">Processando</span>
                   <span className="flex gap-0.5 mt-1">
-                    <div className="w-1 h-1 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                    <div className="w-1 h-1 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                    <div className="w-1 h-1 bg-neon-purple rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    <div className="w-1 h-1 bg-neon-blue rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-1 h-1 bg-neon-blue rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-1 h-1 bg-neon-blue rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                   </span>
                 </div>
               </div>
@@ -155,7 +161,7 @@ export default function OrbeAssistant() {
 
       {/* Robot Core Toggle */}
       <div onClick={() => setIsOpen(!isOpen)} className="pointer-events-auto">
-        <RobotCoreWidget isThinking={isThinking && isOpen} />
+        <RobotCoreWidget isOpen={isOpen} isThinking={isThinking} />
       </div>
     </div>
   );

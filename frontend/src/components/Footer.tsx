@@ -46,7 +46,7 @@ export default function Footer() {
 
           {/* Social links & Contact */}
           <div id="contact" className="flex flex-col md:flex-row items-center gap-6">
-            <div className="flex items-center gap-2 text-neon-purple font-mono text-xs hidden md:flex border border-glow-purple px-4 py-1.5 rounded-full bg-black/40">
+            <div className="flex items-center gap-2 text-neon-blue font-mono text-xs hidden md:flex border border-glow-purple px-4 py-1.5 rounded-full bg-black/40">
               <Command size={14} /> SYS.CONTACT
             </div>
             <a
@@ -68,7 +68,7 @@ export default function Footer() {
               <button
                 onClick={handleCopyEmail}
                 aria-label="Copy Email"
-                className="w-10 h-10 rounded border border-glow-purple/30 text-neon-purple flex items-center justify-center transition-all duration-300 hover:text-neon-purple hover:border-glow-purple hover:shadow-neon-cyan bg-black/50"
+                className="w-10 h-10 rounded border border-glow-purple/30 text-neon-blue flex items-center justify-center transition-all duration-300 hover:text-neon-blue hover:border-glow-purple hover:shadow-neon-cyan bg-black/50"
               >
                 <Mail size={16} />
               </button>

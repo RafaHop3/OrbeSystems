@@ -187,14 +187,14 @@ function highlight(code: string, lang: string): string {
     s = s
       .replace(/("""[\s\S]*?""")/g, '<span class="text-yellow-400/80">$1</span>')
       .replace(/(#[^\n]*)/g, '<span class="text-terminal-muted/70 italic">$1</span>')
-      .replace(/\b(from|import|def|class|return|async|await|if|else|elif|for|while|try|except|with|as|not|and|or|in|True|False|None|print|raise)\b/g, '<span class="text-neon-purple">$1</span>')
+      .replace(/\b(from|import|def|class|return|async|await|if|else|elif|for|while|try|except|with|as|not|and|or|in|True|False|None|print|raise)\b/g, '<span class="text-neon-blue">$1</span>')
       .replace(/(".*?"|'.*?')/g, '<span class="text-neon-green/90">$1</span>')
       .replace(/\b(\d+\.?\d*)\b/g, '<span class="text-orange-400">$1</span>')
       .replace(/(@\w+)/g, '<span class="text-neon-cyan">$1</span>');
   } else if (lang === 'tsx' || lang === 'ts' || lang === 'js') {
     s = s
       .replace(/(\/\/[^\n]*)/g, '<span class="text-terminal-muted/70 italic">$1</span>')
-      .replace(/\b(import|export|from|default|const|let|var|function|return|async|await|if|else|for|while|class|extends|typeof|type|interface|new|true|false|null|undefined)\b/g, '<span class="text-neon-purple">$1</span>')
+      .replace(/\b(import|export|from|default|const|let|var|function|return|async|await|if|else|for|while|class|extends|typeof|type|interface|new|true|false|null|undefined)\b/g, '<span class="text-neon-blue">$1</span>')
       .replace(/(`[^`]*`)/g, '<span class="text-neon-green/90">$1</span>')
       .replace(/(".*?"|'.*?')/g, '<span class="text-neon-green/90">$1</span>')
       .replace(/\b(\d+)\b/g, '<span class="text-orange-400">$1</span>')

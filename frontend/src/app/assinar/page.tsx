@@ -53,7 +53,7 @@ const PLANS = [
     id: "premium",
     label: "PREMIUM",
     price: "R$ 29/mês",
-    color: "#bc13fe",
+    color: "#00f2fe",
     glow: "rgba(188,19,254,0.2)",
     badge: "MAIS POPULAR",
     features: [
@@ -440,7 +440,7 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: "left",
   },
   bannerTitle: {
-    color: "#bc13fe",
+    color: "#00f2fe",
     fontSize: "18px",
     fontWeight: 700,
     marginBottom: "8px",

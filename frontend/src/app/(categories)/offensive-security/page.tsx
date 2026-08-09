@@ -7,7 +7,7 @@ export default function OffensiveSecurityPage() {
     <div className="space-y-8">
       <ScrollReveal variant="fade-up" delay={0}>
         <section className="space-y-4 font-mono">
-          <div className="flex items-center gap-3 text-neon-purple mb-2">
+          <div className="flex items-center gap-3 text-neon-blue mb-2">
             <Lock size={20} />
             <h1 className="text-2xl font-bold tracking-tight uppercase">Offensive Security</h1>
           </div>
@@ -17,7 +17,7 @@ export default function OffensiveSecurityPage() {
               <span className="text-neon-cyan">$</span> 
               <span>whoami</span>
             </p>
-            <div className="text-terminal-muted leading-relaxed space-y-4 border-l-2 border-neon-purple/30 pl-4 py-2 bg-neon-purple/5">
+            <div className="text-terminal-muted leading-relaxed space-y-4 border-l-2 border-neon-blue/30 pl-4 py-2 bg-neon-blue/5">
               <p>
                 &gt; Simulação de ataques reais (PENTESTING) para identificar vetores de invasão 
                 antes que atacantes mal-intencionados os explorem.
@@ -46,10 +46,10 @@ export default function OffensiveSecurityPage() {
                 { name: 'vulnerability-scanner', type: '-rwx------', size: '15MB' },
               ].map((item, i) => (
                 <ScrollReveal key={item.name} variant="fade-left" delay={i * 60}>
-                  <div className="group flex items-center justify-between p-2 hover:bg-neon-purple/5 rounded transition-colors cursor-default border border-transparent hover:border-neon-purple/10">
+                  <div className="group flex items-center justify-between p-2 hover:bg-neon-blue/5 rounded transition-colors cursor-default border border-transparent hover:border-neon-blue/10">
                     <div className="flex items-center gap-4">
-                      <span className="text-neon-purple/40">{item.type}</span>
-                      <span className="text-white group-hover:text-neon-purple transition-colors">{item.name}</span>
+                      <span className="text-neon-blue/40">{item.type}</span>
+                      <span className="text-white group-hover:text-neon-blue transition-colors">{item.name}</span>
                     </div>
                     <span className="text-terminal-muted/40">{item.size}</span>
                   </div>
@@ -64,13 +64,13 @@ export default function OffensiveSecurityPage() {
         <div className="pt-10 flex items-center justify-between">
           <Link 
             href="/" 
-            className="inline-flex items-center gap-2 text-xs text-terminal-muted hover:text-neon-purple transition-colors group font-mono"
+            className="inline-flex items-center gap-2 text-xs text-terminal-muted hover:text-neon-blue transition-colors group font-mono"
           >
             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
             <span>cd ..</span>
           </Link>
           <div className="flex items-center gap-2 opacity-20">
-            <Terminal size={12} className="text-neon-purple" />
+            <Terminal size={12} className="text-neon-blue" />
             <span className="font-mono text-[10px] uppercase">Unauthorized Access Restricted</span>
           </div>
         </div>

@@ -230,8 +230,8 @@ export default function CyberSecurityPage() {
                 <h2 className="text-lg font-bold text-white mt-1 uppercase">
                   {selectedService.title}
                 </h2>
-                <div className="text-[11px] text-neon-purple font-semibold italic mt-1.5 flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-neon-purple animate-pulse" />
+                <div className="text-[11px] text-neon-blue font-semibold italic mt-1.5 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-neon-blue animate-pulse" />
                   "{selectedService.hook}"
                 </div>
               </div>
@@ -312,7 +312,7 @@ export default function CyberSecurityPage() {
                     key={idx}
                     className={`
                       ${line.type === 'error' ? 'text-red-400 font-bold' : ''}
-                      ${line.type === 'warning' ? 'text-neon-purple font-semibold' : ''}
+                      ${line.type === 'warning' ? 'text-neon-blue font-semibold' : ''}
                       ${line.type === 'success' ? 'text-neon-green' : ''}
                       ${line.type === 'info' ? 'text-neon-cyan' : ''}
                     `}

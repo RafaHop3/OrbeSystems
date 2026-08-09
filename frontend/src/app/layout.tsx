@@ -5,6 +5,7 @@ import MouseAtomTrail from '@/components/MouseAtomTrail';
 import dynamic from 'next/dynamic';
 import LgpdBanner from '@/components/LgpdBanner';
 import WhatsappButton from '@/components/WhatsappButton';
+import VerticalMarquee from '@/components/VerticalMarquee';
 
 const OrbeAssistant = dynamic(() => import('@/components/OrbeAssistant'), { ssr: false });
 
@@ -38,6 +39,7 @@ export default function RootLayout({
         <MouseAtomTrail />
         {children}
         <OrbeAssistant />
+        <VerticalMarquee />
         <LgpdBanner />
         <WhatsappButton />
       </body>

@@ -134,9 +134,9 @@ export default function AiLogsPanel() {
 
                                 <div className="space-y-3">
                                     <div className="flex gap-2">
-                                        <MessageSquare size={12} className="text-neon-purple mt-0.5 shrink-0" />
+                                        <MessageSquare size={12} className="text-neon-blue mt-0.5 shrink-0" />
                                         <div className="text-[11px] text-white/80">
-                                            <span className="text-neon-purple font-bold">User:</span> {log.user_message}
+                                            <span className="text-neon-blue font-bold">User:</span> {log.user_message}
                                         </div>
                                     </div>
 

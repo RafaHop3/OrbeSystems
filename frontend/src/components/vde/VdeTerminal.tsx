@@ -394,7 +394,7 @@ export default function VdeTerminal() {
           {
             text: (
               <div className="flex items-center gap-2">
-                <User size={14} className="text-neon-purple" />
+                <User size={14} className="text-neon-blue" />
                 <span>Identidade: <strong className="text-white">{user?.email || 'anonimo@orbesystems.com.br'}</strong></span>
               </div>
             ),
@@ -700,7 +700,7 @@ export default function VdeTerminal() {
                   : line.type === 'error'
                     ? 'text-red-500 font-bold'
                     : line.type === 'warning'
-                      ? 'text-neon-purple'
+                      ? 'text-neon-blue'
                       : line.type === 'info'
                         ? 'text-neon-cyan'
                         : line.type === 'input'

@@ -8,7 +8,7 @@
   :root {
     --color-terminal-bg: 5, 5, 5;
     --color-neon-cyan: 0, 255, 245;
-    --color-neon-purple: 188, 19, 254;
+    --color-neon-blue: 188, 19, 254;
     --color-neon-green: 57, 255, 20;
     --color-neon-blue: 0, 102, 255;
   }
@@ -57,9 +57,9 @@ body {
     color: rgb(var(--color-neon-cyan));
     text-shadow: 0 0 15px rgba(var(--color-neon-cyan), 0.6);
   }
-  .text-neon-purple {
-    color: rgb(var(--color-neon-purple));
-    text-shadow: 0 0 15px rgba(var(--color-neon-purple), 0.6);
+  .text-neon-blue {
+    color: rgb(var(--color-neon-blue));
+    text-shadow: 0 0 15px rgba(var(--color-neon-blue), 0.6);
   }
   .text-neon-green {
     color: rgb(var(--color-neon-green));
@@ -92,8 +92,8 @@ body {
   }
   
   .border-glow-purple {
-    border-color: rgba(var(--color-neon-purple), 0.4);
-    box-shadow: 0 0 20px rgba(var(--color-neon-purple), 0.2);
+    border-color: rgba(var(--color-neon-blue), 0.4);
+    box-shadow: 0 0 20px rgba(var(--color-neon-blue), 0.2);
   }
 }
 

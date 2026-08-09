@@ -186,7 +186,7 @@ function JobResultCard({ job }: { job: Job }) {
               )}
               {job.action === 'security_audit' && (
                 <div className="space-y-1">
-                  <div><Shield size={9} className="inline mr-1 text-neon-purple" />
+                  <div><Shield size={9} className="inline mr-1 text-neon-blue" />
                     Score: <span className={`font-bold ${job.result.security_score >= 75 ? 'text-neon-green' : job.result.security_score >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
                       {job.result.security_score}/100 ({job.result.risk_level})</span>
                   </div>

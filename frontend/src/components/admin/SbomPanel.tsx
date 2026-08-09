@@ -8,7 +8,7 @@ const LICENSE_COLORS: Record<string, string> = {
     BSD: 'bg-blue-400',
     GPL: 'bg-red-500',
     LGPL: 'bg-orange-500',
-    ISC: 'bg-purple-400',
+    ISC: 'bg-blue-400',
     Other: 'bg-yellow-500',
 };
 
