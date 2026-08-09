@@ -20,8 +20,7 @@ export default function Header() {
   const { user, loading } = useAuth();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[100] glass-magnetic border-b-0 pb-[1px]">
-      <div className="absolute bottom-0 left-0 right-0 border-b border-glow-cyan"></div>
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/70">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-3 group z-50">
           <div className="relative w-9 h-9 rounded-full overflow-visible">
