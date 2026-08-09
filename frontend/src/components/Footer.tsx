@@ -81,9 +81,6 @@ export default function Footer() {
           <p className="font-mono text-xs text-slate-500">
             &copy; {year} The Orbe Systems. Todos os direitos reservados.
           </p>
-          <p className="font-mono text-[10px] tracking-widest text-neon-cyan/50">
-            orbesystems.com.br _
-          </p>
         </div>
       </div>
     </footer>
