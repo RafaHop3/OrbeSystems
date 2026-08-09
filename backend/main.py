@@ -29,6 +29,7 @@ from routes.audit_chain import router as audit_chain_router
 from routes.sbom import router as sbom_router
 from routes.ir import router as ir_router
 from routes.chat import router as chat_router
+from routes.optout import router as optout_router
 from security.auth import verify_password
 from security.supabase_rls import ensure_supabase_rls
 from sqlalchemy import inspect, text
@@ -48,6 +49,7 @@ import models.ueba_baseline    # Import to register ueba_baselines table
 import models.incident_report  # Import to register incident_reports table (IR lifecycle)
 import models.chat_logs        # Import to register ai_chat_logs table
 import models.test_event        # Import to register test_events table (required before run_migrations seeds it)
+import models.optout            # Import to register optout_requests table
 
 
 def run_migrations():
@@ -341,6 +343,7 @@ app.include_router(imortal_router, prefix="/api", tags=["imortal"])
 app.include_router(imobverse_router, prefix="/api", tags=["imobverse"])
 app.include_router(powershell_bot_router, prefix="/api", tags=["PowerShell Bot"])
 app.include_router(chat_router, prefix="/api", tags=["chat"])
+app.include_router(optout_router, prefix="/api/optout", tags=["data-broker-mvp"])
 from routes.suite_inteligente import router as suite_inteligente_router
 app.include_router(suite_inteligente_router)
 from routes.offline_agent import router as offline_agent_router
