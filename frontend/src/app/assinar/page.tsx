@@ -8,7 +8,7 @@
  * para a página de checkout seguro do Stripe.
  */
 
-import { useState, useTransition, Suspense } from "react";
+import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createCheckoutSessionAction } from "@/lib/auth-actions";
 
@@ -257,21 +257,7 @@ function AssinarPageContent() {
 }
 
 export default function AssinarPage() {
-  return (
-    <Suspense fallback={
-      <div style={styles.page}>
-        <div style={styles.grid} />
-        <div style={styles.container}>
-          <div style={styles.header}>
-            <div style={styles.badge}>UPGRADE_SYSTEM</div>
-            <h1 style={styles.title}>Carregando...</h1>
-          </div>
-        </div>
-      </div>
-    }>
-      <AssinarPageContent />
-    </Suspense>
-  );
+  return <AssinarPageContent />;
 }
 
 // ── Styles ────────────────────────────────────────────────────────────────────
