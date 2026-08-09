@@ -14,7 +14,7 @@ const BROKER_DATA: Record<string, { name: string; difficulty: string; type: stri
 
 // Generates correct SEO Tags dynamically before the page even renders!
 export async function generateMetadata({ params }: { params: { broker: string } }): Promise<Metadata> {
-    const brokerKey = params.broker.toLowerCase();
+    const brokerKey = params.broker?.toLowerCase() || 'escavador';
     const brokerInfo = BROKER_DATA[brokerKey] || { name: capitalize(brokerKey), difficulty: 'Variável', type: 'Exposição de Dados' };
 
     return {
@@ -32,7 +32,7 @@ function capitalize(str: string) {
 }
 
 export default function SeoBrokerPage({ params }: { params: { broker: string } }) {
-    const brokerKey = params.broker.toLowerCase();
+    const brokerKey = params.broker?.toLowerCase() || 'escavador';
     const brokerInfo = BROKER_DATA[brokerKey] || { name: capitalize(brokerKey), difficulty: 'Variável', type: 'Exposição de Dados' };
 
     return (
