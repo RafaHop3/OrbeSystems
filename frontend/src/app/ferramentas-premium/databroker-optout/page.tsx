@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Shield, ShieldAlert, FileText, Send, RefreshCw, Printer } from "lucide-react";
-import { useAuth } from "@/lib/auth";
+import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
 interface OptOutTicket {
@@ -16,7 +16,7 @@ interface OptOutTicket {
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.orbesystems.com.br").replace(/\/$/, "");
 
 export default function DataBrokerOptOutPage() {
-    const { session } = useAuth();
+    const { user } = useAuth();
     const router = useRouter();
     const [tickets, setTickets] = useState<OptOutTicket[]>([]);
     const [loading, setLoading] = useState(false);
@@ -28,13 +28,13 @@ export default function DataBrokerOptOutPage() {
     const [acceptLgpd, setAcceptLgpd] = useState(false);
 
     useEffect(() => {
-        if (!session) return;
-        if (session.role !== "premium") {
+        if (!user) return;
+        if (user.role !== "premium") {
             router.push("/assinar?from=databroker");
         } else {
             fetchTickets();
         }
-    }, [session, router]);
+    }, [user, router]);
 
     const fetchTickets = async () => {
         try {
@@ -232,8 +232,8 @@ export default function DataBrokerOptOutPage() {
                                         <td className="p-4">{t.target_broker}</td>
                                         <td className="p-4">
                                             <span className={`px-2 py-1 text-[10px] font-bold rounded ${t.status === "PENDING" ? "bg-yellow-500/20 text-yellow-500" :
-                                                    t.status === "SUCCESS" ? "bg-[#bc13fe]/20 text-[#bc13fe]" :
-                                                        "bg-red-500/20 text-red-500"
+                                                t.status === "SUCCESS" ? "bg-[#bc13fe]/20 text-[#bc13fe]" :
+                                                    "bg-red-500/20 text-red-500"
                                                 }`}>
                                                 {t.status}
                                             </span>
