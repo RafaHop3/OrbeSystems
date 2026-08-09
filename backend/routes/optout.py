@@ -52,6 +52,12 @@ def create_opt_out_ticket(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    if current_user.role != "premium":
+        raise HTTPException(
+            status_code=403, 
+            detail="A Remoção em Massa de Dados (Data Broker) é uma ferramenta exclusiva do Plano Premium. Faça o upgrade para utilizar."
+        )
+
     try:
         cipher = get_fernet_cipher()
         encrypted_cpf = cipher.encrypt(payload.cpf.encode('utf-8')).decode('utf-8')
@@ -96,3 +102,21 @@ def github_status_webhook(payload: GithubWebhookPayload, db: Session = Depends(g
         
     db.commit()
     return {"status": "Updated"}
+
+@router.get("/list")
+def list_optout_tickets(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Retrieve all data broker removal requests for the current user."""
+    pedidos = db.query(OptOutRequest).filter(OptOutRequest.user_id == current_user.id).order_by(OptOutRequest.created_at.desc()).all()
+    
+    return [
+        {
+            "id": p.id,
+            "target_broker": p.target_broker,
+            "status": p.status,
+            "logs": p.logs,
+            "created_at": p.created_at.isoformat()
+        } for p in pedidos
+    ]
