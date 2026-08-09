@@ -8,13 +8,13 @@ import GhostEnginePromo from '@/components/GhostEnginePromo';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-transparent">
+    <main className="min-h-screen bg-transparent pt-16">
       <Header />
+      <GhostEnginePromo />
       <ScrollNarrativeEngine>
         <HeroSection />
       </ScrollNarrativeEngine>
       <FeaturedSitesSection />
-      <GhostEnginePromo />
       <FreedomSection />
       <Footer />
     </main>
