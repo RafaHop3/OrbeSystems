@@ -62,7 +62,7 @@ async def create_checkout_session(
         # ── Checkout Session ──────────────────────────────────────────────────
         session = stripe.checkout.Session.create(
             customer=current_user.stripe_customer_id,
-            payment_method_types=["card"],
+            payment_method_types=["card", "pix"],
             mode="subscription",
             line_items=[
                 {
