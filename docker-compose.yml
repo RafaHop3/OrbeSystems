@@ -22,9 +22,7 @@ services:
       - "6379:6379"
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: 982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest
     container_name: orbe_backend
     restart: always
     environment:

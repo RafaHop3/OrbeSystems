@@ -19,7 +19,7 @@ echo 4. Enviando para o repositorio remoto (GitHub)...
 git push
 echo.
 echo ===================================================
-echo Sync Completo! O Render iniciara o auto-redeploy.
+echo Sync Completo! GitHub Actions iniciara o auto-deploy para AWS ECR.
 echo ===================================================
 pause
 

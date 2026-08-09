@@ -1,21 +1,21 @@
-# Orbe Systems — Monorepo
+﻿# Orbe Systems â€” Monorepo
 
-> Hub de portfólio de projetos de Engenharia de Software e Cyber Security.
+> Hub de portfÃ³lio de projetos de Engenharia de Software e Cyber Security.
 
 ## Estrutura
 
 ```
 orbe-systems/
-├── backend/    # FastAPI — API Gateway para o GitHub
-├── frontend/   # Next.js — Interface cyberpunk
-└── terraform/  # Infraestrutura AWS Free Tier (Configuração baseada em Custo $0)
+â”œâ”€â”€ backend/    # FastAPI â€” API Gateway para o GitHub
+â”œâ”€â”€ frontend/   # Next.js â€” Interface cyberpunk
+â””â”€â”€ terraform/  # Infraestrutura AWS Free Tier (ConfiguraÃ§Ã£o baseada em Custo $0)
 ```
 
 **Diretrizes de Infraestrutura:** Leia as [Regras de Custo Zero (Free Tier)](./DIRETRIZES_AWS_CUSTO_ZERO.md) para detalhes da arquitetura.
 
 ---
 
-## 🐍 Backend (FastAPI)
+## ðŸ Backend (FastAPI)
 
 ### Setup local
 
@@ -28,7 +28,7 @@ python -m venv .venv
 # 2. Ativar
 .venv\Scripts\activate
 
-# 3. Instalar dependências
+# 3. Instalar dependÃªncias
 pip install -r requirements.txt
 
 # 4. Copiar o arquivo de env
@@ -39,28 +39,28 @@ copy .env.example .env
 uvicorn main:app --reload --port 8000
 ```
 
-Acesse a documentação interativa em: http://localhost:8000/docs
+Acesse a documentaÃ§Ã£o interativa em: http://localhost:8000/docs
 
 ### Endpoints
 
-| Método | Rota | Descrição |
+| MÃ©todo | Rota | DescriÃ§Ã£o |
 |--------|------|-----------|
-| GET | `/api/projects` | Lista repositórios do GitHub (RafaHop3), com featured first |
-| GET | `/health` | Health check para o Render keep-alive |
+| GET | `/api/projects` | Lista repositÃ³rios do GitHub (RafaHop3), com featured first |
+| GET | `/health` | Health check para o AWS EC2 keep-alive |
 
 ---
 
-## ⚡ Frontend (Next.js)
+## âš¡ Frontend (Next.js)
 
 ### Setup local
 
 ```powershell
 cd frontend
 
-# 1. Instalar dependências
+# 1. Instalar dependÃªncias
 npm install
 
-# 2. (Opcional) Conferir o .env.local — já aponta para localhost:8000
+# 2. (Opcional) Conferir o .env.local â€” jÃ¡ aponta para localhost:8000
 # NEXT_PUBLIC_API_URL=http://localhost:8000
 
 # 3. Rodar em modo dev
@@ -71,28 +71,29 @@ Abra http://localhost:3000
 
 ---
 
-## 🚀 Deploy
+## ðŸš€ Deploy
 
-### Backend → Render (Alternativa Free Tier)
+### Backend â†’ Render (Alternativa Free Tier)
 - **Build Command:** `pip install -r requirements.txt`
 - **Start Command:** `uvicorn main:app --host 0.0.0.0 --port $PORT`
-- Adicione a variável `ALLOWED_ORIGINS` com o domínio da Vercel + `https://orbesystems.com.br`
-- **Manutenção de Atividade (Keep-Alive):** Para contornar a suspensão automática após 15 minutos de inatividade no plano gratuito do Render, **não** utilize schedulers internos (que consomem recursos e falham se o contêiner já estiver suspenso). Utilize o **Vercel Cron Job** configurado no frontend, que aciona a rota externa de ping `/api/ping-backend` a cada 10 minutos para manter o backend ativo.
+- Adicione a variÃ¡vel `ALLOWED_ORIGINS` com o domÃ­nio da Vercel + `https://orbesystems.com.br`
+- **ManutenÃ§Ã£o de Atividade (Keep-Alive):** Para contornar a suspensÃ£o automÃ¡tica apÃ³s 15 minutos de inatividade no ambiente EC2 AWS, **nÃ£o** utilize schedulers internos (que consomem recursos e falham se o contÃªiner jÃ¡ estiver suspenso). Utilize o **Vercel Cron Job** configurado no frontend, que aciona a rota externa de ping `/api/ping-backend` a cada 10 minutos para manter o backend ativo.
 
-### Backend → Vercel Serverless (Recomendado)
-- O backend está totalmente preparado para ser executado como serverless no Vercel (conforme `vercel.json` na raiz da pasta `backend`). Nesta modalidade, as funções escalam para zero automaticamente e não requerem nenhum robô de keep-alive.
+### Backend â†’ Vercel Serverless (Recomendado)
+- O backend estÃ¡ totalmente preparado para ser executado como serverless no Vercel (conforme `vercel.json` na raiz da pasta `backend`). Nesta modalidade, as funÃ§Ãµes escalam para zero automaticamente e nÃ£o requerem nenhum robÃ´ de keep-alive.
 
-### Frontend → Vercel
-- Conecte o repositório no painel da Vercel.
-- Configure a variável de ambiente:
-  - `NEXT_PUBLIC_API_URL` = URL do seu backend (ex: `https://orbe-systems-fuc5.vercel.app` ou URL do Render).
-- O Vercel detectará as configurações de Cron contidas em `frontend/vercel.json` e executará o ping automático.
+### Frontend â†’ Vercel
+- Conecte o repositÃ³rio no painel da Vercel.
+- Configure a variÃ¡vel de ambiente:
+  - `NEXT_PUBLIC_API_URL` = URL do seu backend (ex: `https://orbe-systems-fuc5.vercel.app` ou URL do seu Elastic IP).
+- O Vercel detectarÃ¡ as configuraÃ§Ãµes de Cron contidas em `frontend/vercel.json` e executarÃ¡ o ping automÃ¡tico.
 
 
 ---
 
-## 🔒 Segurança
+## ðŸ”’ SeguranÃ§a
 
 - CORS restrito a origens permitidas (configurado via `.env`)
 - Token do GitHub nunca exposto no frontend (passa pelo backend)
-- Headers padrão do FastAPI + revisar com `securityheaders.com` após deploy
+- Headers padrÃ£o do FastAPI + revisar com `securityheaders.com` apÃ³s deploy
+

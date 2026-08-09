@@ -1,0 +1,53 @@
+﻿#0 building with "default" instance using docker driver
+
+#1 [backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.62kB 0.0s done
+#1 DONE 0.0s
+
+#2 [backend internal] load metadata for docker.io/library/python:3.11-slim
+#2 DONE 0.0s
+
+#3 [backend internal] load .dockerignore
+#3 transferring context: 327B done
+#3 DONE 0.0s
+
+#4 [backend internal] load build context
+#4 DONE 0.0s
+
+#5 [backend builder 1/4] FROM docker.io/library/python:3.11-slim@sha256:90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff
+#5 resolve docker.io/library/python:3.11-slim@sha256:90744cff8f32887f075c47d747a173ff333e9e98801667af93c357fa9f5e28ff 0.0s done
+#5 DONE 0.1s
+
+#6 [backend stage-1 2/5] WORKDIR /app
+#6 CACHED
+
+#4 [backend internal] load build context
+#4 transferring context: 1.07MB 0.1s done
+#4 DONE 0.1s
+
+#7 [backend builder 2/4] WORKDIR /build
+#7 CACHED
+
+#8 [backend builder 3/4] COPY requirements.txt .
+#8 DONE 0.1s
+
+#9 [backend builder 4/4] RUN pip install --upgrade pip &&     pip install --no-cache-dir --prefix=/install -r requirements.txt
+#9 3.473 Requirement already satisfied: pip in /usr/local/lib/python3.11/site-packages (24.0)
+#9 3.609 Collecting pip
+#9 3.630   Downloading pip-26.2.1-py3-none-any.whl.metadata (4.6 kB)
+#9 3.647 Downloading pip-26.2.1-py3-none-any.whl (1.8 MB)
+#9 3.686    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 50.9 MB/s eta 0:00:00
+#9 3.748 Installing collected packages: pip
+#9 3.749   Attempting uninstall: pip
+#9 3.754     Found existing installation: pip 24.0
+#9 3.826     Uninstalling pip-24.0:
+#9 4.148       Successfully uninstalled pip-24.0
+#9 5.107 Successfully installed pip-26.2.1
+#9 5.108 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manage
+---Output truncated---
+----------ERROR-------
+Cloning into 'OrbeSystems'...
+time="2026-08-09T11:24:11Z" level=warning msg="/home/ubuntu/OrbeSystems/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+time="2026-08-09T11:24:12Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+failed to solve: process "/bin/sh -c pip install --upgrade pip &&     pip install --no-cache-dir --prefix=/install -r requirements.txt" did not complete successfully: exit code: 1
+failed to run commands: exit status 1
