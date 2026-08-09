@@ -135,6 +135,54 @@ async def demolition_worker(nome: str, cpf: str, target: str):
                 log_messages.append("✅ Relatório de Invasão: Assinatura LGPD cravada perante os diretórios identificados. Aguardando período mandatório de 48h deles.")
                 return "SUCCESS", "\\n".join(log_messages)
                 
+            elif target.lower() == "jusbrasil":
+                log_messages.append("Iniciando Varredura Pesada no JUSBRASIL.")
+                search_url = f"https://www.jusbrasil.com.br/busca?q={urllib.parse.quote(nome)}"
+                log_messages.append(f"Acessando Jusbrasil Search Engine: {search_url}")
+                await page.goto(search_url, timeout=20000)
+                await asyncio.sleep(3)
+                
+                log_messages.append("Coletando links de processos expostos...")
+                profile_elements = await page.locator("a[href*='/processos/']").all()
+                profile_urls = []
+                for el in profile_elements[:3]:
+                    url = await el.get_attribute("href")
+                    if url and url not in profile_urls:
+                        profile_urls.append(url)
+                        
+                if not profile_urls:
+                    return "SUCCESS", "Nenhum processo exposto encontrado no Jusbrasil sob este Titular."
+                    
+                for p_url in profile_urls:
+                    if p_url.startswith("/"): p_url = f"https://www.jusbrasil.com.br{p_url}"
+                    log_messages.append(f"Infiltrando no Jurídico exposto: {p_url}")
+                    
+                    report_url = f"https://www.jusbrasil.com.br/suporte/atendimento?assunto=privacidade&url={urllib.parse.quote(p_url)}"
+                    await page.goto(report_url, timeout=20000)
+                    
+                    try:
+                        await page.fill('input[name="requester_name"]', nome)
+                    except Exception as e:
+                        log_messages.append(f"Aviso Form: {str(e)}")
+                        
+                return "SUCCESS", "\\n".join(log_messages)
+
+            elif target.lower() == "tudosobretodos":
+                log_messages.append("Iniciando Alvo TUDOSOBRETODOS.")
+                search_url = f"https://tudosobretodos.info/{cpf.replace('.','').replace('-','')}"
+                log_messages.append(f"Aproximando via busca direta pelo Hash CPF: {search_url}")
+                await page.goto(search_url, timeout=20000)
+                
+                log_messages.append("Injetando notificação Extrajudicial via Fale Conosco.")
+                await page.goto("https://tudosobretodos.info/contato", timeout=20000)
+                try:
+                    await page.fill('input[name="nome"]', nome)
+                    await page.fill('textarea[name="mensagem"]', f"Sou Titular do CPF {cpf}. Exijo remoção imediata baseada na LGPD 13.709.")
+                except Exception:
+                    pass
+
+                return "SUCCESS", "\\n".join(log_messages)
+
             else:
                 return "FAILED", f"Robô não aprendeu ainda como destruir a base {target}."
                 

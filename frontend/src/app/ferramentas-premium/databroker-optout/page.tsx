@@ -153,8 +153,10 @@ export default function DataBrokerOptOutPage() {
                                 <select value={targetBroker} onChange={e => setTargetBroker(e.target.value)}
                                     className="w-full bg-black/50 border border-gray-800 text-white p-3 rounded focus:outline-none focus:border-[#bc13fe] transition-colors"
                                 >
-                                    <option value="Escavador / Consultas Flex">Escavador / Consultas Flex (ALVO PILOTO)</option>
-                                    <option value="TudoSobreTodos">TudoSobreTodos (Em Breve)</option>
+                                    <option value="Escavador">Escavador</option>
+                                    <option value="TudoSobreTodos">TudoSobreTodos</option>
+                                    <option value="Jusbrasil">Jusbrasil</option>
+                                    <option value="ConsultasFlex">ConsultasFlex</option>
                                 </select>
                             </div>
 
