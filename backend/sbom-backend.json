@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:0a397b57-e36c-45f2-857b-9f76af91b0c1",
+  "serialNumber": "urn:uuid:ef8fe936-289f-489b-b28e-d69b503346b7",
   "metadata": {
-    "timestamp": "2026-08-07T20:26:18.604128+00:00",
+    "timestamp": "2026-08-09T16:17:01.738107+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -704,31 +704,6 @@
         {
           "alg": "SHA-256",
           "content": "4f7d7473e75b0a7452ff07f4250d3c311fc1697b616fcf21b77edd68fc104d9e"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "hiredis",
-      "version": "3.4.1",
-      "purl": "pkg:pypi/hiredis@3.4.1",
-      "licenses": [
-        {
-          "license": {
-            "id": "MIT"
-          }
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "website",
-          "url": "https://github.com/redis/hiredis-py"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-256",
-          "content": "140f1d9007c58044e460bf2a978c92792e9c308f6a746baf822dcd9ab7312e61"
         }
       ]
     },
@@ -2089,11 +2064,11 @@
     }
   ],
   "_orbe_meta": {
-    "total_dependencies": 87,
+    "total_dependencies": 86,
     "license_summary": {
       "Apache 2": 5,
       "Unknown": 29,
-      "MIT": 17,
+      "MIT": 16,
       "MIT License": 2,
       "Apache-2.0": 5,
       "Apache License 2.0": 3,
