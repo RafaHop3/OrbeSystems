@@ -5,7 +5,7 @@ import MouseAtomTrail from '@/components/MouseAtomTrail';
 import dynamic from 'next/dynamic';
 import LgpdBanner from '@/components/LgpdBanner';
 import WhatsappButton from '@/components/WhatsappButton';
-import VerticalMarquee from '@/components/VerticalMarquee';
+import HorizontalScanline from '@/components/HorizontalScanline';
 
 const OrbeAssistant = dynamic(() => import('@/components/OrbeAssistant'), { ssr: false });
 
@@ -34,12 +34,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className="bg-terminal-bg text-[#c8d6e3] antialiased selection:bg-neon-cyan selection:text-black bg-cyber-grid bg-fixed font-sans">
-        <div className="scanline-effect"></div>
         <AnalyticsTracker />
         <MouseAtomTrail />
         {children}
         <OrbeAssistant />
-        <VerticalMarquee />
+        <HorizontalScanline />
         <LgpdBanner />
         <WhatsappButton />
       </body>

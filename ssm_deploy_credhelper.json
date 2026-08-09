@@ -1,0 +1,32 @@
+{
+    "DocumentName": "AWS-RunShellScript",
+    "Targets": [
+        {
+            "Key": "InstanceIds",
+            "Values": [
+                "i-058e26140671b3254"
+            ]
+        }
+    ],
+    "Parameters": {
+        "commands": [
+            "sudo DEBIAN_FRONTEND=noninteractive apt-get update",
+            "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y amazon-ecr-credential-helper",
+            "mkdir -p ~/.docker",
+            "echo '{\"credHelpers\": {\"982534388133.dkr.ecr.us-east-1.amazonaws.com\": \"ecr-login\"}}' > ~/.docker/config.json",
+            "cd /home/ubuntu",
+            "rm -rf OrbeSystems",
+            "git clone -b dev https://github.com/RafaHop3/OrbeSystems.git",
+            "cd OrbeSystems/backend",
+            "echo 'ADMIN_USERNAME=rafael_admin' > .env",
+            "echo 'ADMIN_PASSWORD_HASH=\\$2b\\$12\\$dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy' >> .env",
+            "echo 'SECRET_KEY=supersecretkeyfortestingonly123' >> .env",
+            "echo 'STRIPE_SECRET_KEY=sk_test_SECURE' >> .env",
+            "echo 'STRIPE_WEBHOOK_SECRET=whsec_SECURE' >> .env",
+            "echo 'FRONTEND_URL=https://orbesystems.com.br' >> .env",
+            "cd /home/ubuntu/OrbeSystems",
+            "docker compose pull",
+            "docker compose up -d"
+        ]
+    }
+}

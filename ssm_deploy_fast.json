@@ -1,0 +1,31 @@
+﻿{
+    "DocumentName": "AWS-RunShellScript",
+    "Targets": [
+        {
+            "Key": "InstanceIds",
+            "Values": [
+                "i-058e26140671b3254"
+            ]
+        }
+    ],
+    "Parameters": {
+        "commands": [
+            "cd /home/ubuntu",
+            "rm -rf OrbeSystems",
+            "git clone -b dev https://github.com/RafaHop3/OrbeSystems.git",
+            "cd OrbeSystems/backend",
+            "echo "ADMIN_USERNAME=rafael_admin" > .env",
+            "echo "ADMIN_PASSWORD_HASH='\\$2b\\$12\\$dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy'" >> .env",
+            "echo "SECRET_KEY=supersecretkeyfortestingonly123" >> .env",
+            "echo "NUM_TRUSTED_PROXIES=1" >> .env",
+            "echo "STRIPE_SECRET_KEY=sk_test_SECURE_PLACEHOLDER_KEY" >> .env",
+            "echo "STRIPE_WEBHOOK_SECRET=whsec_SECURE_PLACEHOLDER_KEY" >> .env",
+            "echo "STRIPE_PREMIUM_PRICE_ID=price_1TZgUlFfd0YCJr8gB8d08Rfu" >> .env",
+            "echo "FRONTEND_URL=https://orbesystems.com.br" >> .env",
+            "cd /home/ubuntu/OrbeSystems",
+            "docker login --username AWS --password "eyJwYXlsb2FkIjoiMjZTNWlpSWR1OG5PRmt4TzRDdkdEVkg0TDg1WGduZDhoVC81TG9DWUpsNzQ5Ny9laGgyd0h2RWp1UnhWTmc3TlhTaGtpRXlFWDRsa21XWEJhOFdmUHNSYVVWZkFBOVBLNkR6M1BKWlhyNEd1K1o1SFBGY1Jld2NPRTJ2cTZGTWUrMW95V1lEMWtoRExqSEplamlJZnczaHJNNkJVTU9ZK24wamthRU5pSDU1SHowMkk3clFMT2RwU1ZQeFhjaEVGZXhOaVg1QnIxT2ltZWdOWmtTUmlmZ2hsMmpudU1sRTRLczZ2RFNsakN4WHhvdzducTNQYXpMTWxITjJYWnIyaVRLVlVaN2lpN3RHOUMvQTdlYURlOFhsK1dVZDZWU002QzFyTldmQU5jQTNYczN1WC9KTk5yT09VRUp3czRkd0hLaUNWZk5qNDZSNjJBMzJUVWhnSG5tOVJDWW1UejA2eE1ya2x1cXNIblA2ME43WlczNHpYRmRwcmcrMDN5SEZab2tKMnEzTE9SUDFtdjBaeVI4M0tMaitnZWY5MkVTT2RnTW84dEV4YmJkT0h4ZXZyMEtjMUtLSG1nWUhMRHdjU1pDN0srdDhZb2tyQ2NOMGtIM28wZE5QRWFETnYxdWFIaXE0M0dpM0F4VkJVNjBPdEs0Z0p4dXFVdktWQm92THFqb3JqRmk1NVJzT082clhFci9JR3g3ZjFTYlNtN1publNGODZwdHJhczFhcVE2NytmMGNHZEJ0Q3hhMm91L09KTUtQZGZ3N3UyenZ3MmIvVEJKUVFDWXNudjQ2ZFNVb01uM1dQMmx0c0R5VVAvejFvaE9QeUxaZ0ZTa3dnQjVpMy9oMGFIZWZ2YTZiR0EySlBVTXA5cWRTTkdac1ByTWRreTJtdnc4Qk4ySEtnaytWanNIYy9Ld1RqMTlvWHE3Y2k1elBTWkJJTERRQ3dJaUlsWFBXclpJdzBSQW1JOHhyNmpubUNTcmZvdFNyWUlKdEJubkQvMk83KzVWVDFNZVlCcUVlTDhTUGZ1K1pHOFpHWXBEeWpzZDFkb3FrNnUvc0I2c1BZK0Vvbkh1b3VpbkZkeGNwaTlML0hIVDhGbWNhTSt0NUlHSWhGOERIQXdqMG5tK2JZY2NLUFVaWDRkSWRFcEZMMlhyTWlScG1vek0wQjBHYW5uc0VGUHRLcVZPMU9iVzFHS01HWWZHeWgyTTNwZFN5L2xQWVNvMVdya0xVRjJZdFNFQ1FtRmR4NG42MlROR0FCYjlNdE5BczdMSHpFc0d5ZjFqOTBrK0k2V25aTmh3djIwaTh3a0pTRjlyOTFHcVdxNHpGS1hLQ0JmLzhTNjk3VTZnWituZ1BIZHBqbWtSZCtTR0orWVJRQyIsImRhdGFrZXkiOiJBUUVCQUhod20wWWFJU0plUnRKbTVuMUc2dXFlZWtYdW9YWFBlNVVGY2U5UnE4LzE0d0FBQUg0d2ZBWUpLb1pJaHZjTkFRY0dvRzh3YlFJQkFEQm9CZ2txaGtpRzl3MEJCd0V3SGdZSllJWklBV1VEQkFFdU1CRUVERGFFblFvRjJMOXl2V0g0RXdJQkVJQTdtUFgzRXNQNUtJd2theWpzV1AwMCs0STl2QUgzci9YNHdQVWNRLzZINnFOamk0d3c5b2ptaUU2aEtWckczZ2JIWUFhS3kyOE5XNkFFd0JrPSIsInZlcnNpb24iOiIyIiwidHlwZSI6IkRBVEFfS0VZIiwiZXhwaXJhdGlvbiI6MTc4NjMyMTA3OH0=" 982534388133.dkr.ecr.us-east-1.amazonaws.com",
+            "docker compose pull",
+            "docker compose up -d --remove-orphans"
+        ]
+    }
+}

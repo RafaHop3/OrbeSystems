@@ -1,0 +1,18 @@
+﻿
+----------ERROR-------
+Cloning into 'OrbeSystems'...
+/var/lib/amazon/ssm/i-058e26140671b3254/document/orchestration/4642ac4e-fe34-4081-b675-25f026180d6f/awsrunShellScript/0.awsrunShellScript/_script.sh: 14: aws: not found
+error: cannot perform an interactive login from a non TTY device
+time="2026-08-09T12:09:26Z" level=warning msg="/home/ubuntu/OrbeSystems/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ db Pulling 
+ redis Pulling 
+ backend Pulling 
+ backend Error failed to resolve reference "982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+ redis  Interrupted
+ db  Interrupted
+Error response from daemon: failed to resolve reference "982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+time="2026-08-09T12:09:27Z" level=warning msg="/home/ubuntu/OrbeSystems/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ backend Pulling 
+ backend Error failed to resolve reference "982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+Error response from daemon: failed to resolve reference "982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest": pull access denied, repository does not exist or may require authorization: authorization failed: no basic auth credentials
+failed to run commands: exit status 1

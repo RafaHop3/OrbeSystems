@@ -13,6 +13,7 @@
             "cd /home/ubuntu",
             "rm -rf OrbeSystems",
             "git clone -b dev https://github.com/RafaHop3/OrbeSystems.git",
+            "sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y awscli",
             "cd OrbeSystems/backend",
             "echo \"ADMIN_USERNAME=rafael_admin\" > .env",
             "echo \"ADMIN_PASSWORD_HASH='\\$2b\\$12\\$dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy'\" >> .env",
