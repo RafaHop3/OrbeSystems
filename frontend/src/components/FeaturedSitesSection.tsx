@@ -7,8 +7,8 @@ const sites = [
     {
         name: 'Ghost Engine',
         tagline: 'Motor de Renderização 3D · Física Real-Time',
-        url: '/ghost-engine',
-        image: '/featured-ghostengine.png',
+        url: '/ferramentas-premium/databroker-optout',
+        image: '/featured-astrowatch.png',
         accent: '#00f2fe',
         accentBg: 'rgba(0, 242, 254, 0.08)',
         accentBorder: 'rgba(0, 242, 254, 0.25)',

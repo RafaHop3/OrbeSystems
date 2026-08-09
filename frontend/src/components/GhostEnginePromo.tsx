@@ -11,7 +11,6 @@ export default function GhostEnginePromo() {
             <div className="absolute inset-0 z-0">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-[#00f2fe]/10 to-transparent pointer-events-none" />
                 <div className="absolute top-1/2 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
-                <div className="absolute inset-0 bg-[url('/matrix-rain.png')] opacity-5 mix-blend-overlay pointer-events-none" />
             </div>
 
             <div className="relative z-10 max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-12">
