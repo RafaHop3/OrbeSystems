@@ -3,6 +3,8 @@ import './globals.css';
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import MouseAtomTrail from '@/components/MouseAtomTrail';
 import dynamic from 'next/dynamic';
+import LgpdBanner from '@/components/LgpdBanner';
+import WhatsappButton from '@/components/WhatsappButton';
 
 const OrbeAssistant = dynamic(() => import('@/components/OrbeAssistant'), { ssr: false });
 
@@ -36,6 +38,8 @@ export default function RootLayout({
         <MouseAtomTrail />
         {children}
         <OrbeAssistant />
+        <LgpdBanner />
+        <WhatsappButton />
       </body>
     </html>
   );
