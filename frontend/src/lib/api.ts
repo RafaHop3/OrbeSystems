@@ -16,7 +16,7 @@
 
 /** Server-side only. Used in Server Actions and Route Handlers. */
 export const API_BASE_URL: string =
-  process.env.NEXT_PUBLIC_API_URL ?? 'https://Sua-Vercel-Injetara-AVariavel-Da-AWSAqui';
+  process.env.NEXT_PUBLIC_API_URL ?? 'http://52.20.22.241';
 
 /**
  * Client-side safe. Routes all browser fetches through the Next.js

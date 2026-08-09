@@ -51,8 +51,28 @@ resource "aws_instance" "app_server" {
               systemctl enable docker
               systemctl start docker
 
-              # Fazer login no ECR antecipadamente (opcional, pode ser feito dps)
+              # Adicionar usuário ubuntu ao grupo docker
               usermod -aG docker ubuntu
+
+              # Configurar login automático no ECR usando IAM role (sem credenciais explícitas)
+              mkdir -p /home/ubuntu/.docker
+              cat > /home/ubuntu/.docker/config.json <<'DOCKERCONFIG'
+{
+  "credsStore": "ecr-login"
+}
+DOCKERCONFIG
+              chown -R ubuntu:ubuntu /home/ubuntu/.docker
+              
+              # Criar script de deploy com login ECR automático
+              cat > /home/ubuntu/deploy_with_ecr_login.sh <<'DEPLOYSCRIPT'
+#!/bin/bash
+cd /home/ubuntu/OrbeSystems
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 982534388133.dkr.ecr.us-east-1.amazonaws.com
+docker compose pull
+docker compose up -d
+DEPLOYSCRIPT
+              chmod +x /home/ubuntu/deploy_with_ecr_login.sh
+              chown ubuntu:ubuntu /home/ubuntu/deploy_with_ecr_login.sh
               EOF
 
   tags = {

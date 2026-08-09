@@ -17,7 +17,7 @@ import { NextRequest, NextResponse } from 'next/server';
 const BACKEND_URL = (
     process.env.BACKEND_URL ??
     process.env.NEXT_PUBLIC_API_URL ??
-    ''
+    'http://52.20.22.241'
 ).replace(/\/$/, '');
 
 type Params = { params: Promise<{ path: string[] }> };
