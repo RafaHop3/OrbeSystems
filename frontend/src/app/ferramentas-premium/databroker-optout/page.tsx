@@ -109,10 +109,10 @@ export default function DataBrokerOptOutPage() {
                 <div className="no-print">
                     <h1 className="text-3xl font-bold text-[#00f2fe] flex items-center gap-3">
                         <ShieldAlert size={32} />
-                        Data Broker Demolition
+                        Orbe Ghost Engine - Data Broker Demolition
                     </h1>
                     <p className="text-gray-400 mt-2 text-sm border-l-2 border-[#00f2fe] pl-4">
-                        Motor automatizado de <strong>Opt-Out e Remoção de Dados</strong> em plataformas públicas. <br />
+                        <strong>Ghost Engine</strong> é o motor automatizado de <strong>Opt-Out e Remoção de Dados</strong> em plataformas públicas. <br />
                         Nossos robôs Serverless invadem os corretores de dados (Data Brokers) e emitem uma ordem legal baseada na LGPD para excluir registros associados ao seu CPF. Tudo em Background.
                     </p>
                 </div>
