@@ -33,6 +33,8 @@ jobs:
         env:
           FERNET_SECRET_KEY: ${{ secrets.FERNET_SECRET_KEY }}
           ORBESYSTEMS_DB_URL: ${{ secrets.POSTGRES_DIRECT_URL }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_ADMIN_CHAT_ID: ${{ secrets.TELEGRAM_ADMIN_CHAT_ID }}
           WEBHOOK_URL: 'https://api.orbesystems.com.br/api/optout/webhook'
           TICKET_ID: ${{ github.event.inputs.ticket_id }}
           TARGET_BROKER: ${{ github.event.inputs.target_broker }}

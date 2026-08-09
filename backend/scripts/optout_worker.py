@@ -206,6 +206,28 @@ def report_back(status: str, log_str: str):
     except Exception as e:
         logger.error(f"Não consegui avisar o Backend: {e}")
 
+def send_telegram_alert(error_detail: str):
+    bot_token = os.getenv("TELEGRAM_BOT_TOKEN")
+    chat_id = os.getenv("TELEGRAM_ADMIN_CHAT_ID")
+    if not bot_token or not chat_id:
+        logger.info("TELEGRAM credentials not fully set, skipping push alert.")
+        return
+        
+    msg = (f"🚨 *ORBE SYSTEMS - ALARME DE QUEBRA [Data Broker Engine]*\n\n"
+          f"🎯 *Alvo:* {TARGET}\n"
+          f"🎫 *Ticket:* `{TICKET_ID}`\n"
+          f"⚠️ *Falha Detectada:*\n`{error_detail}`\n\n"
+          f"🛑 *Status:* Ticket Reprovado / Worker Crash. Requer manutenção do Playwright no GitHub!")
+          
+    try:
+        httpx.post(
+            f"https://api.telegram.org/bot{bot_token}/sendMessage",
+            json={"chat_id": chat_id, "text": msg, "parse_mode": "Markdown"},
+            timeout=5.0
+        )
+    except Exception as e:
+        logger.error(f"Falha ao tentar avisar o Telegram: {e}")
+
 if __name__ == "__main__":
     logger.info(f"⚡ ORBESYSTEMS GITHUB WORKER Iniciado | TICKET: {TICKET_ID} | ALVO: {TARGET}")
     
@@ -215,6 +237,9 @@ if __name__ == "__main__":
         # Start async engine
         status_final, output_log = asyncio.run(demolition_worker(nome_alvo, cpf_alvo, TARGET))
         
+        if status_final == "FAILED":
+            send_telegram_alert(output_log)
+            
         # Post webhook
         report_back(status_final, output_log)
         logger.info("Processo finalizado sem vazar memoria para a Orbe.")
@@ -222,4 +247,5 @@ if __name__ == "__main__":
     except Exception as e:
         logger.error(f"ERRO GLOBAL: {e}")
         report_back("FAILED", str(e))
+        send_telegram_alert(str(e))
         sys.exit(1)
