@@ -1,0 +1,45 @@
+{
+    "DocumentName": "AWS-RunShellScript",
+    "InstanceIds": [
+        "i-058e26140671b3254"
+    ],
+    "Parameters": {
+        "commands": [
+            "set -e",
+            "echo 'Setting up Swap Space to prevent Out of Memory during Docker build...'",
+            "sudo fallocate -l 2G /swapfile || true",
+            "sudo chmod 600 /swapfile || true",
+            "sudo mkswap /swapfile || true",
+            "sudo swapon /swapfile || true",
+            "echo 'Installing dependencies...'",
+            "sudo yum update -y",
+            "sudo yum install -y git docker",
+            "sudo systemctl start docker",
+            "sudo systemctl enable docker",
+            "sudo usermod -a -G docker ec2-user || true",
+            "echo 'Installing Docker Compose...'",
+            "sudo curl -L \"https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/local/bin/docker-compose",
+            "sudo chmod +x /usr/local/bin/docker-compose",
+            "echo 'Cloning Repository...'",
+            "cd /home/ec2-user",
+            "rm -rf OrbeSystems",
+            "git clone https://github.com/RafaHop3/OrbeSystems.git",
+            "cd OrbeSystems/orbe-systems",
+            "echo 'Generating .env file...'",
+            "mkdir -p backend",
+            "cat << 'ENVEOF' > backend/.env",
+            "ADMIN_USERNAME=rafael_admin",
+            "ADMIN_PASSWORD_HASH=$2b$12$dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy",
+            "SECRET_KEY=supersecretkeyfortestingonly123",
+            "NUM_TRUSTED_PROXIES=1",
+            "STRIPE_SECRET_KEY=sk_test_SECURE_PLACEHOLDER_KEY",
+            "STRIPE_WEBHOOK_SECRET=whsec_SECURE_PLACEHOLDER_KEY",
+            "STRIPE_PREMIUM_PRICE_ID=price_1TZgUlFfd0YCJr8gB8d08Rfu",
+            "ENVEOF",
+            "echo 'Building and starting Docker Containers...'",
+            "sudo /usr/local/bin/docker-compose build",
+            "sudo /usr/local/bin/docker-compose up -d",
+            "echo 'Deployment complete!'"
+        ]
+    }
+}

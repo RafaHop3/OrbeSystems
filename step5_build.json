@@ -1,0 +1,17 @@
+{
+    "DocumentName": "AWS-RunShellScript",
+    "InstanceIds": [
+        "i-058e26140671b3254"
+    ],
+    "Parameters": {
+        "commands": [
+            "set -e",
+            "cd /home/ubuntu/OrbeSystems",
+            "sudo curl -L \"https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s)-$(uname -m)\" -o /usr/local/bin/docker-compose",
+            "sudo chmod +x /usr/local/bin/docker-compose",
+            "sudo /usr/local/bin/docker-compose --version",
+            "sudo /usr/local/bin/docker-compose -f /home/ubuntu/OrbeSystems/docker-compose.yml build",
+            "sudo /usr/local/bin/docker-compose -f /home/ubuntu/OrbeSystems/docker-compose.yml up -d"
+        ]
+    }
+}

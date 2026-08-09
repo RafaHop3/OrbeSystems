@@ -1,0 +1,27 @@
+{
+    "DocumentName": "AWS-RunShellScript",
+    "InstanceIds": [
+        "i-058e26140671b3254"
+    ],
+    "Parameters": {
+        "commands": [
+            "set -e",
+            "cd /home/ubuntu/OrbeSystems",
+            "mkdir -p backend frontend",
+            "cat << 'ENVEOF' > backend/.env",
+            "ADMIN_USERNAME=rafael_admin",
+            "ADMIN_PASSWORD_HASH=$2b$12$dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy",
+            "SECRET_KEY=supersecretkeyfortestingonly123",
+            "NUM_TRUSTED_PROXIES=1",
+            "STRIPE_SECRET_KEY=sk_test_SECURE_PLACEHOLDER_KEY",
+            "STRIPE_WEBHOOK_SECRET=whsec_SECURE_PLACEHOLDER_KEY",
+            "STRIPE_PREMIUM_PRICE_ID=price_1TZgUlFfd0YCJr8gB8d08Rfu",
+            "ENVEOF",
+            "cat << 'FRONTEOF' > frontend/.env.local",
+            "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51SnN0b...",
+            "FRONTEOF",
+            "sudo docker-compose build",
+            "sudo docker-compose up -d"
+        ]
+    }
+}

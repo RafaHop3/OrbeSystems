@@ -52,18 +52,21 @@ class OfflineTaskIntent(BaseModel):
 
 # ── Local Persistent Registry for Background Jobs ───────────────────────────
 JOBS_FILE = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "offline_jobs.json")
+_jobs_lock = threading.Lock()
 
 def _init_jobs_file():
     os.makedirs(os.path.dirname(JOBS_FILE), exist_ok=True)
-    if not os.path.exists(JOBS_FILE):
-        with open(JOBS_FILE, "w", encoding="utf-8") as f:
-            json.dump({}, f, indent=2)
+    with _jobs_lock:
+        if not os.path.exists(JOBS_FILE):
+            with open(JOBS_FILE, "w", encoding="utf-8") as f:
+                json.dump({}, f, indent=2)
 
 def _load_jobs() -> Dict[str, Any]:
     _init_jobs_file()
     try:
-        with open(JOBS_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+        with _jobs_lock:
+            with open(JOBS_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
     except Exception as e:
         logger.error(f"[OfflineAgent] Falha ao carregar jobs persistentes: {e}")
         return {}
@@ -72,8 +75,9 @@ def _save_job(job_id: str, job_data: Dict[str, Any]):
     jobs = _load_jobs()
     jobs[job_id] = job_data
     try:
-        with open(JOBS_FILE, "w", encoding="utf-8") as f:
-            json.dump(jobs, f, indent=2, ensure_ascii=False)
+        with _jobs_lock:
+            with open(JOBS_FILE, "w", encoding="utf-8") as f:
+                json.dump(jobs, f, indent=2, ensure_ascii=False)
     except Exception as e:
         logger.error(f"[OfflineAgent] Falha ao salvar job {job_id}: {e}")
 

@@ -1,0 +1,62 @@
+{
+    "Command": {
+        "CommandId": "f73773ff-8163-48c8-930b-60c9e6989391",
+        "DocumentName": "AWS-RunShellScript",
+        "DocumentVersion": "$DEFAULT",
+        "Comment": "",
+        "ExpiresAfter": 1786194788.1,
+        "Parameters": {
+            "commands": [
+                "set -e",
+                "cd /home/ubuntu",
+                "rm -rf OrbeSystems",
+                "git clone https://github.com/RafaHop3/OrbeSystems.git",
+                "cd OrbeSystems",
+                "mkdir -p backend",
+                "cat << 'ENVEOF' > backend/.env",
+                "ADMIN_USERNAME=rafael_admin",
+                "ADMIN_PASSWORD_HASH=$2b$12$dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy",
+                "SECRET_KEY=supersecretkeyfortestingonly123",
+                "NUM_TRUSTED_PROXIES=1",
+                "STRIPE_SECRET_KEY=sk_test_SECURE_PLACEHOLDER_KEY",
+                "STRIPE_WEBHOOK_SECRET=whsec_SECURE_PLACEHOLDER_KEY",
+                "STRIPE_PREMIUM_PRICE_ID=price_1TZgUlFfd0YCJr8gB8d08Rfu",
+                "ENVEOF",
+                "sudo docker-compose build",
+                "sudo docker-compose up -d"
+            ]
+        },
+        "InstanceIds": [
+            "i-058e26140671b3254"
+        ],
+        "Targets": [],
+        "RequestedDateTime": 1786187588.1,
+        "Status": "Pending",
+        "StatusDetails": "Pending",
+        "OutputS3Region": "us-east-1",
+        "OutputS3BucketName": "",
+        "OutputS3KeyPrefix": "",
+        "MaxConcurrency": "50",
+        "MaxErrors": "0",
+        "TargetCount": 1,
+        "CompletedCount": 0,
+        "ErrorCount": 0,
+        "DeliveryTimedOutCount": 0,
+        "ServiceRole": "",
+        "NotificationConfig": {
+            "NotificationArn": "",
+            "NotificationEvents": [],
+            "NotificationType": ""
+        },
+        "CloudWatchOutputConfig": {
+            "CloudWatchLogGroupName": "",
+            "CloudWatchOutputEnabled": false
+        },
+        "TimeoutSeconds": 3600,
+        "AlarmConfiguration": {
+            "IgnorePollAlarmFailure": false,
+            "Alarms": []
+        },
+        "TriggeredAlarms": []
+    }
+}

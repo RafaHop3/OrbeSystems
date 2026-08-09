@@ -11,6 +11,16 @@ export const metadata: Metadata = {
   title: 'Orbe Systems | Engineering & Arquitetura de Dados',
   description:
     'Hub tecnológico da Orbe Systems. Soluções escaláveis em engenharia de software, cyber safety e design de sistemas de alta disponibilidade.',
+  icons: {
+    icon: '/favicon.ico',
+  },
+  openGraph: {
+    title: 'Orbe Systems | Engineering',
+    description: 'Hub tecnológico: engenharia de software, cyber safety e design de sistemas.',
+    url: 'https://orbesystems.com.br',
+    siteName: 'Orbe Systems',
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
@@ -20,7 +30,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className="bg-navy-black text-navy-mist antialiased selection:bg-navy-steel selection:text-white">
+      <body className="bg-terminal-bg text-[#c8d6e3] antialiased selection:bg-neon-cyan selection:text-black bg-cyber-grid bg-fixed font-sans">
+        <div className="scanline-effect"></div>
         <AnalyticsTracker />
         <MouseAtomTrail />
         {children}

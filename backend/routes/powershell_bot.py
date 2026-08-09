@@ -5,7 +5,7 @@ import urllib.request
 import re
 from typing import Dict, Any, List
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from security.auth import require_premium
 from models.users import User
@@ -16,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 # ── Pydantic Schemas ──────────────────────────────────────────────────────────
 class PowerShellChatRequest(BaseModel):
-    prompt: str
+    prompt: str = Field(..., max_length=3000)
 
 class ScriptAnalysisRequest(BaseModel):
-    script_content: str
+    script_content: str = Field(..., max_length=150000)
 
 # ── Prompts do Sistema ────────────────────────────────────────────────────────
 POWERSHELL_SYSTEM_PROMPT = """Você é o OrbePSShield, um assistente especialista e amigável em PowerShell, Administração de Sistemas Windows e Segurança (SecDevOps) da Orbe Systems.

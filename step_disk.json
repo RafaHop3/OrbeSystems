@@ -1,0 +1,15 @@
+{
+    "DocumentName": "AWS-RunShellScript",
+    "InstanceIds": [
+        "i-058e26140671b3254"
+    ],
+    "Parameters": {
+        "commands": [
+            "df -h",
+            "sudo docker system df",
+            "free -h",
+            "echo 'Pruning docker to clear space...'",
+            "sudo docker system prune -af"
+        ]
+    }
+}

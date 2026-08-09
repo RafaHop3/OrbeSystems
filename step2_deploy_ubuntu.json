@@ -1,0 +1,37 @@
+{
+    "DocumentName": "AWS-RunShellScript",
+    "InstanceIds": [
+        "i-058e26140671b3254"
+    ],
+    "Parameters": {
+        "commands": [
+            "set -e",
+            "export DEBIAN_FRONTEND=noninteractive",
+            "sudo -E apt-get update -y",
+            "sudo -E apt-get install -y git docker.io docker-compose",
+            "sudo systemctl start docker || true",
+            "sudo systemctl enable docker || true",
+            "sudo usermod -a -G docker ubuntu || true",
+            "cd /home/ubuntu",
+            "rm -rf OrbeSystems",
+            "git clone https://github.com/RafaHop3/OrbeSystems.git",
+            "cd OrbeSystems/orbe-systems",
+            "mkdir -p backend",
+            "cat << 'ENVEOF' > backend/.env",
+            "ADMIN_USERNAME=rafael_admin",
+            "ADMIN_PASSWORD_HASH=$2b$12$dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy",
+            "SECRET_KEY=supersecretkeyfortestingonly123",
+            "NUM_TRUSTED_PROXIES=1",
+            "STRIPE_SECRET_KEY=sk_test_SECURE_PLACEHOLDER_KEY",
+            "STRIPE_WEBHOOK_SECRET=whsec_SECURE_PLACEHOLDER_KEY",
+            "STRIPE_PREMIUM_PRICE_ID=price_1TZgUlFfd0YCJr8gB8d08Rfu",
+            "ENVEOF",
+            "mkdir -p frontend",
+            "cat << 'FRONTEOF' > frontend/.env.local",
+            "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51SnN0b...",
+            "FRONTEOF",
+            "sudo docker-compose build",
+            "sudo docker-compose up -d"
+        ]
+    }
+}
