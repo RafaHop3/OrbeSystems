@@ -69,6 +69,13 @@ export default function HeroSection() {
             Abrir Workspace
           </Link>
           <Link
+            href="/ferramentas-premium/databroker-optout"
+            className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider border border-[#00f2fe]/40 text-[#00f2fe] px-7 py-3 rounded-lg hover:bg-[#00f2fe]/10 hover:border-[#00f2fe]/60 hover:shadow-[0_0_15px_rgba(0,242,254,0.3)] transition-all duration-300 bg-navy-deep/40 backdrop-blur-sm"
+          >
+            <Zap size={13} className="text-[#00f2fe]" />
+            Ghost Engine
+          </Link>
+          <Link
             href="/ferramentas-premium/powershell-bot"
             className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-wider border border-navy-metallic/30 text-navy-mist px-7 py-3 rounded-lg hover:border-navy-shine/50 transition-all duration-300"
           >
