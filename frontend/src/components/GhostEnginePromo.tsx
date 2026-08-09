@@ -2,6 +2,8 @@
 import Link from 'next/link';
 import { Ghost, ShieldAlert, Cpu, ArrowRight } from 'lucide-react';
 
+// Ghost Engine Promo Component - Deploy fix
+
 export default function GhostEnginePromo() {
     return (
         <section className="relative w-full py-20 px-6 border-y border-[#00f2fe]/30 bg-black overflow-hidden group">
