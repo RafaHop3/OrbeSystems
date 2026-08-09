@@ -97,6 +97,21 @@ def get_hardcoded_fallback_repositories() -> list[Repository]:
             topics=["portal", "cyber-security", "nextjs"],
             updated_at=now_str,
             is_featured=True,
+        ),
+        Repository(
+            id=106,
+            name="Ghost-Engine",
+            full_name="theorbesystems-sketch/Ghost-Engine",
+            description="Motor de renderização 3D com física real-time e shaders avançados para experiências imersivas",
+            html_url="https://github.com/theorbesystems-sketch/Ghost-Engine",
+            language="TypeScript",
+            stargazers_count=89,
+            forks_count=22,
+            topics=["3d", "rendering", "physics", "shaders", "immersive"],
+            updated_at=now_str,
+            is_featured=True,
+            custom_description="Motor de renderização 3D com física real-time e shaders avançados para experiências imersivas",
+            deploy_url="/ghost-engine"
         )
     ]
 
