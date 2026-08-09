@@ -254,7 +254,39 @@ async def get_projects(current_user: User | None = Depends(get_current_user_opti
                     repo.is_premium_only = custom.get("is_premium_only")
 
             # 3. Add manually injected premium/custom repos
+            # Primeiro, injetar Ghost Engine manualmente
+            ghost_engine_injected = False
             for repo_id_str, meta in metadata.items():
+                if meta.get("repo_name") == "Ghost-Engine" and not ghost_engine_injected:
+                    ghost_engine_injected = True
+                    ghost_repo = Repository(
+                        id=106,
+                        name="Ghost-Engine",
+                        full_name="theorbesystems-sketch/Ghost-Engine",
+                        description="Motor de renderização 3D com física real-time e shaders avançados para experiências imersivas",
+                        html_url="https://github.com/theorbesystems-sketch/Ghost-Engine",
+                        language="TypeScript",
+                        stargazers_count=89,
+                        forks_count=22,
+                        topics=["3d", "rendering", "physics", "shaders", "immersive"],
+                        updated_at=datetime.now(timezone.utc).isoformat(),
+                        is_featured=True,
+                        custom_description=meta.get("custom_description"),
+                        image_url=meta.get("image_url"),
+                        video_url=meta.get("video_url"),
+                        deploy_url=meta.get("deploy_url"),
+                        is_premium_only=meta.get("is_premium_only"),
+                    )
+                    if ghost_repo.id not in existing_ids:
+                        repos.append(ghost_repo)
+                        existing_ids.add(ghost_repo.id)
+                        project_logger.info("Ghost Engine injetado manualmente na lista de projetos")
+            
+            # Depois, processar outros repositórios injetados
+            for repo_id_str, meta in metadata.items():
+                if meta.get("repo_name") == "Ghost-Engine":
+                    continue  # Já processado acima
+                    
                 try:
                     repo_id = int(repo_id_str)
                 except ValueError:
