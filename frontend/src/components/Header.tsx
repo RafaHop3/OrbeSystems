@@ -1,9 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Menu, X, LayoutGrid, Lightbulb, Mail, LogIn, LogOut, Crown, Zap, Building2, ChevronDown, Terminal, Cpu } from 'lucide-react';
+import { Menu, X, LayoutGrid, Lightbulb, Mail, LogIn, LogOut, Crown, Zap, Building2, ChevronDown, Terminal, Cpu, Globe } from 'lucide-react';
 import Link from 'next/link';
-import OrbeLogo from './OrbeLogo';
 import { useAuth } from '@/hooks/useAuth';
 import { logoutAction } from '@/lib/auth-actions';
 
@@ -23,8 +22,8 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/70">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-3 group z-50">
-          <div className="relative w-9 h-9 rounded-full overflow-visible">
-            <OrbeLogo className="w-9 h-9 transition-transform group-hover:scale-110 duration-300" variant="header" />
+          <div className="relative w-8 h-8 rounded-full flex items-center justify-center border-2 border-neon-cyan shadow-[0_0_15px_rgba(0,242,254,0.6)] group-hover:scale-110 transition-transform">
+            <Globe className="text-neon-cyan animate-pulse" size={16} />
           </div>
           <span className="font-grotesk text-sm font-bold tracking-wide text-white group-hover:text-neon-cyan transition-colors">
             ORBE<span className="text-neon-cyan font-outfit">SYSTEMS</span>
@@ -138,8 +137,8 @@ export default function Header() {
                 href="/login"
                 className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:text-neon-cyan transition-all duration-300 border border-slate-700 rounded px-3 py-1.5 hover:border-glow-cyan hover:bg-neon-cyan/5"
               >
-                <LogIn size={12} className="text-neon-cyan" />
-                <span>Sys.Login</span>
+                <LogIn size={11} className="text-blue-400" />
+                <span>Login</span>
               </Link>
             )}
           </div>
@@ -232,7 +231,7 @@ export default function Header() {
                 className="flex items-center gap-3 font-mono text-xs text-slate-400 hover:text-neon-cyan transition-colors duration-200 tracking-wider py-3"
               >
                 <LogIn size={16} />
-                <span>Sys.Login</span>
+                <span>Login VIP</span>
               </Link>
             )}
           </div>
