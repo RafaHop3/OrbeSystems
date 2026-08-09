@@ -15,7 +15,7 @@
             "git clone https://github.com/RafaHop3/OrbeSystems.git",
             "cd OrbeSystems/backend",
             "echo \"ADMIN_USERNAME=rafael_admin\" > .env",
-            "echo \"ADMIN_PASSWORD_HASH=\\$2b\\$12\\$dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" >> .env",
+            "echo \"ADMIN_PASSWORD_HASH='\\$2b\\$12\\$dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy'\" >> .env",
             "echo \"SECRET_KEY=supersecretkeyfortestingonly123\" >> .env",
             "echo \"NUM_TRUSTED_PROXIES=1\" >> .env",
             "echo \"STRIPE_SECRET_KEY=sk_test_SECURE_PLACEHOLDER_KEY\" >> .env",
