@@ -9,7 +9,7 @@
  */
 
 import { useState, useTransition } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createCheckoutSessionAction } from "@/lib/auth-actions";
 
 const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://orbe-systems-api.onrender.com";
@@ -73,36 +73,10 @@ const PLANS = [
 
 function AssinarPageContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const fromRoute = searchParams.get("from");
-
-  const getBannerDetails = () => {
-    if (!fromRoute) return null;
-    if (fromRoute.includes("imobverse")) {
-      return {
-        title: "🏠 Imobverse — Plataforma Proptech & Vistoria",
-        description: "Esta tela requer a assinatura do plano PREMIUM. O Imobverse integra um motor de reputação em tempo real, inteligência de vistorias fotográficas de imóveis para prevenir fraudes, e geração segura de leads de locação.",
-        why: "Por que essa tela é Premium? O Imobverse executa consultas complexas de reputação no banco de dados e processa o upload e processamento de imagens de vistoria na nuvem."
-      };
-    }
-    if (fromRoute.includes("imortal")) {
-      return {
-        title: "⚡ IMORTAL — Hardware Formal Verification",
-        description: "Esta tela requer a assinatura do plano PREMIUM. O IMORTAL possui verificação formal matemática via Microsoft Z3 Solver e sandbox de fuzzing estocástico para provar a corretude de firmware para microcontroladores AVR antes da compilação.",
-        why: "Por que essa tela é Premium? A verificação matemática e a execução concorrente em sandbox de fuzzing utilizam alta capacidade de processamento (CPU-bound) isolada em nossos servidores."
-      };
-    }
-    return {
-      title: "🔒 Tela Restrita / Ferramenta Premium",
-      description: "A funcionalidade que você tentou acessar faz parte do ecossistema de ferramentas premium da Orbe Systems.",
-      why: "Por que essa tela é Premium? Nossos algoritmos avançados e ferramentas analíticas rodam sob um ecossistema seguro de microsserviços exclusivos para assinantes premium."
-    };
-  };
-
-  const banner = getBannerDetails();
+  const banner = null;
 
   const handleStripeCheckout = () => {
     setError(null);
@@ -139,18 +113,6 @@ function AssinarPageContent() {
           </p>
         </div>
 
-        {/* Banner de aviso para rotas premium bloqueadas */}
-        {banner && (
-          <div style={styles.premiumBanner}>
-            <div style={styles.bannerTitle}>
-              <span>👑</span> {banner.title}
-            </div>
-            <p style={styles.bannerDesc}>{banner.description}</p>
-            <div style={styles.bannerWhy}>
-              <strong>💡 {banner.why}</strong>
-            </div>
-          </div>
-        )}
 
         {error && (
           <div style={styles.errorBanner}>
