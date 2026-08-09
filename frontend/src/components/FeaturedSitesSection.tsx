@@ -5,6 +5,17 @@ import { ExternalLink } from 'lucide-react';
 
 const sites = [
     {
+        name: 'Ghost Engine',
+        tagline: 'Motor de Renderização 3D · Física Real-Time',
+        url: '/ghost-engine',
+        image: '/featured-ghostengine.png',
+        accent: '#00f2fe',
+        accentBg: 'rgba(0, 242, 254, 0.08)',
+        accentBorder: 'rgba(0, 242, 254, 0.25)',
+        badge: '👻 Premium',
+        isAnimated: true,
+    },
+    {
         name: 'AstroWatch',
         tagline: 'Universe Explorer · Satélites & Cosmos 3D',
         url: 'https://astro-watch-chi.vercel.app/',
@@ -62,7 +73,7 @@ export default function FeaturedSitesSection() {
             </div>
 
             {/* Cards grid */}
-            <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
                 {sites.map((site) => (
                     <a
                         key={site.url}
