@@ -12,9 +12,7 @@ WORKDIR /build
 # Copy only requirements first for better layer caching
 COPY requirements.txt .
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends build-essential libpq-dev libffi-dev && \
-    pip install --upgrade pip && \
+RUN pip install --upgrade pip && \
     pip install --no-cache-dir --prefix=/install -r requirements.txt
 
 # ─────────────────────────────────────────────────────────────────────────────

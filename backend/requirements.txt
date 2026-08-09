@@ -18,5 +18,5 @@ email-validator
 mangum
 boto3
 aioboto3
-redis[hiredis]
+redis
 mcp
