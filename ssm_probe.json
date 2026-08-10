@@ -1,0 +1,1 @@
+{"DocumentName": "AWS-RunShellScript", "Targets": [{"Key": "InstanceIds", "Values": ["i-058e26140671b3254"]}], "Parameters": {"commands": ["cat /home/ubuntu/OrbeSystems/backend/routes/checkout.py | head -n 70 | tail -n 25"]}}
