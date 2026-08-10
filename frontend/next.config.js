@@ -51,6 +51,14 @@ const securityHeaders = [
 
 const nextConfig = {
   reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: '/remover-dados-:broker',
+        destination: '/remover-dados/:broker',
+      },
+    ];
+  },
   async headers() {
     return [
       {
