@@ -35,7 +35,33 @@ def trigger_github_workflow(request_id: str, broker: str):
     ou usamos um API Endpoint Serverless aberto para webhook.
     """
     logger.info(f"Disparando Workflow Github Actions para o ticket: {request_id} ({broker})")
-    # TODO: Disparo Real usando httpx.post para api.github.com/repos/X/X/actions/workflows/broker-demolition.yml/dispatches
+    
+    if not settings.GITHUB_TOKEN:
+        logger.error("FATAL: GITHUB_TOKEN indisponível nas variáveis de ambiente. Não é possível disparar o worker.")
+        return
+
+    try:
+        response = httpx.post(
+            "https://api.github.com/repos/RafaHop3/OrbeSystems/actions/workflows/broker-demolition.yml/dispatches",
+            headers={
+                "Accept": "application/vnd.github.v3+json",
+                "Authorization": f"Bearer {settings.GITHUB_TOKEN}",
+            },
+            json={
+                "ref": "main",
+                "inputs": {
+                    "ticket_id": str(request_id),
+                    "target_broker": broker
+                }
+            },
+            timeout=10.0
+        )
+        if response.status_code // 100 == 2:
+            logger.info("Workflow do Ghost Engine despachado com sucesso!")
+        else:
+            logger.error(f"Falha ao despachar Action no Github: {response.status_code} - {response.text}")
+    except Exception as e:
+        logger.error(f"Exceção ao disparar Ghost Engine via Github Actions: {e}")
 
 from pydantic import BaseModel
 class OptOutCreatePayload(BaseModel):
