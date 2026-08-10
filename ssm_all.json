@@ -1,0 +1,44 @@
+{
+    "CommandInvocations": [
+        {
+            "CommandId": "7c5f5f37-368b-49bc-ad65-c6193734d188",
+            "InstanceId": "i-058e26140671b3254",
+            "InstanceName": "ip-10-0-1-219.ec2.internal",
+            "Comment": "",
+            "DocumentName": "AWS-RunShellScript",
+            "DocumentVersion": "$DEFAULT",
+            "RequestedDateTime": 1786299227.746,
+            "Status": "Success",
+            "StatusDetails": "Success",
+            "StandardOutputUrl": "",
+            "StandardErrorUrl": "",
+            "CommandPlugins": [
+                {
+                    "Name": "aws:runShellScript",
+                    "Status": "Success",
+                    "StatusDetails": "Success",
+                    "ResponseCode": 0,
+                    "ResponseStartDateTime": 1786299229.515,
+                    "ResponseFinishDateTime": 1786299231.014,
+                    "Output": "{\"id\":\"khF1pMivWmFt\",\"time\":1786299230,\"expires\":1786342430,\"event\":\"message\",\"topic\":\"orbe-rafael-logs-12345\",\"message\":\"You received a file: attachment.txt\",\"attachment\":{\"name\":\"attachment.txt\",\"type\":\"text/plain; charset=utf-8\",\"size\":5039,\"expires\":1786310030,\"url\":\"https://ntfy.sh/file/khF1pMivWmFt.txt\"}}\n\n----------ERROR-------\n  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current\n                                 Dload  Upload   Total   Spent    Left  Speed\n\r  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0\r100  5352  100   313  100  5039   2157  34738 --:--:-- --:--:-- --:--:-- 37166\n",
+                    "StandardOutputUrl": "",
+                    "StandardErrorUrl": "",
+                    "OutputS3Region": "us-east-1",
+                    "OutputS3BucketName": "",
+                    "OutputS3KeyPrefix": ""
+                }
+            ],
+            "ServiceRole": "",
+            "NotificationConfig": {
+                "NotificationArn": "",
+                "NotificationEvents": [],
+                "NotificationType": ""
+            },
+            "CloudWatchOutputConfig": {
+                "CloudWatchLogGroupName": "",
+                "CloudWatchOutputEnabled": false
+            }
+        }
+    ],
+    "NextToken": "eyJOZXh0VG9rZW4iOiBudWxsLCAiYm90b190cnVuY2F0ZV9hbW91bnQiOiAxfQ=="
+}

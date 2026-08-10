@@ -39,7 +39,17 @@ export default function Header() {
               className="group flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-slate-400 transition-all duration-300 hover:text-neon-cyan"
             >
               <Icon size={14} className="group-hover:animate-pulse-neon text-neon-blue group-hover:text-neon-cyan transition-colors" />
-              <span>{label}</span>
+              <div className="flex">
+                {label.split('').map((char, i) => (
+                  <span
+                    key={i}
+                    className="transition-all duration-300 group-hover:-translate-y-[2px]"
+                    style={{ transitionDelay: `${i * 30}ms` }}
+                  >
+                    {char === ' ' ? '\u00A0' : char}
+                  </span>
+                ))}
+              </div>
             </Link>
           ))}
 

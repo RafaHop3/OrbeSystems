@@ -1,0 +1,18 @@
+{
+    "DocumentName": "AWS-RunShellScript",
+    "Targets": [
+        {
+            "Key": "InstanceIds",
+            "Values": [
+                "i-058e26140671b3254"
+            ]
+        }
+    ],
+    "Parameters": {
+        "commands": [
+            "cd /home/ubuntu/OrbeSystems/backend || exit 1",
+            "docker compose logs --tail 30 backend > error.log 2>&1",
+            "base64 -w 0 error.log"
+        ]
+    }
+}

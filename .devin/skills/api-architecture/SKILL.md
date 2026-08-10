@@ -1,4 +1,5 @@
 ---
+name: api-architecture
 description: Arquitetura de APIs - Integrações e Endpoints
 ---
 

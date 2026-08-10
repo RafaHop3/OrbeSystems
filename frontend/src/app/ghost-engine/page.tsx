@@ -7,7 +7,7 @@ export default function GhostEnginePage() {
     return (
         <main className="min-h-screen bg-black pt-16">
             <Header />
-            
+
             <section className="relative w-full py-20 px-6 border-y border-[#00f2fe]/30 bg-black overflow-hidden">
                 {/* Background Cyberpunk FX */}
                 <div className="absolute inset-0 z-0">
@@ -30,7 +30,7 @@ export default function GhostEnginePage() {
 
                         <p className="text-slate-400 font-sans leading-relaxed text-lg max-w-xl">
                             Seus dados privados como CPF, Endereço e Processos estão sendo vendidos agora mesmo em sites públicos.
-                            Nosso <strong>Sniper Algorítmico Custo-Zero</strong> invade bases como Escavador e Jusbrasil exigindo o seu "Direito de Esquecimento" via LGPD.
+                            Nosso <strong>Sniper Algorítmico</strong> invade bases como Escavador e Jusbrasil exigindo o seu "Direito de Esquecimento" via LGPD.
                         </p>
 
                         <div className="flex gap-4 pt-4">
@@ -83,20 +83,20 @@ export default function GhostEnginePage() {
             <section className="py-20 px-6">
                 <div className="max-w-4xl mx-auto">
                     <h2 className="text-3xl font-bold text-white mb-8 text-center">Como Funciona</h2>
-                    
+
                     <div className="grid md:grid-cols-3 gap-6">
                         <div className="bg-[#181310] border border-[#00f2fe]/20 rounded-lg p-6">
                             <Zap className="text-[#00f2fe] mb-4" size={32} />
                             <h3 className="text-white font-bold mb-2">Varredura Automática</h3>
                             <p className="text-slate-400 text-sm">Nossa IA busca seus dados em mais de 50 sites de dados públicos brasileiros.</p>
                         </div>
-                        
+
                         <div className="bg-[#181310] border border-[#00f2fe]/20 rounded-lg p-6">
                             <Lock className="text-[#00f2fe] mb-4" size={32} />
                             <h3 className="text-white font-bold mb-2">Proteção Legal</h3>
                             <p className="text-slate-400 text-sm">Utilizamos a LGPD para exigir a remoção dos seus dados de forma legal e definitiva.</p>
                         </div>
-                        
+
                         <div className="bg-[#181310] border border-[#00f2fe]/20 rounded-lg p-6">
                             <Ghost className="text-[#00f2fe] mb-4" size={32} />
                             <h3 className="text-white font-bold mb-2">Monitoramento Contínuo</h3>

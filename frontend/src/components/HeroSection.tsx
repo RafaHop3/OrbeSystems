@@ -17,6 +17,13 @@ export default function HeroSection() {
       className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-28 pb-16 overflow-hidden"
     >
       <div className="relative z-10 text-center max-w-4xl mx-auto">
+        <div className="inline-flex items-center gap-2 border border-navy-metallic/30 rounded-full px-4 py-1.5 mb-8 bg-navy-deep/40 backdrop-blur-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-navy-glow animate-pulse-neon" />
+          <span className="font-mono text-[10px] text-navy-glow/90 tracking-widest uppercase">
+            Orbe Systems · v1.2
+          </span>
+        </div>
+
         <h1 className="font-sans text-4xl md:text-6xl font-light mb-6 leading-tight tracking-tight text-white/95">
           O terminal é a sua{' '}
           <span className="font-medium text-navy-glow">ferramenta.</span>

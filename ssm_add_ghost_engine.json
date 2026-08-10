@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Adicionar Ghost Engine ao banco de dados",
+  "parameters": {},
+  "mainSteps": [
+    {
+      "action": "aws:runShellScript",
+      "name": "addGhostEngine",
+      "inputs": {
+        "runCommand": [
+          "#!/bin/bash",
+          "cd /home/ubuntu/OrbeSystems/backend || exit 1",
+          "",
+          "# Executar script para adicionar Ghost Engine",
+          "python add_ghost_engine.py || echo 'Script execution failed'",
+          "",
+          "# Reiniciar o container backend para aplicar mudanças",
+          "docker compose restart backend || echo 'Container restart failed'",
+          "",
+          "echo 'Ghost Engine adicionado e backend reiniciado'"
+        ],
+        "timeoutSeconds": 120
+      }
+    }
+  ]
+}

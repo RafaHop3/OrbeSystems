@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: 'Orbe Systems | Engineering & Arquitetura de Dados',
   description:
     'Hub tecnológico da Orbe Systems. Soluções escaláveis em engenharia de software, cyber safety e design de sistemas de alta disponibilidade.',
+  keywords: ['data broker', 'Orbe Ghost Engine', 'engenharia de software', 'cyber safety', 'arquitetura de dados', 'LGPD', 'remoção de dados'],
   icons: {
     icon: '/favicon.ico',
   },

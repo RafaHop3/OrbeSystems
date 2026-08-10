@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Deploy Orbe Systems com login ECR automático",
+  "parameters": {
+    "ECRRepository": {
+      "type": "String",
+      "description": "ECR Repository URL",
+      "default": "982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest"
+    }
+  },
+  "mainSteps": [
+    {
+      "action": "aws:runShellScript",
+      "name": "deployOrbeSystems",
+      "inputs": {
+        "runCommand": [
+          "#!/bin/bash",
+          "cd /home/ubuntu || exit 1",
+          "",
+          "# Clonar repositório se não existir",
+          "if [ ! -d \"OrbeSystems\" ]; then",
+          "  git clone https://github.com/RafaHop3/OrbeSystems.git OrbeSystems",
+          "fi",
+          "",
+          "cd OrbeSystems || exit 1",
+          "git pull origin main || git pull origin master || echo 'Git pull failed, continuing...'",
+          "",
+          "# Login no ECR usando IAM role",
+          "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 982534388133.dkr.ecr.us-east-1.amazonaws.com || exit 1",
+          "",
+          "# Parar containers existentes",
+          "docker compose down || true",
+          "",
+          "# Pular e iniciar novas imagens",
+          "docker compose pull || exit 1",
+          "docker compose up -d || exit 1",
+          "",
+          "echo 'Deploy concluído com sucesso!'"
+        ],
+        "timeoutSeconds": 300
+      }
+    }
+  ]
+}
