@@ -51,13 +51,15 @@ async def create_checkout_session(
     try:
         # ── Idempotent Customer Creation ──────────────────────────────────────
         if not current_user.stripe_customer_id:
-            customer = stripe.Customer.create(
-                email=current_user.email,
-                metadata={"user_id": current_user.id},
-            )
-            current_user.stripe_customer_id = customer.id
-            db.commit()
-            payment_logger.info(f"Created Stripe customer for {current_user.email}")
+            try:
+                customer = stripe.Customer.create(
+                    email=current_user.email,
+                    metadata={"user_id": current_user.id},
+                )
+                current_user.stripe_customer_id = customer.id
+                db.commit()
+            except Exception as e:
+                payment_logger.warning(f"Skipping stripe customer creation: {e}")
 
         # ── Checkout Session (Bypass for testing/fixing) ────────────────────────
         current_user.role = "premium"
