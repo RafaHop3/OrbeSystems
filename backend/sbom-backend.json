@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:073d11be-4719-463c-ae6f-e228fc2e2831",
+  "serialNumber": "urn:uuid:5f07ce3d-f32c-4f7a-b6f5-b97cd6358f30",
   "metadata": {
-    "timestamp": "2026-08-10T11:24:32.265816+00:00",
+    "timestamp": "2026-08-10T15:30:04.123331+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -660,8 +660,8 @@
     {
       "type": "library",
       "name": "greenlet",
-      "version": "3.5.4",
-      "purl": "pkg:pypi/greenlet@3.5.4",
+      "version": "3.5.5",
+      "purl": "pkg:pypi/greenlet@3.5.5",
       "licenses": [
         {
           "license": {
@@ -678,7 +678,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "8d27c72b5d9e3848413857351b973b9e0d1c99a0b8b088e137aad2e355fa3642"
+          "content": "d6606559127e8eae106c12b3974d6ba04c681c268a5df923cb8d7c24142d7ce5"
         }
       ]
     },
