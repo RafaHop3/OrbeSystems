@@ -6,13 +6,13 @@ import { ExternalLink } from 'lucide-react';
 const sites = [
     {
         name: 'Ghost Engine',
-        tagline: 'Motor de Renderização 3D · Física Real-Time',
-        url: '/ferramentas-premium/databroker-optout',
-        image: '/featured-astrowatch.png',
+        tagline: 'Sniper Algorítmico · Remoção Automática de Dados (LGPD)',
+        url: '/ghost-engine',
+        image: '/featured-ghostengine.png',
         accent: '#00f2fe',
         accentBg: 'rgba(0, 242, 254, 0.08)',
         accentBorder: 'rgba(0, 242, 254, 0.25)',
-        badge: '👻 Premium',
+        badge: '👻 Opt-Out',
         isAnimated: true,
     },
     {

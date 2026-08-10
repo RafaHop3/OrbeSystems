@@ -109,9 +109,9 @@ Os hashes a seguir atestam a integridade absoluta da arquitetura IMORTAL no ecos
 | `backend/imortal/server.py` | Servidor API local para orquestração offline e CLI | `a330e4dc427964e8be5fddf17a1f5f2d3a19328483588ccfe1532d5b438e0cf9` |
 | `backend/imortal/visualizer.py` | Motor de geração de dashboards gráficos e renderizador SVG | `56f6172090b23b1ee47cea1ee7a908edd2ad512ea1165ae43ad62e0853069f59` |
 | `frontend/src/app/api/ping-backend/route.ts` | Rota do Next.js para manter o backend ativo via requisições de cron externas | `b741c200f77eccffbe5404ab61a3696d946e2a251f54ce7411ac68487288b6d5` |
-| `frontend/vercel.json` | Configuração do Vercel Cron Job para automação de pings de keep-alive | `ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356` |
-| `SECURITY_PROTOCOL.md` | Protocolo Geral de Cibersegurança e DevSecOps da Orbe | `239e3d3e17c9e36001ab1c620213950d5d8cb105a3084771df98d38fd6076951` |
-| `NORMATIZACAO_JURIDICO_TECNICA.md` | Este termo de normatização técnico-legal | `0da9c8e7ffe5621265f6cbdb840dd12463c78cc823956d4b963a233dfe642c1f` |
+| `frontend/vercel.json` | Configuração do Vercel Cron Job para automação de pings de keep-alive | `7fddfc678ddf3653801945e1a9fb3c6d5d15116edffc76f0eb611d4acb36b254` |
+| `SECURITY_PROTOCOL.md` | Protocolo Geral de Cibersegurança e DevSecOps da Orbe | `0f600378b964ee61765b1b2e42f81dde13b5aed7ef62623ddcebab5af4262a2d` |
+| `NORMATIZACAO_JURIDICO_TECNICA.md` | Este termo de normatização técnico-legal | `d1fd746ff1ebce7ff96352317b1be7017c0ef8368f209519affcd88889fa59eb` |
 
 ---
 

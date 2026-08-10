@@ -172,14 +172,14 @@ Os hashes SHA-256 abaixo atestam a integridade e conformidade de cada componente
 
 | Arquivo | Hash SHA-256 |
 | :--- | :--- |
-| `backend/routes/powershell_bot.py` | `5e20a3479db4224724b22cdba0893b3befe40aa2673270446c2976eec6ade6eb` |
-| `backend/main.py` | `a41ed887181af8439e52d8acfec996192dc66d846573a6728075d8d8d3cb8b99` |
-| `frontend/src/app/ferramentas-premium/powershell-bot/page.tsx` | `f23de2d960c3d44d6ec05596a9e729b2c617f5789b810eba2f03fd3735294eb5` |
-| `frontend/src/components/Header.tsx` | `8412c5aa06d89b9df4400f50ac708cff2297d203d95bc0b43e0b23cff315b82e` |
-| `frontend/src/app/(categories)/cyber-security/page.tsx` | `7ed0416a6acabe088a6b3c9b06882e87d8e70d1811589ea42508383d538d86d7` |
-| `SECURITY_PROTOCOL.md` | `239e3d3e17c9e36001ab1c620213950d5d8cb105a3084771df98d38fd6076951` |
-| `ORGANIZACAO_ATIVOS.md` | `f2bf4f7e1535fe80afdcb952c409be6cc1c0a661945354a8fe0228ae7df5ee3e` |
-| `NORMATIZACAO_JURIDICO_TECNICA.md` | `0da9c8e7ffe5621265f6cbdb840dd12463c78cc823956d4b963a233dfe642c1f` |
+| `backend/routes/powershell_bot.py` | `7d604f9d4422ad91e7ca25d6baad434d1dfd9837f7a70f11caf72c8e0c1e47d7` |
+| `backend/main.py` | `d38d047a25faaeb3e8bd2680bada5d75b8dfc0c8c996705b038e1ae0d0d0f098` |
+| `frontend/src/app/ferramentas-premium/powershell-bot/page.tsx` | `7ee9042989349b8ffe7ea313d61e3a89b015c215b99ef618d8e4592554709411` |
+| `frontend/src/components/Header.tsx` | `1719ec26937dc4389e905cb8c4e7e14185f28c4982e83835369e7617cafc276c` |
+| `frontend/src/app/(categories)/cyber-security/page.tsx` | `4a9552b26d92081927319c9d0c62482f536f0cda81d6ee801e30dbcb0586af73` |
+| `SECURITY_PROTOCOL.md` | `0f600378b964ee61765b1b2e42f81dde13b5aed7ef62623ddcebab5af4262a2d` |
+| `ORGANIZACAO_ATIVOS.md` | `b4587584368f3c1d9122bbd8906dac57164705464e54976a72d16b284e8c129b` |
+| `NORMATIZACAO_JURIDICO_TECNICA.md` | `d1fd746ff1ebce7ff96352317b1be7017c0ef8368f209519affcd88889fa59eb` |
 | `backend/imortal/ai.py` | `0b073a6bd398c1401fe5d1e622f4b710bb1d50b140499c61becc66d409dd68ea` |
 | `backend/imortal/compiler.py` | `5ffa3f4b08f91c9ff371623e489ee44ab4fee4e0e4e3362b456915eb5edfc4a2` |
 | `backend/imortal/prover.py` | `f507a9caf1d43352b21e365ca354b596c9abed0cb14892bb603201a597109744` |
@@ -187,6 +187,6 @@ Os hashes SHA-256 abaixo atestam a integridade e conformidade de cada componente
 | `backend/imortal/server.py` | `a330e4dc427964e8be5fddf17a1f5f2d3a19328483588ccfe1532d5b438e0cf9` |
 | `backend/imortal/visualizer.py` | `56f6172090b23b1ee47cea1ee7a908edd2ad512ea1165ae43ad62e0853069f59` |
 | `frontend/src/app/api/ping-backend/route.ts` | `b741c200f77eccffbe5404ab61a3696d946e2a251f54ce7411ac68487288b6d5` |
-| `frontend/vercel.json` | `ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356` |
+| `frontend/vercel.json` | `7fddfc678ddf3653801945e1a9fb3c6d5d15116edffc76f0eb611d4acb36b254` |
 
 
