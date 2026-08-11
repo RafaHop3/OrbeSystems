@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
     Shield, ShieldAlert, Send, RefreshCw, Lock, Ghost,
     AlertTriangle, CheckCircle, Clock, ExternalLink,
@@ -242,7 +242,8 @@ export default function DataBrokerOptOutPage() {
     const { user } = useAuth();
     const router = useRouter();
     const [tickets, setTickets] = useState<OptOutTicket[]>([]);
-    const [pollingActive, setPollingActive] = useState(false);
+    const [sseStatus, setSseStatus] = useState<"connecting" | "live" | "error">("connecting");
+    const esRef = useRef<EventSource | null>(null);
 
     // Form state
     const [fullName, setFullName] = useState("");
@@ -274,33 +275,51 @@ export default function DataBrokerOptOutPage() {
             const res = await fetch(`${API_URL}/api/optout/list`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
-            if (res.ok) {
-                const data = await res.json();
-                setTickets(data);
-                // Keep polling if any pending
-                const hasPending = data.some((t: OptOutTicket) => t.status === "PENDING" || t.status === "RUNNING");
-                setPollingActive(hasPending);
-            }
-        } catch (e) {
-            console.error("Erro listando tickets", e);
-        }
+            if (res.ok) setTickets(await res.json());
+        } catch (e) { console.error("Refresh failed", e); }
     }, []);
 
-    // Auto-poll while there are PENDING tickets
-    useEffect(() => {
-        if (!pollingActive) return;
-        const interval = setInterval(fetchTickets, 5000);
-        return () => clearInterval(interval);
-    }, [pollingActive, fetchTickets]);
+    // ── SSE: open once, handle all real-time events ─────────────────────
+    const openSSE = useCallback(() => {
+        const token = localStorage.getItem("orbe_access_token");
+        if (!token) return;
+        esRef.current?.close();
+        const es = new EventSource(
+            `${API_URL}/api/optout/stream?token=${encodeURIComponent(token)}`
+        );
+        esRef.current = es;
+        setSseStatus("connecting");
+
+        es.addEventListener("connected", () => setSseStatus("live"));
+
+        es.addEventListener("ticket_created", (e: MessageEvent) => {
+            const t: OptOutTicket = JSON.parse(e.data);
+            setTickets((prev) => prev.some((p) => p.id === t.id) ? prev : [t, ...prev]);
+        });
+
+        es.addEventListener("ticket_update", (e: MessageEvent) => {
+            const updated: OptOutTicket = JSON.parse(e.data);
+            setTickets((prev) =>
+                prev.map((t) => (t.id === updated.id ? { ...t, ...updated } : t))
+            );
+        });
+
+        es.onerror = () => setSseStatus("error");
+        // Browser EventSource auto-reconnects on error after ~3s
+
+        return () => { es.close(); esRef.current = null; };
+    }, []);
 
     useEffect(() => {
         if (!user) return;
         if (user.role !== "premium") {
             router.push("/assinar?from=databroker");
-        } else {
-            fetchTickets();
+            return;
         }
-    }, [user, router, fetchTickets]);
+        fetchTickets();           // REST snapshot on mount
+        const cleanup = openSSE(); // SSE for all future updates
+        return cleanup;
+    }, [user, router, fetchTickets, openSSE]);
 
     const submitOptOut = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -327,8 +346,7 @@ export default function DataBrokerOptOutPage() {
                 setFullName("");
                 setCpf("");
                 setAcceptLgpd(false);
-                await fetchTickets();
-                setPollingActive(true);
+                // SSE will deliver ticket_created event — no need to refetch
                 setTimeout(() => setFormStep("form"), 3000);
             } else {
                 const d = await res.json();
@@ -511,13 +529,14 @@ export default function DataBrokerOptOutPage() {
                     <div className="lg:col-span-3 space-y-4">
                         <div className="flex items-center justify-between">
                             <h2 className="text-base font-bold text-white uppercase flex items-center gap-2">
-                                <Activity size={16} className={pollingActive ? "text-[#00f2fe] animate-pulse" : "text-gray-600"} />
+                                <Activity size={16} className={sseStatus === "live" ? "text-green-400 animate-pulse" : sseStatus === "error" ? "text-red-400 animate-pulse" : "text-yellow-400"} />
                                 Painel de Operações
-                                {pollingActive && (
-                                    <span className="text-[10px] font-normal text-[#00f2fe] bg-[#00f2fe]/10 px-2 py-0.5 rounded-full animate-pulse">
-                                        LIVE
-                                    </span>
-                                )}
+                                <span className={`text-[10px] font-normal px-2 py-0.5 rounded-full ${sseStatus === "live" ? "text-green-400 bg-green-500/10" :
+                                        sseStatus === "error" ? "text-red-400 bg-red-500/10 animate-pulse" :
+                                            "text-yellow-400 bg-yellow-500/10"
+                                    }`}>
+                                    {sseStatus === "live" ? "● LIVE" : sseStatus === "error" ? "⚠ RECONECTANDO" : "◌ CONECTANDO"}
+                                </span>
                             </h2>
                             <button
                                 onClick={fetchTickets}
