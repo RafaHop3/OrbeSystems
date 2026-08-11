@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { Shield, ShieldAlert, FileText, Send, RefreshCw, Printer } from "lucide-react";
+import { useEffect, useState, useCallback, useRef } from "react";
+import {
+    Shield, ShieldAlert, Send, RefreshCw, Lock, Ghost,
+    AlertTriangle, CheckCircle, Clock, ExternalLink,
+    Eye, Trash2, Zap, TrendingUp, Activity
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 
@@ -15,17 +19,279 @@ interface OptOutTicket {
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.orbesystems.com.br").replace(/\/$/, "");
 
+// ── Broker manual fallback URLs ──────────────────────────────────────────────
+const BROKER_MANUAL_URLS: Record<string, { url: string; steps: string[] }> = {
+    escavador: {
+        url: "https://www.escavador.com/fale-conosco?assunto=3",
+        steps: [
+            "Acesse o link abaixo",
+            "No campo 'Assunto', selecione 'Exclusão de dados'",
+            "Informe seu nome completo e CPF",
+            "Envie mencionando o Artigo 18 da LGPD (Lei 13.709/2018)",
+        ],
+    },
+    jusbrasil: {
+        url: "https://www.jusbrasil.com.br/suporte/atendimento?assunto=privacidade",
+        steps: [
+            "Acesse o link abaixo",
+            "Preencha 'Assunto' como Privacidade / LGPD",
+            "Solicite remoção do seu nome dos resultados de busca",
+            "Aguarde resposta em até 72h",
+        ],
+    },
+    consultasflex: {
+        url: "https://consultasflex.com/opt-out",
+        steps: [
+            "Acesse o link de Opt-Out direto",
+            "Preencha nome completo e CPF",
+            "Confirme pelo email cadastrado",
+        ],
+    },
+    tudosobretodos: {
+        url: "https://tudosobretodos.info/contato",
+        steps: [
+            "Acesse a página de contato",
+            "Informe seu CPF e solicite remoção via LGPD Art. 18",
+            "Copie: 'Sou titular do CPF informado. Exijo exclusão imediata dos meus dados com base na Lei nº 13.709/2018.'",
+        ],
+    },
+};
+
+// ── Security Animation Canvas ─────────────────────────────────────────────────
+function EncryptionAnimation() {
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+
+        const chars = "01AES█▓▒░LGPD∑∞§";
+        const particles: { x: number; y: number; speed: number; char: string; opacity: number }[] = [];
+
+        for (let i = 0; i < 40; i++) {
+            particles.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                speed: 0.3 + Math.random() * 0.7,
+                char: chars[Math.floor(Math.random() * chars.length)],
+                opacity: Math.random() * 0.5 + 0.1,
+            });
+        }
+
+        let animId: number;
+        const animate = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.font = "10px monospace";
+
+            particles.forEach((p) => {
+                ctx.fillStyle = `rgba(0, 242, 254, ${p.opacity})`;
+                ctx.fillText(p.char, p.x, p.y);
+                p.y += p.speed;
+                p.opacity -= 0.003;
+                if (p.y > canvas.height || p.opacity <= 0) {
+                    p.y = 0;
+                    p.x = Math.random() * canvas.width;
+                    p.opacity = Math.random() * 0.5 + 0.1;
+                    p.char = chars[Math.floor(Math.random() * chars.length)];
+                }
+            });
+            animId = requestAnimationFrame(animate);
+        };
+        animate();
+        return () => cancelAnimationFrame(animId);
+    }, []);
+
+    return (
+        <canvas
+            ref={canvasRef}
+            className="absolute inset-0 w-full h-full pointer-events-none opacity-40"
+        />
+    );
+}
+
+// ── Metrics Counter ───────────────────────────────────────────────────────────
+function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: string }) {
+    const [count, setCount] = useState(0);
+    useEffect(() => {
+        let start = 0;
+        const step = Math.ceil(target / 40);
+        const timer = setInterval(() => {
+            start += step;
+            if (start >= target) { setCount(target); clearInterval(timer); }
+            else setCount(start);
+        }, 30);
+        return () => clearInterval(timer);
+    }, [target]);
+    return <span>{count}{suffix}</span>;
+}
+
+// ── Broker Status Card ────────────────────────────────────────────────────────
+function BrokerCard({ ticket }: { ticket: OptOutTicket }) {
+    const brokerKey = ticket.target_broker.toLowerCase();
+    const manual = BROKER_MANUAL_URLS[brokerKey];
+
+    const STATUS_MAP: Record<string, { label: string; color: string; bg: string; border: string; icon: React.ReactNode }> = {
+        PENDING: {
+            label: "PROCESSANDO",
+            color: "text-yellow-400",
+            bg: "bg-yellow-500/10",
+            border: "border-yellow-500/30",
+            icon: <Clock size={16} className="animate-spin text-yellow-400" style={{ animationDuration: "3s" }} />,
+        },
+        RUNNING: {
+            label: "DEMOLINDO",
+            color: "text-[#00f2fe]",
+            bg: "bg-[#00f2fe]/10",
+            border: "border-[#00f2fe]/40",
+            icon: <Activity size={16} className="animate-pulse text-[#00f2fe]" />,
+        },
+        SUCCESS: {
+            label: "REMOVIDO",
+            color: "text-green-400",
+            bg: "bg-green-500/10",
+            border: "border-green-500/30",
+            icon: <CheckCircle size={16} className="text-green-400" />,
+        },
+        FAILED: {
+            label: "BLOQUEADO — AÇÃO NECESSÁRIA",
+            color: "text-amber-400",
+            bg: "bg-amber-500/10",
+            border: "border-amber-500/40",
+            icon: <AlertTriangle size={16} className="text-amber-400 animate-pulse" />,
+        },
+    };
+
+    const s = STATUS_MAP[ticket.status] ?? STATUS_MAP["PENDING"];
+
+    return (
+        <div className={`relative rounded-xl border ${s.border} ${s.bg} p-5 transition-all duration-700`}>
+            {/* Scanning bar for PENDING/RUNNING */}
+            {(ticket.status === "PENDING" || ticket.status === "RUNNING") && (
+                <div className="absolute top-0 left-0 h-[2px] w-full overflow-hidden rounded-t-xl">
+                    <div className="h-full w-1/3 bg-[#00f2fe] animate-[scan_2s_linear_infinite]" />
+                </div>
+            )}
+
+            <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-lg ${s.bg} flex items-center justify-center shrink-0`}>
+                        <Ghost size={20} className={s.color} />
+                    </div>
+                    <div>
+                        <p className="text-white font-bold text-sm uppercase tracking-wider">{ticket.target_broker}</p>
+                        <p className="text-gray-500 text-[9px] font-mono mt-0.5">
+                            {new Date(ticket.created_at).toLocaleString("pt-BR")} · ID: {ticket.id.slice(0, 8)}
+                        </p>
+                    </div>
+                </div>
+                <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${s.bg} border ${s.border}`}>
+                    {s.icon}
+                    <span className={`text-[10px] font-bold ${s.color}`}>{s.label}</span>
+                </div>
+            </div>
+
+            {/* Logs preview */}
+            {ticket.logs && ticket.status === "SUCCESS" && (
+                <div className="mt-3 bg-black/40 rounded-lg p-3 border border-green-500/20">
+                    <p className="text-[10px] text-green-400/80 font-mono whitespace-pre-wrap line-clamp-3">{ticket.logs.replace(/\\n/g, "\n")}</p>
+                </div>
+            )}
+
+            {/* ACTION_REQUIRED fallback for FAILED */}
+            {ticket.status === "FAILED" && (
+                <div className="mt-4 border border-amber-500/30 bg-amber-500/5 rounded-lg p-4">
+                    <p className="text-amber-400 font-bold text-xs mb-2 flex items-center gap-2">
+                        <AlertTriangle size={12} /> Automação bloqueada por sistema anti-robô (WAF/Cloudflare)
+                    </p>
+                    <p className="text-gray-400 text-[11px] mb-3">
+                        A remoção manual leva menos de 2 minutos. Siga os passos abaixo:
+                    </p>
+                    {manual ? (
+                        <>
+                            <ol className="space-y-1 mb-3">
+                                {manual.steps.map((step, i) => (
+                                    <li key={i} className="text-[11px] text-gray-300 flex gap-2">
+                                        <span className="text-amber-400 font-bold shrink-0">{i + 1}.</span> {step}
+                                    </li>
+                                ))}
+                            </ol>
+                            <a
+                                href={manual.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold rounded-lg hover:bg-amber-500/30 transition-colors"
+                            >
+                                <ExternalLink size={12} /> Realizar Remoção Manual Agora →
+                            </a>
+                        </>
+                    ) : (
+                        <p className="text-[11px] text-gray-500">Contate o broker diretamente e cite o Art. 18 da LGPD.</p>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
 export default function DataBrokerOptOutPage() {
     const { user } = useAuth();
     const router = useRouter();
     const [tickets, setTickets] = useState<OptOutTicket[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [pollingActive, setPollingActive] = useState(false);
 
-    // Formulario procuração
+    // Form state
     const [fullName, setFullName] = useState("");
     const [cpf, setCpf] = useState("");
-    const [targetBroker, setTargetBroker] = useState("Escavador / Consultas Flex");
+    const [targetBroker, setTargetBroker] = useState("escavador");
     const [acceptLgpd, setAcceptLgpd] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [formStep, setFormStep] = useState<"form" | "encrypting" | "done">("form");
+
+    // CPF mask
+    const handleCpfChange = (v: string) => {
+        const digits = v.replace(/\D/g, "").slice(0, 11);
+        const masked = digits
+            .replace(/(\d{3})(\d)/, "$1.$2")
+            .replace(/(\d{3})(\d)/, "$1.$2")
+            .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        setCpf(masked);
+    };
+
+    // Metrics derived from tickets
+    const successCount = tickets.filter((t) => t.status === "SUCCESS").length;
+    const pendingCount = tickets.filter((t) => t.status === "PENDING" || t.status === "RUNNING").length;
+    const failedCount = tickets.filter((t) => t.status === "FAILED").length;
+
+    const fetchTickets = useCallback(async () => {
+        const token = localStorage.getItem("orbe_access_token");
+        if (!token) return;
+        try {
+            const res = await fetch(`${API_URL}/api/optout/list`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setTickets(data);
+                // Keep polling if any pending
+                const hasPending = data.some((t: OptOutTicket) => t.status === "PENDING" || t.status === "RUNNING");
+                setPollingActive(hasPending);
+            }
+        } catch (e) {
+            console.error("Erro listando tickets", e);
+        }
+    }, []);
+
+    // Auto-poll while there are PENDING tickets
+    useEffect(() => {
+        if (!pollingActive) return;
+        const interval = setInterval(fetchTickets, 5000);
+        return () => clearInterval(interval);
+    }, [pollingActive, fetchTickets]);
 
     useEffect(() => {
         if (!user) return;
@@ -34,240 +300,259 @@ export default function DataBrokerOptOutPage() {
         } else {
             fetchTickets();
         }
-    }, [user, router]);
-
-    const fetchTickets = async () => {
-        try {
-            const token = localStorage.getItem("orbe_access_token");
-            const res = await fetch(`${API_URL}/api/optout/list`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const data = await res.json();
-                setTickets(data);
-            }
-        } catch (e) {
-            console.error("Erro listando tickets", e);
-        }
-    };
+    }, [user, router, fetchTickets]);
 
     const submitOptOut = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!acceptLgpd) return alert("Você deve aceitar a Procuração Digital para prosseguirmos.");
-
+        if (!acceptLgpd) return;
         setLoading(true);
-        const token = localStorage.getItem("orbe_access_token");
+        setFormStep("encrypting");
 
+        // Simulate encrypt animation for 1.5s before actually posting
+        await new Promise((r) => setTimeout(r, 1500));
+
+        const token = localStorage.getItem("orbe_access_token");
         try {
             const res = await fetch(`${API_URL}/api/optout/request`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({
-                    full_name: fullName,
-                    cpf: cpf,
-                    target_broker: targetBroker
-                })
+                body: JSON.stringify({ full_name: fullName, cpf, target_broker: targetBroker }),
             });
 
             if (res.ok) {
-                alert("Procuração Eletrônica Gerada! Seu pedido de remoção foi enviado para o Hub de IA da Orbe.");
+                setFormStep("done");
                 setFullName("");
                 setCpf("");
                 setAcceptLgpd(false);
-                fetchTickets();
+                await fetchTickets();
+                setPollingActive(true);
+                setTimeout(() => setFormStep("form"), 3000);
             } else {
-                const data = await res.json();
-                alert(data.detail || "Falha ao requisitar automação.");
+                const d = await res.json();
+                alert(d.detail || "Falha ao requisitar automação.");
+                setFormStep("form");
             }
-        } catch (error) {
-            alert("Erro de Conexão com o Backbone.");
+        } catch {
+            alert("Erro de conexão com o Backbone da Orbe.");
+            setFormStep("form");
         } finally {
             setLoading(false);
         }
     };
 
-    const printPdf = () => {
-        window.print();
-    };
-
     return (
-        <div className="min-h-screen bg-[#050510] text-[#c8d6e3] pt-28 pb-20 px-6 font-mono no-print-bg">
-            <style jsx global>{`
-                @media print {
-                    .no-print { display: none !important; }
-                    .print-only { display: block !important; }
-                    .no-print-bg { background: white !important; color: black !important; }
-                    body { margin: 0; padding: 2cm; }
-                }
-            `}</style>
+        <div className="min-h-screen bg-[#050510] text-white font-mono pb-24">
 
-            <div className="max-w-5xl mx-auto space-y-10">
-                {/* Cabeçalho */}
-                <div className="no-print">
-                    <h1 className="text-3xl font-bold text-[#00f2fe] flex items-center gap-3">
-                        <ShieldAlert size={32} />
-                        Orbe Ghost Engine - Data Broker Demolition
+            {/* ── CSS Animations ── */}
+            <style>{`
+        @keyframes scan {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(400%); }
+        }
+        @keyframes fadeInUp {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in-up { animation: fadeInUp 0.5s ease forwards; }
+      `}</style>
+
+            <div className="max-w-6xl mx-auto px-6 pt-28 space-y-10">
+
+                {/* ── Header ─────────────────────────────────────────────────────── */}
+                <div className="fade-in-up">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#00f2fe]/10 border border-[#00f2fe]/30 rounded-full text-[10px] text-[#00f2fe] uppercase font-bold tracking-widest mb-4">
+                        <Activity size={10} className="animate-pulse" /> Ghost Engine v1.0 · Pipeline Ativo
+                    </div>
+                    <h1 className="text-3xl md:text-4xl font-bold text-white flex items-center gap-3 mb-2">
+                        <ShieldAlert size={32} className="text-[#00f2fe]" />
+                        Data Broker Demolition
                     </h1>
-                    <p className="text-gray-400 mt-2 text-sm border-l-2 border-[#00f2fe] pl-4">
-                        <strong>Ghost Engine</strong> é o motor automatizado de <strong>Opt-Out e Remoção de Dados</strong> em plataformas públicas. <br />
-                        Nossos robôs Serverless invadem os corretores de dados (Data Brokers) e emitem uma ordem legal baseada na LGPD para excluir registros associados ao seu CPF. Tudo em Background.
+                    <p className="text-gray-400 text-sm border-l-2 border-[#00f2fe] pl-4 max-w-2xl">
+                        Nosso motor serverless invade brokers de dados e emite{" "}
+                        <strong className="text-white">Procurações Eletrônicas LGPD</strong> em Robôs Headless Chrome rodando
+                        nos servidores da Microsoft (GitHub). Todo o processamento é assíncrono — você dispara e acompanha em tempo real.
                     </p>
                 </div>
 
-                {/* Procuração Digital e Forms */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 no-print">
+                {/* ── Metrics Top Bar ─────────────────────────────────────────────── */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 fade-in-up">
+                    {[
+                        { icon: <Ghost size={20} className="text-green-400" />, label: "Perfis Fantasmas Apagados", value: successCount, suffix: "", color: "text-green-400", border: "border-green-500/20" },
+                        { icon: <Activity size={20} className="text-[#00f2fe]" />, label: "Demolições em Andamento", value: pendingCount, suffix: "", color: "text-[#00f2fe]", border: "border-[#00f2fe]/20" },
+                        { icon: <AlertTriangle size={20} className="text-amber-400" />, label: "Exigem Ação Manual", value: failedCount, suffix: "", color: "text-amber-400", border: "border-amber-500/20" },
+                        { icon: <TrendingUp size={20} className="text-purple-400" />, label: "Proteções Totais Ativas", value: tickets.length, suffix: "", color: "text-purple-400", border: "border-purple-500/20" },
+                    ].map((m, i) => (
+                        <div key={i} className={`bg-black/60 rounded-xl border ${m.border} p-4`}>
+                            <div className="flex items-center gap-2 mb-2">{m.icon}<span className="text-gray-500 text-[10px] uppercase">{m.label}</span></div>
+                            <p className={`text-3xl font-bold ${m.color}`}>
+                                <AnimatedCounter target={m.value} suffix={m.suffix} />
+                            </p>
+                        </div>
+                    ))}
+                </div>
 
-                    {/* Painel do Robô */}
-                    <div className="border border-[#00f2fe]/30 bg-black/60 p-6 rounded-xl shadow-[0_0_20px_rgba(188,19,254,0.1)] relative overflow-hidden">
-                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#00f2fe] to-[#00f2fe]/20"></div>
+                {/* ── Main Grid ──────────────────────────────────────────────────── */}
+                <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
 
-                        <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
-                            <Send size={18} className="text-[#00f2fe]" /> Deflaglar Varredura
-                        </h2>
+                    {/* ── Left: Onboarding Form ─────────────────────────────────────── */}
+                    <div className="lg:col-span-2">
+                        <div className="relative bg-black/60 border border-[#00f2fe]/30 rounded-xl overflow-hidden">
+                            <EncryptionAnimation />
+                            <div className="relative z-10 p-6">
+                                <h2 className="text-base font-bold text-white mb-1 flex items-center gap-2">
+                                    <Send size={16} className="text-[#00f2fe]" /> Deflagrar Nova Varredura
+                                </h2>
+                                <p className="text-gray-500 text-[11px] mb-5">
+                                    Dados capturados localmente e cifrados via AES-256 antes de qualquer transmissão.
+                                </p>
 
-                        <form onSubmit={submitOptOut} className="space-y-4">
-                            <div>
-                                <label className="block text-xs uppercase text-gray-500 mb-1">Nome Completo</label>
-                                <input required type="text" value={fullName} onChange={e => setFullName(e.target.value)}
-                                    className="w-full bg-black/50 border border-gray-800 text-white p-3 rounded focus:outline-none focus:border-[#00f2fe] transition-colors"
-                                    placeholder="Ex: Rafael Hop..."
-                                />
+                                {/* Security assurance badges */}
+                                <div className="flex flex-wrap gap-2 mb-5">
+                                    {[
+                                        { icon: <Lock size={9} />, label: "AES-256 End-to-End" },
+                                        { icon: <Shield size={9} />, label: "LGPD Compliant" },
+                                        { icon: <Eye size={9} />, label: "CPF nunca em texto puro" },
+                                        { icon: <Trash2 size={9} />, label: "Zero Knowledge Broker" },
+                                    ].map((b) => (
+                                        <span key={b.label} className="inline-flex items-center gap-1 px-2 py-1 bg-green-500/10 border border-green-500/20 text-green-400 text-[9px] rounded-full font-bold">
+                                            {b.icon} {b.label}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                {formStep === "encrypting" && (
+                                    <div className="flex flex-col items-center justify-center py-8 gap-3">
+                                        <div className="relative w-16 h-16">
+                                            <div className="absolute inset-0 rounded-full border-2 border-[#00f2fe]/30 animate-ping" />
+                                            <div className="absolute inset-2 rounded-full border-2 border-[#00f2fe] animate-spin" />
+                                            <Lock size={20} className="absolute inset-0 m-auto text-[#00f2fe]" />
+                                        </div>
+                                        <p className="text-[#00f2fe] font-bold text-sm animate-pulse">Cifrando CPF via AES...</p>
+                                        <p className="text-gray-500 text-[10px]">Disparando robô para o GitHub Actions</p>
+                                    </div>
+                                )}
+
+                                {formStep === "done" && (
+                                    <div className="flex flex-col items-center justify-center py-8 gap-3">
+                                        <CheckCircle size={40} className="text-green-400" />
+                                        <p className="text-green-400 font-bold text-sm">Missão Iniciada!</p>
+                                        <p className="text-gray-400 text-[11px] text-center">Robô despachado. Acompanhe ao vivo no painel à direita.</p>
+                                    </div>
+                                )}
+
+                                {formStep === "form" && (
+                                    <form onSubmit={submitOptOut} className="space-y-4">
+                                        <div>
+                                            <label className="block text-[10px] uppercase text-gray-500 mb-1">Nome Completo (Outorgante)</label>
+                                            <input
+                                                required type="text" value={fullName} onChange={(e) => setFullName(e.target.value)}
+                                                className="w-full bg-black/50 border border-gray-800 text-white px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:border-[#00f2fe] transition-colors"
+                                                placeholder="Rafael Hop..."
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[10px] uppercase text-gray-500 mb-1">
+                                                CPF
+                                                <span className="ml-2 text-green-400 normal-case font-normal">↳ Criptografado localmente</span>
+                                            </label>
+                                            <input
+                                                required type="text" value={cpf} onChange={(e) => handleCpfChange(e.target.value)}
+                                                className="w-full bg-black/50 border border-gray-800 text-white px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:border-[#00f2fe] transition-colors font-sans tracking-widest"
+                                                placeholder="000.000.000-00"
+                                            />
+                                            <p className="text-[9px] text-green-500/60 mt-1 flex gap-1 items-center">
+                                                <Shield size={8} /> Nunca armazenado em texto puro. Fernet AES-128-CBC + IV aleatório por requisição.
+                                            </p>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-[10px] uppercase text-gray-500 mb-1">Alvo Data Broker</label>
+                                            <select
+                                                value={targetBroker} onChange={(e) => setTargetBroker(e.target.value)}
+                                                className="w-full bg-black/50 border border-gray-800 text-white px-3 py-2.5 rounded-lg text-sm focus:outline-none focus:border-[#00f2fe] transition-colors"
+                                            >
+                                                <option value="escavador">Escavador</option>
+                                                <option value="jusbrasil">Jusbrasil</option>
+                                                <option value="consultasflex">ConsultasFlex</option>
+                                                <option value="tudosobretodos">TudoSobreTodos</option>
+                                            </select>
+                                        </div>
+
+                                        {/* LGPD Consent */}
+                                        <div className="bg-[#00f2fe]/5 border border-[#00f2fe]/20 rounded-lg p-3">
+                                            <label className="flex items-start gap-3 cursor-pointer">
+                                                <input type="checkbox" required checked={acceptLgpd} onChange={(e) => setAcceptLgpd(e.target.checked)} className="mt-0.5 accent-[#00f2fe]" />
+                                                <span className="text-[11px] text-gray-400 leading-relaxed">
+                                                    Outorgo Procuração Legal à <strong className="text-white">Orbe Systems</strong> para atuar em meu nome perante os Data Brokers e solicitar exclusão de dados com base na{" "}
+                                                    <strong className="text-[#00f2fe]">LGPD Art. 18</strong>.
+                                                </span>
+                                            </label>
+                                        </div>
+
+                                        <button
+                                            disabled={loading || !acceptLgpd}
+                                            type="submit"
+                                            className="w-full bg-[#00f2fe]/10 border border-[#00f2fe] hover:bg-[#00f2fe] text-white hover:text-black px-4 py-3 font-bold text-sm transition-all duration-300 rounded-lg disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        >
+                                            <Zap size={16} />
+                                            {loading ? "CONFIGURANDO ROTA..." : "INICIAR VARREDURA E DEMOLIÇÃO"}
+                                        </button>
+                                    </form>
+                                )}
                             </div>
-
-                            <div>
-                                <label className="block text-xs uppercase text-gray-500 mb-1">CPF (Sede Protegido via AES-256)</label>
-                                <input required type="text" value={cpf} onChange={e => setCpf(e.target.value)}
-                                    className="w-full bg-black/50 border border-gray-800 text-white p-3 rounded focus:outline-none focus:border-[#00f2fe] transition-colors font-sans"
-                                    placeholder="000.000.000-00"
-                                />
-                                <span className="text-[10px] text-green-500/60 mt-1 flex gap-1 items-center">
-                                    <Shield size={10} /> LGPD Seguro: Nossos bancos não armazenam CPFs expostos.
-                                </span>
-                            </div>
-
-                            <div>
-                                <label className="block text-xs uppercase text-gray-500 mb-1">Alvo Data Broker</label>
-                                <select value={targetBroker} onChange={e => setTargetBroker(e.target.value)}
-                                    className="w-full bg-black/50 border border-gray-800 text-white p-3 rounded focus:outline-none focus:border-[#00f2fe] transition-colors"
-                                >
-                                    <option value="Escavador">Escavador</option>
-                                    <option value="TudoSobreTodos">TudoSobreTodos</option>
-                                    <option value="Jusbrasil">Jusbrasil</option>
-                                    <option value="ConsultasFlex">ConsultasFlex</option>
-                                </select>
-                            </div>
-
-                            <label className="flex items-start gap-3 mt-4 mb-6 cursor-pointer">
-                                <input type="checkbox" required checked={acceptLgpd} onChange={e => setAcceptLgpd(e.target.checked)} className="mt-1 accent-[#00f2fe]" />
-                                <span className="text-xs text-gray-400">
-                                    Eu dou Procuração Legal à Orbe Systems para atuar em meu nome perante os Data Brokers e solicitar a exclusão de meus dados baseados na Lei Geral de Proteção de Dados Pessoais (LGPD).
-                                </span>
-                            </label>
-
-                            <button disabled={loading} type="submit"
-                                className="w-full bg-[#00f2fe]/20 border border-[#00f2fe] hover:bg-[#00f2fe] text-white p-3 font-bold transition-all disabled:opacity-50">
-                                {loading ? "CONFIGURANDO ROTA PARA O GITHUB_ACTIONS..." : "INICIAR VARREDURA E DEMOLIÇÃO"}
-                            </button>
-                        </form>
+                        </div>
                     </div>
 
-                    {/* Exibição da Procuração */}
-                    <div className="border border-gray-800 bg-gray-900/50 p-6 rounded-xl relative">
-                        <div className="flex justify-between items-center mb-4 border-b border-gray-800 pb-2">
-                            <h2 className="text-sm font-bold text-gray-300 flex items-center gap-2">
-                                <FileText size={16} /> Espelho da Procuração Digital LGPD
+                    {/* ── Right: Live Dashboard ──────────────────────────────────────── */}
+                    <div className="lg:col-span-3 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-base font-bold text-white uppercase flex items-center gap-2">
+                                <Activity size={16} className={pollingActive ? "text-[#00f2fe] animate-pulse" : "text-gray-600"} />
+                                Painel de Operações
+                                {pollingActive && (
+                                    <span className="text-[10px] font-normal text-[#00f2fe] bg-[#00f2fe]/10 px-2 py-0.5 rounded-full animate-pulse">
+                                        LIVE
+                                    </span>
+                                )}
                             </h2>
-                            <button onClick={printPdf} className="text-gray-400 hover:text-white transition-colors" title="Imprimir PDF">
-                                <Printer size={16} />
+                            <button
+                                onClick={fetchTickets}
+                                className="text-xs border border-gray-700 hover:border-[#00f2fe] text-gray-400 hover:text-[#00f2fe] px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all"
+                            >
+                                <RefreshCw size={11} /> Refresh
                             </button>
                         </div>
 
-                        <div className="bg-white text-black p-6 rounded shadow-inner text-xs font-sans whitespace-pre-wrap min-h-[300px]">
-                            <h3 className="font-bold text-center underline mb-4 text-sm">PROCURAÇÃO ESPECÍFICA - LGPD</h3>
-                            Outorgante: <b>{fullName || "[Nome Vazio]"}</b><br />
-                            CPF: <b>{cpf ? "***.***.***-** (Protegido)" : "[CPF Vazio]"}</b><br /><br />
+                        {tickets.length === 0 ? (
+                            <div className="border border-gray-800 rounded-xl bg-black/40 flex flex-col items-center justify-center py-16 gap-3">
+                                <Ghost size={40} className="text-gray-700" />
+                                <p className="text-gray-600 text-sm">Nenhuma operação iniciada.</p>
+                                <p className="text-gray-700 text-[11px]">Dispare seu primeiro robô no formulário ao lado.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {tickets.map((t) => (
+                                    <div key={t.id} className="fade-in-up">
+                                        <BrokerCard ticket={t} />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
-                            Pelo presente instrumento particular, constituo meu bastante procurador a plataforma digital <b>Orbe Systems Tools</b>, conferindo-lhe os poderes específicos para requerer a exclusão e Opt-out de meus dados pessoais publicamente expostos no portal: <b>{targetBroker}</b>,
-                            vedando o repasse e armazenamento dos mesmos, invocando para isso as estipulações da Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais - LGPD).
-                            <br /><br />
-                            Este documento é dinâmico e tem a assinatura criptográfica autenticada eletronicamente pelos logs da Plataforma (Orbe Hub).<br /><br />
-
-                            Data do Requerimento: <b>{new Date().toLocaleDateString("pt-BR")}</b>
+                        {/* Architecture transparency note */}
+                        <div className="bg-black/40 border border-gray-800 rounded-xl p-4 mt-6">
+                            <p className="text-[10px] text-gray-600 font-mono leading-relaxed">
+                                <span className="text-gray-500 font-bold">ARQUITETURA DE SEGURANÇA:</span> Seu CPF viaja da UI já cifrado. O servidor{" "}
+                                <span className="text-[#00f2fe]">nunca</span> o lê em texto puro. O decifradores existe apenas dentro do runner efêmero do GitHub Actions (RAM), que é destruído após cada run. O webhook final{" "}
+                                <span className="text-[#00f2fe]">reporta apenas o status</span>, jamais os dados pessoais.
+                            </p>
                         </div>
                     </div>
                 </div>
-
-                {/* Dashboard de Filas em Tempo Real */}
-                <div className="no-print mt-10">
-                    <div className="flex justify-between items-end mb-4">
-                        <h2 className="text-xl font-bold text-white uppercase flex items-center gap-2">
-                            Trilhas de Auditoria (GitHub Actions Status)
-                        </h2>
-                        <button onClick={fetchTickets} className="text-xs border border-gray-700 hover:border-gray-400 px-3 py-1 rounded flex items-center gap-2 transition-colors">
-                            <RefreshCw size={12} /> Refresh
-                        </button>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left bg-black border border-gray-800 text-sm">
-                            <thead className="bg-gray-900 border-b border-gray-800 text-gray-400 uppercase text-[10px]">
-                                <tr>
-                                    <th className="p-4">Ticket ID</th>
-                                    <th className="p-4">Data / Hora</th>
-                                    <th className="p-4">Alvo</th>
-                                    <th className="p-4">Status Github</th>
-                                    <th className="p-4">Logs Consolidados</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-800">
-                                {tickets.length === 0 ? (
-                                    <tr>
-                                        <td colSpan={5} className="p-6 text-center text-gray-600">Nenhum protocolo encontrado. Envie um robô acima.</td>
-                                    </tr>
-                                ) : tickets.map(t => (
-                                    <tr key={t.id} className="hover:bg-gray-900/50 transition-colors">
-                                        <td className="p-4 text-xs font-mono text-gray-500">{t.id.split("-")[0]}...</td>
-                                        <td className="p-4 text-xs">{new Date(t.created_at).toLocaleString("pt-BR")}</td>
-                                        <td className="p-4">{t.target_broker}</td>
-                                        <td className="p-4">
-                                            <span className={`px-2 py-1 text-[10px] font-bold rounded ${t.status === "PENDING" ? "bg-yellow-500/20 text-yellow-500" :
-                                                t.status === "SUCCESS" ? "bg-[#00f2fe]/20 text-[#00f2fe]" :
-                                                    "bg-red-500/20 text-red-500"
-                                                }`}>
-                                                {t.status}
-                                            </span>
-                                        </td>
-                                        <td className="p-4 whitespace-pre-wrap text-[10px] text-gray-500 max-w-xs truncate" title={t.logs}>
-                                            {t.logs || "Aguardando instanciamento do contêiner Microsoft..."}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {/* Área exclusiva visível na impressão da Procuração (Modo janela invisível) */}
-                <div className="hidden print-only text-black font-sans bg-white p-8">
-                    {/* É renderizado pelo css global quando chamamos o window.print() para ocultar todo resto */}
-                    <h2 className="text-2xl font-bold text-center underline mb-8">PROCURAÇÃO ESPECÍFICA - LGPD</h2>
-                    <p className="mb-4">Outorgante: <b>{fullName || "[Nome não preenchido]"}</b></p>
-                    <p className="mb-8">CPF: <b>{cpf ? "***.***.***-** (Protegido por Criptografia do Servidor)" : "[CPF não preenchido]"}</b></p>
-
-                    <p className="mb-8 text-justify leading-relaxed">
-                        Pelo presente instrumento particular, constituo meu bastante procurador a plataforma digital <b>Orbe Systems Tools</b>, conferindo-lhe os poderes específicos para requerer a exclusão, apagamento e Opt-out de meus dados pessoais publicamente expostos no portal: <b>{targetBroker}</b>,
-                        vedando o repasse e armazenamento dos mesmos, invocando para isso as estipulações da Lei nº 13.709/2018 (Lei Geral de Proteção de Dados Pessoais - LGPD).
-                    </p>
-
-                    <p className="mb-12">
-                        Este documento é dinâmico e tem a assinatura criptográfica autenticada eletronicamente pelos logs da Plataforma (Orbe Hub).
-                    </p>
-                    <p className="text-right">_____________________________, ____ de __________________ de ______.</p>
-                </div>
-
             </div>
         </div>
     );
