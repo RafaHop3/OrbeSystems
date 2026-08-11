@@ -1,0 +1,27 @@
+name: Supabase Keep-Alive Ping
+
+on:
+  schedule:
+    # Runs every 3 days at 10:00 UTC to prevent Supabase free-tier auto-pause
+    - cron: '0 10 */3 * *'
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  ping:
+    name: Ping Health Endpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Orbe Systems API /health
+        run: |
+          echo "Pinging production API to keep Supabase active..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://orbesystems.com.br/api/health)
+          echo "Response status: $STATUS"
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Health check OK — Supabase DB is active."
+          else
+            echo "⚠️  Unexpected status $STATUS. Backend may be down."
+            # Do not fail the job — the goal is just to send traffic.
+          fi
+
+      - name: Log completion
+        run: echo "Keep-alive ping completed at $(date -u)"

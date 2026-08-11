@@ -31,7 +31,7 @@ import os
 logger = logging.getLogger("keep_alive")
 
 # ── Config ────────────────────────────────────────────────────────────────────
-SELF_URL = os.getenv("KEEP_ALIVE_URL", "https://orbe-systems-api.onrender.com/health")
+SELF_URL = os.getenv("KEEP_ALIVE_URL", "https://orbesystems.com.br/api/health")
 PING_INTERVAL_MINUTES = int(os.getenv("KEEP_ALIVE_INTERVAL", "14"))
 
 # ── Serverless guard ──────────────────────────────────────────────────────────
