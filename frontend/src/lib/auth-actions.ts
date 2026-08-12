@@ -162,6 +162,15 @@ export async function getMeAction(): Promise<{ user?: AuthUser; error?: string }
   }
 }
 
+export async function getAuthTokenAction(): Promise<string | null> {
+  try {
+    const cookieStore = await cookies();
+    return cookieStore.get(TOKEN_COOKIE)?.value ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function passkeyLoginAction(
   emailOrCredentialId: string,
   isCredentialId = false
@@ -209,11 +218,11 @@ export async function changePasswordAction(
 
     if (!token) return { success: false, error: 'Sessao expirada. Faca login novamente.' };
 
-    const res = await fetch(`/api/users/change-password`, {
+    const res = await fetch(`${API_URL}/api/users/change-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer `,
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
         current_password: currentPassword,
