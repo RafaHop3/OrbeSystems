@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import { getAuthTokenAction } from "@/lib/auth-actions";
 
 interface OptOutTicket {
     id: string;
@@ -17,7 +18,8 @@ interface OptOutTicket {
     created_at: string;
 }
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.orbesystems.com.br").replace(/\/$/, "");
+// Use proxy to forward httpOnly auth cookie automatically
+const API_URL = "/api/proxy";
 
 // ── Broker manual fallback URLs ──────────────────────────────────────────────
 const BROKER_MANUAL_URLS: Record<string, { url: string; steps: string[] }> = {
@@ -269,19 +271,18 @@ export default function DataBrokerOptOutPage() {
     const failedCount = tickets.filter((t) => t.status === "FAILED").length;
 
     const fetchTickets = useCallback(async () => {
-        const token = localStorage.getItem("orbe_access_token");
-        if (!token) return;
         try {
             const res = await fetch(`${API_URL}/api/optout/list`, {
-                headers: { Authorization: `Bearer ${token}` },
+                credentials: "include",
             });
             if (res.ok) setTickets(await res.json());
         } catch (e) { console.error("Refresh failed", e); }
     }, []);
 
     // ── SSE: open once, handle all real-time events ─────────────────────
-    const openSSE = useCallback(() => {
-        const token = localStorage.getItem("orbe_access_token");
+    const openSSE = useCallback(async () => {
+        const tokenRes = await getAuthTokenAction();
+        const token = tokenRes ?? null;
         if (!token) return;
         esRef.current?.close();
         const es = new EventSource(
@@ -317,8 +318,13 @@ export default function DataBrokerOptOutPage() {
             return;
         }
         fetchTickets();           // REST snapshot on mount
-        const cleanup = openSSE(); // SSE for all future updates
-        return cleanup;
+        let cleanupFn: (() => void) | null = null;
+        openSSE().then((cleanup) => {
+            cleanupFn = cleanup ?? null;
+        });
+        return () => {
+            if (cleanupFn) cleanupFn();
+        };
     }, [user, router, fetchTickets, openSSE]);
 
     const submitOptOut = async (e: React.FormEvent) => {
@@ -330,13 +336,12 @@ export default function DataBrokerOptOutPage() {
         // Simulate encrypt animation for 1.5s before actually posting
         await new Promise((r) => setTimeout(r, 1500));
 
-        const token = localStorage.getItem("orbe_access_token");
         try {
             const res = await fetch(`${API_URL}/api/optout/request`, {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify({ full_name: fullName, cpf, target_broker: targetBroker }),
             });
