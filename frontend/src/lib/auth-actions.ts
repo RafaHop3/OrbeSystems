@@ -198,3 +198,39 @@ export async function passkeyLoginAction(
   }
 }
 
+
+export async function changePasswordAction(
+  currentPassword: string,
+  newPassword: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(TOKEN_COOKIE)?.value;
+
+    if (!token) return { success: false, error: 'Sessao expirada. Faca login novamente.' };
+
+    const res = await fetch(`/api/users/change-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer `,
+      },
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      return { success: false, error: data.detail ?? 'Falha ao alterar senha.' };
+    }
+
+    const data = await res.json();
+    await setAuthCookie(data.access_token);
+
+    return { success: true };
+  } catch {
+    return { success: false, error: 'Erro de conexao. Tente novamente.' };
+  }
+}

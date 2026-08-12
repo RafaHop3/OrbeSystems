@@ -165,3 +165,57 @@ async def passkey_login(
     )
 
 
+# ── Change Password ───────────────────────────────────────────────────────────
+class ChangePasswordSchema(BaseModel):
+    current_password: str
+    new_password: str
+
+
+@router.post("/change-password", status_code=status.HTTP_200_OK)
+@limiter.limit("5/minute")
+async def change_password(
+    request: Request,
+    data: ChangePasswordSchema,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """
+    Allows an authenticated user to change their own password.
+    Requires the current password for confirmation (prevents session hijacking).
+    Returns a new JWT so the frontend can update its cookie without forcing re-login.
+    """
+    # 1. Verify current password
+    if not verify_password(data.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Current password is incorrect.",
+        )
+
+    # 2. Reject if new password is the same as the old one
+    if verify_password(data.new_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="New password must be different from the current password.",
+        )
+
+    # 3. Validate new password strength (same rules as registration)
+    if len(data.new_password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="New password must be at least 8 characters.",
+        )
+    if not any(c.isdigit() for c in data.new_password):
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="New password must contain at least one number.",
+        )
+
+    # 4. Persist the new password hash
+    current_user.password_hash = get_password_hash(data.new_password)
+    db.commit()
+
+    print(f"[Users] [CHANGE-PASSWORD] {current_user.email} changed their password successfully.")
+
+    # 5. Return a fresh token so the frontend can update its cookie seamlessly
+    return _build_token(current_user)
+
