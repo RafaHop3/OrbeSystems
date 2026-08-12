@@ -14,11 +14,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Server-only: this string is NEVER bundled into client JS.
-const BACKEND_URL = (
-    process.env.BACKEND_URL ??
-    process.env.NEXT_PUBLIC_API_URL ??
-    'https://api.orbesystems.com.br'
-).replace(/\/$/, '');
+const BACKEND_URL = "https://api.orbesystems.com.br";
 
 type Params = { params: Promise<{ path: string[] }> };
 

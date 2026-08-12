@@ -15,8 +15,7 @@ import type { AuthUser } from "./auth";
 
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
-const rawUrl = process.env.BACKEND_URL ?? process.env.NEXT_PUBLIC_API_URL ?? "https://api.orbesystems.com.br";
-const API_URL = rawUrl.trim().replace(/\/$/, "");
+const API_URL = "https://api.orbesystems.com.br";
 
 // ── Cookie Management ─────────────────────────────────────────────────────────
 async function setAuthCookie(token: string): Promise<void> {
