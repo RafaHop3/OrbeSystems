@@ -20,6 +20,8 @@ const BACKEND_URL = (
     'http://52.20.22.241'
 ).replace(/\/$/, '');
 
+const TOKEN_COOKIE = 'orbe_auth_token';
+
 type Params = { params: Promise<{ path: string[] }> };
 
 async function proxyRequest(request: NextRequest, { params }: Params): Promise<NextResponse> {
@@ -33,12 +35,18 @@ async function proxyRequest(request: NextRequest, { params }: Params): Promise<N
 
     // Forward only safe headers — strip host to avoid conflicts
     const forwardedHeaders: Record<string, string> = {};
-    const allowedHeaders = ['authorization', 'content-type', 'accept', 'x-request-id'];
+    const allowedHeaders = ['authorization', 'content-type', 'accept', 'x-request-id', 'cookie'];
     request.headers.forEach((value, key) => {
         if (allowedHeaders.includes(key.toLowerCase())) {
             forwardedHeaders[key] = value;
         }
     });
+
+    // Forward the auth cookie if present (httpOnly cookie from login)
+    const authCookie = request.cookies.get(TOKEN_COOKIE)?.value;
+    if (authCookie) {
+        forwardedHeaders['cookie'] = `${TOKEN_COOKIE}=${authCookie}`;
+    }
 
     // Forward client IP for rate-limiting / audit logs on the backend
     const clientIp =
