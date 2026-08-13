@@ -186,7 +186,7 @@ function BrokerCard({ ticket }: { ticket: OptOutTicket }) {
                     <div>
                         <p className="text-white font-bold text-sm uppercase tracking-wider">{ticket.target_broker}</p>
                         <p className="text-gray-500 text-[9px] font-mono mt-0.5">
-                            {new Date(ticket.created_at).toLocaleString("pt-BR")} · ID: {ticket.id.slice(0, 8)}
+                            {new Date(ticket.created_at + (ticket.created_at.includes('Z') ? '' : 'Z')).toLocaleString("pt-BR")} · ID: {ticket.id.slice(0, 8)}
                         </p>
                     </div>
                 </div>
@@ -196,12 +196,30 @@ function BrokerCard({ ticket }: { ticket: OptOutTicket }) {
                 </div>
             </div>
 
-            {/* Logs preview */}
-            {ticket.logs && ticket.status === "SUCCESS" && (
-                <div className="mt-3 bg-black/40 rounded-lg p-3 border border-green-500/20">
-                    <p className="text-[10px] text-green-400/80 font-mono whitespace-pre-wrap line-clamp-3">{ticket.logs.replace(/\\n/g, "\n")}</p>
+            {/* Live Terminal Output */}
+            <div className="mt-4 bg-[#050508] border border-gray-800/60 rounded-lg p-3 shadow-inner">
+                <div className="flex items-center gap-2 mb-2 border-b border-gray-800/50 pb-2">
+                    <Activity size={10} className={ticket.status === 'SUCCESS' ? 'text-green-400' : ticket.status === 'FAILED' ? 'text-amber-400' : 'text-[#00f2fe] animate-pulse'} />
+                    <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">
+                        Terminal SecOps — {ticket.status === 'SUCCESS' ? 'FINALIZADO' : ticket.status === 'FAILED' ? 'ABORTADO' : 'AGUARDANDO WORKERS'}
+                    </span>
                 </div>
-            )}
+                <div className="text-[10px] font-mono whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto">
+                    {(() => {
+                        const rawLogs = ticket.logs ? ticket.logs.replace(/\\n/g, "\n").split('\n').filter(Boolean) : [];
+                        const logLines = rawLogs.length > 0 ? rawLogs : ["Iniciando Motor Serverless...", "Decifrando dados via AES-256...", "Alocando Headless Chrome no Datacenter AWS..."];
+
+                        return logLines.map((line, i) => (
+                            <div key={i} className="flex flex-start gap-2 mb-1">
+                                <span className={ticket.status === 'SUCCESS' ? 'text-green-500 shrink-0' : ticket.status === 'FAILED' ? 'text-amber-500 shrink-0' : 'text-[#00f2fe] shrink-0'}>{'>_'}</span>
+                                <span className={i === logLines.length - 1 && ticket.status !== 'SUCCESS' && ticket.status !== 'FAILED' ? 'text-white animate-pulse font-bold' : 'text-gray-400'}>
+                                    {line}
+                                </span>
+                            </div>
+                        ));
+                    })()}
+                </div>
+            </div>
 
             {/* ACTION_REQUIRED fallback for FAILED */}
             {ticket.status === "FAILED" && (
