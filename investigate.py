@@ -6,11 +6,15 @@ payload = {
     "DocumentName": "AWS-RunShellScript",
     "Targets": [ { "Key": "InstanceIds", "Values": ["i-058e26140671b3254"] } ],
     "Parameters": {
-        "commands": ["sudo docker logs --tail 200 orbe_backend 2>&1"]
+        "commands": [
+            "cat /tmp/mock.log",
+            "sudo docker logs --tail 20 orbe_backend",
+            "sudo docker exec orbe_postgres psql -U orbe_admin -d orbesystems -c \"SELECT id, status, target_broker FROM public.optout_requests ORDER BY created_at DESC LIMIT 3;\""
+        ]
     }
 }
-with open("ssm_logs_check.json", "w") as f: json.dump(payload, f)
-res = subprocess.check_output(["aws", "ssm", "send-command", "--cli-input-json", "file://ssm_logs_check.json", "--region", "us-east-1", "--output", "json"], text=True)
+with open("ssm_investigate.json", "w") as f: json.dump(payload, f)
+res = subprocess.check_output(["aws", "ssm", "send-command", "--cli-input-json", "file://ssm_investigate.json", "--region", "us-east-1", "--output", "json"], text=True)
 cmd_id = json.loads(res)["Command"]["CommandId"]
 
 print(f"Sent: {cmd_id}")
@@ -24,7 +28,7 @@ for i in range(12):
             if data.get("Status") in ["Success", "Failed"]:
                 print(data.get("StandardOutputContent", ""))
                 import sys
-                print("ERR:", data.get("StandardErrorContent", ""), file=sys.stderr)
+                print(data.get("StandardErrorContent", ""), file=sys.stderr)
                 break
         except Exception:
             pass

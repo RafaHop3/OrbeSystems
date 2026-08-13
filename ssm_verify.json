@@ -1,0 +1,1 @@
+{"DocumentName": "AWS-RunShellScript", "Targets": [{"Key": "InstanceIds", "Values": ["i-058e26140671b3254"]}], "Parameters": {"commands": ["sudo docker exec orbe_postgres psql -U orbe_admin -d orbesystems -t -c \"SELECT id, target_broker, status, created_at FROM schema_ghostengine.optout_requests ORDER BY created_at DESC LIMIT 3;\""]}}

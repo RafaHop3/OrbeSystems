@@ -15,6 +15,7 @@ interface OptOutTicket {
     target_broker: string;
     status: string;
     logs: string;
+    proof_url?: string;
     created_at: string;
 }
 
@@ -264,6 +265,25 @@ function BrokerCard({ ticket }: { ticket: OptOutTicket }) {
             </div>
 
             <ProgressStepper status={ticket.status} />
+
+            {ticket.status === 'SUCCESS' && ticket.proof_url && (
+                <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg flex items-center justify-between">
+                    <div>
+                        <p className="text-green-400 font-bold text-xs flex items-center gap-2">
+                            <Shield size={12} /> Certificado de Exclusão Emitido
+                        </p>
+                        <p className="text-[10px] text-gray-400 mt-1">Evidência de remoção preservada sob protocolo LGPD Art. 18.</p>
+                    </div>
+                    <a
+                        href={ticket.proof_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-green-500/20 text-green-300 border border-green-500/40 rounded-lg text-[10px] font-bold hover:bg-green-500/30 transition-colors"
+                    >
+                        <ExternalLink size={12} /> VER AUDITORIA
+                    </a>
+                </div>
+            )}
 
             <div className="mt-4 border-t border-gray-800/60 pt-3">
                 <button

@@ -6,15 +6,16 @@ payload = {
     "DocumentName": "AWS-RunShellScript",
     "Targets": [ { "Key": "InstanceIds", "Values": ["i-058e26140671b3254"] } ],
     "Parameters": {
-        "commands": ["sudo docker logs --tail 200 orbe_backend 2>&1"]
+        "commands": [
+            "sudo docker inspect --format '{{ json .Mounts }}' orbe_postgres"
+        ]
     }
 }
-with open("ssm_logs_check.json", "w") as f: json.dump(payload, f)
-res = subprocess.check_output(["aws", "ssm", "send-command", "--cli-input-json", "file://ssm_logs_check.json", "--region", "us-east-1", "--output", "json"], text=True)
+with open("ssm_inspect.json", "w") as f: json.dump(payload, f)
+res = subprocess.check_output(["aws", "ssm", "send-command", "--cli-input-json", "file://ssm_inspect.json", "--region", "us-east-1", "--output", "json"], text=True, encoding='utf-8')
 cmd_id = json.loads(res)["Command"]["CommandId"]
-
-print(f"Sent: {cmd_id}")
-for i in range(12):
+print(f"Sent command: {cmd_id}")
+for i in range(10):
     time.sleep(5)
     out = subprocess.run(["aws", "ssm", "get-command-invocation", "--command-id", cmd_id, "--instance-id", "i-058e26140671b3254", "--region", "us-east-1", "--output", "json"], capture_output=True)
     if out.returncode == 0:
@@ -23,8 +24,6 @@ for i in range(12):
             data = json.loads(data_text)
             if data.get("Status") in ["Success", "Failed"]:
                 print(data.get("StandardOutputContent", ""))
-                import sys
-                print("ERR:", data.get("StandardErrorContent", ""), file=sys.stderr)
                 break
         except Exception:
             pass

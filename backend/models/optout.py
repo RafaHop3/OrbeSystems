@@ -27,3 +27,4 @@ class OptOutRequest(Base):
     
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    proof_url = Column(String(500), nullable=True)
