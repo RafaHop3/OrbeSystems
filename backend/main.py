@@ -185,7 +185,20 @@ async def lifespan(app: FastAPI):
     
     # Run migrations safely
     try:
-        print(f"INFO: [Database] Initializing tables...")
+        print(f"INFO: [Database] Initializing tables and schemas...")
+        with engine.begin() as conn:
+            conn.execute(text("CREATE SCHEMA IF NOT EXISTS schema_ghostengine"))
+            conn.execute(text("CREATE SCHEMA IF NOT EXISTS schema_imobverse"))
+            for sql in [
+                "ALTER TABLE IF EXISTS public.optout_requests SET SCHEMA schema_ghostengine",
+                "ALTER TABLE IF EXISTS public.imob_properties SET SCHEMA schema_imobverse",
+                "ALTER TABLE IF EXISTS public.imob_inspection_items SET SCHEMA schema_imobverse",
+                "ALTER TABLE IF EXISTS public.imob_leads SET SCHEMA schema_imobverse"
+            ]:
+                try:
+                    conn.execute(text(sql))
+                except Exception:
+                    pass
         Base.metadata.create_all(bind=engine)
         run_migrations()
         ensure_supabase_rls(engine)
