@@ -1,0 +1,66 @@
+"""
+INHO – Alembic env.py (async migrations)
+"""
+import os
+from logging.config import fileConfig
+import asyncio
+from sqlalchemy import pool
+from sqlalchemy.ext.asyncio import async_engine_from_config
+from alembic import context
+
+from core.config import settings
+from db.session import Base
+import models.models  # noqa: F401 – ensures all models are loaded
+
+config = context.config
+if config.config_file_name is not None:
+    fileConfig(config.config_file_name)
+
+# ── URL Resolution (Cyber Safety) ─────────────────────────────────
+# Para migrações: use a URL DIRETA do Neon.tech (porta 5432, psycopg2).
+# NÃO use a URL de Pool PgBouncer (porta 6543) — transações DDL exigem
+# conexão persistente que o pooler pode interromper.
+#
+# Como injetar antes de rodar alembic (PowerShell):
+#   $env:DATABASE_URL = "postgresql+psycopg2://user:pass@host.neon.tech:5432/inho_db?sslmode=require"
+#   alembic upgrade head
+_raw_url = os.environ.get("DATABASE_URL", settings.DATABASE_URL)
+
+# Normaliza: converte driver asyncpg → psycopg2 para o engine síncrono do Alembic
+_migration_url = _raw_url.replace("postgresql+asyncpg://", "postgresql+psycopg2://")
+
+config.set_main_option("sqlalchemy.url", _migration_url)
+target_metadata = Base.metadata
+
+
+def run_migrations_offline() -> None:
+    context.configure(url=_migration_url, target_metadata=target_metadata, literal_binds=True)
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+def do_run_migrations(connection):
+    context.configure(connection=connection, target_metadata=target_metadata)
+    with context.begin_transaction():
+        context.run_migrations()
+
+
+async def run_async_migrations() -> None:
+    connectable = async_engine_from_config(
+        config.get_section(config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
+    async with connectable.connect() as connection:
+        await connection.run_sync(do_run_migrations)
+    await connectable.dispose()
+
+
+def run_migrations_online() -> None:
+    asyncio.run(run_async_migrations())
+
+
+if context.is_offline_mode():
+    run_migrations_offline()
+else:
+    run_migrations_online()
