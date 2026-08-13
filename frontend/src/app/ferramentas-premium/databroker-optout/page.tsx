@@ -404,8 +404,17 @@ export default function DataBrokerOptOutPage() {
         const token = tokenRes ?? null;
         if (!token) return;
         esRef.current?.close();
+
+        // [BUGFIX: 504 GATEWAY TIMEOUT]
+        // The Vercel proxy (/api/proxy) buffers the response using await backendRes.arrayBuffer().
+        // SSE streams never end, so Vercel hangs until timeout resulting in 504 Gateway Timeout.
+        // We force direct connection to the API for the SSE stream to bypass Vercel buffering.
+        const targetHost = API_URL.includes("/api/proxy")
+            ? "https://api.orbesystems.com.br"
+            : API_URL;
+
         const es = new EventSource(
-            `${API_URL}/api/optout/stream?token=${encodeURIComponent(token)}`
+            `${targetHost}/api/optout/stream?token=${encodeURIComponent(token)}`
         );
         esRef.current = es;
         setSseStatus("connecting");
