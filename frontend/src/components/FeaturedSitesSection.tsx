@@ -16,6 +16,17 @@ const sites = [
         isAnimated: true,
     },
     {
+        name: 'INHO Business',
+        tagline: 'ERP Enterprise · Gestão Multi-Tenant Criptografada',
+        url: '/assinar',
+        image: '/featured-inho.png',
+        accent: '#8b5cf6',
+        accentBg: 'rgba(139, 92, 246, 0.08)',
+        accentBorder: 'rgba(139, 92, 246, 0.25)',
+        badge: '💼 B2B ERP',
+        isAnimated: true,
+    },
+    {
         name: 'AstroWatch',
         tagline: 'Universe Explorer · Satélites & Cosmos 3D',
         url: 'https://astro-watch-chi.vercel.app/',
