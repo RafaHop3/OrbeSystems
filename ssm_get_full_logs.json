@@ -1,0 +1,1 @@
+{"DocumentName": "AWS-RunShellScript", "Targets": [{"Key": "InstanceIds", "Values": ["i-058e26140671b3254"]}], "Parameters": {"commands": ["sudo docker logs --tail 200 orbe_backend 2> /tmp/err_logs.txt 1> /tmp/out_logs.txt", "cat /tmp/err_logs.txt"]}}

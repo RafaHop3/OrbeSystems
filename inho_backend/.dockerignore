@@ -1,0 +1,36 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# Env & secrets — NEVER in the image
+.env
+.env.*
+!.env.example
+
+# Tests & tooling
+tests/
+pytest.ini
+.pytest_cache/
+coverage.xml
+.coverage
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Migrations (run separately via CI job)
+# migrations/
+
+# Git
+.git/
+.gitignore

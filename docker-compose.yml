@@ -37,5 +37,18 @@ services:
     volumes:
       - ./backend/data:/app/data
 
+  inho_backend:
+    build: ./inho_backend
+    container_name: inho_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://orbe_admin:orbe_password@db:5432/orbesystems
+      - REDIS_URL=redis://redis:6379/1
+      - SCHEMA=inho
+    ports:
+      - "8001:8000"
+    depends_on:
+      - db
+
 volumes:
   postgres_data:

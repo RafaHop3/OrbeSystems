@@ -1,0 +1,22 @@
+{
+    "CommandId": "4ec4a09d-f41e-4772-9720-418354ffada8",
+    "InstanceId": "i-058e26140671b3254",
+    "Comment": "",
+    "DocumentName": "AWS-RunShellScript",
+    "DocumentVersion": "$DEFAULT",
+    "PluginName": "aws:runShellScript",
+    "ResponseCode": 0,
+    "ExecutionStartDateTime": "2026-08-13T19:28:22.625Z",
+    "ExecutionElapsedTime": "PT0.045S",
+    "ExecutionEndDateTime": "2026-08-13T19:28:22.625Z",
+    "Status": "Success",
+    "StatusDetails": "Success",
+    "StandardOutputContent": "INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)\nINFO:     Started parent process [1]\nINFO:     Started server process [8]\nINFO:     Started server process [9]\nINFO:     Waiting for application startup.\nINFO:     Waiting for application startup.\nINFO:     Application startup complete.\nINFO:     Application startup complete.\n/app/services/anomaly_service.py:79: SAWarning: Coercing Subquery object into a select() for use in IN(); please pass a select() construct explicitly\n  VisitLog.id.in_(\n/app/services/anomaly_service.py:79: SAWarning: Coercing Subquery object into a select() for use in IN(); please pass a select() construct explicitly\n  VisitLog.id.in_(\n",
+    "StandardOutputUrl": "",
+    "StandardErrorContent": "",
+    "StandardErrorUrl": "",
+    "CloudWatchOutputConfig": {
+        "CloudWatchLogGroupName": "",
+        "CloudWatchOutputEnabled": false
+    }
+}
