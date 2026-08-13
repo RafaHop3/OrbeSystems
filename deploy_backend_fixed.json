@@ -1,0 +1,22 @@
+{
+    "DocumentName": "AWS-RunShellScript",
+    "Targets": [
+        {
+            "Key": "InstanceIds",
+            "Values": [
+                "i-058e26140671b3254"
+            ]
+        }
+    ],
+    "Parameters": {
+        "commands": [
+            "cd /home/ubuntu/orbe-systems || cd /home/ubuntu/OrbeSystems",
+            "git pull origin main",
+            "sudo docker compose pull",
+            "sudo docker compose down",
+            "sudo docker compose build backend",
+            "sudo docker compose up -d",
+            "echo 'BACKEND_DEPLOY_COMPLETE'"
+        ]
+    }
+}

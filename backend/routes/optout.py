@@ -102,6 +102,7 @@ class GithubWebhookPayload(BaseModel):
     ticket_id: str
     status: str
     log: str = ""
+    proof_url: str = ""
 
 
 # ── POST /request ─────────────────────────────────────────────────────────────
@@ -148,6 +149,7 @@ def create_opt_out_ticket(
             "target_broker": novo_pedido.target_broker,
             "status": "PENDING",
             "logs": None,
+            "proof_url": None,
             "created_at": novo_pedido.created_at.isoformat(),
         },
     )
@@ -166,6 +168,8 @@ def github_status_webhook(payload: GithubWebhookPayload, db: Session = Depends(g
     pedido.status = payload.status
     if payload.log:
         pedido.logs = f"{pedido.logs or ''}\n{payload.log}"
+    if payload.proof_url:
+        pedido.proof_url = payload.proof_url
     db.commit()
 
     # Real-time push: the user's browser receives this in <50ms
@@ -177,6 +181,7 @@ def github_status_webhook(payload: GithubWebhookPayload, db: Session = Depends(g
             "target_broker": pedido.target_broker,
             "status": pedido.status,
             "logs": pedido.logs,
+            "proof_url": pedido.proof_url,
             "created_at": pedido.created_at.isoformat(),
         },
     )
@@ -277,6 +282,7 @@ def list_optout_tickets(
             "target_broker": p.target_broker,
             "status": p.status,
             "logs": p.logs,
+            "proof_url": p.proof_url,
             "created_at": p.created_at.isoformat(),
         }
         for p in pedidos

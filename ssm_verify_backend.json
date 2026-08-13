@@ -1,0 +1,1 @@
+{"DocumentName": "AWS-RunShellScript", "Targets": [{"Key": "InstanceIds", "Values": ["i-058e26140671b3254"]}], "Parameters": {"commands": ["sudo docker ps -a", "sudo docker logs --tail 30 orbe_backend 2>&1"]}}

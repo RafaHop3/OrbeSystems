@@ -6,11 +6,15 @@ payload = {
     "DocumentName": "AWS-RunShellScript",
     "Targets": [ { "Key": "InstanceIds", "Values": ["i-058e26140671b3254"] } ],
     "Parameters": {
-        "commands": ["sudo docker logs --tail 200 orbe_backend 2>&1"]
+        "commands": [
+            "sudo sed -i 's/\"8000:8000\"/\"80:8000\"/g' /home/ubuntu/orbe-systems/docker-compose.yml",
+            "cd /home/ubuntu/orbe-systems && sudo docker compose down",
+            "cd /home/ubuntu/orbe-systems && sudo docker compose up -d"
+        ]
     }
 }
-with open("ssm_logs_check.json", "w") as f: json.dump(payload, f)
-res = subprocess.check_output(["aws", "ssm", "send-command", "--cli-input-json", "file://ssm_logs_check.json", "--region", "us-east-1", "--output", "json"], text=True)
+with open("ssm_fix_final.json", "w") as f: json.dump(payload, f)
+res = subprocess.check_output(["aws", "ssm", "send-command", "--cli-input-json", "file://ssm_fix_final.json", "--region", "us-east-1", "--output", "json"], text=True)
 cmd_id = json.loads(res)["Command"]["CommandId"]
 
 print(f"Sent: {cmd_id}")
@@ -22,6 +26,7 @@ for i in range(12):
         try:
             data = json.loads(data_text)
             if data.get("Status") in ["Success", "Failed"]:
+                print("STATUS:", data.get("Status"))
                 print(data.get("StandardOutputContent", ""))
                 import sys
                 print("ERR:", data.get("StandardErrorContent", ""), file=sys.stderr)
