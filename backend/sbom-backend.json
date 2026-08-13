@@ -395,8 +395,8 @@
     {
       "type": "library",
       "name": "charset-normalizer",
-      "version": "3.4.9",
-      "purl": "pkg:pypi/charset-normalizer@3.4.9",
+      "version": "3.5.0",
+      "purl": "pkg:pypi/charset-normalizer@3.5.0",
       "licenses": [
         {
           "license": {
@@ -408,7 +408,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "f5b3fc4d3f640dcd16ef9a52d6354be3a0440d4c0cefde2d63beba7aeb95d034"
+          "content": "7aec306f211f3bbb5f0827fbd6f059122cfca7e8dfb4ca5c046df916dc023cac"
         }
       ]
     },

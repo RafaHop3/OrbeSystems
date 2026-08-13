@@ -272,6 +272,7 @@ export default function DataBrokerOptOutPage() {
 
     const fetchTickets = useCallback(async () => {
         try {
+            const token = await getAuthTokenAction();
             const res = await fetch(`${API_URL}/api/optout/list`, {
                 credentials: "include",
             });
@@ -337,6 +338,7 @@ export default function DataBrokerOptOutPage() {
         await new Promise((r) => setTimeout(r, 1500));
 
         try {
+            const token = await getAuthTokenAction();
             const res = await fetch(`${API_URL}/api/optout/request`, {
                 method: "POST",
                 credentials: "include",
@@ -537,8 +539,8 @@ export default function DataBrokerOptOutPage() {
                                 <Activity size={16} className={sseStatus === "live" ? "text-green-400 animate-pulse" : sseStatus === "error" ? "text-red-400 animate-pulse" : "text-yellow-400"} />
                                 Painel de Operações
                                 <span className={`text-[10px] font-normal px-2 py-0.5 rounded-full ${sseStatus === "live" ? "text-green-400 bg-green-500/10" :
-                                        sseStatus === "error" ? "text-red-400 bg-red-500/10 animate-pulse" :
-                                            "text-yellow-400 bg-yellow-500/10"
+                                    sseStatus === "error" ? "text-red-400 bg-red-500/10 animate-pulse" :
+                                        "text-yellow-400 bg-yellow-500/10"
                                     }`}>
                                     {sseStatus === "live" ? "● LIVE" : sseStatus === "error" ? "⚠ RECONECTANDO" : "◌ CONECTANDO"}
                                 </span>

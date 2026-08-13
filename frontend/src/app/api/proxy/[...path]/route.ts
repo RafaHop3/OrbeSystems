@@ -14,11 +14,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Server-only: this string is NEVER bundled into client JS.
-const BACKEND_URL = (
-    process.env.BACKEND_URL ??
-    process.env.NEXT_PUBLIC_API_URL ??
-    'http://52.20.22.241'
-).replace(/\/$/, '');
+const BACKEND_URL = "https://api.orbesystems.com.br";
 
 const TOKEN_COOKIE = 'orbe_auth_token';
 
