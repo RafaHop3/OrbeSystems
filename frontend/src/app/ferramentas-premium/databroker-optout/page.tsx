@@ -131,35 +131,102 @@ function AnimatedCounter({ target, suffix = "" }: { target: number; suffix?: str
     return <span>{count}{suffix}</span>;
 }
 
+// ── Visual Progress Stepper ───────────────────────────────────────────────────
+function ProgressStepper({ status }: { status: string }) {
+    let currentStep = 0;
+    if (status === "PENDING") currentStep = 1; // 1 step done (received)
+    if (status === "RUNNING") currentStep = 2; // 2 steps done (bot running)
+    if (status === "SUCCESS" || status === "FAILED") currentStep = 4; // all steps done
+
+    const steps = [
+        { label: "Solicitação Recebida", desc: "Ticket criado no sistema" },
+        { label: "Despachando Robô", desc: "Motor Headless ativo" },
+        { label: "Notificando Broker", desc: "Exigência LGPD enviada" },
+        {
+            label: status === "FAILED" ? "Ação Manual" : "Tudo Limpo",
+            desc: status === "FAILED" ? "Bloqueio de robô" : "Dados excluídos"
+        }
+    ];
+
+    return (
+        <div className="mt-5 mb-2">
+            <div className="flex items-center justify-between relative">
+                {/* Background Line */}
+                <div className="absolute left-0 top-3 w-full h-0.5 bg-gray-800 -z-10" />
+                {/* Active Line (animated) */}
+                <div
+                    className="absolute left-0 top-3 h-0.5 bg-[#00f2fe] -z-10 transition-all duration-1000 ease-out"
+                    style={{ width: `${(Math.min(currentStep, 3) / 3) * 100}%` }}
+                />
+
+                {steps.map((step, idx) => {
+                    const isCompleted = currentStep > idx;
+                    const isActive = currentStep === idx;
+                    const isError = idx === 3 && status === "FAILED";
+
+                    return (
+                        <div key={idx} className="flex flex-col items-center gap-2 relative">
+                            <div className={`w-6 h-6 rounded-full flex items-center justify-centertext-[10px] 
+                                transition-all duration-500 shadow-md ${isCompleted || isActive
+                                    ? isError ? "bg-amber-500 border border-amber-300" : "bg-[#00f2fe] border border-blue-400"
+                                    : "bg-gray-900 border border-gray-700"
+                                }`}>
+                                {isCompleted || isActive ? (
+                                    isError ? <AlertTriangle size={12} className="text-black" /> : <CheckCircle size={12} className="text-black" />
+                                ) : (
+                                    <span className="text-gray-500 text-xs font-bold">{idx + 1}</span>
+                                )}
+
+                                {isActive && !isError && status !== "SUCCESS" && (
+                                    <div className="absolute w-8 h-8 rounded-full border border-[#00f2fe] animate-ping opacity-50" />
+                                )}
+                            </div>
+                            <div className="text-center">
+                                <p className={`text-[9px] font-bold uppercase tracking-wider ${isCompleted || isActive ? (isError ? "text-amber-400" : "text-[#00f2fe]") : "text-gray-500"}`}>
+                                    {step.label}
+                                </p>
+                                <p className="text-[8px] text-gray-600 hidden sm:block">
+                                    {step.desc}
+                                </p>
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+}
+
 // ── Broker Status Card ────────────────────────────────────────────────────────
 function BrokerCard({ ticket }: { ticket: OptOutTicket }) {
+    const [showTerminal, setShowTerminal] = useState(false);
     const brokerKey = ticket.target_broker.toLowerCase();
     const manual = BROKER_MANUAL_URLS[brokerKey];
 
     const STATUS_MAP: Record<string, { label: string; color: string; bg: string; border: string; icon: React.ReactNode }> = {
         PENDING: {
-            label: "PROCESSANDO",
+            label: "NA FILA",
             color: "text-yellow-400",
             bg: "bg-yellow-500/10",
             border: "border-yellow-500/30",
-            icon: <Clock size={16} className="animate-spin text-yellow-400" style={{ animationDuration: "3s" }} />,
+            icon: <Clock size={16} className="text-yellow-400" />,
         },
         RUNNING: {
-            label: "DEMOLINDO",
+            label: "PROCESSANDO",
             color: "text-[#00f2fe]",
             bg: "bg-[#00f2fe]/10",
             border: "border-[#00f2fe]/40",
             icon: <Activity size={16} className="animate-pulse text-[#00f2fe]" />,
         },
         SUCCESS: {
-            label: "REMOVIDO",
+            label: "FINALIZADO",
             color: "text-green-400",
             bg: "bg-green-500/10",
             border: "border-green-500/30",
             icon: <CheckCircle size={16} className="text-green-400" />,
         },
         FAILED: {
-            label: "BLOQUEADO — AÇÃO NECESSÁRIA",
+            label: "BLOQUEADO",
             color: "text-amber-400",
             bg: "bg-amber-500/10",
             border: "border-amber-500/40",
@@ -171,8 +238,8 @@ function BrokerCard({ ticket }: { ticket: OptOutTicket }) {
 
     return (
         <div className={`relative rounded-xl border ${s.border} ${s.bg} p-5 transition-all duration-700`}>
-            {/* Scanning bar for PENDING/RUNNING */}
-            {(ticket.status === "PENDING" || ticket.status === "RUNNING") && (
+            {/* Scanning bar for RUNNING */}
+            {ticket.status === "RUNNING" && (
                 <div className="absolute top-0 left-0 h-[2px] w-full overflow-hidden rounded-t-xl">
                     <div className="h-full w-1/3 bg-[#00f2fe] animate-[scan_2s_linear_infinite]" />
                 </div>
@@ -196,30 +263,43 @@ function BrokerCard({ ticket }: { ticket: OptOutTicket }) {
                 </div>
             </div>
 
-            {/* Live Terminal Output */}
-            <div className="mt-4 bg-[#050508] border border-gray-800/60 rounded-lg p-3 shadow-inner">
-                <div className="flex items-center gap-2 mb-2 border-b border-gray-800/50 pb-2">
-                    <Activity size={10} className={ticket.status === 'SUCCESS' ? 'text-green-400' : ticket.status === 'FAILED' ? 'text-amber-400' : 'text-[#00f2fe] animate-pulse'} />
-                    <span className="text-[9px] text-gray-500 font-bold uppercase tracking-widest">
-                        Terminal SecOps — {ticket.status === 'SUCCESS' ? 'FINALIZADO' : ticket.status === 'FAILED' ? 'ABORTADO' : 'AGUARDANDO WORKERS'}
-                    </span>
-                </div>
-                <div className="text-[10px] font-mono whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto">
-                    {(() => {
-                        const rawLogs = ticket.logs ? ticket.logs.replace(/\\n/g, "\n").split('\n').filter(Boolean) : [];
-                        const logLines = rawLogs.length > 0 ? rawLogs : ["Iniciando Motor Serverless...", "Decifrando dados via AES-256...", "Alocando Headless Chrome no Datacenter AWS..."];
+            <ProgressStepper status={ticket.status} />
 
-                        return logLines.map((line, i) => (
-                            <div key={i} className="flex flex-start gap-2 mb-1">
-                                <span className={ticket.status === 'SUCCESS' ? 'text-green-500 shrink-0' : ticket.status === 'FAILED' ? 'text-amber-500 shrink-0' : 'text-[#00f2fe] shrink-0'}>{'>_'}</span>
-                                <span className={i === logLines.length - 1 && ticket.status !== 'SUCCESS' && ticket.status !== 'FAILED' ? 'text-white animate-pulse font-bold' : 'text-gray-400'}>
-                                    {line}
-                                </span>
-                            </div>
-                        ));
-                    })()}
-                </div>
+            <div className="mt-4 border-t border-gray-800/60 pt-3">
+                <button
+                    onClick={() => setShowTerminal(!showTerminal)}
+                    className="flex justify-between items-center w-full text-left"
+                >
+                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest flex items-center gap-2 hover:text-[#00f2fe] transition-colors">
+                        <Activity size={10} className={ticket.status === 'SUCCESS' ? 'text-green-400' : ticket.status === 'FAILED' ? 'text-amber-400' : 'text-[#00f2fe] animate-pulse'} />
+                        Ver Logs Técnicos (SecOps Terminal)
+                    </span>
+                    <span className="text-[10px] text-gray-600 font-mono">
+                        {showTerminal ? '[ OCULTAR ]' : '[ EXIBIR ]'}
+                    </span>
+                </button>
             </div>
+
+            {/* Live Terminal Output (Collapsible) */}
+            {showTerminal && (
+                <div className="mt-3 bg-[#050508] border border-gray-800/60 rounded-lg p-3 shadow-inner transform transition-all">
+                    <div className="text-[10px] font-mono whitespace-pre-wrap leading-relaxed max-h-36 overflow-y-auto">
+                        {(() => {
+                            const rawLogs = ticket.logs ? ticket.logs.replace(/\\n/g, "\n").split('\n').filter(Boolean) : [];
+                            const logLines = rawLogs.length > 0 ? rawLogs : ["Iniciando Motor Serverless...", "Decifrando dados via AES-256...", "Alocando Headless Chrome no Datacenter AWS..."];
+
+                            return logLines.map((line, i) => (
+                                <div key={i} className="flex flex-start gap-2 mb-1">
+                                    <span className={ticket.status === 'SUCCESS' ? 'text-green-500 shrink-0' : ticket.status === 'FAILED' ? 'text-amber-500 shrink-0' : 'text-[#00f2fe] shrink-0'}>{'>_'}</span>
+                                    <span className={i === logLines.length - 1 && ticket.status !== 'SUCCESS' && ticket.status !== 'FAILED' ? 'text-white animate-pulse font-bold' : 'text-gray-400'}>
+                                        {line}
+                                    </span>
+                                </div>
+                            ));
+                        })()}
+                    </div>
+                </div>
+            )}
 
             {/* ACTION_REQUIRED fallback for FAILED */}
             {ticket.status === "FAILED" && (
