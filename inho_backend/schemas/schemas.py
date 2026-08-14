@@ -36,6 +36,7 @@ class UserOut(BaseModel):
     email: str
     full_name: str
     role: UserRole
+    role_label: Optional[str] = None
     is_active: bool
     is_verified: bool
     created_at: datetime
@@ -47,14 +48,25 @@ class UserOut(BaseModel):
 class UserUpdate(BaseModel):
     full_name: Optional[str] = Field(None, min_length=2, max_length=100)
     password: Optional[str] = Field(None, min_length=8)
+    role: Optional[UserRole] = None
+    is_active: Optional[bool] = None
 
 
+class UserCreate(BaseModel):
+    email: EmailStr
+    full_name: str = Field(..., min_length=2, max_length=100)
+    password: str = Field(..., min_length=8)
+    role: UserRole = UserRole.OPERATOR
+    is_active: bool = True
 
 
 # ── AuditLog ──────────────────────────────────────────────────────
 class AuditLogOut(BaseModel):
     id: UUID
     user_id: Optional[UUID]
+    user_name: Optional[str] = None
+    user_role: Optional[str] = None
+    business_id: Optional[UUID] = None
     action: AuditAction
     entity: str
     entity_id: Optional[str]

@@ -9,7 +9,7 @@ from uuid import UUID
 from fastapi import Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models.models import AuditLog, AuditAction
+from models.models import AuditLog, AuditAction, User
 
 # FIX: lista de proxies confiaveis — X-Forwarded-For so e aceito quando vier deles
 _TRUSTED_PROXIES: set[str] = {"127.0.0.1", "::1", "::ffff:127.0.0.1"}
@@ -21,14 +21,15 @@ async def write_audit(
     entity: str,
     *,
     user_id: Optional[UUID] = None,
+    user_name: Optional[str] = None,
+    user_role: Optional[str] = None,
+    business_id: Optional[UUID] = None,
     entity_id: Optional[str] = None,
     detail: Optional[dict] = None,
     request: Optional[Request] = None,
 ) -> AuditLog:
     """
-    Grava um registro imutavel no AuditLog.
-    Nunca deve ser chamado dentro de transacoes que possam ser revertidas
-    sem antes fazer flush, para garantir persistencia do log.
+    Grava um registro imutavel no AuditLog com nome e função do usuário.
     """
     ip  = _extract_ip(request)
     ua  = _extract_ua(request)
@@ -39,8 +40,26 @@ async def write_audit(
         except ValueError:
             pass
 
+    if isinstance(business_id, str):
+        try:
+            business_id = UUID(business_id)
+        except ValueError:
+            pass
+
+    # Auto-resolve user_name and user_role if user_id is provided and user_name is missing
+    if user_id and not user_name:
+        from sqlalchemy import select
+        res = await db.execute(select(User).where(User.id == user_id))
+        u = res.scalar_one_or_none()
+        if u:
+            user_name = u.full_name
+            user_role = user_role or u.role_label
+
     log = AuditLog(
         user_id=user_id,
+        user_name=user_name,
+        user_role=user_role,
+        business_id=business_id,
         action=action,
         entity=entity,
         entity_id=str(entity_id) if entity_id else None,

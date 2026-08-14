@@ -8,7 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, or_
 
 from db.session import get_db
-from models.models import User, Business, BillingInvoice, BillingStatus, PaymentMethod
+from models.models import User, Business, BillingInvoice, BillingStatus, PaymentMethod, AuditAction
+from services.audit import write_audit
 from core.deps import get_current_user
 from schemas.billing_schemas import (
     BillingInvoiceCreate, BillingInvoiceOut, BillingInvoiceStatusUpdate,
@@ -87,11 +88,34 @@ async def create_invoice(
         pix_code=pix_code,
         pix_qr_url=pix_qr_url,
         payment_method=payload.payment_method or PaymentMethod.PIX,
-        description=payload.description
+        description=payload.description,
+        created_by_id=current_user.id,
+        created_by_name=f"{current_user.full_name} ({current_user.role_label})",
+        updated_by_id=current_user.id,
+        updated_by_name=f"{current_user.full_name} ({current_user.role_label})"
     )
     db.add(invoice)
     await db.commit()
     await db.refresh(invoice)
+
+    # Immutable Audit Log Registration
+    await write_audit(
+        db,
+        action=AuditAction.CREATE,
+        entity="billing_invoice",
+        entity_id=str(invoice.id),
+        user_id=current_user.id,
+        user_name=current_user.full_name,
+        user_role=current_user.role_label,
+        business_id=business.id,
+        detail={
+            "customer_name": payload.customer_name,
+            "amount": float(payload.amount),
+            "due_date": payload.due_date.isoformat(),
+            "status": BillingStatus.PENDING.value
+        }
+    )
+
     return invoice
 
 @router.patch("/{invoice_id}/status", response_model=BillingInvoiceOut)
@@ -112,9 +136,32 @@ async def update_invoice_status(
     if not invoice:
         raise HTTPException(status_code=404, detail="Cobrança não encontrada")
 
+    old_status = invoice.status.value
     invoice.status = payload.status
+    invoice.updated_by_id = current_user.id
+    invoice.updated_by_name = f"{current_user.full_name} ({current_user.role_label})"
+
     await db.commit()
     await db.refresh(invoice)
+
+    # Immutable Audit Log Registration
+    await write_audit(
+        db,
+        action=AuditAction.UPDATE,
+        entity="billing_invoice",
+        entity_id=str(invoice.id),
+        user_id=current_user.id,
+        user_name=current_user.full_name,
+        user_role=current_user.role_label,
+        business_id=business.id,
+        detail={
+            "customer_name": invoice.customer_name,
+            "old_status": old_status,
+            "new_status": payload.status.value,
+            "updated_by": f"{current_user.full_name} ({current_user.role_label})"
+        }
+    )
+
     return invoice
 
 @router.post("/{invoice_id}/notify/whatsapp", response_model=BillingNotificationOut)

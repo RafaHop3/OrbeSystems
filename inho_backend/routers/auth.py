@@ -51,7 +51,7 @@ async def register(
 
 
 @router.post("/login", response_model=TokenResponse)
-@_limiter.limit("10/minute")   # FIX: rate limit aplicado — anti brute-force
+@_limiter.limit("100/minute")   # Dev friendly rate limit
 async def login(
     request: Request,
     response: Response,

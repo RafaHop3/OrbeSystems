@@ -58,6 +58,17 @@ class User(Base):
     def __repr__(self) -> str:
         return f"<User {self.email} [{self.role}]>"
 
+    @property
+    def role_label(self) -> str:
+        labels = {
+            UserRole.SUPER_ADMIN: "Super Administrador",
+            UserRole.ADMIN: "Usuário Mestre (Administrador)",
+            UserRole.OPERATOR: "Operador",
+            UserRole.VIEWER: "Visualizador",
+            UserRole.CLIENT: "Cliente",
+        }
+        return labels.get(self.role, "Usuário")
+
 
 # ── Business (Tenant) ─────────────────────────────────────────────
 class Business(Base):
@@ -91,6 +102,8 @@ class AuditLog(Base):
     id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id= Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=True)
     user_id    = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    user_name  = Column(String(255), nullable=True)
+    user_role  = Column(String(100), nullable=True)
     action     = Column(Enum(AuditAction), nullable=False)
     entity     = Column(String(100), nullable=False)
     entity_id  = Column(String(255), nullable=True)
@@ -255,6 +268,12 @@ class BillingInvoice(Base):
     notification_count       = Column(Integer, nullable=False, default=0)
     last_notification_sent_at= Column(DateTime(timezone=True), nullable=True)
     
+    # Audit fields: quem e quando criou / editou
+    created_by_id   = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_by_name = Column(String(255), nullable=True)
+    updated_by_id   = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    updated_by_name = Column(String(255), nullable=True)
+
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc), nullable=False)
