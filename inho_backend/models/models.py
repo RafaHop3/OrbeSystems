@@ -226,3 +226,42 @@ class PDVSale(Base):
         Index("ix_pdv_sales_register", "cash_register_id"),
         Index("ix_pdv_sales_created", "created_at"),
     )
+
+
+# ── BillingStatus / BillingInvoice ────────────────────────────────
+class BillingStatus(str, enum.Enum):
+    PENDING   = "PENDING"
+    PAID      = "PAID"
+    OVERDUE   = "OVERDUE"
+    CANCELLED = "CANCELLED"
+
+
+class BillingInvoice(Base):
+    __tablename__ = "billing_invoices"
+
+    id                       = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id              = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    customer_name            = Column(String(255), nullable=False)
+    customer_phone           = Column(String(50), nullable=True)
+    customer_email           = Column(String(255), nullable=True)
+    customer_doc             = Column(String(20), nullable=True)
+    amount                   = Column(Numeric(precision=20, scale=8), nullable=False)
+    due_date                 = Column(DateTime(timezone=True), nullable=False)
+    status                   = Column(Enum(BillingStatus), nullable=False, default=BillingStatus.PENDING)
+    pix_code                 = Column(Text, nullable=True)
+    pix_qr_url               = Column(Text, nullable=True)
+    payment_method           = Column(Enum(PaymentMethod), nullable=False, default=PaymentMethod.PIX)
+    description              = Column(Text, nullable=True)
+    notification_count       = Column(Integer, nullable=False, default=0)
+    last_notification_sent_at= Column(DateTime(timezone=True), nullable=True)
+    
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_billing_invoices_status", "status"),
+        Index("ix_billing_invoices_business", "business_id"),
+        Index("ix_billing_invoices_due", "due_date"),
+    )
+
