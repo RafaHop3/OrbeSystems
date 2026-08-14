@@ -32,6 +32,13 @@ async def write_audit(
     """
     ip  = _extract_ip(request)
     ua  = _extract_ua(request)
+
+    if isinstance(user_id, str):
+        try:
+            user_id = UUID(user_id)
+        except ValueError:
+            pass
+
     log = AuditLog(
         user_id=user_id,
         action=action,

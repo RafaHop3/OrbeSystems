@@ -29,13 +29,21 @@ def _build_ssl_context() -> ssl.SSLContext:
 
 _ssl_ctx = _build_ssl_context()
 
+engine_kwargs = {
+    "echo": settings.DEBUG,
+    "pool_pre_ping": True,
+}
+
+if not settings.DATABASE_URL.startswith("sqlite"):
+    engine_kwargs.update({
+        "pool_size": 5,
+        "max_overflow": 10,
+        "connect_args": {"ssl": _ssl_ctx},
+    })
+
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=settings.DEBUG,
-    pool_size=5,
-    max_overflow=10,
-    pool_pre_ping=True,
-    connect_args={"ssl": _ssl_ctx},
+    **engine_kwargs
 )
 
 AsyncSessionLocal = async_sessionmaker(

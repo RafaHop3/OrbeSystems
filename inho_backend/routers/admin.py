@@ -5,7 +5,7 @@ from typing import List
 import uuid
 
 from db.session import get_db
-from models.models import User, Account, Transaction, PDVSale, AuditLog
+from models.models import User, Business, SalesOrder, PDVSale, AuditLog
 from core.deps import require_super_admin
 from schemas.admin_schemas import (
     GlobalStatsOut, UserListOut, UserRoleUpdate, UserStatusUpdate, AuditLogOut
@@ -21,11 +21,11 @@ async def get_global_stats(
     # Total de usuários
     users_count = await db.scalar(select(func.count(User.id)))
     
-    # Contas ativas
-    accounts_count = await db.scalar(select(func.count(Account.id)).where(Account.is_active == True))
+    # Contas ativas / Empresas
+    accounts_count = await db.scalar(select(func.count(Business.id)))
     
-    # Volume total de transações
-    tx_volume = await db.scalar(select(func.sum(Transaction.amount)))
+    # Volume total de transações/pedidos
+    tx_volume = await db.scalar(select(func.sum(SalesOrder.amount)))
     tx_volume = tx_volume or 0
     
     # Volume total de vendas PDV

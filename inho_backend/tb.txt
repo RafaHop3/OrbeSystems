@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "D:\OrbeSystems\orbe-systems\inho_backend\main.py", line 17, in <module>
+    from routers import (
+  File "D:\OrbeSystems\orbe-systems\inho_backend\routers\auth.py", line 17, in <module>
+    router = APIRouter(prefix="/auth", tags=["Auth"])
+  File "D:\PY3\lib\site-packages\fastapi\routing.py", line 837, in __init__
+    super().__init__(
+TypeError: Router.__init__() got an unexpected keyword argument 'on_startup'
