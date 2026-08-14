@@ -34,6 +34,8 @@ class BillingInvoiceOut(BaseModel):
     description: Optional[str]
     notification_count: int
     last_notification_sent_at: Optional[datetime]
+    created_by_name: Optional[str] = None
+    updated_by_name: Optional[str] = None
     created_at: datetime
     updated_at: datetime
 

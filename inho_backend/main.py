@@ -79,15 +79,25 @@ app.add_middleware(
         "http://127.0.0.1:8000",
         "http://localhost:3001",
         "http://127.0.0.1:3001",
+        "https://orbesystems.com.br",
     ],
-    allow_origin_regex=r"https?://.*",
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|.*orbesystems.*)(:[0-9]+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+async def custom_rate_limit_handler(request: Request, exc: RateLimitExceeded):
+    response = _rate_limit_exceeded_handler(request, exc)
+    origin = request.headers.get("origin")
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
+
+app.add_exception_handler(RateLimitExceeded, custom_rate_limit_handler)
 
 
 # ── Routers ───────────────────────────────────────────────────────
