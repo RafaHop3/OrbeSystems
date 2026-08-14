@@ -1,0 +1,16 @@
+Traceback (most recent call last):
+  File "<string>", line 3, in <module>
+  File "D:\OrbeSystems\orbe-systems\inho_backend\test_inho_limits.py", line 7, in <module>
+    from main import app
+  File "D:\OrbeSystems\orbe-systems\inho_backend\main.py", line 15, in <module>
+    from db.session import engine, Base
+  File "D:\OrbeSystems\orbe-systems\inho_backend\db\session.py", line 32, in <module>
+    engine = create_async_engine(
+  File "D:\PY3\lib\site-packages\sqlalchemy\ext\asyncio\engine.py", line 120, in create_async_engine
+    sync_engine = _create_engine(url, **kw)
+  File "<string>", line 2, in create_engine
+  File "D:\PY3\lib\site-packages\sqlalchemy\util\deprecations.py", line 281, in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+  File "D:\PY3\lib\site-packages\sqlalchemy\engine\create.py", line 697, in create_engine
+    raise TypeError(
+TypeError: Invalid argument(s) 'pool_size','max_overflow' sent to create_engine(), using configuration SQLiteDialect_aiosqlite/NullPool/Engine.  Please check that the keyword arguments are appropriate for this combination of components.

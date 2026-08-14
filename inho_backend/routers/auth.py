@@ -8,6 +8,7 @@ from slowapi.util import get_remote_address
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.config import settings
 from core.security import create_access_token, create_refresh_token, hash_password, verify_password, decode_token
 from db.session import get_db
 from models.models import AuditAction, User
@@ -71,14 +72,15 @@ async def login(
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Conta desativada")
 
-    access  = create_access_token(str(user.id), user.role.value)
+    role_val = user.role.value if hasattr(user.role, "value") else str(user.role)
+    access  = create_access_token(str(user.id), role_val)
     refresh = create_refresh_token(str(user.id))
 
     response.set_cookie(
         key="inho_refresh_token",
         value=refresh,
         httponly=True,
-        secure=True,
+        secure=settings.APP_ENV == "production",
         samesite="lax",
         max_age=7 * 86400  # 7 days
     )
@@ -108,20 +110,27 @@ async def refresh(
         raise HTTPException(status_code=401, detail="Refresh token invalido")
 
     user_id = payload.get("sub")
+    if isinstance(user_id, str):
+        try:
+            user_id = uuid.UUID(user_id)
+        except ValueError:
+            pass
+
     result  = await db.execute(select(User).where(User.id == user_id))
     user: User | None = result.scalar_one_or_none()
 
     if not user or not user.is_active:
         raise HTTPException(status_code=401, detail="Usuario nao encontrado")
 
-    access      = create_access_token(str(user.id), user.role.value)
+    role_val    = user.role.value if hasattr(user.role, "value") else str(user.role)
+    access      = create_access_token(str(user.id), role_val)
     refresh_new = create_refresh_token(str(user.id))
 
     response.set_cookie(
         key="inho_refresh_token",
         value=refresh_new,
         httponly=True,
-        secure=True,
+        secure=settings.APP_ENV == "production",
         samesite="lax",
         max_age=7 * 86400
     )

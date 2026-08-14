@@ -18,8 +18,6 @@ from routers import (
     auth, users, audit, contracts, sales_orders, pdv, admin, pco, businesses, billing
 )
 
-# ... (rest of the file remains same, will be injected correctly by tool if chunk is small, but let's be careful. The tool replaces [StartLine, EndLine] with ReplacementContent)
-
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger("inho")
 
@@ -74,10 +72,18 @@ app = FastAPI(
 # ── Middleware ────────────────────────────────────────────────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ],
+    allow_origin_regex=r"https?://.*",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "X-Request-ID", "Accept"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.state.limiter = limiter
@@ -107,7 +113,7 @@ async def health_check(request: Request):
         "service": "inho-api",
         "version": settings.APP_VERSION,
         "env": settings.APP_ENV,
-        "database": "connected" if request.app.state.db_ready else "unavailable",
+        "database": "connected" if getattr(request.app.state, "db_ready", False) else "unavailable",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
 

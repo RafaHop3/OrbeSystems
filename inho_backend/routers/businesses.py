@@ -10,16 +10,19 @@ from models.models import Business, User, UserRole
 
 router = APIRouter(prefix="/businesses", tags=["Businesses"])
 
+from uuid import UUID
+from pydantic import BaseModel, ConfigDict
+
 class BusinessCreate(BaseModel):
     name: str
     cnpj: str | None = None
 
 class BusinessResponse(BaseModel):
-    id: str
+    id: UUID
     name: str
+    cnpj: str | None = None
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 # TODO: Replace with dependency that gets current OrbeSystems premium user
 async def get_current_user_placeholder(db: AsyncSession = Depends(get_db)):

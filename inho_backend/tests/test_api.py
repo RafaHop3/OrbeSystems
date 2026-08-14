@@ -10,6 +10,14 @@ import os
 os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///./test_inho.db"
 
 from main import app  # noqa: E402
+from db.session import engine, Base
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def setup_db():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
 
 
 @pytest_asyncio.fixture
