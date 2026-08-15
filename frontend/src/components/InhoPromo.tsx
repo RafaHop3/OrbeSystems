@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Briefcase, Building2, Key, ArrowRight, QrCode, ShieldCheck, Zap } from 'lucide-react';
 
 export default function InhoPromo() {
-    const inhoUrl = process.env.NEXT_PUBLIC_INHO_URL || 'http://localhost:3000';
+    const inhoUrl = process.env.NEXT_PUBLIC_INHO_URL || 'https://inho.orbesystems.com.br';
 
     return (
         <section className="relative w-full py-20 px-6 border-b border-[#8b5cf6]/30 bg-black overflow-hidden group">
