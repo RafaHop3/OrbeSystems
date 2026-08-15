@@ -9,8 +9,7 @@ async def run_e2e_test():
         assert r.status_code == 200
 
         print("2. Registering Cooperativa Habitacional user...")
-        import uuid
-        email = f"coop.{uuid.uuid4().hex[:6]}@solnascente.coop.br"
+        email = "test_colab@orbe.com"
         r = await client.post("/api/v1/auth/register", json={
             "email": email,
             "full_name": "Cooperativa Habitacional Sol Nascente",
