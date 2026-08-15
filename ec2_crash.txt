@@ -1,0 +1,149 @@
+#0 building with "default" instance using docker driver
+
+#1 [inho_backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.63kB 0.0s done
+#1 DONE 0.0s
+
+#2 [inho_backend internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.1s
+
+#3 [inho_backend internal] load .dockerignore
+#3 transferring context: 396B done
+#3 DONE 0.0s
+
+#4 [inho_backend internal] load build context
+#4 transferring context: 2.22kB done
+#4 DONE 0.0s
+
+#5 [inho_backend builder 1/5] FROM docker.io/library/python:3.12-slim@sha256:dd29372629eeba2dd003fd9e9d35a5b8236c44727875a0364254b5127af88e65
+#5 resolve docker.io/library/python:3.12-slim@sha256:dd29372629eeba2dd003fd9e9d35a5b8236c44727875a0364254b5127af88e65 0.0s done
+#5 CACHED
+
+#6 [inho_backend runtime 2/6] RUN apt-get update && apt-get install -y --no-install-recommends     libpq5     curl     && rm -rf /var/lib/apt/lists/*
+#6 0.460 Hit:1 http://deb.debian.org/debian trixie InRelease
+#6 0.460 Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+#6 0.465 Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+#6 0.500 Get:4 http://deb.debian.org/debian trixie/main amd64 Packages [9673 kB]
+#6 0.658 Get:5 http://deb.debian.org/debian trixie-updates/main amd64 Packages [4412 B]
+#6 0.662 Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [242 kB]
+#6 2.089 Fetched 10.0 MB in 2s (6017 kB/s)
+#6 2.089 Reading package lists...
+#6 3.264 Reading package lists...
+#6 4.406 Building dependency tree...
+#6 4.684 Reading state information...
+#6 5.255 The following additional packages will be installed:
+#6 5.255   libbrotli1 libcom-err2 libcurl4t64 libgnutls30t64 libgssapi-krb5-2 libidn2-0
+#6 5.255   libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap2 libnghttp2-14
+#6 5.257   libnghttp3-9 libp11-kit0 libpsl5t64 librtmp1 libsasl2-2 libsasl2-modules-db
+#6 5.259   libssh2-1t64 libtasn1-6 libunistring5
+#6 5.264 Suggested packages:
+#6 5.265   gnutls-bin krb5-doc krb5-user
+#6 5.265 Recommended packages:
+#6 5.266   bash-completion krb5-locales libldap-common publicsuffix libsasl2-modules
+#6 5.558 The following NEW packages will be installed:
+#6 5.560   curl libbrotli1 libcom-err2 libcurl4t64 libgnutls30t64 libgssapi-krb5-2
+#6 5.561   libidn2-0 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap2
+#6 5.562   libnghttp2-14 libnghttp3-9 libp11-kit0 libpq5 libpsl5t64 librtmp1 libsasl2-2
+#6 5.564   libsasl2-modules-db libssh2-1t64 libtasn1-6 libunistring5
+#6 5.642 0 upgraded, 23 newly installed, 0 to remove and 9 not upgraded.
+#6 5.642 Need to get 5125 kB of archives.
+#6 5.642 After this operation, 15.8 MB of additional disk space will be used.
+#6 5.642 Get:1 http://deb.debian.org/debian trixie/main amd64 libbrotli1 amd64 1.1.0-2+b7 [307 kB]
+#6 5.650 Get:2 http://deb.debian.org/debian trixie/main amd64 libkrb5support0 amd64 1.21.3-5+deb13u1 [33.1 kB]
+#6 5.655 Get:3 http://deb.debian.org/debian trixie/main amd64 libcom-err2 amd64 1.47.2-3+b11 [25.0 kB]
+#6 5.656 Get:4 http://deb.debian.org/debian trixie/main amd64 libk5crypto3 amd64 1.21.3-5+deb13u1 [81.2 kB]
+#6 5.657 Get:5 http://deb.debian.org/debian trixie/main amd64 libkeyutils1 amd64 1.6.3-6 [9456 B]
+#6 5.659 Get:6 http://deb.debian.org/debian trixie/main amd64 libkrb5-3 amd64 1.21.3-5+deb13u1 [326 kB]
+#6 5.664 Get:7 http://deb.debian.org/debian trixie/main amd64 libgssapi-krb5-2 amd64 1.21.3-5+deb13u1 [138 kB]
+#6 5.667 Get:8 http://deb.debian.org/debian trixie/main amd64 libunistring5 amd64 1.3-2 [477 kB]
+#6 5.674 Get:9 http://deb.debian.org/debian trixie/main amd64 libidn2-0 amd64 2.3.8-2 [109 kB]
+#6 5.675 Get:10 http://deb.debian.org/debian trixie/main amd64 libsasl2-modules-db amd64 2.1.28+dfsg1-9 [19.8 kB]
+#6 5.677 Get:11 http://deb.debian.org/debian trixie/main amd64 libsasl2-2 amd64 2.1.28+dfsg1-9 [57.5 kB]
+#6 5.681 Get:12 http://deb.debian.org/debian trixie/main amd64 libldap2 amd64 2.6.10+dfsg-1 [194 kB]
+#6 5.682 Get:13 http://deb.debian.org/debian trixie/main amd64 libnghttp2-14 amd64 1.64.0-1.1+deb13u1 [76.2 kB]
+#6 5.684 Get:14 http://deb.debian.org/debian trixie/main amd64 libnghttp3-9 amd64 1.8.0-1 [67.7 kB]
+#6 5.686 Get:15 http://deb.debian.org/debian trixie/main amd64 libpsl5t64 amd64 0.21.2-1.1+b1 [57.2 kB]
+#6 5.688 Get:16 http://deb.debian.org/debian trixie/main amd64 libp11-kit0 amd64 0.25.5-3 [425 kB]
+#6 5.694 Get:17 http://deb.debian.org/debian trixie/main amd64 libtasn1-6 amd64 4.20.0-2+deb13u1 [50.1 kB]
+#6 5.695 Get:18 http://deb.debian.org/debian trixie/main amd64 libgnutls30t64 amd64 3.8.9-3+deb13u4 [1469 kB]
+#6 5.717 Get:19 http://deb.debian.org/debian trixie/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2+b5 [58.8 kB]
+#6 5.718 Get:20 http://deb.debian.org/debian trixie/main amd64 libssh2-1t64 amd64 1.11.1-1+deb13u1 [245 kB]
+#6 5.721 Get:21 http://deb.debian.org/debian trixie/main amd64 libcurl4t64 amd64 8.14.1-2+deb13u4 [392 kB]
+#6 5.726 Get:22 http://deb.debian.org/debian trixie/main amd64 curl amd64 8.14.1-2+deb13u4 [270 kB]
+#6 5.730 Get:23 http://deb.debian.org/debian-security trixie-security/main amd64 libpq5 amd64 17.11-0+deb13u1 [237 kB]
+#6 CANCELED
+
+#7 [inho_backend builder 2/5] RUN apt-get update && apt-get install -y --no-install-recommends     build-essential     libpq-dev     && rm -rf /var/lib/apt/lists/*
+#7 0.461 Hit:1 http://deb.debian.org/debian trixie InRelease
+#7 0.464 Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+#7 0.472 Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+#7 0.502 Get:4 http://deb.debian.org/debian trixie/main amd64 Packages [9673 kB]
+#7 0.670 Get:5 http://deb.debian.org/debian trixie-updates/main amd64 Packages [4412 B]
+#7 0.672 Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [242 kB]
+#7 2.114 Fetched 10.0 MB in 2s (5938 kB/s)
+#7 2.114 Reading package lists...
+#7 3.265 Reading package lists...
+#7 4.398 Building dependency tree...
+#7 4.681 Reading state information...
+#7 5.267 The following additional packages will be installed:
+#7 5.267   binutils binutils-common binutils-x86-64-linux-gnu bzip2 cpp cpp-14
+#7 5.268   cpp-14-x86-64-linux-gnu cpp-x86-64-linux-gnu dpkg-dev g++ g++-14
+#7 5.268   g++-14-x86-64-linux-gnu g++-x86-64-linux-gnu gcc gcc-14
+#7 5.268   gcc-14-x86-64-linux-gnu gcc-x86-64-linux-gnu libasan8 libatomic1 libbinutils
+#7 5.269   libc-dev-bin libc6-dev libcc1-0 libcom-err2 libcrypt-dev libctf-nobfd0
+#7 5.270   libctf0 libdpkg-perl libgcc-14-dev libgdbm-compat4t64 libgomp1 libgprofng0
+#7 5.270   libgssapi-krb5-2 libhwasan0 libisl23 libitm1 libjansson4 libk5crypto3
+#7 5.271   libkeyutils1 libkrb5-3 libkrb5support0 libldap2 liblsan0 libmpc3 libmpfr6
+#7 5.272   libperl5.40 libpq5 libquadmath0 libsasl2-2 libsasl2-modules-db libsframe1
+#7 5.273   libssl-dev libstdc++-14-dev libtsan2 libubsan1 linux-libc-dev make patch
+#7 5.274   perl perl-modules-5.40 rpcsvc-proto xz-utils
+#7 5.279 Suggested packages:
+#7 5.279   binutils-doc gprofng-gui binutils-gold bzip2-doc cpp-doc gcc-14-locales
+#7 5.279   cpp-14-doc debian-keyring debian-tag2upload-keyring g++-multilib
+#7 5.279   g++-14-multilib gcc-14-doc gcc-multilib manpages-dev autoconf automake
+#7 5.279   libtool flex bison gdb gcc-doc gcc-14-multilib gdb-x86-64-linux-gnu
+#7 5.279   libc-devtools glibc-doc sq | sqop | rsop | gosop | pgpainless-cli | gpg-sq
+#7 5.279   | gnupg sensible-utils git bzr krb5-doc krb5-user postgresql-doc-17
+#7 5.279   libssl-doc libstdc++-14-doc make-doc ed diffutils-doc perl-doc
+#7 5.279   libterm-readline-gnu-perl | libterm-readline-perl-perl
+#7 5.279   libtap-harness-archive-perl
+#7 5.279 Recommended packages:
+#7 5.279   fakeroot sq | sqop | rsop | gosop | pgpainless-cli | gpg-sq | gnupg
+#7 5.279   libalgorithm-merge-perl manpages manpages-dev libfile-fcntllock-perl
+#7 5.279   liblocale-gettext-perl krb5-locales libldap-common libsasl2-modules
+#7 5.736 The following NEW packages will be installed:
+#7 5.736   binutils binutils-common binutils-x86-64-linux-gnu build-essential bzip2 cpp
+#7 5.736   cpp-14 cpp-14-x86-64-linux-gnu cpp-x86-64-linux-gnu dpkg-dev g++ g++-14
+#7 5.736   g++-14-x86-64-linux-gnu g++-x86-64-linux-gnu gcc gcc-14
+#7 5.736   gcc-14-x86-64-linux-gnu gcc-x86-64-linux-gnu libasan8 libatomic1 libbinutils
+#7 5.737   libc-dev-bin libc6-dev libcc1-0 libcom-err2 libcrypt-dev libctf-nobfd0
+#7 5.737   libctf0 libdpkg-perl libgcc-14-dev libgdbm-compat4t64 libgomp1 libgprofng0
+#7 5.737   libgssapi-krb5-2 libhwasan0 libisl23 libitm1 libjansson4 libk5crypto3
+#7 5.738   libkeyutils1 libkrb5-3 libkrb5support0 libldap2 liblsan0 libmpc3 libmpfr6
+#7 5.739   libperl5.40 libpq-dev libpq5 libquadmath0 libsasl2-2 libsasl2-modules-db
+#7 5.739   libsframe1 libssl-dev libstdc++-14-dev libtsan2 libubsan1 linux-libc-dev
+#7 5.741   make patch perl perl-modules-5.40 rpcsvc-proto xz-utils
+#7 5.788 E:0 upgraded, 64 newly installed, 0 to remove and 9 not upgraded.
+#7 5.788 Need to get 86.8 MB of archives.
+#7 5.788 After this operation, 357 MB of additional disk space will be used.
+#7 5.789  You don't have enough free space in /var/cache/apt/archives/.
+#7 ERROR: process "/bin/sh -c apt-get update && apt-get install -y --no-install-recommends     build-essential     libpq-dev     && rm -rf /var/lib/apt/lists/*" did not complete successfully: exit code: 100
+------
+ > [inho_backend builder 2/5] RUN apt-get update && apt-get install -y --no-install-recommends     build-essential     libpq-dev     && rm -rf /var/lib/apt/lists/*:
+5.737   libctf0 libdpkg-perl libgcc-14-dev libgdbm-compat4t64 libgomp1 libgprofng0
+5.737   libgssapi-krb5-2 libhwasan0 libisl23 libitm1 libjansson4 libk5crypto3
+5.738   libkeyutils1 libkrb5-3 libkrb5support0 libldap2 liblsan0 libmpc3 libmpfr6
+5.739   libperl5.40 libpq-dev libpq5 libquadmath0 libsasl2-2 libsasl2-modules-db
+5.739   libsframe1 libssl-dev libstdc++-14-dev libtsan2 libubsan1 linux-libc-dev
+5.741   make patch perl perl-modules-5.40 rpcsvc-proto xz-utils
+5.788 E:0 upgraded, 64 newly installed, 0 to remove and 9 not upgraded.
+5.788 Need to get 86.8 MB of archives.
+5.788 After this operation, 357 MB of additional disk space will be used.
+5.789  You don't have enough free space in /var/cache/apt/archives/.
+------
+
+--ERR--
+time="2026-08-15T08:33:21Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+time="2026-08-15T08:33:22Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+failed to solve: process "/bin/sh -c apt-get update && apt-get install -y --no-install-recommends     build-essential     libpq-dev     && rm -rf /var/lib/apt/lists/*" did not complete successfully: exit code: 100
+failed to run commands: exit status 1
