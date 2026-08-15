@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:a0403019-46c1-4dff-948e-93286a8770d6",
+  "serialNumber": "urn:uuid:9a6e52a5-0561-4270-8c7e-4534cb270291",
   "metadata": {
-    "timestamp": "2026-08-15T08:01:41.833212+00:00",
+    "timestamp": "2026-08-15T13:21:43.691506+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -395,8 +395,8 @@
     {
       "type": "library",
       "name": "charset-normalizer",
-      "version": "3.5.0",
-      "purl": "pkg:pypi/charset-normalizer@3.5.0",
+      "version": "3.5.1",
+      "purl": "pkg:pypi/charset-normalizer@3.5.1",
       "licenses": [
         {
           "license": {
@@ -408,7 +408,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "7aec306f211f3bbb5f0827fbd6f059122cfca7e8dfb4ca5c046df916dc023cac"
+          "content": "fd9834b103d910c0831a398053798b2c9e570fc6cdafe9a0d00ffc1f1584abbd"
         }
       ]
     },
