@@ -13,8 +13,9 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
-// Server-only: this string is NEVER bundled into client JS.
+// Server-only: these strings are NEVER bundled into client JS.
 const BACKEND_URL = "https://api.orbesystems.com.br";
+const INHO_API_URL = "https://inho-api.orbesystems.com.br";
 
 const TOKEN_COOKIE = 'orbe_auth_token';
 
@@ -24,10 +25,21 @@ async function proxyRequest(request: NextRequest, { params }: Params): Promise<N
     const { path } = await params;
     const targetPath = path.join('/');
 
+    // Route to correct backend based on path
+    const isInhoApi = targetPath.startsWith('api/v1/optout') ||
+                      targetPath.startsWith('api/v1/imortal') ||
+                      targetPath.startsWith('api/v1/imobverse') ||
+                      targetPath.startsWith('api/v1/powershell-bot') ||
+                      targetPath.startsWith('api/v1/billing') ||
+                      targetPath.startsWith('api/v1/suite-inteligente') ||
+                      targetPath.startsWith('api/v1/offline-agent');
+
+    const baseUrl = isInhoApi ? INHO_API_URL : BACKEND_URL;
+
     // Preserve the original query string
     const searchParams = request.nextUrl.searchParams.toString();
     const qs = searchParams ? `?${searchParams}` : '';
-    const targetUrl = `${BACKEND_URL}/${targetPath}${qs}`;
+    const targetUrl = `${baseUrl}/${targetPath}${qs}`;
 
     // Forward only safe headers — strip host to avoid conflicts
     const forwardedHeaders: Record<string, string> = {};
