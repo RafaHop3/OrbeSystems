@@ -11,6 +11,7 @@ psycopg2-binary==2.9.10
 # ── Security / Auth ──────────────────────────────────────────────
 python-jose[cryptography]==3.3.0
 python-multipart==0.0.12
+bcrypt==4.0.1
 
 # ── Validation / Settings ────────────────────────────────────────
 pydantic==2.10.3
