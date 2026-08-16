@@ -38,8 +38,10 @@ if not settings.DATABASE_URL.startswith("sqlite"):
     engine_kwargs.update({
         "pool_size": 5,
         "max_overflow": 10,
-        "connect_args": {"ssl": _ssl_ctx},
     })
+    # Only apply SSL for production databases (Supabase, Render, etc.)
+    if "supabase" in settings.DATABASE_URL or "render.com" in settings.DATABASE_URL:
+        engine_kwargs["connect_args"] = {"ssl": _ssl_ctx}
 
 engine = create_async_engine(
     settings.DATABASE_URL,
