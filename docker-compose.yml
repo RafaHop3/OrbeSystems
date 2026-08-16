@@ -29,8 +29,8 @@ services:
     # Opcional: Se preencher o .env em bash no EC2, remova o comentário abaixo
     env_file:
       - ./backend/.env
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     depends_on:
       - db
       - redis
