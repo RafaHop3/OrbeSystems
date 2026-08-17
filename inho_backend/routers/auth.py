@@ -2,6 +2,7 @@
 INHO – Auth Router
 POST /auth/register | POST /auth/login | POST /auth/refresh
 """
+import uuid
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from slowapi import Limiter
 from slowapi.util import get_remote_address
