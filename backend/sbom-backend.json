@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:5dba6961-9692-4a6e-831f-6387ad4ced07",
+  "serialNumber": "urn:uuid:26ad8a85-ddfd-4b25-9da1-0d76e36bc50a",
   "metadata": {
-    "timestamp": "2026-08-16T17:59:14.757523+00:00",
+    "timestamp": "2026-08-17T19:24:29.331199+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -1305,8 +1305,8 @@
     {
       "type": "library",
       "name": "Pygments",
-      "version": "2.20.0",
-      "purl": "pkg:pypi/pygments@2.20.0",
+      "version": "2.21.0",
+      "purl": "pkg:pypi/pygments@2.21.0",
       "licenses": [
         {
           "license": {
@@ -1323,7 +1323,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "c21616aab67873a4df2d1455470e8702f065dbef25e8d94d205805985bf5b430"
+          "content": "39ad1340ec049ea0d7ab88aa4fe6b672c9bf2abf60e6eaa15c195315e0d50f33"
         }
       ]
     },
