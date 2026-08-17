@@ -35,7 +35,7 @@ export default function AdminLogin() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ username, password: trimmedPassword }),
+          body: JSON.stringify({ email: username, password: trimmedPassword }),
         });
 
         if (!res.ok) {
@@ -103,13 +103,13 @@ export default function AdminLogin() {
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
             <label className="text-xs uppercase text-neon-green/80 flex justify-between">
-              <span>Username</span>
+              <span>Email</span>
             </label>
             <input
-              type="text"
+              type="email"
               autoFocus
               className="w-full bg-transparent border-b border-neon-green/40 px-0 py-2 text-neon-green focus:outline-none focus:border-neon-green focus:shadow-[0_1px_10px_rgba(57,255,20,0.3)] transition-all placeholder:text-neon-green/20"
-              placeholder="_"
+              placeholder="admin@inho.io"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={loading}
