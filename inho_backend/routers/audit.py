@@ -121,6 +121,16 @@ async def get_siem_security_overview(
     else:
         threat_level = "LOW"
 
+    # Out-of-Band Webhook Alert Dispatch on HIGH/CRITICAL threat
+    if threat_level in ["HIGH", "CRITICAL"]:
+        from core.security_alerts import dispatch_security_webhook_alert
+        dispatch_security_webhook_alert(
+            threat_level=threat_level,
+            action="SIEM_THREAT_SPIKE",
+            details=f"Nível de ameaça elevado para {threat_level}. {critical_alerts} alertas críticos ativos.",
+            user_email=current_user.email
+        )
+
     return {
         "status": "active",
         "threat_level": threat_level,
@@ -133,4 +143,44 @@ async def get_siem_security_overview(
         },
         "logs": enriched_logs
     }
+
+
+@router.get("/siem/stream")
+async def stream_siem_events(
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Pilar 1 - Server-Sent Events (SSE) Push Stream:
+    Envia eventos de auditoria em tempo real via text/event-stream, eliminando polling HTTP no frontend.
+    """
+    import asyncio
+    from fastapi.responses import StreamingResponse
+
+    async def event_generator():
+        while True:
+            if await request.is_disconnected():
+                break
+
+            overview = await get_siem_security_overview(request, db, current_user)
+            yield f"data: {json.dumps(overview)}\n\n"
+            await asyncio.sleep(5.0)  # Stream update every 5 seconds
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+@router.post("/siem/prune")
+async def prune_audit_logs(
+    retention_days: int = Query(90, ge=7, le=365),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Pilar 3 - Rotação e Retenção de Dados de Auditoria:
+    Expurga logs informativos (INFO) mais antigos que retention_days (padrão: 90 dias).
+    """
+    from core.audit_retention import rotate_old_audit_logs
+    return await rotate_old_audit_logs(db, retention_days=retention_days)
+
 

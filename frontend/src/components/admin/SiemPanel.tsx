@@ -117,10 +117,41 @@ export default function SIEMPanel() {
         }
     };
 
+    const [sseActive, setSseActive] = useState<boolean>(false);
+
     useEffect(() => {
         fetchSIEMData();
-        const interval = setInterval(fetchSIEMData, 15000); // Auto refresh every 15s
-        return () => clearInterval(interval);
+
+        // Pilar 1 - Server-Sent Events (SSE) Realtime Push Stream
+        const token = localStorage.getItem("orbe_token");
+        const sseUrl = `http://localhost:8000/api/v1/audit/siem/stream`;
+        let eventSource: EventSource | null = null;
+
+        try {
+            eventSource = new EventSource(sseUrl);
+            eventSource.onopen = () => setSseActive(true);
+            eventSource.onmessage = (event) => {
+                try {
+                    const parsed = JSON.parse(event.data);
+                    setData(parsed);
+                    setSseActive(true);
+                } catch (e) {
+                    console.error("Erro ao decodificar evento SSE SIEM:", e);
+                }
+            };
+            eventSource.onerror = () => {
+                setSseActive(false);
+                if (eventSource) eventSource.close();
+            };
+        } catch (e) {
+            setSseActive(false);
+        }
+
+        const interval = setInterval(fetchSIEMData, 15000); // Polling Fallback
+        return () => {
+            clearInterval(interval);
+            if (eventSource) eventSource.close();
+        };
     }, []);
 
     const filteredLogs = data?.logs.filter((log) => {
@@ -150,6 +181,17 @@ export default function SIEMPanel() {
                 </div>
 
                 <div className="flex items-center space-x-3">
+                    {/* SSE Stream Push Status Badge */}
+                    <div className="flex items-center space-x-2 px-3 py-1.5 rounded bg-slate-900 border border-slate-800">
+                        <span className={`relative flex h-2.5 w-2.5 ${sseActive ? "text-cyan-400" : "text-slate-600"}`}>
+                            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${sseActive ? "bg-cyan-400" : "bg-slate-600"}`}></span>
+                            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${sseActive ? "bg-cyan-500" : "bg-slate-600"}`}></span>
+                        </span>
+                        <span className={`text-[11px] font-semibold uppercase ${sseActive ? "text-cyan-400" : "text-slate-500"}`}>
+                            {sseActive ? "SSE PUSH: ATIVO" : "POLLING FALLBACK"}
+                        </span>
+                    </div>
+
                     {/* Status Badge */}
                     <div className="flex items-center space-x-2 px-3 py-1.5 rounded bg-slate-900 border border-slate-800">
                         <span className="relative flex h-3 w-3">
@@ -240,14 +282,14 @@ export default function SIEMPanel() {
                             key={sev}
                             onClick={() => setFilterSeverity(sev)}
                             className={`px-3 py-1 text-xs font-semibold rounded transition-colors ${filterSeverity === sev
-                                    ? sev === "CRITICAL"
-                                        ? "bg-rose-950 text-rose-300 border border-rose-800"
-                                        : sev === "WARNING"
-                                            ? "bg-amber-950 text-amber-300 border border-amber-800"
-                                            : sev === "INFO"
-                                                ? "bg-cyan-950 text-cyan-300 border border-cyan-800"
-                                                : "bg-slate-800 text-slate-200"
-                                    : "text-slate-400 hover:text-slate-200"
+                                ? sev === "CRITICAL"
+                                    ? "bg-rose-950 text-rose-300 border border-rose-800"
+                                    : sev === "WARNING"
+                                        ? "bg-amber-950 text-amber-300 border border-amber-800"
+                                        : sev === "INFO"
+                                            ? "bg-cyan-950 text-cyan-300 border border-cyan-800"
+                                            : "bg-slate-800 text-slate-200"
+                                : "text-slate-400 hover:text-slate-200"
                                 }`}
                         >
                             {sev}
@@ -305,10 +347,10 @@ export default function SIEMPanel() {
                                         <td className="px-4 py-3">
                                             <span
                                                 className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${log.severity === "CRITICAL"
-                                                        ? "bg-rose-950/80 text-rose-300 border-rose-800"
-                                                        : log.severity === "WARNING"
-                                                            ? "bg-amber-950/80 text-amber-300 border-amber-800"
-                                                            : "bg-cyan-950/80 text-cyan-300 border-cyan-800"
+                                                    ? "bg-rose-950/80 text-rose-300 border-rose-800"
+                                                    : log.severity === "WARNING"
+                                                        ? "bg-amber-950/80 text-amber-300 border-amber-800"
+                                                        : "bg-cyan-950/80 text-cyan-300 border-cyan-800"
                                                     }`}
                                             >
                                                 {log.severity}
