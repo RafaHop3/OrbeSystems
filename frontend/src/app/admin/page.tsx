@@ -6,7 +6,6 @@ import { Shield, Activity, HardDrive, LogOut, Edit3, Save, X, Globe, Video, Imag
 import type { Repository } from '@/types/repository';
 import VisitorMonitor from '@/components/VisitorMonitor';
 import FileUploader from '@/components/FileUploader';
-import SiemPanel from '@/components/admin/SiemPanel';
 import SoarPanel from '@/components/admin/SoarPanel';
 import AuditChainPanel from '@/components/admin/AuditChainPanel';
 import SbomPanel from '@/components/admin/SbomPanel';
@@ -18,6 +17,7 @@ import ChronosPanel from '@/components/admin/ChronosPanel';
 import AiLogsPanel from '@/components/admin/AiLogsPanel';
 import AnalyticsPanel from '@/components/admin/AnalyticsPanel';
 import InhoPanel from '@/components/admin/InhoPanel';
+import SIEMPanel from '@/components/admin/SiemPanel';
 
 /*
 - [x] Install/Add Backend dependency (`cloudinary`)
@@ -918,10 +918,7 @@ export default function AdminDashboard() {
             {/* ── Security Tool Panels ──────────────────────────── */}
             {activeTab === 'siem' && (
               <div className="border border-neon-green/20 bg-neon-green/5 p-5">
-                <h2 className="text-xs font-bold border-b border-neon-green/10 pb-3 mb-5 flex items-center gap-2 text-neon-cyan uppercase">
-                  🛡 SIEM — Security Alerts
-                </h2>
-                <SiemPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
+                <SIEMPanel />
               </div>
             )}
 
