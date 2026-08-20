@@ -57,3 +57,14 @@ async def test_invalid_broker_fallback():
 
     assert res["status"] == "MANUAL_REQUIRED"
     assert "nao encontrada" in res["reasoning"]
+
+
+@pytest.mark.asyncio
+async def test_semaphore_concurrency_limit():
+    """Valida se o semaforo asyncio.Semaphore limita a concorrência a no maximo 3 workers."""
+    from services.playwright_automator import PLAYWRIGHT_SEMAPHORE, MAX_CONCURRENT_WORKERS
+
+    assert MAX_CONCURRENT_WORKERS == 3
+    assert PLAYWRIGHT_SEMAPHORE._value <= MAX_CONCURRENT_WORKERS
+
+
