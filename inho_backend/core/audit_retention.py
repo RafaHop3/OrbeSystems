@@ -24,7 +24,36 @@ async def rotate_old_audit_logs(db: AsyncSession, retention_days: int = 90) -> d
     except Exception:
         total_before = 0
 
-    # 2. Excluir logs INFO antigos (açao sem termos de falha/critical/lockout)
+    # 2. Buscar logs INFO que serão expurgados para arquivamento prévio em Cold Storage
+    select_stmt = select(AuditLog).where(
+        AuditLog.timestamp < cutoff_date,
+        ~AuditLog.action.ilike("%fail%"),
+        ~AuditLog.action.ilike("%lockout%"),
+        ~AuditLog.action.ilike("%unauthorized%"),
+        ~AuditLog.action.ilike("%critical%")
+    )
+
+    logs_to_export_res = await db.execute(select_stmt)
+    logs_to_export = logs_to_export_res.scalars().all()
+
+    # Formatar para o exportador do Cold Storage
+    formatted_logs = [
+        {
+            "id": str(l.id),
+            "timestamp": l.timestamp.isoformat() if l.timestamp else None,
+            "user_email": l.user_email or "Sistema",
+            "action": l.action,
+            "entity": l.entity,
+            "ip_address": l.ip_address or "127.0.0.1",
+            "details": l.details
+        }
+        for l in logs_to_export
+    ]
+
+    from core.audit_cold_storage import export_logs_to_cold_storage
+    archive_file_path = export_logs_to_cold_storage(formatted_logs)
+
+    # 3. Excluir logs do banco relacional
     stmt = delete(AuditLog).where(
         AuditLog.timestamp < cutoff_date,
         ~AuditLog.action.ilike("%fail%"),
@@ -38,7 +67,7 @@ async def rotate_old_audit_logs(db: AsyncSession, retention_days: int = 90) -> d
 
     deleted_count = result.rowcount
 
-    # 3. Total de logs após rotação
+    # 4. Total de logs após rotação
     count_after_res = await db.execute(select(func.count(AuditLog.id)))
     total_after = count_after_res.scalar() or 0
 

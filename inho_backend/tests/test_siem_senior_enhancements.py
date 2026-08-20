@@ -32,6 +32,9 @@ async def test_audit_retention_rotation_mocked():
     mock_result_before = MagicMock()
     mock_result_before.scalar.return_value = 150
 
+    mock_result_select = MagicMock()
+    mock_result_select.scalars.return_value.all.return_value = []
+
     mock_result_delete = MagicMock()
     mock_result_delete.rowcount = 42
 
@@ -40,6 +43,7 @@ async def test_audit_retention_rotation_mocked():
 
     mock_db.execute.side_effect = [
         mock_result_before,
+        mock_result_select,
         mock_result_delete,
         mock_result_after
     ]
@@ -50,3 +54,32 @@ async def test_audit_retention_rotation_mocked():
     assert res["retention_days"] == 90
     assert res["logs_expurgated"] == 42
     assert res["total_remaining_logs"] == 108
+
+
+def test_cold_storage_export_file_creation():
+    """Valida a escrita e serializacao de logs no Cold Storage em formato JSON."""
+    import os
+    import json
+    from core.audit_cold_storage import export_logs_to_cold_storage
+
+    sample_logs = [
+        {
+            "id": "log_001",
+            "timestamp": "2026-05-01T12:00:00Z",
+            "user_email": "user@orbesystems.com.br",
+            "action": "USER_LOGIN_SUCCESS",
+            "entity": "Auth",
+            "ip_address": "189.10.20.30",
+            "details": "Login de teste arquivado"
+        }
+    ]
+
+    archive_path = export_logs_to_cold_storage(sample_logs)
+
+    assert os.path.exists(archive_path)
+    with open(archive_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    assert data["total_records"] == 1
+    assert data["records"][0]["id"] == "log_001"
+
