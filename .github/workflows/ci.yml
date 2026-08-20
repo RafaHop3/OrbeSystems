@@ -1,93 +1,89 @@
-name: CI — Orbe Systems
+name: Orbe Systems & INHO — Continuous Integration (CI)
 
 on:
   push:
-    branches: [dev, main]
+    branches: [ main, master, feat-* ]
   pull_request:
-    branches: [main]
+    branches: [ main, master ]
 
 jobs:
-  # ── Frontend ─────────────────────────────────────────────────────────────────
-  frontend:
-    name: Frontend (TypeScript + Build)
+  # ==========================================
+  # 🐍 1. Backend FastAPI & Ghost Engine CI
+  # ==========================================
+  backend-ci:
+    name: Backend Pytest & Security Audit
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
 
     steps:
-      - name: Checkout
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: TypeScript type-check
-        run: npx tsc --noEmit
-
-      - name: Build
-        run: npm run build
-        env:
-          # Dummy value — build must succeed without real API URL
-          NEXT_PUBLIC_API_URL: https://api.orbesystems.com.br
-
-  # ── Backend ──────────────────────────────────────────────────────────────────
-  backend:
-    name: Backend (Python syntax check)
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'inho_backend/requirements.txt'
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt --quiet
-
-      - name: Syntax check all Python files
+      - name: Install Dependencies
         run: |
-          find . -name "*.py" -not -path "./.venv/*" | while read f; do
-            python -m py_compile "$f" && echo "OK: $f" || exit 1
-          done
+          cd inho_backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-asyncio flake8 bandit
 
-      - name: Import check (entry point)
-        run: python -c "import main; print('Entry point OK')"
-        env:
-          DATABASE_URL: sqlite:///./data/test.db
-          SECRET_KEY: ci-test-secret-key-not-used-in-production
-          ADMIN_USERNAME: ci_admin
-          ADMIN_PASSWORD_HASH: $2b$12$placeholder_hash_for_ci_only
+      - name: Run Code Quality Check (Flake8)
+        run: |
+          cd inho_backend
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+      - name: Run Pytest Test Suite (E2E & Unit)
+        run: |
+          cd inho_backend
+          python -m pytest -v tests/
+
+      - name: Security Vulnerability Scan (Bandit)
+        run: |
+          cd inho_backend
+          bandit -r core/ services/ routers/ -ll -ii || true
+
+  # ==========================================
+  # ⚡ 2. Frontend Next.js CI
+  # ==========================================
+  frontend-ci:
+    name: Frontend TypeScript & Next.js Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 18.x
+        uses: actions/setup-node@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'frontend/package-lock.json'
 
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-        
-      - name: Build, tag, and push Docker image to ECR
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: orbe-systems-api
-          IMAGE_TAG: latest
+      - name: Install Dependencies
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          cd frontend
+          npm ci
+
+      - name: TypeScript Type Checking
+        run: |
+          cd frontend
+          npx tsc --noEmit
+
+      - name: Next.js ESLint Linting
+        run: |
+          cd frontend
+          npm run lint || true
+
+      - name: Test Production Build
+        run: |
+          cd frontend
+          npm run build
+        env:
+          NEXT_PUBLIC_API_URL: https://api.orbesystems.com.br
