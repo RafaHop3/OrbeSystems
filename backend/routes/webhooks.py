@@ -102,6 +102,36 @@ async def stripe_webhook(
                 except Exception as e:
                     webhook_logger.error(f"Erro ao disparar provisionamento de workspace AnythingLLM para {user.email}: {e}")
 
+                # ── Provisionar Conta de Proprietário (Admin) no INHO Business
+                import os
+                import httpx
+                import asyncio
+                
+                async def provision_inho_admin(user_email, user_fullname, user_hash):
+                    inho_api_url = os.getenv("INHO_API_INTERNAL_URL", "https://inho-api.orbesystems.com.br/api/v1")
+                    sys_secret = os.getenv("INHO_SYSTEM_SECRET", "super_secret_inho_provisioning_key_change_me")
+                    payload = {
+                        "email": user_email,
+                        "full_name": user_fullname or "Administrador INHO",
+                        "hashed_password": user_hash
+                    }
+                    try:
+                        async with httpx.AsyncClient() as client:
+                            resp = await client.post(
+                                f"{inho_api_url}/auth/webhook/provision",
+                                json=payload,
+                                headers={"X-INHO-SYSTEM-SECRET": sys_secret},
+                                timeout=15.0
+                            )
+                            if resp.status_code in [201, 200]:
+                                webhook_logger.info(f"INHO Admin provisioned successfully for {user_email}")
+                            else:
+                                webhook_logger.error(f"INHO provisioning failed for {user_email}: {resp.text}")
+                    except Exception as ex:
+                        webhook_logger.error(f"Failed to call INHO bridging API: {ex}")
+
+                asyncio.create_task(provision_inho_admin(user.email, user.full_name, user.hashed_password))
+
     elif event_type in ("customer.subscription.deleted", "customer.subscription.paused"):
         # Subscription ended — downgrade to free user
         customer_id = data.get("customer")
