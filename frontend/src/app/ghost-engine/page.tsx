@@ -30,7 +30,7 @@ export default function GhostEnginePage() {
 
                         <p className="text-slate-400 font-sans leading-relaxed text-lg max-w-xl">
                             Seus dados privados como CPF, Endereço e Processos estão sendo vendidos agora mesmo em sites públicos.
-                            Nosso <strong>Sniper Algorítmico</strong> invade bases como Escavador e Jusbrasil exigindo o seu "Direito de Esquecimento" via LGPD.
+                            Nosso <strong>Sistema Automatizado</strong> processa dados exigindo o seu "Direito de Esquecimento" via LGPD.
                         </p>
 
                         <div className="flex gap-4 pt-4">
@@ -72,7 +72,7 @@ export default function GhostEnginePage() {
                                 </div>
                                 <div>
                                     <h3 className="font-bold text-white text-sm">3. Remoção Automática</h3>
-                                    <p className="text-xs text-slate-400 mt-1">Disparamos procurações da LGPD para deletar seus perfis no mesmo dia.</p>
+                                    <p className="text-xs text-slate-400 mt-1">Acionamos solicitações baseadas na LGPD para deletar seus perfis de dados.</p>
                                 </div>
                             </div>
                         </div>

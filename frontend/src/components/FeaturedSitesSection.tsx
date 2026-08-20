@@ -6,7 +6,7 @@ import { ExternalLink } from 'lucide-react';
 const sites = [
     {
         name: 'Ghost Engine',
-        tagline: 'Sniper Algorítmico · Remoção Automática de Dados (LGPD)',
+        tagline: 'Automação Integrada · Remoção de Dados (LGPD)',
         url: '/ghost-engine',
         image: '/featured-ghostengine.png',
         accent: '#00f2fe',
