@@ -12,9 +12,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.config import settings
 from core.security import create_access_token, create_refresh_token, hash_password, verify_password, decode_token
 from db.session import get_db
-from models.models import AuditAction, User
-from schemas.schemas import LoginRequest, RegisterRequest, TokenResponse, RefreshRequest
+from models.models import AuditAction, User, UserRole
+from schemas.schemas import LoginRequest, RegisterRequest, TokenResponse, RefreshRequest, WebhookProvisionRequest
 from services.audit import write_audit
+from fastapi import Header
 
 router = APIRouter(prefix="/auth", tags=["Auth"])
 
@@ -142,3 +143,43 @@ async def refresh(
 async def logout(response: Response):
     response.delete_cookie("inho_refresh_token")
     return None
+
+
+@router.post("/webhook/provision", response_model=dict, status_code=status.HTTP_201_CREATED)
+async def webhook_provision(
+    request: Request,
+    body: WebhookProvisionRequest,
+    x_inho_system_secret: str = Header(None),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    INTERNAL USE ONLY: Chamado pelo Webhook do Orbe Hub após pagamento no Stripe.
+    Cria um mestre (Proprietário/Admin) com os mesmos dados e hash de senha.
+    """
+    if not x_inho_system_secret or x_inho_system_secret != settings.INHO_SYSTEM_SECRET:
+        raise HTTPException(status_code=403, detail="Acesso negado: Secret interno invalido")
+
+    existing = await db.execute(select(User).where(User.email == body.email))
+    if existing.scalar_one_or_none():
+        # Idempotent return (in case stripe webhook fires twice)
+        return {"message": "Usuario já provisionado", "status": "idempotent_ok"}
+
+    user = User(
+        email=body.email,
+        full_name=body.full_name,
+        hashed_password=body.hashed_password,
+        role=UserRole.ADMIN,  # Provisioned as master
+        is_active=True,
+        is_verified=True,
+    )
+    db.add(user)
+    await db.flush()
+
+    await write_audit(
+        db, AuditAction.CREATE, "User",
+        user_id=user.id, entity_id=str(user.id),
+        detail={"email": user.email, "action": "webhook_provision_admin"},
+        request=request,
+    )
+    await db.commit()
+    return {"message": "Admin INHO provisionado com sucesso via Webhook", "user_id": str(user.id)}

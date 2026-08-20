@@ -15,6 +15,12 @@ class RegisterRequest(BaseModel):
     password: str = Field(..., min_length=8)
 
 
+class WebhookProvisionRequest(BaseModel):
+    email: EmailStr
+    full_name: str
+    hashed_password: str
+
+
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
