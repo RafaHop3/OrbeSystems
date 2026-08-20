@@ -13,7 +13,7 @@ export default function InhoPanel() {
     const [creating, setCreating] = useState(false);
 
     // Inho API is completely divorced from Orbe Main URL
-    const INHO_API_URL = 'https://business-api.orbesystems.com.br/api/v1';
+    const INHO_API_URL = 'https://inho-api.orbesystems.com.br/api/v1';
 
     useEffect(() => {
         fetchUsers();
