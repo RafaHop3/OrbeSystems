@@ -115,6 +115,19 @@ async def run_playwright_form_submission(
 
                 page = await context.new_page()
 
+                # 💰 Otimização de Custos de Proxy: Interceptar e abortar recursos não essenciais
+                async def block_unnecessary_resources(route, request):
+                    if request.resource_type in ["image", "media", "font"]:
+                        await route.abort()
+                    else:
+                        await route.continue_()
+
+                await page.route("**/*", block_unnecessary_resources)
+
+                # 🕵️ Detecção de Shadow Banning: Monitorar respostas HTTP de requisições POST
+                network_responses = []
+                page.on("response", lambda resp: network_responses.append(resp) if resp.request.method == "POST" else None)
+
                 url = broker_cfg["form_url"]
                 selectors = broker_cfg["selectors"]
 

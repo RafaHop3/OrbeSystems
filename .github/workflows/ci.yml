@@ -25,6 +25,15 @@ jobs:
           cache: 'pip'
           cache-dependency-path: 'inho_backend/requirements.txt'
 
+      # ⚡ Otimização de CI: Cache dos Binários do Playwright Chromium (~150MB)
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('inho_backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
       - name: Install Dependencies
         run: |
           cd inho_backend
