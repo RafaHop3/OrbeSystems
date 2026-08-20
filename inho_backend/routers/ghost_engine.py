@@ -6,7 +6,7 @@ import uuid
 from typing import List
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -174,3 +174,85 @@ async def parse_dpo_response(
         requested_docs=parsed["requested_docs"],
         summary=parsed["summary"]
     )
+
+
+async def _run_playwright_background_worker(
+    request_id: UUID,
+    broker_name: str,
+    user_data: dict,
+    db_factory
+):
+    """Worker em segundo plano para execucao do robô Playwright."""
+    from services.playwright_automator import run_playwright_form_submission
+    from db.session import AsyncSessionLocal
+
+    async with AsyncSessionLocal() as db:
+        result = await db.execute(select(PrivacyRequest).where(PrivacyRequest.id == request_id))
+        pr: PrivacyRequest | None = result.scalar_one_or_none()
+
+        if not pr:
+            return
+
+        # Status inicial de processamento
+        pr.status = PrivacyRequestStatus.DISPATCHED
+        await db.commit()
+
+        # Execução do Playwright com Stealth & CAPTCHA Handler
+        res = await run_playwright_form_submission(
+            request_id=str(request_id),
+            broker_key=broker_name.lower(),
+            user_data=user_data
+        )
+
+        # Atualização pós-automação com evidência
+        pr.status = PrivacyRequestStatus(res["status"])
+        pr.notes = res["reasoning"]
+        if res.get("evidence_url"):
+            pr.legal_notice = f"Evidencia: {res['evidence_url']}"
+
+        await db.commit()
+
+
+@router.post("/dispatch-form/{request_id}", status_code=202)
+async def dispatch_form_request(
+    request_id: UUID,
+    background_tasks: BackgroundTasks,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Fase 5 - Orquestração e Filas:
+    Dispara o motor Playwright para preenchimento de formulário em segundo plano sem bloquear a requisição HTTP.
+    """
+    result = await db.execute(select(PrivacyRequest).where(PrivacyRequest.id == request_id))
+    pr: PrivacyRequest | None = result.scalar_one_or_none()
+
+    if not pr:
+        raise HTTPException(status_code=404, detail="Solicitação de privacidade não encontrada")
+
+    result_broker = await db.execute(select(DataBroker).where(DataBroker.id == pr.broker_id))
+    broker: DataBroker | None = result_broker.scalar_one_or_none()
+
+    broker_name = broker.name if broker else "serasa"
+
+    user_data = {
+        "full_name": user.full_name or "Titular dos Dados",
+        "cpf": "000.000.000-00",
+        "email": user.email
+    }
+
+    # Envia para a fila em segundo plano (FastAPI BackgroundTasks)
+    background_tasks.add_task(
+        _run_playwright_background_worker,
+        request_id=request_id,
+        broker_name=broker_name,
+        user_data=user_data,
+        db_factory=None
+    )
+
+    return {
+        "status": "QUEUED",
+        "message": f"Robô Ghost Engine agendado para o broker {broker_name}. Executando em segundo plano.",
+        "request_id": request_id
+    }
+
