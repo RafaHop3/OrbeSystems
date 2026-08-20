@@ -1,0 +1,331 @@
+Deleted Images:
+untagged: sha256:355adf4b36e40d1b93c88cee6d31a444c3da1550ef56530870808d85910448e1
+deleted: sha256:355adf4b36e40d1b93c88cee6d31a444c3da1550ef56530870808d85910448e1
+untagged: orbe-systems-inho_backend:latest
+deleted: sha256:964c6f36ac8ea431901ccad38f28cda393412e43b499a875ef93d880b920778c
+deleted: sha256:a08720e0cd89dd60ec97457e94c034d4e945c28ffdb294ced2dbdc29979c3f78
+deleted: sha256:0c1068a8067a1f9b4d684af34810d877d3b29263111a2bf47d3a8ec9e4f9fe90
+untagged: orbesystems-inho_backend:latest
+deleted: sha256:83dd4ed1c594bc2f321eb0dd1b676863829ad9e6c78c0d7c2caf9704d3f7be93
+deleted: sha256:c02078b62256002077aa940b8e08941b6464de0a60f99d63c37e89e791ad4cea
+deleted: sha256:64da94eac6349d1fb3d5bf226892de9c0a6cd91746fcacdddf7fa9801a5047e0
+
+Deleted build cache objects:
+f4enkjs4g9viytq3ekzg0ot6e
+2bvxky59fyrkxl5fw0y7m0glp
+lcfejjhbmgpdljkqi50eowok7
+vbo59bkl1lgxo7o3v47qfxyw4
+s7jmwjdd60skc1kyjn5h0psac
+nepgh51ec9cy0cfzz8w7t220r
+i6qfvwvs69thgri8ydlbrtez5
+t2mxq2lnsmqhm8mp8awd4py52
+kn3aqzdrpgacrw4zmmzzijshx
+i1y001zgyqzthtjwi388ersdg
+we9pl6h7vyfst1c8suil4ehhq
+t2h2jmey48cmf7v369a7q80hn
+rehug98zcoo2an930smpk937e
+l0dvshu2w0vsdrpcjkn10gm6v
+xmeesc3anfgd9gtmhqq1bfkjy
+knthyumju0yb5lursa1ks005c
+rtr4mip4c4xxn2xl2e7agndhm
+kpio71lb18u0bwwlxetzrcsxo
+niv8fj8uovwmd9lei5lvo799y
+juvfhcftmn7zja7g7updahufs
+q9ykr70k5za8f2sdfm252yop1
+mvwmhiu9oqo2wg31pg679n1l9
+1j44k3idrx5jk1f7u440ll6tj
+y0jyatn9rjcerc87zdrbl4vkf
+yzjfqhzaxstk2qr5z3b5n4123
+
+Total reclaimed space: 1.047GB
+#0 building with "default" instance using docker driver
+
+#1 [inho_backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.63kB 0.0s done
+#1 DONE 0.1s
+
+#2 [inho_backend internal] load metadata for docker.io/library/python:3.12-slim
+#2 DONE 0.6s
+
+#3 [inho_backend internal] load .dockerignore
+#3 transferring context: 396B done
+#3 DONE 0.0s
+
+#4 [inho_backend internal] load build context
+#4 transferring context: 146.84kB 0.0s done
+#4 DONE 0.1s
+
+#5 [inho_backend builder 1/5] FROM docker.io/library/python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
+#5 resolve docker.io/library/python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a 0.1s done
+#5 DONE 0.2s
+
+#5 [inho_backend builder 1/5] FROM docker.io/library/python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
+#5 sha256:6760bfe2ff00c4530bc73b2f88a1e9615a56c9a77028f41f8bb4b978d08b8439 248B / 248B 0.2s done
+#5 sha256:b952fe9f6810de5dac5d24a3983aee5fce3884f7359a533ba325e48ecb745994 12.12MB / 12.12MB 0.3s done
+#5 sha256:fa18dfb1257a9c1afc75e233c55b0195dd02b8d6d18dd7e24c10238b039e7742 1.29MB / 1.29MB 0.1s done
+#5 extracting sha256:fa18dfb1257a9c1afc75e233c55b0195dd02b8d6d18dd7e24c10238b039e7742
+#5 extracting sha256:fa18dfb1257a9c1afc75e233c55b0195dd02b8d6d18dd7e24c10238b039e7742 0.2s done
+#5 extracting sha256:b952fe9f6810de5dac5d24a3983aee5fce3884f7359a533ba325e48ecb745994
+#5 extracting sha256:b952fe9f6810de5dac5d24a3983aee5fce3884f7359a533ba325e48ecb745994 0.6s done
+#5 DONE 1.1s
+
+#5 [inho_backend builder 1/5] FROM docker.io/library/python:3.12-slim@sha256:2c941e860699f878900b0edc2403613c234d4b32eda3cc9fa7036991a2a63c4a
+#5 extracting sha256:6760bfe2ff00c4530bc73b2f88a1e9615a56c9a77028f41f8bb4b978d08b8439 0.0s done
+#5 DONE 1.2s
+
+#6 [inho_backend runtime 2/6] RUN apt-get update && apt-get install -y --no-install-recommends     libpq5     curl     && rm -rf /var/lib/apt/lists/*
+#6 1.524 Hit:1 http://deb.debian.org/debian trixie InRelease
+#6 1.534 Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+#6 1.547 Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+#6 1.621 Get:4 http://deb.debian.org/debian trixie/main amd64 Packages [9673 kB]
+#6 1.901 Get:5 http://deb.debian.org/debian trixie-updates/main amd64 Packages [4412 B]
+#6 1.901 Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [245 kB]
+#6 4.270 Fetched 10.0 MB in 3s (3585 kB/s)
+#6 4.270 Reading package lists...
+#6 6.025 Reading package lists...
+#6 7.378 Building dependency tree...
+#6 7.664 Reading state information...
+#6 8.401 The following additional packages will be installed:
+#6 8.401   libbrotli1 libcom-err2 libcurl4t64 libgnutls30t64 libgssapi-krb5-2 libidn2-0
+#6 8.401   libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap2 libnghttp2-14
+#6 8.401   libnghttp3-9 libp11-kit0 libpsl5t64 librtmp1 libsasl2-2 libsasl2-modules-db
+#6 8.401   libssh2-1t64 libtasn1-6 libunistring5
+#6 8.401 Suggested packages:
+#6 8.401   gnutls-bin krb5-doc krb5-user
+#6 8.401 Recommended packages:
+#6 8.401   bash-completion krb5-locales libldap-common publicsuffix libsasl2-modules
+#6 ...
+
+#7 [inho_backend builder 2/5] RUN apt-get update && apt-get install -y --no-install-recommends     build-essential     libpq-dev     && rm -rf /var/lib/apt/lists/*
+#7 1.522 Hit:1 http://deb.debian.org/debian trixie InRelease
+#7 1.534 Get:2 http://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+#7 1.547 Get:3 http://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+#7 1.616 Get:4 http://deb.debian.org/debian trixie/main amd64 Packages [9673 kB]
+#7 1.911 Get:5 http://deb.debian.org/debian trixie-updates/main amd64 Packages [4412 B]
+#7 1.912 Get:6 http://deb.debian.org/debian-security trixie-security/main amd64 Packages [245 kB]
+#7 4.049 Fetched 10.0 MB in 3s (3945 kB/s)
+#7 4.049 Reading package lists...
+#7 6.027 Reading package lists...
+#7 7.450 Building dependency tree...
+#7 7.741 Reading state information...
+#7 8.402 The following additional packages will be installed:
+#7 8.402   binutils binutils-common binutils-x86-64-linux-gnu bzip2 cpp cpp-14
+#7 8.402   cpp-14-x86-64-linux-gnu cpp-x86-64-linux-gnu dpkg-dev g++ g++-14
+#7 8.402   g++-14-x86-64-linux-gnu g++-x86-64-linux-gnu gcc gcc-14
+#7 8.402   gcc-14-x86-64-linux-gnu gcc-x86-64-linux-gnu libasan8 libatomic1 libbinutils
+#7 8.402   libc-dev-bin libc6-dev libcc1-0 libcom-err2 libcrypt-dev libctf-nobfd0
+#7 8.402   libctf0 libdpkg-perl libgcc-14-dev libgdbm-compat4t64 libgomp1 libgprofng0
+#7 8.402   libgssapi-krb5-2 libhwasan0 libisl23 libitm1 libjansson4 libk5crypto3
+#7 8.402   libkeyutils1 libkrb5-3 libkrb5support0 libldap2 liblsan0 libmpc3 libmpfr6
+#7 8.402   libperl5.40 libpq5 libquadmath0 libsasl2-2 libsasl2-modules-db libsframe1
+#7 8.402   libssl-dev libstdc++-14-dev libtsan2 libubsan1 linux-libc-dev make patch
+#7 8.402   perl perl-modules-5.40 rpcsvc-proto xz-utils
+#7 8.402 Suggested packages:
+#7 8.402   binutils-doc gprofng-gui binutils-gold bzip2-doc cpp-doc gcc-14-locales
+#7 8.402   cpp-14-doc debian-keyring debian-tag2upload-keyring g++-multilib
+#7 8.402   g++-14-multilib gcc-14-doc gcc-multilib manpages-dev autoconf automake
+#7 8.402   libtool flex bison gdb gcc-doc gcc-14-multilib gdb-x86-64-linux-gnu
+#7 8.402   libc-devtools glibc-doc sq | sqop | rsop | gosop | pgpainless-cli | gpg-sq
+#7 8.402   | gnupg sensible-utils git bzr krb5-doc krb5-user postgresql-doc-17
+#7 8.402   libssl-doc libstdc++-14-doc make-doc ed diffutils-doc perl-doc
+#7 8.402   libterm-readline-gnu-perl | libterm-readline-perl-perl
+#7 8.402   libtap-harness-archive-perl
+#7 8.402 Recommended packages:
+#7 8.402   fakeroot sq | sqop | rsop | gosop | pgpainless-cli | gpg-sq | gnupg
+#7 8.402   libalgorithm-merge-perl manpages manpages-dev libfile-fcntllock-perl
+#7 8.402   liblocale-gettext-perl krb5-locales libldap-common libsasl2-modules
+#7 ...
+
+#6 [inho_backend runtime 2/6] RUN apt-get update && apt-get install -y --no-install-recommends     libpq5     curl     && rm -rf /var/lib/apt/lists/*
+#6 9.731 The following NEW packages will be installed:
+#6 9.731   curl libbrotli1 libcom-err2 libcurl4t64 libgnutls30t64 libgssapi-krb5-2
+#6 9.731   libidn2-0 libk5crypto3 libkeyutils1 libkrb5-3 libkrb5support0 libldap2
+#6 9.731   libnghttp2-14 libnghttp3-9 libp11-kit0 libpq5 libpsl5t64 librtmp1 libsasl2-2
+#6 9.731   libsasl2-modules-db libssh2-1t64 libtasn1-6 libunistring5
+#6 11.31 0 upgraded, 23 newly installed, 0 to remove and 9 not upgraded.
+#6 11.31 Need to get 5125 kB of archives.
+#6 11.31 After this operation, 15.8 MB of additional disk space will be used.
+#6 11.31 Get:1 http://deb.debian.org/debian trixie/main amd64 libbrotli1 amd64 1.1.0-2+b7 [307 kB]
+#6 11.31 Get:2 http://deb.debian.org/debian trixie/main amd64 libkrb5support0 amd64 1.21.3-5+deb13u1 [33.1 kB]
+#6 11.31 Get:3 http://deb.debian.org/debian trixie/main amd64 libcom-err2 amd64 1.47.2-3+b11 [25.0 kB]
+#6 11.31 Get:4 http://deb.debian.org/debian trixie/main amd64 libk5crypto3 amd64 1.21.3-5+deb13u1 [81.2 kB]
+#6 11.31 Get:5 http://deb.debian.org/debian trixie/main amd64 libkeyutils1 amd64 1.6.3-6 [9456 B]
+#6 11.31 Get:6 http://deb.debian.org/debian trixie/main amd64 libkrb5-3 amd64 1.21.3-5+deb13u1 [326 kB]
+#6 11.31 Get:7 http://deb.debian.org/debian trixie/main amd64 libgssapi-krb5-2 amd64 1.21.3-5+deb13u1 [138 kB]
+#6 11.31 Get:8 http://deb.debian.org/debian trixie/main amd64 libunistring5 amd64 1.3-2 [477 kB]
+#6 11.31 Get:9 http://deb.debian.org/debian trixie/main amd64 libidn2-0 amd64 2.3.8-2 [109 kB]
+#6 11.31 Get:10 http://deb.debian.org/debian trixie/main amd64 libsasl2-modules-db amd64 2.1.28+dfsg1-9 [19.8 kB]
+#6 11.31 Get:11 http://deb.debian.org/debian trixie/main amd64 libsasl2-2 amd64 2.1.28+dfsg1-9 [57.5 kB]
+#6 11.31 Get:12 http://deb.debian.org/debian trixie/main amd64 libldap2 amd64 2.6.10+dfsg-1 [194 kB]
+#6 11.31 Get:13 http://deb.debian.org/debian trixie/main amd64 libnghttp2-14 amd64 1.64.0-1.1+deb13u1 [76.2 kB]
+#6 11.31 Get:14 http://deb.debian.org/debian trixie/main amd64 libnghttp3-9 amd64 1.8.0-1 [67.7 kB]
+#6 11.31 Get:15 http://deb.debian.org/debian trixie/main amd64 libpsl5t64 amd64 0.21.2-1.1+b1 [57.2 kB]
+#6 11.31 Get:16 http://deb.debian.org/debian trixie/main amd64 libp11-kit0 amd64 0.25.5-3 [425 kB]
+#6 11.31 Get:17 http://deb.debian.org/debian trixie/main amd64 libtasn1-6 amd64 4.20.0-2+deb13u1 [50.1 kB]
+#6 11.31 Get:18 http://deb.debian.org/debian trixie/main amd64 libgnutls30t64 amd64 3.8.9-3+deb13u4 [1469 kB]
+#6 11.31 Get:19 http://deb.debian.org/debian trixie/main amd64 librtmp1 amd64 2.4+20151223.gitfa8646d.1-2+b5 [58.8 kB]
+#6 11.31 Get:20 http://deb.debian.org/debian trixie/main amd64 libssh2-1t64 amd64 1.11.1-1+deb13u1 [245 kB]
+#6 11.31 Get:21 http://deb.debian.org/debian trixie/main amd64 libcurl4t64 amd64 8.14.1-2+deb13u4 [392 kB]
+#6 11.31 Get:22 http://deb.debian.org/debian trixie/main amd64 curl amd64 8.14.1-2+deb13u4 [270 kB]
+#6 11.31 Get:23 http://deb.debian.org/debian-security trixie-security/main amd64 libpq5 amd64 17.11-0+deb13u1 [237 kB]
+#6 ...
+
+#7 [inho_backend builder 2/5] RUN apt-get update && apt-get install -y --no-install-recommends     build-essential     libpq-dev     && rm -rf /var/lib/apt/lists/*
+#7 10.83 The following NEW packages will be installed:
+#7 10.83   binutils binutils-common binutils-x86-64-linux-gnu build-essential bzip2 cpp
+#7 10.83   cpp-14 cpp-14-x86-64-linux-gnu cpp-x86-64-linux-gnu dpkg-dev g++ g++-14
+#7 10.83   g++-14-x86-64-linux-gnu g++-x86-64-linux-gnu gcc gcc-14
+#7 10.83   gcc-14-x86-64-linux-gnu gcc-x86-64-linux-gnu libasan8 libatomic1 libbinutils
+#7 10.83   libc-dev-bin libc6-dev libcc1-0 libcom-err2 libcrypt-dev libctf-nobfd0
+#7 10.83   libctf0 libdpkg-perl libgcc-14-dev libgdbm-compat4t64 libgomp1 libgprofng0
+#7 10.83   libgssapi-krb5-2 libhwasan0 libisl23 libitm1 libjansson4 libk5crypto3
+#7 10.83   libkeyutils1 libkrb5-3 libkrb5support0 libldap2 liblsan0 libmpc3 libmpfr6
+#7 10.83   libperl5.40 libpq-dev libpq5 libquadmath0 libsasl2-2 libsasl2-modules-db
+#7 10.83   libsframe1 libssl-dev libstdc++-14-dev libtsan2 libubsan1 linux-libc-dev
+#7 10.83   make patch perl perl-modules-5.40 rpcsvc-proto xz-utils
+#7 11.94 0 upgraded, 64 newly installed, 0 to remove and 9 not upgraded.
+#7 11.94 Need to get 86.8 MB of archives.
+#7 11.94 After this operation, 357 MB of additional disk space will be used.
+#7 11.94 Get:1 http://deb.debian.org/debian trixie/main amd64 bzip2 amd64 1.0.8-6 [40.5 kB]
+#7 12.01 Get:2 http://deb.debian.org/debian trixie/main amd64 perl-modules-5.40 all 5.40.1-6 [3019 kB]
+#7 12.06 Get:3 http://deb.debian.org/debian trixie/main amd64 libgdbm-compat4t64 amd64 1.24-2 [50.3 kB]
+#7 12.06 Get:4 http://deb.debian.org/debian trixie/main amd64 libperl5.40 amd64 5.40.1-6 [4341 kB]
+#7 12.13 Get:5 http://deb.debian.org/debian trixie/main amd64 perl amd64 5.40.1-6 [267 kB]
+#7 12.13 Get:6 http://deb.debian.org/debian trixie/main amd64 xz-utils amd64 5.8.1-1+deb13u1 [659 kB]
+#7 12.22 Get:7 http://deb.debian.org/debian trixie/main amd64 libsframe1 amd64 2.44-3 [78.4 kB]
+#7 12.22 Get:8 http://deb.debian.org/debian trixie/main amd64 binutils-common amd64 2.44-3 [2509 kB]
+#7 12.22 Get:9 http://deb.debian.org/debian trixie/main amd64 libbinutils amd64 2.44-3 [534 kB]
+#7 12.22 Get:10 http://deb.debian.org/debian trixie/main amd64 libgprofng0 amd64 2.44-3 [808 kB]
+#7 12.22 Get:11 http://deb.debian.org/debian trixie/main amd64 libctf-nobfd0 amd64 2.44-3 [156 kB]
+#7 12.22 Get:12 http://deb.debian.org/debian trixie/main amd64 libctf0 amd64 2.44-3 [88.6 kB]
+#7 12.22 Get:13 http://deb.debian.org/debian trixie/main amd64 libjansson4 amd64 2.14-2+b3 [39.8 kB]
+#7 12.22 Get:14 http://deb.debian.org/debian trixie/main amd64 binutils-x86-64-linux-gnu amd64 2.44-3 [1014 kB]
+#7 12.26 Get:15 http://deb.debian.org/debian trixie/main amd64 binutils amd64 2.44-3 [265 kB]
+#7 12.26 Get:16 http://deb.debian.org/debian trixie/main amd64 libc-dev-bin amd64 2.41-12+deb13u3 [59.8 kB]
+#7 12.26 Get:17 http://deb.debian.org/debian-security trixie-security/main amd64 linux-libc-dev all 6.12.101-1 [2901 kB]
+#7 12.28 Get:18 http://deb.debian.org/debian trixie/main amd64 libcrypt-dev amd64 1:4.4.38-1 [119 kB]
+#7 12.28 Get:19 http://deb.debian.org/debian trixie/main amd64 rpcsvc-proto amd64 1.4.3-1 [63.3 kB]
+#7 12.28 Get:20 http://deb.debian.org/debian trixie/main amd64 libc6-dev amd64 2.41-12+deb13u3 [1992 kB]
+#7 12.35 Get:21 http://deb.debian.org/debian trixie/main amd64 libisl23 amd64 0.27-1 [659 kB]
+#7 12.35 Get:22 http://deb.debian.org/debian trixie/main amd64 libmpfr6 amd64 4.2.2-1 [729 kB]
+#7 12.35 Get:23 http://deb.debian.org/debian trixie/main amd64 libmpc3 amd64 1.3.1-1+b3 [52.2 kB]
+#7 12.35 Get:24 http://deb.debian.org/debian trixie/main amd64 cpp-14-x86-64-linux-gnu amd64 14.2.0-19 [11.0 MB]
+#7 12.50 Get:25 http://deb.debian.org/debian trixie/main amd64 cpp-14 amd64 14.2.0-19 [1280 B]
+#7 12.50 Get:26 http://deb.debian.org/debian trixie/main amd64 cpp-x86-64-linux-gnu amd64 4:14.2.0-1 [4840 B]
+#7 12.50 Get:27 http://deb.debian.org/debian trixie/main amd64 cpp amd64 4:14.2.0-1 [1568 B]
+#7 12.50 Get:28 http://deb.debian.org/debian trixie/main amd64 libcc1-0 amd64 14.2.0-19 [42.8 kB]
+#7 12.50 Get:29 http://deb.debian.org/debian trixie/main amd64 libgomp1 amd64 14.2.0-19 [137 kB]
+#7 12.50 Get:30 http://deb.debian.org/debian trixie/main amd64 libitm1 amd64 14.2.0-19 [26.0 kB]
+#7 12.50 Get:31 http://deb.debian.org/debian trixie/main amd64 libatomic1 amd64 14.2.0-19 [9308 B]
+#7 12.50 Get:32 http://deb.debian.org/debian trixie/main amd64 libasan8 amd64 14.2.0-19 [2725 kB]
+#7 15.26 Get:33 http://deb.debian.org/debian trixie/main amd64 liblsan0 amd64 14.2.0-19 [1204 kB]
+#7 15.26 Get:34 http://deb.debian.org/debian trixie/main amd64 libtsan2 amd64 14.2.0-19 [2460 kB]
+#7 15.26 Get:35 http://deb.debian.org/debian trixie/main amd64 libubsan1 amd64 14.2.0-19 [1074 kB]
+#7 15.26 Get:36 http://deb.debian.org/debian trixie/main amd64 libhwasan0 amd64 14.2.0-19 [1488 kB]
+#7 15.26 Get:37 http://deb.debian.org/debian trixie/main amd64 libquadmath0 amd64 14.2.0-19 [145 kB]
+#7 15.26 Get:38 http://deb.debian.org/debian trixie/main amd64 libgcc-14-dev amd64 14.2.0-19 [2672 kB]
+#7 19.77 Get:39 http://deb.debian.org/debian trixie/main amd64 gcc-14-x86-64-linux-gnu amd64 14.2.0-19 [21.4 MB]
+#7 19.77 Get:40 http://deb.debian.org/debian trixie/main amd64 gcc-14 amd64 14.2.0-19 [540 kB]
+#7 19.77 Get:41 http://deb.debian.org/debian trixie/main amd64 gcc-x86-64-linux-gnu amd64 4:14.2.0-1 [1436 B]
+#7 19.77 Get:42 http://deb.debian.org/debian trixie/main amd64 gcc amd64 4:14.2.0-1 [5136 B]
+#7 19.77 Get:43 http://deb.debian.org/debian trixie/main amd64 libstdc++-14-dev amd64 14.2.0-19 [2376 kB]
+#7 19.77 Get:44 http://deb.debian.org/debian trixie/main amd64 g++-14-x86-64-linux-gnu amd64 14.2.0-19 [12.1 MB]
+#7 19.77 Get:45 http://deb.debian.org/debian trixie/main amd64 g++-14 amd64 14.2.0-19 [22.5 kB]
+#7 19.77 Get:46 http://deb.debian.org/debian trixie/main amd64 g++-x86-64-linux-gnu amd64 4:14.2.0-1 [1200 B]
+#7 19.77 Get:47 http://deb.debian.org/debian trixie/main amd64 g++ amd64 4:14.2.0-1 [1344 B]
+#7 23.54 Get:48 http://deb.debian.org/debian trixie/main amd64 make amd64 4.4.1-2 [463 kB]
+#7 23.54 Get:49 http://deb.debian.org/debian trixie/main amd64 libdpkg-perl all 1.22.22 [651 kB]
+#7 27.17 Get:50 http://deb.debian.org/debian trixie/main amd64 patch amd64 2.8-2 [134 kB]
+#7 27.17 Get:51 http://deb.debian.org/debian trixie/main amd64 dpkg-dev all 1.22.22 [1337 kB]
+#7 27.17 Get:52 http://deb.debian.org/debian trixie/main amd64 build-essential amd64 12.12 [4624 B]
+#7 27.17 Get:53 http://deb.debian.org/debian trixie/main amd64 libcom-err2 amd64 1.47.2-3+b11 [25.0 kB]
+#7 37.14 Get:54 http://deb.debian.org/debian trixie/main amd64 libkrb5support0 amd64 1.21.3-5+deb13u1 [33.1 kB]
+#7 37.14 Get:55 http://deb.debian.org/debian trixie/main amd64 libk5crypto3 amd64 1.21.3-5+deb13u1 [81.2 kB]
+#7 37.14 Get:56 http://deb.debian.org/debian trixie/main amd64 libkeyutils1 amd64 1.6.3-6 [9456 B]
+#7 48.59 Get:57 http://deb.debian.org/debian trixie/main amd64 libkrb5-3 amd64 1.21.3-5+deb13u1 [326 kB]
+#7 48.59 Get:58 http://deb.debian.org/debian trixie/main amd64 libgssapi-krb5-2 amd64 1.21.3-5+deb13u1 [138 kB]
+#7 60.93 Get:59 http://deb.debian.org/debian trixie/main amd64 libsasl2-modules-db amd64 2.1.28+dfsg1-9 [19.8 kB]
+#7 60.93 Get:60 http://deb.debian.org/debian trixie/main amd64 libsasl2-2 amd64 2.1.28+dfsg1-9 [57.5 kB]
+#7 60.93 Get:61 http://deb.debian.org/debian trixie/main amd64 libldap2 amd64 2.6.10+dfsg-1 [194 kB]
+#7 80.08 Get:62 http://deb.debian.org/debian-security trixie-security/main amd64 libpq5 amd64 17.11-0+deb13u1 [237 kB]
+#7 80.08 Get:63 http://deb.debian.org/debian trixie/main amd64 libssl-dev amd64 3.5.6-1~deb13u2 [2959 kB]
+#7 88.18 Get:64 http://deb.debian.org/debian-security trixie-security/main amd64 libpq-dev amd64 17.11-0+deb13u1 [159 kB]
+#7 161.2 debconf: unable to initialize frontend: Dialog
+#7 161.2 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#7 161.2 debconf: falling back to frontend: Readline
+#7 161.2 debconf: unable to initialize frontend: Readline
+#7 161.2 debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8, <STDIN> line 64.)
+#7 161.2 debconf: falling back to frontend: Teletype
+#7 161.2 debconf: unable to initialize frontend: Teletype
+#7 161.2 debconf: (This frontend requires a controlling tty.)
+#7 161.2 debconf: falling back to frontend: Noninteractive
+#7 ...
+
+#6 [inho_backend runtime 2/6] RUN apt-get update && apt-get install -y --no-install-recommends     libpq5     curl     && rm -rf /var/lib/apt/lists/*
+#6 161.2 debconf: unable to initialize frontend: Dialog
+#6 161.2 debconf: (TERM is not set, so the dialog frontend is not usable.)
+#6 161.2 debconf: falling back to frontend: Readline
+#6 161.2 debconf: unable to initialize frontend: Readline
+#6 161.2 debconf: (Can't locate Term/ReadLine.pm in @INC (you may need to install the Term::ReadLine module) (@INC entries checked: /etc/perl /usr/local/lib/x86_64-linux-gnu/perl/5.40.1 /usr/local/share/perl/5.40.1 /usr/lib/x86_64-linux-gnu/perl5/5.40 /usr/share/perl5 /usr/lib/x86_64-linux-gnu/perl-base /usr/lib/x86_64-linux-gnu/perl/5.40 /usr/share/perl/5.40 /usr/local/lib/site_perl) at /usr/share/perl5/Debconf/FrontEnd/Readline.pm line 8, <STDIN> line 23.)
+#6 161.2 debconf: falling back to frontend: Teletype
+#6 161.2 debconf: unable to initialize frontend: Teletype
+#6 161.2 debconf: (This frontend requires a controlling tty.)
+#6 161.2 debconf: falling back to frontend: Noninteractive
+#6 164.2 Fetched 5125 kB in 1s (3889 kB/s)
+#6 164.3 Selecting previously unselected package libbrotli1:amd64.
+#6 164.3 (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 5645 files and directories currently installed.)
+#6 164.4 Preparing to unpack .../00-libbrotli1_1.1.0-2+b7_amd64.deb ...
+#6 164.4 Unpacking libbrotli1:amd64 (1.1.0-2+b7) ...
+#6 164.6 Selecting previously unselected package libkrb5support0:amd64.
+#6 164.6 Preparing to unpack .../01-libkrb5support0_1.21.3-5+deb13u1_amd64.deb ...
+#6 164.6 Unpacking libkrb5support0:amd64 (1.21.3-5+deb13u1) ...
+#6 164.6 Selecting previously unselected package libcom-err2:amd64.
+#6 164.6 Preparing to unpack .../02-libcom-err2_1.47.2-3+b11_amd64.deb ...
+#6 164.7 Unpacking libcom-err2:amd64 (1.47.2-3+b11) ...
+#6 164.7 Selecting previously unselected package libk5crypto3:amd64.
+#6 164.7 Preparing to unpack .../03-libk5crypto3_1.21.3-5+deb13u1_amd64.deb ...
+#6 164.7 Unpacking libk5crypto3:amd64 (1.21.3-5+deb13u1) ...
+#6 164.8 Selecting previously unselected package libkeyutils1:amd64.
+#6 164.8 Preparing to unpack .../04-libkeyutils1_1.6.3-6_amd64.deb ...
+#6 164.8 Unpacking libkeyutils1:amd64 (1.6.3-6) ...
+#6 164.9 Selecting previously unselected package libkrb5-3:amd64.
+#6 165.0 Preparing to unpack .../05-libkrb5-3_1.21.3-5+deb13u1_amd64.deb ...
+#6 165.0 Unpacking libkrb5-3:amd64 (1.21.3-5+deb13u1) ...
+#6 165.1 Selecting previously unselected package libgssapi-krb5-2:amd64.
+#6 165.1 Preparing to unpack .../06-libgssapi-krb5-2_1.21.3-5+deb13u1_amd64.deb ...
+#6 165.1 Unpacking libgssapi-krb5-2:amd64 (1.21.3-5+deb13u1) ...
+#6 165.2 Selecting previously unselected package libunistring5:amd64.
+#6 165.2 Preparing to unpack .../07-libunistring5_1.3-2_amd64.deb ...
+#6 165.2 Unpacking libunistring5:amd64 (1.3-2) ...
+#6 165.4 Selecting previously unselected package libidn2-0:amd64.
+#6 165.4 Preparing to unpack .../08-libidn2-0_2.3.8-2_amd64.deb ...
+#6 165.4 Unpacking libidn2-0:amd64 (2.3.8-2) ...
+#6 165.4 Selecting previously unselected package libsasl2-modules-db:amd64.
+#6 165.4 Preparing to unpack .../09-libsasl2-modules-db_2.1.28+dfsg1-9_amd64.deb ...
+#6 165.4 Unpacking libsasl2-modules-db:amd64 (2.1.28+dfsg1-9) ...
+#6 165.5 Selecting previously unselected package libsasl2-2:amd64.
+#6 165.5 Preparing to unpack .../10-libsasl2-2_2.1.28+dfsg1-9_amd64.deb ...
+#6 165.5 Unpacking libsasl2-2:amd64 (2.1.28+dfsg1-9) ...
+#6 165.5 Selecting previously unselected package libldap2:amd64.
+#6 165.5 Preparing to unpack .../11-libldap2_2.6.10+dfsg-1_amd64.deb ...
+#6 165.5 Unpacking libldap2:amd64 (2.6.10+dfsg-1) ...
+#6 165.6 Selecting previously unselected package libnghttp2-14:amd64.
+#6 165.6 Preparing to unpack .../12-libnghttp2-14_1.64.0-1.1+deb13u1_amd64.deb ...
+#6 165.6 Unpacking libnghttp2-14:amd64 (1.64.0-1.1+deb13u1) ...
+#6 165.7 Selecting previously unselected package libnghttp3-9:amd64.
+#6 165.7 Preparing to unpack .../13-libnghttp3-9_1.8.0-1_amd64.deb ...
+#6 165.7 Unpacking libnghttp3-9:amd64 (1--output truncated--
+--ERR--
+ Network orbe-systems_default  Removing
+ Network orbe-systems_default  Removed
+time="2026-08-19T21:43:27Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+time="2026-08-19T21:43:27Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+ inho_backend  Built
+ Network orbe-systems_default  Creating
+ Network orbe-systems_default  Created
+ Container orbe_redis  Creating
+ Container orbe_postgres  Creating
+ Container orbe_redis  Error response from daemon: Conflict. The container name "/orbe_redis" is already in use by container "22627d3d35b7f782313bc1d8732f3ed4b25d6bd754a8335ee6581dc96b0f29ee". You have to remove (or rename) that container to be able to reuse that name.
+ Container orbe_postgres  Error response from daemon: Conflict. The container name "/orbe_postgres" is already in use by container "202449cb35b3d2e663834090a59be120953c28a44bb528fd97586b916ebcd77c". You have to remove (or rename) that container to be able to reuse that name.
+Error response from daemon: Conflict. The container name "/orbe_redis" is already in use by container "22627d3d35b7f782313bc1d8732f3ed4b25d6bd754a8335ee6581dc96b0f29ee". You have to remove (or rename) that container to be able to reuse that name.
+failed to run commands: exit status 1

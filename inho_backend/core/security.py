@@ -21,6 +21,31 @@ def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
 
 
+# ── AES-256 Encryption at Rest (TOTP Secret) ─────────────────────
+import base64
+from cryptography.fernet import Fernet
+
+def _get_fernet() -> Fernet:
+    key_bytes = settings.SECRET_KEY.ljust(32, '0')[:32].encode('utf-8')
+    return Fernet(base64.urlsafe_b64encode(key_bytes))
+
+def encrypt_secret(plain: str) -> str:
+    """Criptografa o secret TOTP antes de salvar no Supabase (AES-256 em repouso)."""
+    if not plain:
+        return ""
+    return _get_fernet().encrypt(plain.encode('utf-8')).decode('utf-8')
+
+def decrypt_secret(cipher: str) -> str:
+    """Descriptografa o secret TOTP para validação."""
+    if not cipher:
+        return ""
+    try:
+        return _get_fernet().decrypt(cipher.encode('utf-8')).decode('utf-8')
+    except Exception:
+        # Se for um secret antigo salvo em texto puro antes da criptografia
+        return cipher
+
+
 # ── JWT ──────────────────────────────────────────────────────────
 def _create_token(data: dict, expires_delta: timedelta) -> str:
     payload = data.copy()
@@ -42,7 +67,12 @@ def create_refresh_token(subject: str) -> str:
     )
 
 
+from core.token_blacklist import token_blacklist
+
+
 def decode_token(token: str) -> Optional[dict]:
+    if token_blacklist.is_revoked(token):
+        return None
     try:
         return jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     except JWTError:

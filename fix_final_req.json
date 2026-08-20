@@ -1,0 +1,1 @@
+{"DocumentName": "AWS-RunShellScript", "Targets": [{"Key": "InstanceIds", "Values": ["i-058e26140671b3254"]}], "Parameters": {"commands": ["cd /home/ubuntu/orbe-systems", "sudo sed -i 's/\"80:8000\"/\"8000:8000\"/g' docker-compose.yml", "sudo systemctl restart nginx || true", "sudo docker compose up -d"]}}

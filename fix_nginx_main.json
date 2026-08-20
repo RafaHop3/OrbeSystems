@@ -1,0 +1,12 @@
+{
+  "InstanceIds": ["i-058e26140671b3254"],
+  "DocumentName": "AWS-RunShellScript",
+  "Parameters": {
+    "commands": [
+      "rm -f /etc/nginx/sites-enabled/default",
+      "cat > /etc/nginx/nginx.conf << 'EOF'\nuser www-data;\nworker_processes auto;\npid /run/nginx.pid;\ninclude /etc/nginx/modules-enabled/*.conf;\n\nevents {\n    worker_connections 768;\n}\n\nhttp {\n    sendfile on;\n    tcp_nopush on;\n    tcp_nodelay on;\n    keepalive_timeout 65;\n    types_hash_max_size 2048;\n    include /etc/nginx/mime.types;\n    default_type application/octet-stream;\n    access_log /var/log/nginx/access.log;\n    error_log /var/log/nginx/error.log;\n    gzip on;\n    include /etc/nginx/sites-enabled/*;\n}\nEOF",
+      "nginx -t && systemctl restart nginx",
+      "systemctl status nginx --no-pager"
+    ]
+  }
+}

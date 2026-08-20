@@ -1,0 +1,26 @@
+import subprocess, json
+
+payload = {
+    "DocumentName": "AWS-RunShellScript",
+    "Targets": [{"Key": "InstanceIds", "Values": ["i-058e26140671b3254"]}],
+    "Parameters": {
+        "commands": [
+            # Get DB URL from container env and run UPDATE via docker exec
+            "DB_URL=$(sudo docker exec inho_backend printenv DATABASE_URL)",
+            "echo DB_URL found",
+            "sudo docker exec inho_backend python -c \"\nimport asyncio, os\nfrom sqlalchemy.ext.asyncio import create_async_engine\nfrom sqlalchemy import text\nengine = create_async_engine(os.environ['DATABASE_URL'])\nasync def run():\n    async with engine.begin() as c:\n        r1 = await c.execute(text(\\\"UPDATE inho.users SET role='ADMIN' WHERE email='admin@inho.com'\\\"))\n        r2 = await c.execute(text(\\\"UPDATE inho.users SET role='OPERATOR' WHERE email='auto_operador3@inho.com'\\\"))\n        rows = await c.execute(text(\\\"SELECT email, role FROM inho.users WHERE email IN ('admin@inho.com','auto_operador3@inho.com')\\\"))\n        for row in rows:\n            print(row)\nasyncio.run(run())\n\""
+        ]
+    }
+}
+
+with open("promote_req.json", "w", encoding="utf-8") as f:
+    json.dump(payload, f)
+
+out = subprocess.check_output(
+    ["aws", "ssm", "send-command",
+     "--cli-input-json", "file://promote_req.json",
+     "--region", "us-east-1",
+     "--output", "json"]
+)
+cmd_id = json.loads(out)["Command"]["CommandId"]
+print(cmd_id)

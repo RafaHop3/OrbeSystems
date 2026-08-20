@@ -46,6 +46,9 @@ class User(Base):
     role            = Column(Enum(UserRole), nullable=False, default=UserRole.CLIENT)
     is_active       = Column(Boolean, default=True, nullable=False)
     is_verified     = Column(Boolean, default=False, nullable=False)
+    otp_secret      = Column(String(255), nullable=True)
+    is_mfa_enabled  = Column(Boolean, default=False, nullable=False)
+    backup_codes    = Column(Text, nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
@@ -283,4 +286,57 @@ class BillingInvoice(Base):
         Index("ix_billing_invoices_business", "business_id"),
         Index("ix_billing_invoices_due", "due_date"),
     )
+
+
+# ── Ghost Engine: Data Broker & Privacy Models ────────────────────
+class DataBrokerMethod(str, enum.Enum):
+    EMAIL = "EMAIL"
+    FORM  = "FORM"
+    AUTO  = "AUTO"
+
+
+class PrivacyRequestStatus(str, enum.Enum):
+    PENDING         = "PENDING"
+    EMAIL_SENT      = "EMAIL_SENT"
+    PENDING_DOCS    = "PENDING_DOCS"
+    DELETED         = "DELETED"
+    MANUAL_REQUIRED = "MANUAL_REQUIRED"
+    REJECTED        = "REJECTED"
+
+
+class DataBroker(Base):
+    __tablename__ = "data_brokers"
+
+    id          = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name        = Column(String(255), nullable=False, unique=True)
+    dpo_email   = Column(String(255), nullable=True)
+    delete_url  = Column(Text, nullable=True)
+    method      = Column(Enum(DataBrokerMethod), nullable=False, default=DataBrokerMethod.EMAIL)
+    category    = Column(String(100), nullable=False, default="Geral") # Crédito, Marketing, CNPJ/CPF
+    is_active   = Column(Boolean, default=True, nullable=False)
+
+    created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+
+class PrivacyRequest(Base):
+    __tablename__ = "privacy_requests"
+
+    id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id         = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    broker_id       = Column(UUID(as_uuid=True), ForeignKey("data_brokers.id", ondelete="CASCADE"), nullable=False)
+    status          = Column(Enum(PrivacyRequestStatus), nullable=False, default=PrivacyRequestStatus.PENDING)
+    sent_at         = Column(DateTime(timezone=True), nullable=True)
+    last_checked_at = Column(DateTime(timezone=True), nullable=True)
+    notes           = Column(Text, nullable=True)
+
+    created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                         onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_privacy_requests_user", "user_id"),
+        Index("ix_privacy_requests_broker", "broker_id"),
+        Index("ix_privacy_requests_status", "status"),
+    )
+
 

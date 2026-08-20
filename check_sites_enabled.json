@@ -1,0 +1,9 @@
+{
+  "InstanceIds": ["i-058e26140671b3254"],
+  "DocumentName": "AWS-RunShellScript",
+  "Parameters": {
+    "commands": [
+      "ls -la /etc/nginx/sites-enabled/"
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+CONTAINER ID   IMAGE                                                                  COMMAND                  CREATED              STATUS                          PORTS                                         NAMES
+e07afb3c9f17   orbe-systems-inho_backend                                              "uvicorn main:app --�"   About a minute ago   Restarting (1) 33 seconds ago                                                 inho_backend
+b12ebdadcfda   982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest   "uvicorn main:app --�"   About a minute ago   Up 49 seconds                                                                 orbe_backend
+05d64a5e6400   postgres:15-alpine                                                     "docker-entrypoint.s�"   About a minute ago   Up About a minute               0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp   orbe_postgres
+d2b6b72ea2c9   redis:7-alpine                                                         "docker-entrypoint.s�"   About a minute ago   Up About a minute               0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp   orbe_redis
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx/1.24.0 (Ubuntu)</center>
+</body>
+</html>
+
+--ERR--
+  File "/app/routes/projects.py", line 3, in <module>
+    from services.metadata_service import get_all_metadata
+  File "/app/services/metadata_service.py", line 3, in <module>
+    from models.metadata import ProjectMetadata
+  File "/app/models/metadata.py", line 2, in <module>
+    from database import Base
+  File "/app/database.py", line 50, in <module>
+    engine = create_engine(
+             ^^^^^^^^^^^^^^
+  File "<string>", line 2, in create_engine
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/util/deprecations.py", line 281, in warned
+    return fn(*args, **kwargs)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/create.py", line 617, in create_engine
+    dbapi = dbapi_meth(**dbapi_args)
+            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 1098, in import_dbapi
+    return AsyncAdapt_asyncpg_dbapi(__import__("asyncpg"))
+                                    ^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'asyncpg'
+    raise exc from None
+  File "/opt/venv/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+    module = importlib.import_module(module_str)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/app/main.py", line 17, in <module>
+    from routers import (
+  File "/app/routers/auth.py", line 12, in <module>
+    from core.security import create_access_token, create_refresh_token, hash_password, verify_password, decode_token
+  File "/app/core/security.py", line 8, in <module>
+    import bcrypt
+ModuleNotFoundError: No module named 'bcrypt'
+* Host localhost:80 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying [::1]:80...
+* connect to ::1 port 80 from ::1 port 55744 failed: Connection refused
+*   Trying 127.0.0.1:80...
+* Connected to localhost (127.0.0.1) port 80
+> GET /api/health HTTP/1.1
+> Host: localhost
+> User-Agent: curl/8.5.0
+> Accept: */*
+> 
+< HTTP/1.1 502 Bad Gateway
+< Server: nginx/1.24.0 (Ubuntu)
+< Date: Wed, 19 Aug 2026 21:49:50 GMT
+< Content-Type: text/html
+< Content-Length: 166
+< Connection: keep-alive
+< 
+{ [166 bytes data]
+100   166  100   166    0     0  11088      0 --:--:-- --:--:-- --:--:-- 11857
+* Connection #0 to host localhost left intact

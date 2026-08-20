@@ -1,0 +1,10 @@
+{
+  "InstanceIds": ["i-058e26140671b3254"],
+  "DocumentName": "AWS-RunShellScript",
+  "Parameters": {
+    "commands": [
+      "cd /home/ubuntu/OrbeSystems/inho_backend",
+      "cat .env"
+    ]
+  }
+}

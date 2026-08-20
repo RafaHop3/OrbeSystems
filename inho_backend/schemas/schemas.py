@@ -24,6 +24,7 @@ class WebhookProvisionRequest(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+    mfa_code: Optional[str] = None
 
 
 class TokenResponse(BaseModel):
@@ -34,6 +35,17 @@ class TokenResponse(BaseModel):
 
 class RefreshRequest(BaseModel):
     refresh_token: str
+
+
+class MFASetupResponse(BaseModel):
+    secret: str
+    provisioning_uri: str
+    issuer: str = "INHO Platform"
+    backup_codes: List[str]
+
+
+class MFAVerifyRequest(BaseModel):
+    code: str = Field(..., min_length=6, max_length=6)
 
 
 # ── User ──────────────────────────────────────────────────────────
@@ -221,4 +233,55 @@ class PCOAnswerSubmit(BaseModel):
 
 class PCOResponseSubmit(BaseModel):
     answers: List[PCOAnswerSubmit]
+
+
+# ── Ghost Engine Schemas ──────────────────────────────────────────
+from models.models import DataBrokerMethod, PrivacyRequestStatus
+
+class DataBrokerOut(BaseModel):
+    id: UUID
+    name: str
+    dpo_email: Optional[str] = None
+    delete_url: Optional[str] = None
+    method: DataBrokerMethod
+    category: str
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class PrivacyRequestCreate(BaseModel):
+    broker_id: UUID
+    full_name: str
+    cpf: str
+    email: str
+
+
+class PrivacyRequestOut(BaseModel):
+    id: UUID
+    user_id: UUID
+    broker_id: UUID
+    status: PrivacyRequestStatus
+    sent_at: Optional[datetime] = None
+    last_checked_at: Optional[datetime] = None
+    notes: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+class DPOResponseParseRequest(BaseModel):
+    request_id: UUID
+    email_body: str
+
+
+class DPOResponseParseResult(BaseModel):
+    request_id: UUID
+    detected_status: PrivacyRequestStatus
+    is_deletion_confirmed: bool
+    requires_documents: bool
+    requested_docs: List[str] = []
+    summary: str
+
 

@@ -1,0 +1,47 @@
+Schema details:
+auth.users.is_anonymous: boolean
+auth.users.phone_change: text
+auth.users.phone_change_token: character varying
+auth.users.phone_change_sent_at: timestamp with time zone
+auth.users.confirmed_at: timestamp with time zone
+auth.users.email_change_token_current: character varying
+auth.users.email_change_confirm_status: smallint
+auth.users.banned_until: timestamp with time zone
+auth.users.reauthentication_token: character varying
+auth.users.reauthentication_sent_at: timestamp with time zone
+auth.users.is_sso_user: boolean
+auth.users.deleted_at: timestamp with time zone
+auth.users.instance_id: uuid
+auth.users.id: uuid
+auth.users.aud: character varying
+auth.users.role: character varying
+auth.users.email: character varying
+auth.users.encrypted_password: character varying
+auth.users.email_confirmed_at: timestamp with time zone
+auth.users.invited_at: timestamp with time zone
+auth.users.confirmation_token: character varying
+auth.users.confirmation_sent_at: timestamp with time zone
+auth.users.recovery_token: character varying
+auth.users.recovery_sent_at: timestamp with time zone
+auth.users.email_change_token_new: character varying
+auth.users.email_change: character varying
+auth.users.email_change_sent_at: timestamp with time zone
+auth.users.last_sign_in_at: timestamp with time zone
+auth.users.raw_app_meta_data: jsonb
+auth.users.raw_user_meta_data: jsonb
+auth.users.is_super_admin: boolean
+auth.users.created_at: timestamp with time zone
+auth.users.updated_at: timestamp with time zone
+auth.users.phone: text
+auth.users.phone_confirmed_at: timestamp with time zone
+public.user_roles.user_id: character varying
+public.user_roles.role_name: character varying
+public.user_roles.id: character varying
+public.users.email: character varying
+public.users.password_hash: character varying
+public.users.role: character varying
+public.users.stripe_customer_id: character varying
+public.users.subscription_status: character varying
+public.users.is_email_verified: boolean
+public.users.created_at: timestamp without time zone
+public.users.id: character varying

@@ -1,0 +1,5 @@
+{
+    "email": "admin@inho.com",
+    "secret": "N23556WQZV6GNZ6D",
+    "uri": "otpauth://totp/INHO%20Platform:admin@inho.com?secret=N23556WQZV6GNZ6D&issuer=INHO%20Platform"
+}

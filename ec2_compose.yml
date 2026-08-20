@@ -1,0 +1,49 @@
+services:
+  backend:
+    container_name: orbe_backend
+    depends_on:
+    - db
+    - redis
+    env_file:
+    - ./backend/.env
+    environment:
+    - REDIS_URL=redis://redis:6379/0
+    - DATABASE_URL=postgresql://postgres.bjidrhoniciczqkhazqv:Muhammadalivsroyjonesjr%23Ju.130798@aws-1-us-west-2.pooler.supabase.com:6543/postgres
+    image: 982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest
+    ports:
+    - 80:8000
+    restart: always
+    volumes:
+    - ./backend/data:/app/data
+  db:
+    container_name: orbe_postgres
+    environment:
+      POSTGRES_DB: orbesystems
+      POSTGRES_PASSWORD: orbe_password
+      POSTGRES_USER: orbe_admin
+    image: postgres:15-alpine
+    ports:
+    - 5432:5432
+    restart: always
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+  inho_backend:
+    build: ./inho_backend
+    container_name: inho_backend
+    depends_on:
+    - db
+    environment:
+    - REDIS_URL=redis://redis:6379/1
+    - SCHEMA=inho
+    - DATABASE_URL=postgresql+asyncpg://postgres.bjidrhoniciczqkhazqv:Muhammadalivsroyjonesjr%23Ju.130798@aws-1-us-west-2.pooler.supabase.com:6543/postgres
+    ports:
+    - 8001:8000
+    restart: always
+  redis:
+    container_name: orbe_redis
+    image: redis:7-alpine
+    ports:
+    - 6379:6379
+    restart: always
+volumes:
+  postgres_data: null
