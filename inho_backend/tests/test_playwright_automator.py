@@ -68,3 +68,15 @@ async def test_semaphore_concurrency_limit():
     assert PLAYWRIGHT_SEMAPHORE._value <= MAX_CONCURRENT_WORKERS
 
 
+def test_celery_redis_queue_config():
+    """Valida a especificacao e formato de persistencia do Celery Message Broker."""
+    from core.queue_config import get_queue_status, CELERY_CONFIG
+
+    status = get_queue_status()
+    assert status["broker"] == "Redis / Celery"
+    assert status["concurrency_limit"] == 3
+    assert CELERY_CONFIG["task_acks_late"] is True
+    assert CELERY_CONFIG["task_reject_on_worker_lost"] is True
+
+
+

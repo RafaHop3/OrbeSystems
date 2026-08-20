@@ -85,11 +85,34 @@ async def run_playwright_form_submission(
             context = None
             page = None
             try:
-                browser = await p.chromium.launch(headless=headless)
+                # 🌐 Pilar 1: Suporte a Proxies Residenciais Rotativos (Fuga de WAF)
+                proxy_url = os.getenv("ROTATING_PROXY_URL")
+                launch_options = {"headless": headless}
+                if proxy_url:
+                    logger.info(f"Roteando automação através de Proxy Residencial: {proxy_url}")
+                    launch_options["proxy"] = {"server": proxy_url}
+
+                browser = await p.chromium.launch(**launch_options)
                 context = await browser.new_context(
                     viewport={"width": 1280, "height": 800},
-                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                    locale="pt-BR",
+                    timezone_id="America/Sao_Paulo"
                 )
+
+                # 🕵️ Pilar 3: Evasão de Fingerprint Avançada (Playwright Stealth Injection)
+                await context.add_init_script("""
+                    Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+                    Object.defineProperty(navigator, 'languages', {get: () => ['pt-BR', 'pt', 'en-US']});
+                    window.chrome = { runtime: {}, loadTimes: function() {}, csi: function() {}, app: {} };
+                    const originalQuery = window.navigator.permissions.query;
+                    window.navigator.permissions.query = (parameters) => (
+                        parameters.name === 'notifications' ?
+                        Promise.resolve({ state: Notification.permission }) :
+                        originalQuery(parameters)
+                    );
+                """)
+
                 page = await context.new_page()
 
                 url = broker_cfg["form_url"]
