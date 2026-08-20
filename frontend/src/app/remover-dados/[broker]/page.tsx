@@ -133,7 +133,7 @@ export default function SeoBrokerPage({ params }: { params: { broker: string } }
                         Fazer e-mails manuais, caçar formulários ocultos, enviar RGs e rezar pra excluírem...
                         <strong>É exaustivo e frequentemente os robôs deles copiam o processo para outra página dias depois.</strong>
                         <br /><br />
-                        Para resolver o problema pela raiz, a plataforma <strong>Orbe Systems</strong> possui **Workers de IA e Web Scraping Servers** (Data Broker Opt-out Engine). Nós geramos uma Procuração Legal em PDF Criptografado e enviamos <em>Sniper Bots</em> que caçam seu Nome e invadem juridicamente todos os principais 50 sites do Brasil repetidamente, batendo até removerem do cache do Google de vez.
+                        Para resolver o problema pela raiz, a plataforma <strong>Orbe Systems</strong> possui **Workers de IA e Web Scraping Servers** (Data Broker Opt-out Engine). Nós ajudamos a remover os seus dados das bases.
                     </p>
 
                     <Link
