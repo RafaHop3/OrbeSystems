@@ -17,6 +17,7 @@ import AuraPanel from '@/components/admin/AuraPanel';
 import ChronosPanel from '@/components/admin/ChronosPanel';
 import AiLogsPanel from '@/components/admin/AiLogsPanel';
 import AnalyticsPanel from '@/components/admin/AnalyticsPanel';
+import InhoPanel from '@/components/admin/InhoPanel';
 
 /*
 - [x] Install/Add Backend dependency (`cloudinary`)
@@ -69,7 +70,7 @@ export default function AdminDashboard() {
 
   // ── User Management state ─────────────────────────────────────────────────────
   const [users, setUsers] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'projects' | 'users' | 'siem' | 'soar' | 'audit' | 'sbom' | 'ir' | 'nexus7' | 'aura' | 'chronos' | 'ai-logs' | 'analytics'>('projects');
+  const [activeTab, setActiveTab] = useState<'projects' | 'users' | 'siem' | 'soar' | 'audit' | 'sbom' | 'ir' | 'nexus7' | 'aura' | 'chronos' | 'ai-logs' | 'analytics' | 'inho'>('projects');
   const [showCreateUserForm, setShowCreateUserForm] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
@@ -394,6 +395,7 @@ export default function AdminDashboard() {
             { id: 'aura', label: '🧠 AURA' },
             { id: 'chronos', label: '⏳ CHRONOS' },
             { id: 'ai-logs', label: '🤖 AI LOGS' },
+            { id: 'inho', label: '🖥️ INHO ADMIN' },
           ] as const).map(tab => (
             <button
               key={tab.id}
@@ -460,6 +462,7 @@ export default function AdminDashboard() {
             {activeTab === 'chronos' && <ChronosPanel />}
             {activeTab === 'ai-logs' && <AiLogsPanel />}
             {activeTab === 'analytics' && <AnalyticsPanel />}
+            {activeTab === 'inho' && <InhoPanel />}
 
             {/* Project Manager Panel */}
             {activeTab === 'projects' && (
