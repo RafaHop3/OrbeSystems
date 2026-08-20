@@ -169,6 +169,8 @@ async def parse_dpo_response(
         detected_status=new_status,
         is_deletion_confirmed=parsed["is_deletion_confirmed"],
         requires_documents=parsed["requires_documents"],
+        confidence=parsed["confidence"],
+        reasoning=parsed["reasoning"],
         requested_docs=parsed["requested_docs"],
         summary=parsed["summary"]
     )

@@ -74,8 +74,8 @@ Atenciosamente,
 
 def parse_dpo_email_response(email_body: str) -> Dict[str, Any]:
     """
-    Analisa o corpo da resposta de um DPO para determinar se a exclusão foi confirmada,
-    se foram solicitados documentos adicionais ou se requer intervenção manual.
+    Analisa o corpo da resposta de um DPO com saída estruturada contendo score de confiança e justificativa.
+    Regra de Sênior: Se a confiança for menor que 0.90, o sistema automaticamente força o status para MANUAL_REQUIRED.
     """
     text = email_body.lower()
 
@@ -103,25 +103,42 @@ def parse_dpo_email_response(email_body: str) -> Dict[str, Any]:
     if "comprovante" in text or "residência" in text:
         requested_docs.append("Comprovante de Residência")
 
-    # Classificação final do status
+    # Classificação inicial e cálculo de confiança (Structured Output)
     if is_confirmed:
-        status = "DELETED"
+        initial_status = "DELETED"
+        confidence = 0.98
+        reasoning = "O e-mail menciona explicitamente a confirmação da eliminação dos registros nas bases de dados."
         summary = "DPO confirmou a exclusão definitiva dos dados pessoais."
     elif requires_docs:
-        status = "PENDING_DOCS"
+        initial_status = "PENDING_DOCS"
+        confidence = 0.95
+        reasoning = "O e-mail exige o envio de documentos comprobatórios de identidade para prosseguir."
         summary = f"DPO solicitou documentos complementares para validação de identidade: {', '.join(requested_docs) if requested_docs else 'Documentos com foto'}."
     elif "portal" in text or "formulario" in text or "link" in text:
-        status = "MANUAL_REQUIRED"
+        initial_status = "MANUAL_REQUIRED"
+        confidence = 0.92
+        reasoning = "O e-mail orienta a realização do pedido através de portal ou formulário específico."
         summary = "DPO orientou preencher formulário específico no portal da empresa."
     else:
-        status = "EMAIL_SENT"
-        summary = "Resposta recebida do DPO. Aguardando processamento final."
+        # Resposta vaga/ambígua -> Confiança baixa
+        initial_status = "MANUAL_REQUIRED"
+        confidence = 0.70
+        reasoning = "Resposta genérica ou ambígua do DPO sem confirmação explícita de exclusão ou pedido de documentos."
+        summary = "Resposta ambígua do DPO. Ação manual necessária para validação."
+
+    # 🚨 REGRA DE SÊNIOR: Se a confiança for menor que 0.90, forçar MANUAL_REQUIRED
+    final_status = initial_status
+    if confidence < 0.90:
+        final_status = "MANUAL_REQUIRED"
+        summary = f"[AVISO DE SEGURANÇA] Confiança baixa ({confidence:.2f} < 0.90). Requer revisão manual por humano."
 
     return {
-        "detected_status": status,
-        "is_deletion_confirmed": is_confirmed,
+        "detected_status": final_status,
+        "is_deletion_confirmed": is_confirmed and final_status == "DELETED",
         "requires_documents": requires_docs,
         "requested_docs": requested_docs,
+        "confidence": confidence,
+        "reasoning": reasoning,
         "summary": summary
     }
 

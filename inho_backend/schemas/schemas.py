@@ -281,6 +281,8 @@ class DPOResponseParseResult(BaseModel):
     detected_status: PrivacyRequestStatus
     is_deletion_confirmed: bool
     requires_documents: bool
+    confidence: float
+    reasoning: str
     requested_docs: List[str] = []
     summary: str
 
