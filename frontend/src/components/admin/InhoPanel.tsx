@@ -12,21 +12,59 @@ export default function InhoPanel() {
     const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'USER' });
     const [creating, setCreating] = useState(false);
 
+    // Authentication State for INHO backend
+    const [inhoToken, setInhoToken] = useState<string | null>(null);
+    const [loginForm, setLoginForm] = useState({ email: 'admin@inho.com', password: '' });
+    const [loggingIn, setLoggingIn] = useState(false);
+
     // Inho API is completely divorced from Orbe Main URL
     const INHO_API_URL = 'https://inho-api.orbesystems.com.br/api/v1';
 
     useEffect(() => {
-        fetchUsers();
+        const savedToken = localStorage.getItem('inho_admin_token');
+        if (savedToken) {
+            setInhoToken(savedToken);
+        } else {
+            setLoading(false);
+        }
     }, []);
 
-    const fetchUsers = async () => {
-        const token = localStorage.getItem('orbe_admin_token');
-        if (!token) {
-            setError('Sessão Administrativa não encontrada');
-            setLoading(false);
-            return;
+    useEffect(() => {
+        if (inhoToken) {
+            fetchUsers(inhoToken);
         }
+    }, [inhoToken]);
 
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoggingIn(true);
+        setError(null);
+        try {
+            const res = await fetch(`${INHO_API_URL}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(loginForm)
+            });
+            if (!res.ok) {
+                throw new Error('Credenciais INHO inválidas ou servidor inacessível');
+            }
+            const data = await res.json();
+            setInhoToken(data.access_token);
+            localStorage.setItem('inho_admin_token', data.access_token);
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoggingIn(false);
+        }
+    };
+
+    const handleLogout = () => {
+        setInhoToken(null);
+        setUsers([]);
+        localStorage.removeItem('inho_admin_token');
+    };
+
+    const fetchUsers = async (token: string) => {
         try {
             setLoading(true);
             const res = await fetch(`${INHO_API_URL}/users/`, {
@@ -34,8 +72,11 @@ export default function InhoPanel() {
             });
 
             if (!res.ok) {
-                if (res.status === 401) throw new Error('Token inválido ou sessão expirada no INHO Backend');
-                if (res.status === 403) throw new Error('Sua conta Orbe Admin não tem privilégios dentro do INHO Sys');
+                if (res.status === 401) {
+                    handleLogout();
+                    throw new Error('Sessão INHO expirada. Faça login novamente.');
+                }
+                if (res.status === 403) throw new Error('Esta conta INHO não tem privilégios de administrador');
                 throw new Error(`Business API Error: ${res.status}`);
             }
 
@@ -51,19 +92,19 @@ export default function InhoPanel() {
     };
 
     const handleRoleChange = async (userId: string, newRole: string) => {
-        const token = localStorage.getItem('orbe_admin_token');
+        if (!inhoToken) return;
         try {
             const res = await fetch(`${INHO_API_URL}/users/${userId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${inhoToken}`
                 },
                 body: JSON.stringify({ role: newRole })
             });
             if (!res.ok) throw new Error('Falha ao atualizar permições do operador');
 
-            fetchUsers(); // Refresh silently
+            fetchUsers(inhoToken); // Refresh silently
         } catch (err) {
             alert('Erro ao propagar elevação de painel');
         }
@@ -71,12 +112,12 @@ export default function InhoPanel() {
 
     const handleDelete = async (userId: string) => {
         if (!confirm('DESEJA REALMENTE ANILIQUILAR ESTA CONTA NO ECOSSISTEMA INHO?')) return;
+        if (!inhoToken) return;
 
-        const token = localStorage.getItem('orbe_admin_token');
         try {
             const res = await fetch(`${INHO_API_URL}/users/${userId}`, {
                 method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: { 'Authorization': `Bearer ${inhoToken}` }
             });
             if (!res.ok) {
                 const errorData = await res.json().catch(() => ({}));
@@ -92,15 +133,15 @@ export default function InhoPanel() {
         if (!form.email || !form.password || !form.full_name) {
             alert('PREENCHA TODOS OS DADOS DA IDENTIDADE'); return;
         }
+        if (!inhoToken) return;
 
         setCreating(true);
-        const token = localStorage.getItem('orbe_admin_token');
         try {
             const res = await fetch(`${INHO_API_URL}/users/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${inhoToken}`
                 },
                 body: JSON.stringify({
                     email: form.email,
@@ -116,7 +157,7 @@ export default function InhoPanel() {
                 throw new Error(err.detail || 'Injeção falhou');
             }
 
-            await fetchUsers();
+            await fetchUsers(inhoToken);
             setShowCreateForm(false);
             setForm({ email: '', full_name: '', password: '', role: 'USER' });
         } catch (err: any) {
@@ -133,28 +174,73 @@ export default function InhoPanel() {
                     <Command size={14} className="text-green-500" /> INHO BUSINESS ADMIN
                 </div>
                 <div className="flex items-center gap-3">
-                    <button
-                        onClick={() => fetchUsers()}
-                        className="text-[10px] text-green-500/60 hover:text-green-400"
-                    >
-                        REFRESH
-                    </button>
-                    <span className="text-[10px] text-green-500/40 px-2 border border-green-500/20 rounded">
-                        {users.length} ENTIDADES
-                    </span>
-                    <button
-                        onClick={() => setShowCreateForm(!showCreateForm)}
-                        className="flex items-center gap-1 text-[10px] bg-green-500/10 text-green-400 px-3 py-1 border border-green-500/30 hover:bg-green-500/20 transition-all font-bold"
-                    >
-                        {showCreateForm ? <X size={10} /> : <Plus size={10} />}
-                        {showCreateForm ? 'CANCEL' : 'NOVA IDENTIDADE'}
-                    </button>
+                    {inhoToken && (
+                        <>
+                            <button
+                                onClick={() => fetchUsers(inhoToken)}
+                                className="text-[10px] text-green-500/60 hover:text-green-400"
+                            >
+                                REFRESH
+                            </button>
+                            <span className="text-[10px] text-green-500/40 px-2 border border-green-500/20 rounded">
+                                {users.length} ENTIDADES
+                            </span>
+                            <button
+                                onClick={() => setShowCreateForm(!showCreateForm)}
+                                className="flex items-center gap-1 text-[10px] bg-green-500/10 text-green-400 px-3 py-1 border border-green-500/30 hover:bg-green-500/20 transition-all font-bold"
+                            >
+                                {showCreateForm ? <X size={10} /> : <Plus size={10} />}
+                                {showCreateForm ? 'CANCEL' : 'NOVA IDENTIDADE'}
+                            </button>
+                            <button
+                                onClick={handleLogout}
+                                className="text-[10px] text-red-500/80 border border-red-500/20 px-2 py-1 rounded hover:bg-red-500/10 transition-colors"
+                            >
+                                LOGOUT INHO
+                            </button>
+                        </>
+                    )}
                 </div>
             </h2>
 
-            {error ? (
-                <div className="p-4 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-mono uppercase">
+            {error && (
+                <div className="p-4 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-mono uppercase mb-4">
                     ERROR_CODE: {error}
+                </div>
+            )}
+
+            {!inhoToken ? (
+                <div className="flex flex-col items-center justify-center p-10 border border-green-500/20 bg-black/40">
+                    <Shield size={32} className="text-green-500 mb-4" />
+                    <h3 className="text-green-400 font-bold tracking-widest text-sm mb-2">INHO - AUTENTICAÇÃO NECESSÁRIA</h3>
+                    <p className="text-green-500/60 text-[10px] mb-6 text-center max-w-sm">
+                        O gerenciamento da equipe INHO requer um token administrativo do backend exclusivo da plataforma. Por favor, identifique-se.
+                    </p>
+                    <form onSubmit={handleLogin} className="flex flex-col w-full max-w-xs gap-3">
+                        <input
+                            type="email"
+                            placeholder="E-MAIL DE ADMIN INHO"
+                            value={loginForm.email}
+                            onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                            className="bg-transparent border border-green-500/30 text-green-400 text-xs focus:outline-none focus:border-green-400 p-3"
+                            required
+                        />
+                        <input
+                            type="password"
+                            placeholder="SENHA ADMINISTRATIVA"
+                            value={loginForm.password}
+                            onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                            className="bg-transparent border border-green-500/30 text-green-400 text-xs focus:outline-none focus:border-green-400 p-3"
+                            required
+                        />
+                        <button
+                            type="submit"
+                            disabled={loggingIn}
+                            className="bg-green-500/20 text-green-400 font-bold tracking-widest text-xs p-3 hover:bg-green-500/40 transition-colors uppercase"
+                        >
+                            {loggingIn ? 'VERIFICANDO...' : 'INICIALIZAR LOGIN'}
+                        </button>
+                    </form>
                 </div>
             ) : loading ? (
                 <div className="flex items-center gap-3 text-green-500/60 text-xs p-4 border border-green-500/20 bg-black/40">
@@ -184,10 +270,10 @@ export default function InhoPanel() {
                                 value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}
                                 className="bg-black border border-green-500/30 text-green-400 text-[10px] focus:outline-none focus:border-green-400 p-2 uppercase"
                             >
-                                <option value="USER">USER</option>
-                                <option value="OPERATOR">OPERATOR</option>
-                                <option value="MANAGER">MANAGER</option>
-                                <option value="ADMIN">ADMIN</option>
+                                <option value="client">CLIENT</option>
+                                <option value="operator">OPERATOR</option>
+                                <option value="viewer">VIEWER</option>
+                                <option value="admin">ADMIN</option>
                             </select>
                             <button
                                 onClick={handleCreate} disabled={creating}
@@ -226,10 +312,10 @@ export default function InhoPanel() {
                                         onChange={e => handleRoleChange(u.id, e.target.value)}
                                         className="flex-1 bg-black text-[9px] text-green-500/80 border border-green-500/20 px-2 py-1 focus:outline-none uppercase"
                                     >
-                                        <option value="USER">ROLE: USER</option>
-                                        <option value="OPERATOR">ROLE: OPERATOR</option>
-                                        <option value="MANAGER">ROLE: MANAGER</option>
-                                        <option value="ADMIN">ROLE: ADMIN</option>
+                                        <option value="client">ROLE: CLIENT</option>
+                                        <option value="operator">ROLE: OPERATOR</option>
+                                        <option value="viewer">ROLE: VIEWER</option>
+                                        <option value="admin">ROLE: ADMIN</option>
                                     </select>
                                     <button
                                         onClick={() => handleDelete(u.id)}
