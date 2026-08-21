@@ -99,29 +99,32 @@ export default function AdminDashboard() {
       }
 
       try {
-        const headers = { Authorization: `Bearer ${token}` };
-
-        // Fetch Status, Projects and Users in parallel
-        const [statusRes, projectsRes, usersRes] = await Promise.all([
-          fetch(`${API_URL}/api/admin/status`, { headers }),
-          fetch(`${API_URL}/api/admin/projects`, { headers }),
-          fetch(`${API_URL}/api/admin/users`, { headers })
+        const [projectsRes, statusRes, usersRes] = await Promise.all([
+          fetch(`${API_URL}/api/admin/projects`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }),
+          fetch(`${API_URL}/api/admin/status`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }),
+          fetch(`${API_URL}/api/admin/users`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
         ]);
 
-        if (statusRes.status === 401 || projectsRes.status === 401 || usersRes.status === 401) {
+        if (statusRes.status === 401) {
           localStorage.removeItem('orbe_admin_token');
           router.replace('/admin/login');
           return;
         }
 
-        if (!statusRes.ok || !projectsRes.ok || !usersRes.ok) throw new Error('Systems Link Failure');
+        const [projectsData, statusData, usersData] = await Promise.all([
+          projectsRes.json(),
+          statusRes.json(),
+          usersRes.json()
+        ]);
 
-        const statusData = await statusRes.json();
-        const projectsData = await projectsRes.json();
-        const usersData = await usersRes.json();
-
+        setProjects(Array.isArray(projectsData?.projects) ? projectsData.projects : Array.isArray(projectsData) ? projectsData : []);
         setStatus(statusData);
-        setProjects(Array.isArray(projectsData) ? projectsData : projectsData?.projects || []);
         setUsers(Array.isArray(usersData?.users) ? usersData.users : Array.isArray(usersData) ? usersData : []);
       } catch (err) {
         console.error('Core data sync failed:', err);

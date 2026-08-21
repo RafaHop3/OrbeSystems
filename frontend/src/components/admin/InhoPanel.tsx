@@ -277,9 +277,10 @@ export default function InhoPanel() {
                             </select>
                             <button
                                 onClick={handleCreate} disabled={creating}
-                                className="bg-green-500/20 text-green-400 text-[10px] font-bold border border-green-500/40 hover:bg-green-500 hover:text-black transition-colors flex items-center justify-center gap-2 uppercase tracking-wider"
+                                className="bg-green-500/20 text-green-400 text-[10px] font-bold border border-green-500/40 hover:bg-green-500 hover:text-black transition-colors flex items-center justify-center gap-2 uppercase tracking-wider relative overflow-hidden group"
                             >
-                                {creating ? 'INJETANDO...' : 'EXECUTAR'}
+                                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-green-400/20 to-transparent -translate-x-full group-hover:translate-x-full duration-500"></span>
+                                {creating ? 'INJETANDO MASTER (BYPASS RLS)...' : 'INJETAR DIRETAMENTE NO DB (MASTER)'}
                             </button>
                         </div>
                     )}
