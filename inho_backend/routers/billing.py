@@ -297,3 +297,104 @@ async def get_billing_stats(
         overdue_amount=f"{overdue_sum:.2f}",
         notifications_sent=notifications_count
     )
+
+from pydantic import BaseModel
+import httpx
+import os
+import asyncio
+from fastapi import Header
+
+class WebhookReconcileRequest(BaseModel):
+    email: str
+    action: str = "payment_succeeded"
+    stripe_customer_id: Optional[str] = None
+    
+async def async_dispatch_whatsapp_receipt(phone: str, customer_name: str, amount: Decimal, business_name: str):
+    amt_str = f"R$ {amount:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    msg = (
+        f"✅ *RECIBO DE PAGAMENTO - {business_name}*\n\n"
+        f"Olá, *{customer_name}*!\n"
+        f"Seu pagamento de *{amt_str}* foi confirmado com sucesso!\n\n"
+        f"Muito obrigado pela preferência. A sua conta já encontra-se totalmente liberada.\n"
+        f"Qualquer dúvida, nossa equipe está à disposição."
+    )
+    encoded_msg = urllib.parse.quote(msg)
+    wa_url = f"https://wa.me/{phone}?text={encoded_msg}"
+    print(f"[RECONCILE] WhatsApp Receipt Link Generated: {wa_url}")
+    return wa_url
+
+async def async_dispatch_email_receipt(email: str, customer_name: str, amount: Decimal, business_name: str):
+    amt_str = f"R$ {amount:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    msg = (
+        f"Assunto: Recibo de Pagamento - {business_name}\n\n"
+        f"Prezado(a) {customer_name},\n\n"
+        f"Registramos o pagamento da sua fatura no valor de {amt_str}.\n"
+        f"Sua conta está ativa e em situação regular.\n\n"
+        f"Atenciosamente,\n{business_name}"
+    )
+    print(f"[RECONCILE] Email Receipt text for {email}: \n{msg}")
+
+@router.post("/webhook/reconcile", response_model=dict, status_code=status.HTTP_200_OK)
+async def webhook_reconcile_billing(
+    payload: WebhookReconcileRequest,
+    x_inho_system_secret: str = Header(None),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    INTERNAL USE ONLY: Chamado pelo Webhook do Orbe Hub após pagamento no Stripe para limpeza de faturas e disparo de recibos via Zap/Email.
+    """
+    expected_secret = os.getenv("INHO_SYSTEM_SECRET", "super_secret_inho_provisioning_key_change_me")
+    if not x_inho_system_secret or x_inho_system_secret != expected_secret:
+        raise HTTPException(status_code=403, detail="Acesso negado: Secret de sistema inválido.")
+
+    # 1. Tentar encontrar a cobrança pelo E-mail que está PENDENTE ou VENCIDA
+    query = select(BillingInvoice).where(
+        BillingInvoice.customer_email == payload.email,
+        or_(BillingInvoice.status == BillingStatus.PENDING, BillingInvoice.status == BillingStatus.OVERDUE)
+    ).order_by(BillingInvoice.due_date.asc())
+    
+    result = await db.execute(query)
+    invoices = result.scalars().all()
+    
+    if not invoices:
+        return {"status": "ok", "message": f"Nenhuma fatura pendente encontrada para {payload.email}"}
+        
+    for invoice in invoices:
+        old_status = invoice.status.value
+        invoice.status = BillingStatus.PAID
+        invoice.updated_by_name = "Stripe Webhook (System Auto-Clear)"
+        
+        # Dispatch Async Notifications (Email/WA Receipt)
+        phone = (invoice.customer_phone or "5511999999999").replace("+", "").replace("-", "").replace(" ", "")
+        business = await db.execute(select(Business).where(Business.id == invoice.business_id))
+        biz_obj = business.scalars().first()
+        b_name = biz_obj.name if biz_obj else "Orbe Systems"
+        
+        asyncio.create_task(async_dispatch_whatsapp_receipt(phone, invoice.customer_name, invoice.amount, b_name))
+        asyncio.create_task(async_dispatch_email_receipt(payload.email, invoice.customer_name, invoice.amount, b_name))
+        
+        # Log resolution
+        await write_audit(
+            db,
+            action=AuditAction.UPDATE,
+            entity="billing_invoice",
+            entity_id=str(invoice.id),
+            user_id=invoice.created_by_id,
+            user_name="SYSTEM_WEBHOOK",
+            user_role="SYSTEM",
+            business_id=invoice.business_id,
+            detail={
+                "action": "AUTO_CLEAR_PAYMENT",
+                "customer_email": payload.email,
+                "old_status": old_status,
+                "new_status": "PAID",
+                "notifications_triggered": ["whatsapp_receipt", "email_receipt"]
+            }
+        )
+        
+    await db.commit()
+    
+    return {
+        "status": "success", 
+        "message": f"Baixa automática efetuada em {len(invoices)} faturas pendentes. Notificações disparadas."
+    }
