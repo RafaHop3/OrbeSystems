@@ -50,42 +50,45 @@ export default function GhostEnginePromo() {
 
                     <div className="relative z-10 w-full max-w-lg flex flex-col gap-6">
                         {/* Passo 1 */}
-                        <MagicCard className="ml-0 hover:scale-105 transition-transform duration-300">
-                            <div className="flex items-center gap-6">
-                                <div className="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center shrink-0 border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.4)]">
-                                    <ShieldAlert className="text-red-400 group-hover:text-red-300 animate-pulse" size={28} />
+                        <MagicCard className="ml-0 hover:scale-110 transition-transform duration-500">
+                            <div className="flex items-center gap-8">
+                                <div className="relative w-24 h-24 rounded-2xl bg-red-500/10 backdrop-blur-2xl flex items-center justify-center shrink-0 border border-red-500/50 shadow-[0_0_40px_rgba(239,68,68,0.5)] group-hover:shadow-[0_0_100px_rgba(239,68,68,0.9)] group-hover:bg-red-500/30 transition-all duration-500 overflow-hidden">
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-red-600/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity animate-pulse-neon"></div>
+                                    <ShieldAlert className="text-red-400 group-hover:text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-all duration-500 transform group-hover:scale-[1.3] group-hover:rotate-[15deg] relative z-10" size={44} />
                                 </div>
                                 <div>
-                                    <h3 className="font-grotesk font-black tracking-wide text-white text-lg group-hover:text-red-400 transition-colors">1. Dados Expostos</h3>
-                                    <p className="text-sm text-slate-400 mt-1">Seu nome, parentes e processos estão em sites de buscas expostos abertamente.</p>
+                                    <h3 className="font-grotesk font-black tracking-wide text-white text-2xl group-hover:text-red-400 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)] transition-colors">1. Dados Expostos</h3>
+                                    <p className="text-base text-slate-300 mt-2 leading-relaxed">Seu nome, parentes e processos estão em sites de buscas expostos abertamente.</p>
                                 </div>
                             </div>
                         </MagicCard>
 
                         {/* Passo 2 */}
-                        <MagicCard className="ml-8 md:ml-12 hover:scale-105 transition-transform duration-300">
-                            <div className="absolute -top-10 left-[2.2rem] w-[2px] h-10 bg-gradient-to-b from-red-500/50 to-blue-500/50 hidden md:block"></div>
-                            <div className="flex items-center gap-6">
-                                <div className="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0 border border-blue-500/30 shadow-[0_0_20px_rgba(59,130,246,0.4)]">
-                                    <Ghost className="text-blue-400 group-hover:animate-bounce" size={28} />
+                        <MagicCard className="ml-8 md:ml-12 hover:scale-110 transition-transform duration-500">
+                            <div className="absolute -top-10 left-[4.8rem] w-[3px] h-10 bg-gradient-to-b from-red-500/50 to-blue-500/50 hidden md:block"></div>
+                            <div className="flex items-center gap-8">
+                                <div className="relative w-24 h-24 rounded-2xl bg-blue-500/10 backdrop-blur-2xl flex items-center justify-center shrink-0 border border-blue-500/50 shadow-[0_0_40px_rgba(59,130,246,0.5)] group-hover:shadow-[0_0_100px_rgba(59,130,246,0.9)] group-hover:bg-blue-500/30 transition-all duration-500 overflow-hidden">
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity animate-pulse-neon"></div>
+                                    <Ghost className="text-blue-400 group-hover:text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-all duration-500 transform group-hover:scale-[1.3] group-hover:-translate-y-2 relative z-10" size={44} />
                                 </div>
                                 <div>
-                                    <h3 className="font-grotesk font-black tracking-wide text-white text-lg group-hover:text-blue-400 transition-colors">2. Machine Tracking</h3>
-                                    <p className="text-sm text-slate-400 mt-1">Nossa IA Ghost Engine rastreia seu CPF varrendo a internet silenciosamente.</p>
+                                    <h3 className="font-grotesk font-black tracking-wide text-white text-2xl group-hover:text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)] transition-colors">2. Machine Tracking</h3>
+                                    <p className="text-base text-slate-300 mt-2 leading-relaxed">Nossa IA Ghost Engine rastreia seu CPF varrendo a internet silenciosamente.</p>
                                 </div>
                             </div>
                         </MagicCard>
 
                         {/* Passo 3 */}
-                        <MagicCard className="ml-16 md:ml-24 hover:scale-105 transition-transform duration-300">
-                            <div className="absolute -top-10 left-[2.2rem] w-[2px] h-10 bg-gradient-to-b from-blue-500/50 to-[#00f2fe]/50 hidden md:block"></div>
-                            <div className="flex items-center gap-6">
-                                <div className="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0 border border-purple-500/30 shadow-[0_0_20px_rgba(168,85,247,0.4)]">
-                                    <Cpu className="text-purple-400 group-hover:text-purple-300 animate-spin-slow" size={28} />
+                        <MagicCard className="ml-16 md:ml-24 hover:scale-110 transition-transform duration-500">
+                            <div className="absolute -top-10 left-[4.8rem] w-[3px] h-10 bg-gradient-to-b from-blue-500/50 to-[#00f2fe]/50 hidden md:block"></div>
+                            <div className="flex items-center gap-8">
+                                <div className="relative w-24 h-24 rounded-2xl bg-purple-500/10 backdrop-blur-2xl flex items-center justify-center shrink-0 border border-purple-500/50 shadow-[0_0_40px_rgba(168,85,247,0.5)] group-hover:shadow-[0_0_100px_rgba(168,85,247,0.9)] group-hover:bg-purple-500/30 transition-all duration-500 overflow-hidden">
+                                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-tl from-purple-600/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity animate-spin-slow"></div>
+                                    <Cpu className="text-purple-400 group-hover:text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] transition-all duration-500 transform group-hover:scale-[1.3] group-hover:rotate-180 relative z-10" size={44} />
                                 </div>
                                 <div>
-                                    <h3 className="font-grotesk font-black tracking-wide text-white text-lg group-hover:text-purple-400 transition-colors">3. Purgação em Massa</h3>
-                                    <p className="text-sm text-slate-400 mt-1">Acionamos dezenas de notificações baseadas na LGPD, forçando a remoção legal.</p>
+                                    <h3 className="font-grotesk font-black tracking-wide text-white text-2xl group-hover:text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.5)] transition-colors">3. Purgação em Massa</h3>
+                                    <p className="text-base text-slate-300 mt-2 leading-relaxed">Acionamos dezenas de notificações baseadas na LGPD, forçando a remoção legal.</p>
                                 </div>
                             </div>
                         </MagicCard>
