@@ -16,13 +16,19 @@ from sqlalchemy.orm import relationship
 from db.session import Base
 
 
-# ── Enums ─────────────────────────────────────────────────────────
 class UserRole(str, enum.Enum):
     SUPER_ADMIN = "super_admin"
     ADMIN       = "admin"
     OPERATOR    = "operator"
     VIEWER      = "viewer"
     CLIENT      = "client"
+
+class BusinessCategory(str, enum.Enum):
+    COOPERATIVA = "COOPERATIVA"
+    VAREJO      = "VAREJO"
+    SERVICOS    = "SERVICOS"
+    OUTROS      = "OUTROS"
+
 
 
 class AuditAction(str, enum.Enum):
@@ -85,6 +91,8 @@ class Business(Base):
     user_id    = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name       = Column(String(255), nullable=False)
     cnpj       = Column(String(20), nullable=True)
+    category   = Column(Enum(BusinessCategory), nullable=False, default=BusinessCategory.OUTROS)
+
     
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
@@ -244,12 +252,41 @@ class PDVSale(Base):
     )
 
 
-# ── BillingStatus / BillingInvoice ────────────────────────────────
 class BillingStatus(str, enum.Enum):
     PENDING   = "PENDING"
     PAID      = "PAID"
     OVERDUE   = "OVERDUE"
     CANCELLED = "CANCELLED"
+
+# ── B2B2C Domain: Cooperado Pipeline ──────────────────────────────
+class CooperadoStatus(str, enum.Enum):
+    CONTRATO_INICIAL  = "CONTRATO_INICIAL"
+    AGUARDANDO_TAXA   = "AGUARDANDO_TAXA"
+    COOPERADO         = "COOPERADO"
+    INADIMPLENTE      = "INADIMPLENTE"
+    EM_REGULARIZACAO  = "EM_REGULARIZACAO"
+
+class Cooperado(Base):
+    __tablename__ = "cooperados"
+
+    id           = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id  = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    name         = Column(String(255), nullable=False)
+    document     = Column(String(50), nullable=False) # CPF or CNPJ
+    email        = Column(String(255), nullable=True)
+    phone        = Column(String(50), nullable=True)
+    status       = Column(Enum(CooperadoStatus), nullable=False, default=CooperadoStatus.CONTRATO_INICIAL)
+
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_cooperados_business", "business_id"),
+        Index("ix_cooperados_status", "status"),
+        Index("ix_cooperados_document", "document"),
+    )
+
 
 
 class BillingInvoice(Base):

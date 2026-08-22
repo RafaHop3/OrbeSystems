@@ -398,3 +398,80 @@ async def webhook_reconcile_billing(
         "status": "success", 
         "message": f"Baixa automática efetuada em {len(invoices)} faturas pendentes. Notificações disparadas."
     }
+
+# ── B2B2C Webhook (Universal Bank Integration) ──────────────────────────
+class BankWebhookPayload(BaseModel):
+    event: str  # e.g., "PAYMENT_RECEIVED", "BOLETO_PAGO"
+    document: str # CPF_CNPJ of the end-client
+    amount: float
+    bank_provider: str = "GENERIC_BANK"
+
+from models.models import Cooperado, CooperadoStatus
+
+@router.post("/webhook/bank", response_model=dict, status_code=status.HTTP_200_OK)
+async def webhook_bank_boleto_b2b2c(
+    payload: BankWebhookPayload,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Universal webhook para receber Boletos Pagos dos Cooperados (B2B2C).
+    Altera o status do end-user instantaneamente para 'COOPERADO' se era taxa pendente!
+    """
+    if payload.event not in ["PAYMENT_RECEIVED", "BOLETO_PAGO"]:
+        return {"status": "ignored", "message": "Ignorando eventos não relacionados a pagamento."}
+
+    # Procura clientes/faturas usando CPF/CNPJ de quem pagou o boleto
+    clean_doc = payload.document.replace(".", "").replace("-", "").replace("/", "")
+    
+    # 1. Dá baixa na fatura (se existir)
+    inv_query = select(BillingInvoice).where(
+        BillingInvoice.customer_doc == clean_doc,
+        or_(BillingInvoice.status == BillingStatus.PENDING, BillingInvoice.status == BillingStatus.OVERDUE)
+    ).order_by(BillingInvoice.due_date.asc())
+    
+    inv_res = await db.execute(inv_query)
+    invoices = inv_res.scalars().all()
+    
+    business_id = None
+    customer_name = "Cliente"
+    phone_contact = None
+    
+    for inv in invoices:
+        inv.status = BillingStatus.PAID
+        inv.updated_by_name = f"Bank Webhook B2B2C ({payload.bank_provider})"
+        business_id = inv.business_id
+        customer_name = inv.customer_name
+        phone_contact = (inv.customer_phone or "5511999999999").replace("+", "").replace("-", "").replace(" ", "")
+        
+    # 2. Gerencia Jounery do COOPERADO
+    coop_query = select(Cooperado).where(Cooperado.document == clean_doc)
+    coop_res = await db.execute(coop_query)
+    cooperado = coop_res.scalars().first()
+    
+    if cooperado:
+        customer_name = cooperado.name
+        business_id = cooperado.business_id
+        phone_contact = (cooperado.phone or phone_contact or "5511999999999").replace("+", "").replace("-", "").replace(" ", "")
+        
+        # O cliente estava pendente de avaliação/taxa inicial! Agora ele é Sócio Efetivo
+        if cooperado.status in [CooperadoStatus.CONTRATO_INICIAL, CooperadoStatus.AGUARDANDO_TAXA, CooperadoStatus.INADIMPLENTE]:
+            cooperado.status = CooperadoStatus.COOPERADO
+            
+            # TODO: Add Auto-Zap dispatch for Cooperative welcome message
+            msg = (
+                f"🌟 *BEM-VINDO COOPERADO*\n\n"
+                f"Olá, *{cooperado.name}*!\n"
+                f"Confirmamos o pagamento da sua taxa associativa. Você agora é um membro ativo da nossa Cooperativa.\n\n"
+                f"Status Atualizado: *[ COOPERADO OFICIAL ]*\n"
+            )
+            encoded_msg = urllib.parse.quote(msg)
+            wa_url = f"https://wa.me/{phone_contact}?text={encoded_msg}"
+            print(f"[B2B2C] Cooperado Upgraded! Dispatching WhatsApp Welcome: {wa_url}")
+
+    await db.commit()
+    
+    return {
+        "status": "success",
+        "invoices_cleared": len(invoices),
+        "cooperado_upgraded": cooperado.id if cooperado else None
+    }
