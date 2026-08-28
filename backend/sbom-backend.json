@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:e5599451-17c3-4677-a163-b0bc861f2e03",
+  "serialNumber": "urn:uuid:6e0c9e54-c3bc-4678-8950-d1034db3ef3f",
   "metadata": {
-    "timestamp": "2026-08-20T13:31:40.297972+00:00",
+    "timestamp": "2026-08-28T12:09:05.214107+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -415,8 +415,8 @@
     {
       "type": "library",
       "name": "click",
-      "version": "8.4.2",
-      "purl": "pkg:pypi/click@8.4.2",
+      "version": "8.5.0",
+      "purl": "pkg:pypi/click@8.5.0",
       "licenses": [
         {
           "license": {
@@ -428,19 +428,19 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "43d413e934181b5f5120b59e5b6fd67db4d6d25e892805251e4660fddd923b7b"
+          "content": "fd92772b8e9b092abcf4192503b3a93b6e398532ee244471b437c15c8f2afbe0"
         }
       ]
     },
     {
       "type": "library",
       "name": "cloudinary",
-      "version": "1.46.0",
-      "purl": "pkg:pypi/cloudinary@1.46.0",
+      "version": "1.46.2",
+      "purl": "pkg:pypi/cloudinary@1.46.2",
       "licenses": [
         {
           "license": {
-            "id": "Released under the MIT license."
+            "id": "MIT License"
           }
         }
       ],
@@ -453,15 +453,15 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "bdbc959daafba64538fbd68fea8052e2a40d5aec82b65534389ccbb76f244cba"
+          "content": "3562bc72ed98fda2172d9dc73e720abbd9d2798d7ee0e5f47d66a0bd00e644d7"
         }
       ]
     },
     {
       "type": "library",
       "name": "cryptography",
-      "version": "50.0.0",
-      "purl": "pkg:pypi/cryptography@50.0.0",
+      "version": "50.0.1",
+      "purl": "pkg:pypi/cryptography@50.0.1",
       "licenses": [
         {
           "license": {
@@ -478,7 +478,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "cf042e5bbae9cdc8854c27a0cf2f22a0020c2b2f338be6a1ccd1800f1ade4193"
+          "content": "58ac97fab7f9cb7a4f1b1d9e2b81bf11f8e98b35e9dc5450fc3da67d6a2d0759"
         }
       ]
     },
@@ -900,8 +900,8 @@
     {
       "type": "library",
       "name": "mangum",
-      "version": "0.21.0",
-      "purl": "pkg:pypi/mangum@0.21.0",
+      "version": "0.22.0",
+      "purl": "pkg:pypi/mangum@0.22.0",
       "licenses": [
         {
           "license": {
@@ -918,7 +918,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "960895d5361525f1811274c812ecd298c0d8da6d3d1af350e57f17d4a2ee6423"
+          "content": "b53415dea5383f0cd461e94f75b12244d7fd09dad9cf7ceca02bc7cb16a5126d"
         }
       ]
     },
@@ -1785,8 +1785,8 @@
     {
       "type": "library",
       "name": "stripe",
-      "version": "15.5.1",
-      "purl": "pkg:pypi/stripe@15.5.1",
+      "version": "15.6.0",
+      "purl": "pkg:pypi/stripe@15.6.0",
       "licenses": [
         {
           "license": {
@@ -1803,15 +1803,15 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "c1cbd8b400068f9474ee90e769dd2a19ef116bdbefd2132413a337d1d6875fd4"
+          "content": "6536d05ede22bea60d69e459a150ecec7857fc07030d22dc54aea1ac7de33af2"
         }
       ]
     },
     {
       "type": "library",
       "name": "typer",
-      "version": "0.27.1",
-      "purl": "pkg:pypi/typer@0.27.1",
+      "version": "0.27.2",
+      "purl": "pkg:pypi/typer@0.27.2",
       "licenses": [
         {
           "license": {
@@ -1828,7 +1828,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "b9da709641ca230599305ee63223993a8c9b065c1d3b7f11284503f51df70de8"
+          "content": "a40c1d23d4586b62b4cfb08b0d127f0bb15f5b4dc2eb797e37bbe19d6c1c7257"
         }
       ]
     },
@@ -1990,8 +1990,8 @@
     {
       "type": "library",
       "name": "websockets",
-      "version": "17.0.1",
-      "purl": "pkg:pypi/websockets@17.0.1",
+      "version": "17.1",
+      "purl": "pkg:pypi/websockets@17.1",
       "licenses": [
         {
           "license": {
@@ -2008,7 +2008,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "4f631b6b58d75795613150a5a63713f3264264ef74c9f833d43e06193adb8792"
+          "content": "119886434f4a2a76d4c3c521302390d087435f84fab419dbf8d965ad5fb146a9"
         }
       ]
     },
@@ -2069,12 +2069,11 @@
       "Apache 2": 5,
       "Unknown": 29,
       "MIT": 16,
-      "MIT License": 2,
+      "MIT License": 3,
       "Apache-2.0": 5,
       "Apache License 2.0": 3,
       "MPL-2.0": 1,
       "LGPL": 1,
-      "Released under the MIT license.": 1,
       "ISC": 1,
       "": 14,
       "Unlicense": 1,
