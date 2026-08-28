@@ -12,6 +12,7 @@ from core.deps import get_current_user, require_admin
 from db.session import get_db
 from models.models import AuditLog, User
 from schemas.schemas import AuditLogOut
+import json
 
 router = APIRouter(prefix="/audit", tags=["Audit"])
 

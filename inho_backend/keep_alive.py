@@ -79,7 +79,6 @@ def start_keep_alive() -> None:
 
 def stop_keep_alive() -> None:
     """Gracefully shut down the scheduler on app teardown."""
-    global _scheduler
     if _scheduler and _scheduler.running:
         _scheduler.shutdown(wait=False)
         logger.info("[KeepAlive] 🛑 Scheduler stopped.")
