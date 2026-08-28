@@ -1,5 +1,0 @@
-﻿Failed	
-----------ERROR-------
-fatal: not a git repository (or any of the parent directories): .git
-failed to run commands: exit status 128
-None

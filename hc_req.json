@@ -1,1 +1,0 @@
-{"DocumentName": "AWS-RunShellScript", "Targets": [{"Key": "InstanceIds", "Values": ["i-058e26140671b3254"]}], "Parameters": {"commands": ["cd /home/ubuntu/orbe-systems", "sudo docker compose restart", "sleep 10", "curl -v http://localhost:8000/api/health", "curl -v http://localhost:8001/api/health", "sudo docker logs orbe_backend --tail 20 2>&1"]}}

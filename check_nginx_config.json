@@ -1,9 +1,0 @@
-{
-  "InstanceIds": ["i-058e26140671b3254"],
-  "DocumentName": "AWS-RunShellScript",
-  "Parameters": {
-    "commands": [
-      "nginx -T 2>/dev/null | grep -A 20 'server_name inho-api'"
-    ]
-  }
-}

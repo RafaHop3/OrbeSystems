@@ -1,8 +1,0 @@
-Patched /home/ubuntu/orbe-systems/inho_backend/routers/auth.py
-Patched /home/ubuntu/orbe-systems/inho_backend/routers/ghost_engine.py
-
---ERR--
-yaml: line 5: could not find expected ':'
-yaml: line 5: could not find expected ':'
-yaml: line 5: could not find expected ':'
-failed to run commands: exit status 1

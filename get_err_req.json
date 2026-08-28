@@ -1,1 +1,0 @@
-{"DocumentName": "AWS-RunShellScript", "Targets": [{"Key": "InstanceIds", "Values": ["i-058e26140671b3254"]}], "Parameters": {"commands": ["cd /home/ubuntu/orbe-systems", "sudo docker compose up -d > compose_err.txt 2>&1 || true", "cat compose_err.txt"]}}
