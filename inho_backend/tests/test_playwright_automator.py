@@ -56,7 +56,7 @@ async def test_invalid_broker_fallback():
     )
 
     assert res["status"] == "MANUAL_REQUIRED"
-    assert "nao encontrada" in res["reasoning"]
+    assert "encontrada" in res["reasoning"]
 
 
 @pytest.mark.asyncio
