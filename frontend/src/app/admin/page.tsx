@@ -6,7 +6,6 @@ import { Shield, Activity, HardDrive, LogOut, Edit3, Save, X, Globe, Video, Imag
 import type { Repository } from '@/types/repository';
 import VisitorMonitor from '@/components/VisitorMonitor';
 import FileUploader from '@/components/FileUploader';
-import SiemPanel from '@/components/admin/SiemPanel';
 import SoarPanel from '@/components/admin/SoarPanel';
 import AuditChainPanel from '@/components/admin/AuditChainPanel';
 import SbomPanel from '@/components/admin/SbomPanel';
@@ -18,6 +17,8 @@ import ChronosPanel from '@/components/admin/ChronosPanel';
 import AiLogsPanel from '@/components/admin/AiLogsPanel';
 import AnalyticsPanel from '@/components/admin/AnalyticsPanel';
 import InhoPanel from '@/components/admin/InhoPanel';
+import SIEMPanel from '@/components/admin/SiemPanel';
+import ChangePasswordPanel from '@/components/admin/ChangePasswordPanel';
 
 /*
 - [x] Install/Add Backend dependency (`cloudinary`)
@@ -70,7 +71,8 @@ export default function AdminDashboard() {
 
   // ── User Management state ─────────────────────────────────────────────────────
   const [users, setUsers] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<'projects' | 'users' | 'siem' | 'soar' | 'audit' | 'sbom' | 'ir' | 'nexus7' | 'aura' | 'chronos' | 'ai-logs' | 'analytics' | 'inho'>('projects');
+  const [currentUserRole, setCurrentUserRole] = useState<string>('user');
+  const [activeTab, setActiveTab] = useState<'projects' | 'users' | 'siem' | 'soar' | 'audit' | 'sbom' | 'ir' | 'nexus7' | 'aura' | 'chronos' | 'ai-logs' | 'analytics' | 'inho' | 'change-password'>('projects');
   const [showCreateUserForm, setShowCreateUserForm] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
@@ -99,29 +101,39 @@ export default function AdminDashboard() {
       }
 
       try {
-        const headers = { Authorization: `Bearer ${token}` };
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          setCurrentUserRole(payload.role || 'user');
+        } catch (e) {
+          console.error("Failed to decode token", e);
+        }
 
-        // Fetch Status, Projects and Users in parallel
-        const [statusRes, projectsRes, usersRes] = await Promise.all([
-          fetch(`${API_URL}/api/admin/status`, { headers }),
-          fetch(`${API_URL}/api/admin/projects`, { headers }),
-          fetch(`${API_URL}/api/admin/users`, { headers })
+        const [projectsRes, statusRes, usersRes] = await Promise.all([
+          fetch(`${API_URL}/api/admin/projects`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }),
+          fetch(`${API_URL}/api/admin/status`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }),
+          fetch(`${API_URL}/api/admin/users`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          })
         ]);
 
-        if (statusRes.status === 401 || projectsRes.status === 401 || usersRes.status === 401) {
+        if (statusRes.status === 401) {
           localStorage.removeItem('orbe_admin_token');
           router.replace('/admin/login');
           return;
         }
 
-        if (!statusRes.ok || !projectsRes.ok || !usersRes.ok) throw new Error('Systems Link Failure');
+        const [projectsData, statusData, usersData] = await Promise.all([
+          projectsRes.json(),
+          statusRes.json(),
+          usersRes.json()
+        ]);
 
-        const statusData = await statusRes.json();
-        const projectsData = await projectsRes.json();
-        const usersData = await usersRes.json();
-
+        setProjects(Array.isArray(projectsData?.projects) ? projectsData.projects : Array.isArray(projectsData) ? projectsData : []);
         setStatus(statusData);
-        setProjects(Array.isArray(projectsData) ? projectsData : projectsData?.projects || []);
         setUsers(Array.isArray(usersData?.users) ? usersData.users : Array.isArray(usersData) ? usersData : []);
       } catch (err) {
         console.error('Core data sync failed:', err);
@@ -396,6 +408,7 @@ export default function AdminDashboard() {
             { id: 'chronos', label: '⏳ CHRONOS' },
             { id: 'ai-logs', label: '🤖 AI LOGS' },
             { id: 'inho', label: '🖥️ INHO ADMIN' },
+            { id: 'change-password', label: '🔒 TROCAR SENHA' },
           ] as const).map(tab => (
             <button
               key={tab.id}
@@ -462,7 +475,8 @@ export default function AdminDashboard() {
             {activeTab === 'chronos' && <ChronosPanel />}
             {activeTab === 'ai-logs' && <AiLogsPanel />}
             {activeTab === 'analytics' && <AnalyticsPanel />}
-            {activeTab === 'inho' && <InhoPanel />}
+            {activeTab === 'inho' && <InhoPanel currentUserRole={currentUserRole} />}
+            {activeTab === 'change-password' && <ChangePasswordPanel />}
 
             {/* Project Manager Panel */}
             {activeTab === 'projects' && (
@@ -791,12 +805,14 @@ export default function AdminDashboard() {
                     <span className="text-[10px] text-neon-blue/40 px-2 border border-neon-blue/20 rounded">
                       {users.length} USERS
                     </span>
-                    <button
-                      onClick={() => setShowCreateUserForm(!showCreateUserForm)}
-                      className="text-[10px] text-neon-blue hover:text-white transition-colors"
-                    >
-                      + Create User
-                    </button>
+                    {currentUserRole === 'superadmin' && (
+                      <button
+                        onClick={() => setShowCreateUserForm(!showCreateUserForm)}
+                        className="text-[10px] text-neon-blue hover:text-white transition-colors"
+                      >
+                        + Create User
+                      </button>
+                    )}
                   </div>
                 </h2>
 
@@ -831,8 +847,8 @@ export default function AdminDashboard() {
                           onChange={(e) => setNewUserRole(e.target.value as 'user' | 'premium')}
                           className="w-full bg-black/60 border border-neon-blue/30 p-2 text-xs text-neon-blue focus:outline-none focus:border-neon-blue"
                         >
-                          <option value="user">User</option>
-                          <option value="premium">Premium</option>
+                          <option value="superadmin">Superadmin</option>
+                          <option value="orbe_operator">Orbe Operator</option>
                         </select>
                       </div>
                       <div className="flex gap-2 pt-2">
@@ -882,32 +898,33 @@ export default function AdminDashboard() {
                             <div>Created: {new Date(user.created_at).toLocaleDateString()}</div>
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          {user.role === 'user' ? (
+                        {currentUserRole === 'superadmin' && user.role !== 'superadmin' && (
+                          <div className="flex gap-2">
                             <button
-                              onClick={() => handleUpdateUserRole(user.id, 'premium')}
+                              onClick={() => handleUpdateUserRole(user.id, 'superadmin')}
                               className="p-2 border border-neon-blue/30 text-neon-blue/60 hover:text-neon-blue hover:border-neon-blue transition-all"
-                              title="Promote to Premium"
+                              title="Promote to Superadmin"
                             >
                               <Crown size={12} />
                             </button>
-                          ) : (
                             <button
-                              onClick={() => handleUpdateUserRole(user.id, 'user')}
+                              onClick={() => handleUpdateUserRole(user.id, 'orbe_operator')}
                               className="p-2 border border-neon-green/30 text-neon-green/60 hover:text-neon-green hover:border-neon-green transition-all"
-                              title="Demote to User"
+                              title="Demote to Orbe Operator"
                             >
                               <AlertCircle size={12} />
                             </button>
-                          )}
+                          </div>
+                        )}
+                        {currentUserRole === 'superadmin' && (
                           <button
                             onClick={() => handleDeleteUser(user.id)}
-                            className="p-2 border border-red-500/30 text-red-500/60 hover:text-red-500 hover:border-red-500 transition-all"
+                            className="p-2 border border-red-500/30 text-red-500/60 hover:text-red-500 hover:border-red-500 transition-all ml-4"
                             title="Delete User"
                           >
                             <X size={12} />
                           </button>
-                        </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -918,10 +935,7 @@ export default function AdminDashboard() {
             {/* ── Security Tool Panels ──────────────────────────── */}
             {activeTab === 'siem' && (
               <div className="border border-neon-green/20 bg-neon-green/5 p-5">
-                <h2 className="text-xs font-bold border-b border-neon-green/10 pb-3 mb-5 flex items-center gap-2 text-neon-cyan uppercase">
-                  🛡 SIEM — Security Alerts
-                </h2>
-                <SiemPanel apiUrl={API_URL} token={localStorage.getItem('orbe_admin_token') || ''} />
+                <SIEMPanel />
               </div>
             )}
 

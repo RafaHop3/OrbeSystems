@@ -1,0 +1,12 @@
+{
+  "InstanceIds": ["i-058e26140671b3254"],
+  "DocumentName": "AWS-RunShellScript",
+  "Parameters": {
+    "commands": [
+      "cd /home/ubuntu/OrbeSystems",
+      "cat > /tmp/test_db.py << 'EOF'\nimport asyncio\nimport asyncpg\n\nasync def test():\n    try:\n        conn = await asyncpg.connect('postgresql://orbe_admin:orbe_password@db:5432/orbesystems')\n        result = await conn.fetchval('SELECT 1')\n        print(f'DB OK: {result}')\n        await conn.close()\n    except Exception as e:\n        print(f'DB ERROR: {e}')\n\nasyncio.run(test())\nEOF",
+      "docker cp /tmp/test_db.py inho_backend:/tmp/test_db.py",
+      "docker exec -w /app inho_backend python3 /tmp/test_db.py"
+    ]
+  }
+}

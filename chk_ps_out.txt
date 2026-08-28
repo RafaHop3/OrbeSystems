@@ -1,0 +1,47 @@
+NAME            IMAGE                       COMMAND                  SERVICE        CREATED         STATUS                   PORTS
+inho_backend    orbe-systems-inho_backend   "uvicorn main:app --�"   inho_backend   6 minutes ago   Up 6 minutes (healthy)   0.0.0.0:8001->8000/tcp, [::]:8001->8000/tcp
+orbe_backend    orbe-systems-backend        "uvicorn main:app --�"   backend        2 hours ago     Up 2 hours               0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+orbe_postgres   postgres:15-alpine          "docker-entrypoint.s�"   db             24 hours ago    Up 24 hours              0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+orbe_redis      redis:7-alpine              "docker-entrypoint.s�"   redis          24 hours ago    Up 24 hours              0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+inho_backend  |     return meth(
+inho_backend  |            ^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/sql/elements.py", line 515, in _execute_on_connection
+inho_backend  |     return connection._execute_clauseelement(
+inho_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1640, in _execute_clauseelement
+inho_backend  |     ret = self._execute_context(
+inho_backend  |           ^^^^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+inho_backend  |     return self._exec_single_context(
+inho_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+inho_backend  |     self._handle_dbapi_exception(
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 2355, in _handle_dbapi_exception
+inho_backend  |     raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+inho_backend  |     self.dialect.do_execute(
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 941, in do_execute
+inho_backend  |     cursor.execute(statement, parameters)
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 568, in execute
+inho_backend  |     self._adapt_connection.await_(
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 132, in await_only
+inho_backend  |     return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+inho_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 196, in greenlet_spawn
+inho_backend  |     value = await result
+inho_backend  |             ^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 546, in _prepare_and_execute
+inho_backend  |     self._handle_exception(error)
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 497, in _handle_exception
+inho_backend  |     self._adapt_connection._handle_exception(error)
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 780, in _handle_exception
+inho_backend  |     raise translated_error from error
+inho_backend  | sqlalchemy.exc.ProgrammingError: (sqlalchemy.dialects.postgresql.asyncpg.ProgrammingError) <class 'asyncpg.exceptions.UndefinedColumnError'>: column users.hashed_password does not exist
+inho_backend  | [SQL: SELECT users.id, users.email, users.full_name, users.hashed_password, users.role, users.is_active, users.is_verified, users.created_at, users.updated_at 
+inho_backend  | FROM users 
+inho_backend  | WHERE users.email = $1::VARCHAR]
+inho_backend  | [parameters: ('robo_tester_csp@inho.com',)]
+inho_backend  | (Background on this error at: https://sqlalche.me/e/20/f405)
+inho_backend  | INFO:     127.0.0.1:42082 - "GET /health HTTP/1.1" 200 OK
+
+--ERR--

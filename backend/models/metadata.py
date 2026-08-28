@@ -1,10 +1,11 @@
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import Column, String, Text, Boolean
 from database import Base
 
 class ProjectMetadata(Base):
     __tablename__ = "projects_metadata"
 
-    id = Column(String, primary_key=True, index=True)  # GitHub repo ID as string
+    id = Column(UUID(as_uuid=True), primary_key=True, index=True)  # GitHub repo ID as string
     repo_name = Column(String, nullable=True, index=True)  # e.g. "OrbeSystems"
     custom_description = Column(String, nullable=True)
     image_url = Column(Text, nullable=True)

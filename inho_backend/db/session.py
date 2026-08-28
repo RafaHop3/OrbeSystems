@@ -34,14 +34,20 @@ engine_kwargs = {
     "pool_pre_ping": True,
 }
 
+from sqlalchemy.pool import NullPool
+
 if not settings.DATABASE_URL.startswith("sqlite"):
     engine_kwargs.update({
-        "pool_size": 5,
-        "max_overflow": 10,
+        "poolclass": NullPool,
     })
+    
+    engine_kwargs.setdefault("connect_args", {})
+    engine_kwargs["connect_args"]["server_settings"] = {"search_path": getattr(settings, "SCHEMA", "inho") + ", public"}
+    engine_kwargs["connect_args"]["prepared_statement_cache_size"] = 0
+    
     # Only apply SSL for production databases (Supabase, Render, etc.)
     if "supabase" in settings.DATABASE_URL or "render.com" in settings.DATABASE_URL:
-        engine_kwargs["connect_args"] = {"ssl": _ssl_ctx}
+        engine_kwargs["connect_args"]["ssl"] = _ssl_ctx
 
 engine = create_async_engine(
     settings.DATABASE_URL,
@@ -55,8 +61,10 @@ AsyncSessionLocal = async_sessionmaker(
 )
 
 
+from sqlalchemy import MetaData
+
 class Base(DeclarativeBase):
-    pass
+    metadata = MetaData(schema="inho" if not settings.DATABASE_URL.startswith("sqlite") else None)
 
 
 async def get_db() -> AsyncSession:

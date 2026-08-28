@@ -17,6 +17,7 @@ Segurança:
 
 from uuid import uuid4
 from datetime import datetime, timezone
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import (
     Column, String, Text, Float, Boolean, DateTime,
     ForeignKey, CheckConstraint
@@ -63,8 +64,8 @@ class ImobProperty(Base):
         ),
     )
 
-    id               = Column(String, primary_key=True, default=lambda: str(uuid4()))
-    owner_id         = Column(String, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    id               = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
+    owner_id         = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
 
     # Informações do anúncio
     title            = Column(String(150), nullable=False)
@@ -140,8 +141,8 @@ class ImobInspectionItem(Base):
     """
     __tablename__ = "imob_inspection_items"
 
-    id                   = Column(String, primary_key=True, default=lambda: str(uuid4()))
-    property_id          = Column(String, ForeignKey("imob_properties.id", ondelete="CASCADE"), nullable=False, index=True)
+    id                   = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
+    property_id          = Column(UUID(as_uuid=True), ForeignKey("imob_properties.id", ondelete="CASCADE"), nullable=False, index=True)
 
     component_name       = Column(String(100), nullable=False)  # Ex: "pia_cozinha", "quadro_eletrico"
 
@@ -182,8 +183,8 @@ class ImobLead(Base):
     """
     __tablename__ = "imob_leads"
 
-    id              = Column(String, primary_key=True, default=lambda: str(uuid4()))
-    property_id     = Column(String, ForeignKey("imob_properties.id", ondelete="CASCADE"), nullable=False, index=True)
+    id              = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
+    property_id     = Column(UUID(as_uuid=True), ForeignKey("imob_properties.id", ondelete="CASCADE"), nullable=False, index=True)
 
     customer_name   = Column(String(100), nullable=False)
     customer_email  = Column(String(200), nullable=False)

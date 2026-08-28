@@ -1,0 +1,51 @@
+{
+    "serasa": {
+        "name": "Serasa Experian",
+        "method": "FORM",
+        "form_url": "https://www.serasa.com.br/lgpd/solicitacao-privacidade",
+        "selectors": {
+            "name_input": "#full_name, input[name='name'], input[name='nome']",
+            "cpf_input": "#cpf, input[name='cpf']",
+            "email_input": "#email, input[name='email']",
+            "submit_button": "button[type='submit'], #btn-submit-lgpd",
+            "success_message": ".success-message, .alert-success, #msg-sucesso",
+            "captcha_indicators": [
+                "iframe[src*='recaptcha']",
+                "iframe[src*='hcaptcha']",
+                ".g-recaptcha",
+                "#cf-turnstile"
+            ]
+        }
+    },
+    "boa_vista": {
+        "name": "Boa Vista SCPC",
+        "method": "FORM",
+        "form_url": "https://www.consumidorpositivo.com.br/atendimento/lgpd",
+        "selectors": {
+            "name_input": "input[name='nome_completo']",
+            "cpf_input": "input[name='cpf_cnpj']",
+            "email_input": "input[name='email_contato']",
+            "submit_button": "button#send-lgpd-request",
+            "success_message": "#confirmation-banner",
+            "captcha_indicators": [
+                "iframe[src*='recaptcha']",
+                ".h-captcha"
+            ]
+        }
+    },
+    "econodata": {
+        "name": "Econodata",
+        "method": "FORM",
+        "form_url": "https://www.econodata.com.br/privacidade/remover-dados",
+        "selectors": {
+            "name_input": "#input-name",
+            "cpf_input": "#input-cpf",
+            "email_input": "#input-email",
+            "submit_button": "button.btn-privacy-submit",
+            "success_message": ".feedback-success",
+            "captcha_indicators": [
+                "#recaptcha-element"
+            ]
+        }
+    }
+}

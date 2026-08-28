@@ -1,0 +1,9 @@
+{
+  "InstanceIds": ["i-058e26140671b3254"],
+  "DocumentName": "AWS-RunShellScript",
+  "Parameters": {
+    "commands": [
+      "curl -s -H 'Host: inho-api.orbesystems.com.br' http://localhost:80/api/v1/auth/login -X POST -H 'Content-Type: application/json' -d '{\"email\": \"admin@inho.io\", \"password\": \"Admin@INHO2026!\"}'"
+    ]
+  }
+}

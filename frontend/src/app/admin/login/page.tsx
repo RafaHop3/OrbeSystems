@@ -35,7 +35,7 @@ export default function AdminLogin() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ email: username, password: trimmedPassword }),
+          body: JSON.stringify({ username: username, password: trimmedPassword }),
         });
 
         if (!res.ok) {

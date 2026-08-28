@@ -1,0 +1,32 @@
+inho_backend  |          ^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+inho_backend  |     raise exc_value.with_traceback(exc_tb)
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/pool/impl.py", line 177, in _do_get
+inho_backend  |     return self._create_connection()
+inho_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 390, in _create_connection
+inho_backend  |     return _ConnectionRecord(self)
+inho_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 674, in __init__
+inho_backend  |     self.__connect()
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 900, in __connect
+inho_backend  |     with util.safe_reraise():
+inho_backend  |          ^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/util/langhelpers.py", line 146, in __exit__
+inho_backend  |     raise exc_value.with_traceback(exc_tb)
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/pool/base.py", line 896, in __connect
+inho_backend  |     self.dbapi_connection = connection = pool._invoke_creator(self)
+inho_backend  |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/engine/create.py", line 643, in connect
+inho_backend  |     return dialect.connect(*cargs, **cparams)
+inho_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/engine/default.py", line 621, in connect
+inho_backend  |     return self.loaded_dbapi.connect(*cargs, **cparams)
+inho_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+inho_backend  |   File "/opt/venv/lib/python3.12/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 949, in connect
+inho_backend  |     await_only(creator_fn(*arg, **kw)),
+inho_backend  |                ^^^^^^^^^^^^^^^^^^^^^^
+inho_backend  | TypeError: connect() got an unexpected keyword argument 'sslmode'
+inho_backend  | INFO:     127.0.0.1:49398 - "GET /health HTTP/1.1" 200 OK
+
+--ERR--

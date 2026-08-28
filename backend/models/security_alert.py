@@ -1,3 +1,4 @@
+from sqlalchemy.dialects.postgresql import UUID
 """
 models/security_alert.py — Security Alert Model
 ════════════════════════════════════════════════
@@ -26,7 +27,7 @@ STATUS_RESOLVED     = "resolved"
 class SecurityAlert(Base):
     __tablename__ = "security_alerts"
 
-    id             = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id             = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
     rule_name      = Column(String(100), nullable=False, index=True)
     severity       = Column(String(20), nullable=False, default=SEVERITY_MEDIUM, index=True)
     status         = Column(String(20), nullable=False, default=STATUS_OPEN, index=True)

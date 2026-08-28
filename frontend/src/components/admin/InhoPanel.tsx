@@ -3,13 +3,13 @@
 import { useEffect, useState } from 'react';
 import { Shield, Crown, User as UserIcon, Activity, Plus, X, Command } from 'lucide-react';
 
-export default function InhoPanel() {
+export default function InhoPanel({ currentUserRole }: { currentUserRole?: string }) {
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'USER' });
+    const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'client' });
     const [creating, setCreating] = useState(false);
 
     // Authentication State for INHO backend
@@ -185,13 +185,15 @@ export default function InhoPanel() {
                             <span className="text-[10px] text-green-500/40 px-2 border border-green-500/20 rounded">
                                 {users.length} ENTIDADES
                             </span>
-                            <button
-                                onClick={() => setShowCreateForm(!showCreateForm)}
-                                className="flex items-center gap-1 text-[10px] bg-green-500/10 text-green-400 px-3 py-1 border border-green-500/30 hover:bg-green-500/20 transition-all font-bold"
-                            >
-                                {showCreateForm ? <X size={10} /> : <Plus size={10} />}
-                                {showCreateForm ? 'CANCEL' : 'NOVA IDENTIDADE'}
-                            </button>
+                            {currentUserRole === 'superadmin' && (
+                                <button
+                                    onClick={() => setShowCreateForm(!showCreateForm)}
+                                    className="flex items-center gap-1 text-[10px] bg-green-500/10 text-green-400 px-3 py-1 border border-green-500/30 hover:bg-green-500/20 transition-all font-bold"
+                                >
+                                    {showCreateForm ? <X size={10} /> : <Plus size={10} />}
+                                    {showCreateForm ? 'CANCEL' : 'NOVA IDENTIDADE INHO'}
+                                </button>
+                            )}
                             <button
                                 onClick={handleLogout}
                                 className="text-[10px] text-red-500/80 border border-red-500/20 px-2 py-1 rounded hover:bg-red-500/10 transition-colors"
@@ -270,16 +272,15 @@ export default function InhoPanel() {
                                 value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}
                                 className="bg-black border border-green-500/30 text-green-400 text-[10px] focus:outline-none focus:border-green-400 p-2 uppercase"
                             >
-                                <option value="client">CLIENT</option>
-                                <option value="operator">OPERATOR</option>
-                                <option value="viewer">VIEWER</option>
-                                <option value="admin">ADMIN</option>
+                                <option value="inho_admin">ASSINANTE INHO (ADMIN)</option>
+                                <option value="inho_operator">OPERADOR INHO (FUNC.)</option>
                             </select>
                             <button
                                 onClick={handleCreate} disabled={creating}
-                                className="bg-green-500/20 text-green-400 text-[10px] font-bold border border-green-500/40 hover:bg-green-500 hover:text-black transition-colors flex items-center justify-center gap-2 uppercase tracking-wider"
+                                className="bg-green-500/20 text-green-400 text-[10px] font-bold border border-green-500/40 hover:bg-green-500 hover:text-black transition-colors flex items-center justify-center gap-2 uppercase tracking-wider relative overflow-hidden group"
                             >
-                                {creating ? 'INJETANDO...' : 'EXECUTAR'}
+                                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-green-400/20 to-transparent -translate-x-full group-hover:translate-x-full duration-500"></span>
+                                {creating ? 'INJETANDO MASTER (BYPASS RLS)...' : 'INJETAR DIRETAMENTE NO DB (MASTER)'}
                             </button>
                         </div>
                     )}
@@ -295,34 +296,36 @@ export default function InhoPanel() {
                                             <p className="text-[9px] text-green-500/50 mt-1 uppercase">{u.email}</p>
                                         </div>
                                     </div>
-                                    {u.role === 'ADMIN' ? (
+                                    {(u.role === 'admin' || u.role === 'super_admin') ? (
                                         <span className="text-[9px] text-green-400 border border-green-400/40 bg-green-400/10 px-2 py-0.5 rounded flex items-center gap-1">
-                                            <Crown size={8} /> MASTER
+                                            <Crown size={8} /> {u.role === 'super_admin' ? 'SUPER ADMIN' : 'MASTER'}
                                         </span>
                                     ) : (
-                                        <span className="text-[9px] text-green-500/50 border border-green-500/20 px-2 py-0.5 rounded">
+                                        <span className="text-[9px] text-green-500/50 border border-green-500/20 px-2 py-0.5 rounded uppercase">
                                             {u.role}
                                         </span>
                                     )}
                                 </div>
 
                                 <div className="flex items-center gap-2 mt-4 pt-4 border-t border-green-500/10">
-                                    <select
-                                        value={u.role}
-                                        onChange={e => handleRoleChange(u.id, e.target.value)}
-                                        className="flex-1 bg-black text-[9px] text-green-500/80 border border-green-500/20 px-2 py-1 focus:outline-none uppercase"
-                                    >
-                                        <option value="client">ROLE: CLIENT</option>
-                                        <option value="operator">ROLE: OPERATOR</option>
-                                        <option value="viewer">ROLE: VIEWER</option>
-                                        <option value="admin">ROLE: ADMIN</option>
-                                    </select>
-                                    <button
-                                        onClick={() => handleDelete(u.id)}
-                                        className="text-[9px] text-red-500 border border-red-500/20 px-3 py-1 hover:bg-red-500 hover:text-white transition-all uppercase"
-                                    >
-                                        PURGE
-                                    </button>
+                                    {currentUserRole === 'superadmin' && (
+                                        <select
+                                            value={u.role}
+                                            onChange={e => handleRoleChange(u.id, e.target.value)}
+                                            className="flex-1 bg-black text-[9px] text-green-500/80 border border-green-500/20 px-2 py-1 focus:outline-none uppercase"
+                                        >
+                                            <option value="inho_admin">ROLE: ASSINANTE INHO (ADMIN)</option>
+                                            <option value="inho_operator">ROLE: OPERADOR INHO</option>
+                                        </select>
+                                    )}
+                                    {currentUserRole === 'superadmin' && (
+                                        <button
+                                            onClick={() => handleDelete(u.id)}
+                                            className="text-[9px] text-red-500 border border-red-500/20 px-3 py-1 hover:bg-red-500 hover:text-white transition-all uppercase"
+                                        >
+                                            PURGE
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         ))}

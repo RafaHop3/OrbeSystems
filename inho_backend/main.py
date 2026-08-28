@@ -15,7 +15,7 @@ from core.config import settings
 from db.session import engine, Base
 from keep_alive import start_keep_alive, stop_keep_alive
 from routers import (
-    auth, users, audit, contracts, sales_orders, pdv, admin, pco, businesses, billing
+    auth, users, audit, contracts, sales_orders, pdv, admin, pco, businesses, billing, ghost_engine
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
@@ -64,8 +64,9 @@ app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
     description="API de alta disponibilidade para gestão empresarial e impacto social global.",
-    docs_url="/docs" if settings.DEBUG else None,
-    redoc_url="/redoc" if settings.DEBUG else None,
+    docs_url=None,
+    redoc_url=None,
+    openapi_url=None,
     lifespan=lifespan,
 )
 
@@ -112,6 +113,7 @@ app.include_router(pdv.router, prefix="/api/v1")
 app.include_router(pco.router, prefix="/api/v1")
 app.include_router(businesses.router, prefix="/api/v1")
 app.include_router(billing.router, prefix="/api/v1/billing", tags=["Billing"])
+app.include_router(ghost_engine.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
 
 

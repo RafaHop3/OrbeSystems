@@ -127,6 +127,21 @@ async def stripe_webhook(
                                 webhook_logger.info(f"INHO Admin provisioned successfully for {user_email}")
                             else:
                                 webhook_logger.error(f"INHO provisioning failed for {user_email}: {resp.text}")
+                            
+                            # Após o registro inicial, mandar dar baixa em faturas antigas!
+                            reconcile_payload = {
+                                "email": user_email,
+                                "action": "checkout_session_completed",
+                                "stripe_customer_id": customer_id
+                            }
+                            rec_resp = await client.post(
+                                f"{inho_api_url}/billing/webhook/reconcile",
+                                json=reconcile_payload,
+                                headers={"X-INHO-SYSTEM-SECRET": sys_secret},
+                                timeout=15.0
+                            )
+                            webhook_logger.info(f"INHO Billing Webhook trigger done: {rec_resp.status_code}")
+
                     except Exception as ex:
                         webhook_logger.error(f"Failed to call INHO bridging API: {ex}")
 

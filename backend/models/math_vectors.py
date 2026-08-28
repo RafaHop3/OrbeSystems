@@ -1,3 +1,4 @@
+from sqlalchemy.dialects.postgresql import UUID
 """
 models/math_vectors.py — Math Vectors Model
 ════════════════════════════════════════════════
@@ -14,8 +15,8 @@ from database import Base
 class MathVector(Base):
     __tablename__ = "math_vectors"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
-    user_id = Column(String, ForeignKey("users.id"), nullable=True, index=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True, index=True)
     name = Column(String, nullable=False)
     dimensions = Column(String, nullable=False)  # e.g. "3", "n"
     components = Column(JSON, nullable=False)  # Array de números: [1, 2, 3]

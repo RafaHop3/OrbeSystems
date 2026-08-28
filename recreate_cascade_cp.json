@@ -1,0 +1,12 @@
+{
+  "InstanceIds": ["i-058e26140671b3254"],
+  "DocumentName": "AWS-RunShellScript",
+  "Parameters": {
+    "commands": [
+      "cd /home/ubuntu/OrbeSystems",
+      "cat > /tmp/recreate_cascade.py << 'EOF'\nimport asyncio\nfrom db.session import engine\nfrom sqlalchemy import text\n\nasync def recreate():\n    async with engine.begin() as conn:\n        await conn.execute(text(\"DROP SCHEMA public CASCADE; CREATE SCHEMA public;\"))\n        print('Schema recreated')\n        from models.models import Base\n        await conn.run_sync(Base.metadata.create_all)\n        print('Tables recreated')\n\nasyncio.run(recreate())\nEOF",
+      "docker cp /tmp/recreate_cascade.py inho_backend:/app/recreate_cascade.py",
+      "docker exec -w /app inho_backend python3 recreate_cascade.py"
+    ]
+  }
+}

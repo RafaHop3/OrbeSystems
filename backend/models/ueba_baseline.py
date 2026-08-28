@@ -1,3 +1,4 @@
+from sqlalchemy.dialects.postgresql import UUID
 """
 models/ueba_baseline.py — UEBA Behavioral Baseline Cache
 ══════════════════════════════════════════════════════════
@@ -14,7 +15,7 @@ from database import Base
 class UebaBaseline(Base):
     __tablename__ = "ueba_baselines"
 
-    id                = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id                = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
     ip                = Column(String(50), nullable=False, unique=True, index=True)
 
     # Statistical baseline (requests per hour)

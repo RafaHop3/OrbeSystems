@@ -1,0 +1,80 @@
+Traceback (most recent call last):
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\dialects\sqlite\aiosqlite.py", line 147, in execute
+    self._adapt_connection._handle_exception(error)
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\dialects\sqlite\aiosqlite.py", line 298, in _handle_exception
+    raise error
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\dialects\sqlite\aiosqlite.py", line 129, in execute
+    self.await_(_cursor.execute(operation, parameters))
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\aiosqlite\cursor.py", line 40, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\aiosqlite\cursor.py", line 32, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\aiosqlite\core.py", line 160, in _execute
+    return await future
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\aiosqlite\core.py", line 63, in _connection_worker_thread
+    result = function()
+sqlite3.OperationalError: no such column: users.otp_secret
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\OrbeSystems\orbe-systems\inho_backend\run_webhook_safe.py", line 8, in test_wrapper
+    await run_simulation()
+  File "D:\OrbeSystems\orbe-systems\inho_backend\test_b2b2c_webhook.py", line 17, in run_simulation
+    user_res = await db.execute(User.__table__.select().limit(1))
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\ext\asyncio\session.py", line 461, in execute
+    result = await greenlet_spawn(
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 201, in greenlet_spawn
+    result = context.throw(*sys.exc_info())
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\orm\session.py", line 2362, in execute
+    return self._execute_internal(
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\orm\session.py", line 2256, in _execute_internal
+    result = conn.execute(
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\engine\base.py", line 1418, in execute
+    return meth(
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\sql\elements.py", line 515, in _execute_on_connection
+    return connection._execute_clauseelement(
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\engine\base.py", line 1640, in _execute_clauseelement
+    ret = self._execute_context(
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\engine\base.py", line 2355, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\engine\default.py", line 941, in do_execute
+    cursor.execute(statement, parameters)
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\dialects\sqlite\aiosqlite.py", line 147, in execute
+    self._adapt_connection._handle_exception(error)
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\dialects\sqlite\aiosqlite.py", line 298, in _handle_exception
+    raise error
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\dialects\sqlite\aiosqlite.py", line 129, in execute
+    self.await_(_cursor.execute(operation, parameters))
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 132, in await_only
+    return current.parent.switch(awaitable)  # type: ignore[no-any-return,attr-defined] # noqa: E501
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\sqlalchemy\util\_concurrency_py3k.py", line 196, in greenlet_spawn
+    value = await result
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\aiosqlite\cursor.py", line 40, in execute
+    await self._execute(self._cursor.execute, sql, parameters)
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\aiosqlite\cursor.py", line 32, in _execute
+    return await self._conn._execute(fn, *args, **kwargs)
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\aiosqlite\core.py", line 160, in _execute
+    return await future
+  File "D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\aiosqlite\core.py", line 63, in _connection_worker_thread
+    result = function()
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such column: users.otp_secret
+[SQL: SELECT users.id, users.email, users.full_name, users.hashed_password, users.role, users.is_active, users.is_verified, users.otp_secret, users.is_mfa_enabled, users.backup_codes, users.created_at, users.updated_at 
+FROM users
+ LIMIT ? OFFSET ?]
+[parameters: (1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

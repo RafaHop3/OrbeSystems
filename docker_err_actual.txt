@@ -1,0 +1,9 @@
+time="2026-08-19T21:49:00Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+ Container orbe_redis  Running
+ Container orbe_postgres  Running
+ Container inho_backend  Starting
+ Container orbe_backend  Starting
+ Container inho_backend  Started
+ Container orbe_backend  Started
+
+---

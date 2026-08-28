@@ -1,0 +1,13 @@
+NAME            IMAGE                       COMMAND                  SERVICE        CREATED             STATUS                            PORTS
+inho_backend    orbe-systems-inho_backend   "uvicorn main:app --�"   inho_backend   8 seconds ago       Up 4 seconds (health: starting)   0.0.0.0:8001->8000/tcp, [::]:8001->8000/tcp
+orbe_backend    orbe-systems-backend        "uvicorn main:app --�"   backend        About an hour ago   Up About an hour                  0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+orbe_postgres   postgres:15-alpine          "docker-entrypoint.s�"   db             24 hours ago        Up 24 hours                       0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+orbe_redis      redis:7-alpine              "docker-entrypoint.s�"   redis          24 hours ago        Up 24 hours                       0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+
+--ERR--
+time="2026-08-23T13:52:18Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+ Container orbe_postgres  Running
+ Container inho_backend  Recreate
+ Container inho_backend  Recreated
+ Container inho_backend  Starting
+ Container inho_backend  Started

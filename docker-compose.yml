@@ -35,16 +35,18 @@ services:
       - db
       - redis
     volumes:
-      - ./backend/data:/app/data
+      - ./backend:/app
 
   inho_backend:
     build: ./inho_backend
     container_name: inho_backend
     restart: always
+    env_file:
+      - ./backend/.env
     environment:
       - DATABASE_URL=postgresql+asyncpg://orbe_admin:orbe_password@db:5432/orbesystems
       - REDIS_URL=redis://redis:6379/1
-      - SCHEMA=inho
+      - SCHEMA=public
     ports:
       - "8001:8000"
     depends_on:

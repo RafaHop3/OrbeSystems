@@ -1,3 +1,4 @@
+from sqlalchemy.dialects.postgresql import UUID
 """
 models/analytics.py — Analytics & Session Models
 ════════════════════════════════════════════════
@@ -15,7 +16,7 @@ from typing import Optional
 class VisitLog(Base):
     __tablename__ = "visit_logs"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
     ip = Column(String, nullable=False, index=True)
     city = Column(String, nullable=True)
     region = Column(String, nullable=True)
@@ -59,7 +60,7 @@ class VisitLog(Base):
 class ActiveSession(Base):
     __tablename__ = "active_sessions"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
     session_id = Column(String, nullable=False, unique=True, index=True)
     ip = Column(String, nullable=False, index=True)
     user_agent = Column(Text, nullable=True)

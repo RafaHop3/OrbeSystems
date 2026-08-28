@@ -90,9 +90,8 @@ def create_user_access_token(user_email: str, role: str, expires_delta: Optional
     )
 
 
-# ── Admin Domain Dependency (unchanged behaviour) ─────────────────────────────
 async def get_current_admin_user(token: str = Depends(oauth2_scheme)):
-    """Validates the JWT and ensures the caller is the sysadmin (ADMIN domain)."""
+    """Validates the JWT and ensures the caller is the sysadmin (ADMIN domain) or DB SuperAdmin."""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -103,10 +102,14 @@ async def get_current_admin_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
+        is_superadmin = payload.get("is_superadmin", False)
         if username is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
+
+    if is_superadmin:
+        return username
 
     if username != ADMIN_USERNAME:
         raise credentials_exception

@@ -1,3 +1,4 @@
+from sqlalchemy.dialects.postgresql import UUID
 """
 models/audit_log.py — Audit Log Model
 ════════════════════════════════════════════════
@@ -13,7 +14,7 @@ from database import Base
 class AuditLog(Base):
     __tablename__ = "audit_logs"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
     admin_email = Column(String, nullable=False, index=True)
     action = Column(String, nullable=False)  # e.g. "update_user_role", "delete_user"
     target_type = Column(String, nullable=False)  # e.g. "user", "project"

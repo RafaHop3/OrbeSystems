@@ -8,6 +8,7 @@ Linked to SecurityAlert by alert_id for bidirectional navigation.
 
 from uuid import uuid4
 from datetime import datetime, timezone
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import (
     Column, String, Text, Boolean, Integer,
     DateTime, JSON, Index,
@@ -36,7 +37,7 @@ IR_STATUS_CLOSED = "closed"
 class IncidentReport(Base):
     __tablename__ = "incident_reports"
 
-    id              = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id              = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
 
     # Link to the triggering SecurityAlert (non-FK soft reference)
     alert_id        = Column(String(36), nullable=True, index=True)

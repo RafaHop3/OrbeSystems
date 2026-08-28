@@ -6,7 +6,8 @@ from pydantic import BaseModel
 import traceback
 
 from db.session import get_db
-from models.models import Business, User, UserRole
+from models.models import Business, User, UserRole, BusinessCategory
+from typing import Optional
 
 router = APIRouter(prefix="/businesses", tags=["Businesses"])
 
@@ -16,11 +17,13 @@ from pydantic import BaseModel, ConfigDict
 class BusinessCreate(BaseModel):
     name: str
     cnpj: str | None = None
+    category: BusinessCategory = BusinessCategory.OUTROS
 
 class BusinessResponse(BaseModel):
     id: UUID
     name: str
     cnpj: str | None = None
+    category: BusinessCategory
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -59,7 +62,8 @@ async def create_business(
     new_business = Business(
         user_id=current_user.id,
         name=item.name,
-        cnpj=item.cnpj
+        cnpj=item.cnpj,
+        category=item.category
     )
     db.add(new_business)
     await db.commit()

@@ -1,3 +1,4 @@
+from sqlalchemy.dialects.postgresql import UUID
 """
 models/ip_blocklist.py — SOAR IP Blocklist Model
 ══════════════════════════════════════════════════
@@ -15,7 +16,7 @@ from database import Base
 class IpBlocklist(Base):
     __tablename__ = "ip_blocklist"
 
-    id                 = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id                 = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
     ip                 = Column(String(50), nullable=False, unique=True, index=True)
     reason             = Column(String(200), nullable=False)
     playbook_triggered = Column(String(100), nullable=True)   # e.g. "rate_abuse_block"

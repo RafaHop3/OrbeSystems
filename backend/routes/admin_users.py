@@ -21,15 +21,20 @@ router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 
 # Constants
-ROLE_USER = "user"
-ROLE_PREMIUM = "premium"
-VALID_ROLES = {ROLE_USER, ROLE_PREMIUM}
+from models.users.roles import SystemRole
+
+VALID_ROLES = {
+    SystemRole.SUPERADMIN,
+    SystemRole.ORBE_OPERATOR,
+    SystemRole.INHO_ADMIN,
+    SystemRole.INHO_OPERATOR
+}
 
 # ── Schemas ───────────────────────────────────────────────────────────────────
 class CreateUserSchema(BaseModel):
     email: EmailStr
     password: str
-    role: str = ROLE_USER
+    role: str = SystemRole.ORBE_OPERATOR
 
 # Whitelist of trusted proxy IPs (Cloudflare, Vercel, etc.)
 TRUSTED_PROXIES = {
@@ -115,6 +120,14 @@ async def create_user(
 
     # Get admin email from dependency
     admin_email = admin
+    
+    # ENFORCE STRICT SUPERADMIN-ONLY FOR CREATION
+    if admin_email != "rafael@orbesystems.com.br" and admin_email != "admin": 
+        # Double check DB incase it's another superadmin
+        admin_user = db.query(User).filter(User.email == admin_email).first()
+        if not admin_user or admin_user.role != SystemRole.SUPERADMIN:
+            admin_logger.error(f"Unauthorized creation attempt by {admin_email}")
+            raise HTTPException(status_code=403, detail="Master Clearance Required. Only Superadmins can add users.")
     # Get real IP address with validation
     ip_address = get_client_ip(request)
 

@@ -3,6 +3,10 @@ from fastapi import APIRouter, Depends, HTTPException, status, Request
 from pydantic import BaseModel
 from slowapi import Limiter
 from slowapi.util import get_remote_address
+from sqlalchemy.orm import Session
+from database import get_db
+from models.users import User
+
 from security.auth import (
     ACCESS_TOKEN_EXPIRE_MINUTES,
     ADMIN_USERNAME,
@@ -14,52 +18,58 @@ from security.auth import (
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
 
+from typing import Optional
+
 class LoginSchema(BaseModel):
-    username: str
+    username: Optional[str] = None
+    email: Optional[str] = None
     password: str
 
 @router.post("/login")
-@limiter.limit("5/minute")
-async def login_for_access_token(request: Request, data: LoginSchema):
-    """ Secure login endpoint. Only the configured admin is allowed. (Max 5 attempts / min) """
-    print(f"[AUTH] Login attempt received.")
+@limiter.limit("10/minute")
+async def login_for_access_token(request: Request, data: LoginSchema, db: Session = Depends(get_db)):
+    """ Secure login endpoint. Admins from .env or users table with superadmin role allowed. """
+    identity = data.username or data.email
+    print(f"[AUTH] Login attempt received for: {identity}")
     
-    # 1. First verify the username (prevents salt crashes on unknown users)
-    if data.username != ADMIN_USERNAME:
+    # 1. DB-backed superadmin check
+    user = db.query(User).filter(User.email == identity).first()
+    if user and user.role == "superadmin":
+        if verify_password(data.password, user.password_hash):
+            print(f"[AUTH] DB SuperAdmin authenticated: {identity}")
+            access_token = create_access_token(
+                data={"sub": user.email, "role": "superadmin", "is_superadmin": True}, 
+                expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+            )
+            return {"access_token": access_token, "token_type": "bearer"}
+
+    # 2. Legacy .env fallback check
+    if identity != ADMIN_USERNAME:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="ACCESS DENIED: UNKNOWN IDENTITY.",
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    # 2. Verify password with safety wrap
     if not ADMIN_PASSWORD_HASH:
-        print("CRITICAL: Auth system failure - ADMIN_PASSWORD_HASH is not configured in environment.")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="SYSTEM ERROR: Orbe System missing backend auth configuration.",
-            headers={"WWW-Authenticate": "Bearer"},
         )
     
     try:
-        is_valid = verify_password(data.password, ADMIN_PASSWORD_HASH)
-        if not is_valid:
+        if not verify_password(data.password, ADMIN_PASSWORD_HASH):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="ACCESS DENIED: INVALID PASSPHRASE.",
                 headers={"WWW-Authenticate": "Bearer"},
             )
     except Exception as e:
-        # This catches "Invalid salt" or malformed hashes in config
         print(f"CRITICAL: Auth system failure - {str(e)}")
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="ACCESS DENIED: AUTH SYSTEM ERROR.",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="ACCESS DENIED.")
         
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": ADMIN_USERNAME}, expires_delta=access_token_expires
+        data={"sub": ADMIN_USERNAME, "role": "superadmin"},
+        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     return {"access_token": access_token, "token_type": "bearer"}

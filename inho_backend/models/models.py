@@ -16,13 +16,19 @@ from sqlalchemy.orm import relationship
 from db.session import Base
 
 
-# ── Enums ─────────────────────────────────────────────────────────
 class UserRole(str, enum.Enum):
     SUPER_ADMIN = "super_admin"
     ADMIN       = "admin"
     OPERATOR    = "operator"
     VIEWER      = "viewer"
     CLIENT      = "client"
+
+class BusinessCategory(str, enum.Enum):
+    COOPERATIVA = "COOPERATIVA"
+    VAREJO      = "VAREJO"
+    SERVICOS    = "SERVICOS"
+    OUTROS      = "OUTROS"
+
 
 
 class AuditAction(str, enum.Enum):
@@ -46,6 +52,9 @@ class User(Base):
     role            = Column(Enum(UserRole), nullable=False, default=UserRole.CLIENT)
     is_active       = Column(Boolean, default=True, nullable=False)
     is_verified     = Column(Boolean, default=False, nullable=False)
+    otp_secret      = Column(String(255), nullable=True)
+    is_mfa_enabled  = Column(Boolean, default=False, nullable=False)
+    backup_codes    = Column(Text, nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
@@ -82,6 +91,8 @@ class Business(Base):
     user_id    = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name       = Column(String(255), nullable=False)
     cnpj       = Column(String(20), nullable=True)
+    category   = Column(Enum(BusinessCategory), nullable=False, default=BusinessCategory.OUTROS)
+
     
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
@@ -241,12 +252,49 @@ class PDVSale(Base):
     )
 
 
-# ── BillingStatus / BillingInvoice ────────────────────────────────
 class BillingStatus(str, enum.Enum):
     PENDING   = "PENDING"
     PAID      = "PAID"
     OVERDUE   = "OVERDUE"
     CANCELLED = "CANCELLED"
+
+class InvoiceType(str, enum.Enum):
+    INTEGRALIZACAO_INICIAL = "INTEGRALIZACAO_INICIAL"
+    MENSALIDADE            = "MENSALIDADE"
+    TAXA_MANUTENCAO        = "TAXA_MANUTENCAO"
+    OUTROS                 = "OUTROS"
+
+# ── B2B2C Domain: Cooperado Pipeline ──────────────────────────────
+class CooperadoStatus(str, enum.Enum):
+    PROPOSTA_CADASTRADA       = "PROPOSTA_CADASTRADA"
+    AGUARDANDO_INTEGRALIZACAO = "AGUARDANDO_INTEGRALIZACAO"
+    ATIVO                     = "ATIVO"
+    INADIMPLENTE              = "INADIMPLENTE"
+    SUSPENSO                  = "SUSPENSO"
+    DESLIGADO                 = "DESLIGADO"
+    EM_REGULARIZACAO          = "EM_REGULARIZACAO"
+
+class Cooperado(Base):
+    __tablename__ = "cooperados"
+
+    id           = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id  = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    name         = Column(String(255), nullable=False)
+    document     = Column(String(50), nullable=False) # CPF or CNPJ
+    email        = Column(String(255), nullable=True)
+    phone        = Column(String(50), nullable=True)
+    status       = Column(Enum(CooperadoStatus), nullable=False, default=CooperadoStatus.PROPOSTA_CADASTRADA)
+
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_cooperados_business", "business_id"),
+        Index("ix_cooperados_status", "status"),
+        Index("ix_cooperados_document", "document"),
+    )
+
 
 
 class BillingInvoice(Base):
@@ -254,6 +302,8 @@ class BillingInvoice(Base):
 
     id                       = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id              = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    cooperado_id             = Column(UUID(as_uuid=True), ForeignKey("cooperados.id", ondelete="CASCADE"), nullable=True)
+    invoice_type             = Column(Enum(InvoiceType), nullable=False, default=InvoiceType.OUTROS)
     customer_name            = Column(String(255), nullable=False)
     customer_phone           = Column(String(50), nullable=True)
     customer_email           = Column(String(255), nullable=True)
@@ -283,4 +333,78 @@ class BillingInvoice(Base):
         Index("ix_billing_invoices_business", "business_id"),
         Index("ix_billing_invoices_due", "due_date"),
     )
+
+
+# ── Ghost Engine: Data Broker & Privacy Models ────────────────────
+class DataBrokerMethod(str, enum.Enum):
+    EMAIL = "EMAIL"
+    FORM  = "FORM"
+    AUTO  = "AUTO"
+
+
+class PrivacyRequestStatus(str, enum.Enum):
+    PENDING         = "PENDING"
+    EMAIL_SENT      = "EMAIL_SENT"
+    PENDING_DOCS    = "PENDING_DOCS"
+    DELETED         = "DELETED"
+    MANUAL_REQUIRED = "MANUAL_REQUIRED"
+    REJECTED        = "REJECTED"
+
+
+class DataBroker(Base):
+    __tablename__ = "data_brokers"
+
+    id          = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name        = Column(String(255), nullable=False, unique=True)
+    dpo_email   = Column(String(255), nullable=True)
+    delete_url  = Column(Text, nullable=True)
+    method      = Column(Enum(DataBrokerMethod), nullable=False, default=DataBrokerMethod.EMAIL)
+    category    = Column(String(100), nullable=False, default="Geral") # Crédito, Marketing, CNPJ/CPF
+    is_active   = Column(Boolean, default=True, nullable=False)
+
+    created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+
+class PrivacyRequest(Base):
+    __tablename__ = "privacy_requests"
+
+    id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id         = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    broker_id       = Column(UUID(as_uuid=True), ForeignKey("data_brokers.id", ondelete="CASCADE"), nullable=False)
+    status          = Column(Enum(PrivacyRequestStatus), nullable=False, default=PrivacyRequestStatus.PENDING)
+    sent_at         = Column(DateTime(timezone=True), nullable=True)
+    last_checked_at = Column(DateTime(timezone=True), nullable=True)
+    notes           = Column(Text, nullable=True)
+
+    created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                         onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_privacy_requests_user", "user_id"),
+        Index("ix_privacy_requests_broker", "broker_id"),
+        Index("ix_privacy_requests_status", "status"),
+    )
+
+
+# ── Webhook Logging ───────────────────────────────────────────────
+class WebhookProcessingStatus(str, enum.Enum):
+    RECEIVED = "RECEIVED"
+    PROCESSED = "PROCESSED"
+    IGNORED = "IGNORED"
+    FAILED = "FAILED"
+
+class WebhookLog(Base):
+    __tablename__ = "webhook_logs"
+
+    id             = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    event_id       = Column(String(255), nullable=False, unique=True, index=True)
+    provider       = Column(String(50), nullable=False) # e.g., 'ASAAS', 'STRIPE'
+    payload        = Column(Text, nullable=False)
+    status         = Column(Enum(WebhookProcessingStatus), nullable=False, default=WebhookProcessingStatus.RECEIVED)
+    error_message  = Column(Text, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc), nullable=False)
 

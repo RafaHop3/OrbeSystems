@@ -1,0 +1,506 @@
+﻿2026-08-22 12:52:52,260 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-08-22 12:52:52,260 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("users")
+2026-08-22 12:52:52,260 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,261 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("users")
+2026-08-22 12:52:52,261 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("businesses")
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("businesses")
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("audit_logs")
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("audit_logs")
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("contracts")
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("contracts")
+2026-08-22 12:52:52,262 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,267 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("sales_orders")
+2026-08-22 12:52:52,268 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,268 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("sales_orders")
+2026-08-22 12:52:52,268 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("cash_registers")
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("cash_registers")
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pdv_sales")
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("pdv_sales")
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("cooperados")
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("cooperados")
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("billing_invoices")
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("billing_invoices")
+2026-08-22 12:52:52,269 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,274 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("data_brokers")
+2026-08-22 12:52:52,274 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,274 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("data_brokers")
+2026-08-22 12:52:52,274 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,274 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("privacy_requests")
+2026-08-22 12:52:52,274 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,274 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("privacy_requests")
+2026-08-22 12:52:52,274 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,276 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("webhook_logs")
+2026-08-22 12:52:52,276 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,276 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("webhook_logs")
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_surveys")
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("pco_surveys")
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_questions")
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("pco_questions")
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_responses")
+2026-08-22 12:52:52,278 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,281 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("pco_responses")
+2026-08-22 12:52:52,281 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,281 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_answers")
+2026-08-22 12:52:52,281 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,281 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("pco_answers")
+2026-08-22 12:52:52,281 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-08-22 12:52:52,281 INFO sqlalchemy.engine.Engine 
+CREATE TABLE users (
+	id UUID NOT NULL, 
+	email VARCHAR(255) NOT NULL, 
+	full_name VARCHAR(255) NOT NULL, 
+	hashed_password VARCHAR(255) NOT NULL, 
+	role VARCHAR(11) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	is_verified BOOLEAN NOT NULL, 
+	otp_secret VARCHAR(255), 
+	is_mfa_enabled BOOLEAN NOT NULL, 
+	backup_codes TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+2026-08-22 12:52:52,281 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,281 INFO sqlalchemy.engine.Engine CREATE UNIQUE INDEX ix_users_email ON users (email)
+2026-08-22 12:52:52,281 INFO sqlalchemy.engine.Engine [no key 0.00012s] ()
+2026-08-22 12:52:52,290 INFO sqlalchemy.engine.Engine CREATE INDEX ix_users_email_active ON users (email, is_active)
+2026-08-22 12:52:52,290 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,293 INFO sqlalchemy.engine.Engine 
+CREATE TABLE data_brokers (
+	id UUID NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	dpo_email VARCHAR(255), 
+	delete_url TEXT, 
+	method VARCHAR(5) NOT NULL, 
+	category VARCHAR(100) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	UNIQUE (name)
+)
+
+
+2026-08-22 12:52:52,293 INFO sqlalchemy.engine.Engine [no key 0.00009s] ()
+2026-08-22 12:52:52,296 INFO sqlalchemy.engine.Engine 
+CREATE TABLE webhook_logs (
+	id UUID NOT NULL, 
+	event_id VARCHAR(255) NOT NULL, 
+	provider VARCHAR(50) NOT NULL, 
+	payload TEXT NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	error_message TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+2026-08-22 12:52:52,296 INFO sqlalchemy.engine.Engine [no key 0.00012s] ()
+2026-08-22 12:52:52,297 INFO sqlalchemy.engine.Engine CREATE UNIQUE INDEX ix_webhook_logs_event_id ON webhook_logs (event_id)
+2026-08-22 12:52:52,297 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,302 INFO sqlalchemy.engine.Engine 
+CREATE TABLE businesses (
+	id UUID NOT NULL, 
+	user_id UUID NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	cnpj VARCHAR(20), 
+	category VARCHAR(11) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+2026-08-22 12:52:52,302 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,302 INFO sqlalchemy.engine.Engine CREATE INDEX ix_businesses_user ON businesses (user_id)
+2026-08-22 12:52:52,302 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,302 INFO sqlalchemy.engine.Engine 
+CREATE TABLE privacy_requests (
+	id UUID NOT NULL, 
+	user_id UUID NOT NULL, 
+	broker_id UUID NOT NULL, 
+	status VARCHAR(15) NOT NULL, 
+	sent_at DATETIME, 
+	last_checked_at DATETIME, 
+	notes TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE, 
+	FOREIGN KEY(broker_id) REFERENCES data_brokers (id) ON DELETE CASCADE
+)
+
+
+2026-08-22 12:52:52,307 INFO sqlalchemy.engine.Engine [no key 0.00009s] ()
+2026-08-22 12:52:52,307 INFO sqlalchemy.engine.Engine CREATE INDEX ix_privacy_requests_broker ON privacy_requests (broker_id)
+2026-08-22 12:52:52,307 INFO sqlalchemy.engine.Engine [no key 0.00009s] ()
+2026-08-22 12:52:52,312 INFO sqlalchemy.engine.Engine CREATE INDEX ix_privacy_requests_status ON privacy_requests (status)
+2026-08-22 12:52:52,312 INFO sqlalchemy.engine.Engine [no key 0.00012s] ()
+2026-08-22 12:52:52,313 INFO sqlalchemy.engine.Engine CREATE INDEX ix_privacy_requests_user ON privacy_requests (user_id)
+2026-08-22 12:52:52,313 INFO sqlalchemy.engine.Engine [no key 0.00009s] ()
+2026-08-22 12:52:52,317 INFO sqlalchemy.engine.Engine 
+CREATE TABLE audit_logs (
+	id UUID NOT NULL, 
+	business_id UUID, 
+	user_id UUID, 
+	user_name VARCHAR(255), 
+	user_role VARCHAR(100), 
+	action VARCHAR(12) NOT NULL, 
+	entity VARCHAR(100) NOT NULL, 
+	entity_id VARCHAR(255), 
+	detail TEXT, 
+	ip_address VARCHAR(45), 
+	user_agent VARCHAR(512), 
+	timestamp DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+2026-08-22 12:52:52,317 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,319 INFO sqlalchemy.engine.Engine CREATE INDEX ix_audit_entity ON audit_logs (entity, entity_id)
+2026-08-22 12:52:52,319 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,319 INFO sqlalchemy.engine.Engine CREATE INDEX ix_audit_timestamp ON audit_logs (timestamp)
+2026-08-22 12:52:52,319 INFO sqlalchemy.engine.Engine [no key 0.00007s] ()
+2026-08-22 12:52:52,324 INFO sqlalchemy.engine.Engine CREATE INDEX ix_audit_user_action ON audit_logs (user_id, action)
+2026-08-22 12:52:52,324 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,327 INFO sqlalchemy.engine.Engine 
+CREATE TABLE contracts (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	title VARCHAR(255) NOT NULL, 
+	contact_name VARCHAR(255) NOT NULL, 
+	contact_doc VARCHAR(20), 
+	record_type VARCHAR(20) NOT NULL, 
+	total_value NUMERIC(20, 8) NOT NULL, 
+	installments INTEGER NOT NULL, 
+	frequency VARCHAR(20), 
+	start_date DATETIME NOT NULL, 
+	end_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-08-22 12:52:52,327 INFO sqlalchemy.engine.Engine [no key 0.00011s] ()
+2026-08-22 12:52:52,330 INFO sqlalchemy.engine.Engine CREATE INDEX ix_contracts_status ON contracts (status)
+2026-08-22 12:52:52,330 INFO sqlalchemy.engine.Engine [no key 0.00011s] ()
+2026-08-22 12:52:52,330 INFO sqlalchemy.engine.Engine CREATE INDEX ix_contracts_business ON contracts (business_id)
+2026-08-22 12:52:52,330 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,334 INFO sqlalchemy.engine.Engine 
+CREATE TABLE sales_orders (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_doc VARCHAR(20), 
+	description TEXT, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	invoice_number VARCHAR(100), 
+	nfe_key VARCHAR(50), 
+	nfe_status VARCHAR(50), 
+	issue_date DATETIME NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-08-22 12:52:52,334 INFO sqlalchemy.engine.Engine [no key 0.00009s] ()
+2026-08-22 12:52:52,334 INFO sqlalchemy.engine.Engine CREATE INDEX ix_sales_orders_business ON sales_orders (business_id)
+2026-08-22 12:52:52,334 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,340 INFO sqlalchemy.engine.Engine CREATE INDEX ix_sales_orders_status ON sales_orders (status)
+2026-08-22 12:52:52,340 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,344 INFO sqlalchemy.engine.Engine 
+CREATE TABLE cash_registers (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	operator_id UUID, 
+	opening_balance NUMERIC(20, 8) NOT NULL, 
+	closing_balance NUMERIC(20, 8), 
+	status VARCHAR(6) NOT NULL, 
+	opened_at DATETIME NOT NULL, 
+	closed_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(operator_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+2026-08-22 12:52:52,344 INFO sqlalchemy.engine.Engine [no key 0.00012s] ()
+2026-08-22 12:52:52,346 INFO sqlalchemy.engine.Engine CREATE INDEX ix_cash_registers_status ON cash_registers (status)
+2026-08-22 12:52:52,346 INFO sqlalchemy.engine.Engine [no key 0.00011s] ()
+2026-08-22 12:52:52,346 INFO sqlalchemy.engine.Engine CREATE INDEX ix_cash_registers_business ON cash_registers (business_id)
+2026-08-22 12:52:52,346 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,352 INFO sqlalchemy.engine.Engine 
+CREATE TABLE cooperados (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50) NOT NULL, 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	status VARCHAR(25) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-08-22 12:52:52,352 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,356 INFO sqlalchemy.engine.Engine CREATE INDEX ix_cooperados_document ON cooperados (document)
+2026-08-22 12:52:52,356 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,356 INFO sqlalchemy.engine.Engine CREATE INDEX ix_cooperados_status ON cooperados (status)
+2026-08-22 12:52:52,356 INFO sqlalchemy.engine.Engine [no key 0.00007s] ()
+2026-08-22 12:52:52,361 INFO sqlalchemy.engine.Engine CREATE INDEX ix_cooperados_business ON cooperados (business_id)
+2026-08-22 12:52:52,362 INFO sqlalchemy.engine.Engine [no key 0.00014s] ()
+2026-08-22 12:52:52,363 INFO sqlalchemy.engine.Engine 
+CREATE TABLE pco_surveys (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	created_by UUID, 
+	title VARCHAR(255) NOT NULL, 
+	description TEXT, 
+	status VARCHAR(8) NOT NULL, 
+	is_anonymous BOOLEAN NOT NULL, 
+	opens_at DATETIME, 
+	closes_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+2026-08-22 12:52:52,363 INFO sqlalchemy.engine.Engine [no key 0.00013s] ()
+2026-08-22 12:52:52,367 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_surveys_status ON pco_surveys (status)
+2026-08-22 12:52:52,367 INFO sqlalchemy.engine.Engine [no key 0.00009s] ()
+2026-08-22 12:52:52,369 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_surveys_created_by ON pco_surveys (created_by)
+2026-08-22 12:52:52,369 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,369 INFO sqlalchemy.engine.Engine 
+CREATE TABLE pdv_sales (
+	id UUID NOT NULL, 
+	cash_register_id UUID NOT NULL, 
+	customer_name VARCHAR(255), 
+	total_amount NUMERIC(20, 8) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(cash_register_id) REFERENCES cash_registers (id) ON DELETE CASCADE
+)
+
+
+2026-08-22 12:52:52,369 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,374 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pdv_sales_register ON pdv_sales (cash_register_id)
+2026-08-22 12:52:52,374 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,378 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pdv_sales_created ON pdv_sales (created_at)
+2026-08-22 12:52:52,378 INFO sqlalchemy.engine.Engine [no key 0.00014s] ()
+2026-08-22 12:52:52,378 INFO sqlalchemy.engine.Engine 
+CREATE TABLE billing_invoices (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	cooperado_id UUID, 
+	invoice_type VARCHAR(22) NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_phone VARCHAR(50), 
+	customer_email VARCHAR(255), 
+	customer_doc VARCHAR(20), 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	pix_code TEXT, 
+	pix_qr_url TEXT, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	notification_count INTEGER NOT NULL, 
+	last_notification_sent_at DATETIME, 
+	created_by_id UUID, 
+	created_by_name VARCHAR(255), 
+	updated_by_id UUID, 
+	updated_by_name VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL, 
+	FOREIGN KEY(updated_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+2026-08-22 12:52:52,378 INFO sqlalchemy.engine.Engine [no key 0.00010s] ()
+2026-08-22 12:52:52,378 INFO sqlalchemy.engine.Engine CREATE INDEX ix_billing_invoices_business ON billing_invoices (business_id)
+2026-08-22 12:52:52,378 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,386 INFO sqlalchemy.engine.Engine CREATE INDEX ix_billing_invoices_due ON billing_invoices (due_date)
+2026-08-22 12:52:52,386 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,390 INFO sqlalchemy.engine.Engine CREATE INDEX ix_billing_invoices_status ON billing_invoices (status)
+2026-08-22 12:52:52,390 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,390 INFO sqlalchemy.engine.Engine 
+CREATE TABLE pco_questions (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	indicator VARCHAR(15) NOT NULL, 
+	q_type VARCHAR(6) NOT NULL, 
+	text TEXT NOT NULL, 
+	options TEXT, 
+	order_index SMALLINT NOT NULL, 
+	required BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE
+)
+
+
+2026-08-22 12:52:52,390 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,396 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_questions_indicator ON pco_questions (indicator)
+2026-08-22 12:52:52,396 INFO sqlalchemy.engine.Engine [no key 0.00012s] ()
+2026-08-22 12:52:52,396 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_questions_survey ON pco_questions (survey_id)
+2026-08-22 12:52:52,396 INFO sqlalchemy.engine.Engine [no key 0.00009s] ()
+2026-08-22 12:52:52,396 INFO sqlalchemy.engine.Engine 
+CREATE TABLE pco_responses (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	respondent_id UUID, 
+	submitted_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE, 
+	FOREIGN KEY(respondent_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+2026-08-22 12:52:52,396 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,402 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_responses_submitted ON pco_responses (submitted_at)
+2026-08-22 12:52:52,402 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,402 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_responses_survey ON pco_responses (survey_id)
+2026-08-22 12:52:52,402 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,402 INFO sqlalchemy.engine.Engine 
+CREATE TABLE pco_answers (
+	id UUID NOT NULL, 
+	response_id UUID NOT NULL, 
+	question_id UUID NOT NULL, 
+	score SMALLINT, 
+	bool_value BOOLEAN, 
+	text_value TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(response_id) REFERENCES pco_responses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(question_id) REFERENCES pco_questions (id) ON DELETE CASCADE
+)
+
+
+2026-08-22 12:52:52,402 INFO sqlalchemy.engine.Engine [no key 0.00008s] ()
+2026-08-22 12:52:52,412 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_answers_response ON pco_answers (response_id)
+2026-08-22 12:52:52,412 INFO sqlalchemy.engine.Engine [no key 0.00015s] ()
+2026-08-22 12:52:52,415 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_answers_question ON pco_answers (question_id)
+2026-08-22 12:52:52,415 INFO sqlalchemy.engine.Engine [no key 0.00012s] ()
+2026-08-22 12:52:52,417 INFO sqlalchemy.engine.Engine COMMIT
+2026-08-22 12:52:52,913 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-08-22 12:52:52,913 INFO sqlalchemy.engine.Engine INSERT INTO users (id, email, full_name, hashed_password, role, is_active, is_verified, otp_secret, is_mfa_enabled, backup_codes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-08-22 12:52:52,913 INFO sqlalchemy.engine.Engine [generated in 0.00026s] ('8923528719714504ab7ffd7fa3c59e8b', 'master@test.com', 'Master Test User', '123', 'CLIENT', 1, 0, None, 0, None, '2026-08-22 15:52:52.913219', '2026-08-22 15:52:52.913219')
+2026-08-22 12:52:52,913 INFO sqlalchemy.engine.Engine COMMIT
+­ƒÜÇ Iniciando Simula├º├úo End-to-End: B2B2C Webhook & Cooperativa Status
+2026-08-22 12:52:52,919 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-08-22 12:52:52,919 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.full_name, users.hashed_password, users.role, users.is_active, users.is_verified, users.otp_secret, users.is_mfa_enabled, users.backup_codes, users.created_at, users.updated_at 
+FROM users
+ LIMIT ? OFFSET ?
+2026-08-22 12:52:52,919 INFO sqlalchemy.engine.Engine [generated in 0.00013s] (1, 0)
+2026-08-22 12:52:52,925 INFO sqlalchemy.engine.Engine INSERT INTO billing_invoices (id, business_id, cooperado_id, invoice_type, customer_name, customer_phone, customer_email, customer_doc, amount, due_date, status, pix_code, pix_qr_url, payment_method, description, notification_count, last_notification_sent_at, created_by_id, created_by_name, updated_by_id, updated_by_name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-08-22 12:52:52,925 INFO sqlalchemy.engine.Engine [generated in 0.00025s] ('c0d9259d54cc41cda86805622eb210e4', '7b17188afb05483dad211be34f6a7790', None, 'OUTROS', 'Jo├úo Cliente Cooperado', None, 'joao@teste.com', '12345678909', 500.0, '2026-08-22 15:52:52.924389', 'PENDING', None, None, 'OTHER', None, 0, None, None, None, None, None, '2026-08-22 15:52:52.925964', '2026-08-22 15:52:52.925964')
+2026-08-22 12:52:52,927 INFO sqlalchemy.engine.Engine INSERT INTO businesses (id, user_id, name, cnpj, category, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)
+2026-08-22 12:52:52,927 INFO sqlalchemy.engine.Engine [generated in 0.00017s] ('7b17188afb05483dad211be34f6a7790', '8923528719714504ab7ffd7fa3c59e8b', 'Cooperativa Simulacao Ltd', None, 'COOPERATIVA', '2026-08-22 15:52:52.927063', '2026-08-22 15:52:52.927063')
+2026-08-22 12:52:52,928 INFO sqlalchemy.engine.Engine INSERT INTO cooperados (id, business_id, name, document, email, phone, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-08-22 12:52:52,928 INFO sqlalchemy.engine.Engine [generated in 0.00022s] ('c3e0bcfd56ed433c968d4d4cc5d2511a', '7b17188afb05483dad211be34f6a7790', 'Jo├úo Cliente Cooperado', '12345678909', 'joao@teste.com', '5511999999999', 'AGUARDANDO_INTEGRALIZACAO', '2026-08-22 15:52:52.928896', '2026-08-22 15:52:52.928896')
+2026-08-22 12:52:52,928 INFO sqlalchemy.engine.Engine COMMIT
+Ô£à Cooperativa 'Cooperativa Simulacao Ltd' estabelecida.
+Ô£à Cooperado 'Jo├úo Cliente Cooperado' aguardando taxa (Status: AGUARDANDO_INTEGRALIZACAO).
+Ô£à Boleto Fatura (Status: PENDING) emitido.
+
+ÔÅ│ [BANCO] Disparando Webhook de Boleto Pago (Via Asaas/MercadoPago)...
+2026-08-22 12:52:52,928 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-08-22 12:52:52,928 INFO sqlalchemy.engine.Engine SELECT webhook_logs.id, webhook_logs.event_id, webhook_logs.provider, webhook_logs.payload, webhook_logs.status, webhook_logs.error_message, webhook_logs.created_at, webhook_logs.updated_at 
+FROM webhook_logs 
+WHERE webhook_logs.event_id = ?
+2026-08-22 12:52:52,928 INFO sqlalchemy.engine.Engine [generated in 0.00013s] ('63bafdfd634d9e818ace5d9f0aa843d7920f26031f0ab76132ab2afef1f5b9e1',)
+2026-08-22 12:52:52,928 INFO sqlalchemy.engine.Engine INSERT INTO webhook_logs (id, event_id, provider, payload, status, error_message, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+2026-08-22 12:52:52,928 INFO sqlalchemy.engine.Engine [generated in 0.00019s] ('df709ae9139d4fc195418407171134bd', '63bafdfd634d9e818ace5d9f0aa843d7920f26031f0ab76132ab2afef1f5b9e1', 'Banco do Brasil Mock', '{"event_id":null,"event":"BOLETO_PAGO","document":"12345678909","amount":500.0,"bank_provider":"Banco do Brasil Mock","invoice_id":null}', 'RECEIVED', None, '2026-08-22 15:52:52.928896', '2026-08-22 15:52:52.928896')
+2026-08-22 12:52:52,940 INFO sqlalchemy.engine.Engine SELECT billing_invoices.id, billing_invoices.business_id, billing_invoices.cooperado_id, billing_invoices.invoice_type, billing_invoices.customer_name, billing_invoices.customer_phone, billing_invoices.customer_email, billing_invoices.customer_doc, billing_invoices.amount, billing_invoices.due_date, billing_invoices.status, billing_invoices.pix_code, billing_invoices.pix_qr_url, billing_invoices.payment_method, billing_invoices.description, billing_invoices.notification_count, billing_invoices.last_notification_sent_at, billing_invoices.created_by_id, billing_invoices.created_by_name, billing_invoices.updated_by_id, billing_invoices.updated_by_name, billing_invoices.created_at, billing_invoices.updated_at 
+FROM billing_invoices 
+WHERE billing_invoices.customer_doc = ? AND (billing_invoices.status = ? OR billing_invoices.status = ?) ORDER BY billing_invoices.due_date ASC
+2026-08-22 12:52:52,940 INFO sqlalchemy.engine.Engine [generated in 0.00015s] ('12345678909', 'PENDING', 'OVERDUE')
+2026-08-22 12:52:52,945 INFO sqlalchemy.engine.Engine UPDATE billing_invoices SET status=?, updated_by_name=?, updated_at=? WHERE billing_invoices.id = ?
+2026-08-22 12:52:52,945 INFO sqlalchemy.engine.Engine [generated in 0.00029s] ('PAID', 'System Webhook (Banco do Brasil Mock)', '2026-08-22 15:52:52.945013', 'c0d9259d54cc41cda86805622eb210e4')
+2026-08-22 12:52:52,946 INFO sqlalchemy.engine.Engine SELECT cooperados.id, cooperados.business_id, cooperados.name, cooperados.document, cooperados.email, cooperados.phone, cooperados.status, cooperados.created_at, cooperados.updated_at 
+FROM cooperados 
+WHERE cooperados.business_id = ? AND cooperados.document = ?
+2026-08-22 12:52:52,946 INFO sqlalchemy.engine.Engine [generated in 0.00016s] ('7b17188afb05483dad211be34f6a7790', '12345678909')
+2026-08-22 12:52:52,946 INFO sqlalchemy.engine.Engine UPDATE cooperados SET status=?, updated_at=? WHERE cooperados.id = ?
+2026-08-22 12:52:52,946 INFO sqlalchemy.engine.Engine [generated in 0.00015s] ('ATIVO', '2026-08-22 15:52:52.946129', 'c3e0bcfd56ed433c968d4d4cc5d2511a')
+2026-08-22 12:52:52,946 INFO sqlalchemy.engine.Engine SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE businesses.id = ?
+2026-08-22 12:52:52,946 INFO sqlalchemy.engine.Engine [generated in 0.00012s] ('7b17188afb05483dad211be34f6a7790',)
+2026-08-22 12:52:52,946 INFO sqlalchemy.engine.Engine UPDATE webhook_logs SET status=?, updated_at=? WHERE webhook_logs.id = ?
+2026-08-22 12:52:52,946 INFO sqlalchemy.engine.Engine [generated in 0.00014s] ('PROCESSED', '2026-08-22 15:52:52.946129', 'df709ae9139d4fc195418407171134bd')
+[MESSAGING] WhatsApp Receipt Link Generated: https://wa.me/5511999999999?text=%E2%9C%85%20%2ARECIBO%20DE%20PAGAMENTO%20-%20Cooperativa%20Simulacao%20Ltd%2A%0A%0AOl%C3%A1%2C%20%2AJo%C3%A3o%20Cliente%20Cooperado%2A%21%0ASeu%20pagamento%20de%20%2AR%24%20500%2C00%2A%20foi%20confirmado%20com%20sucesso%21%0A%0AMuito%20obrigado%20pela%20prefer%C3%AAncia.%20A%20sua%20conta%20j%C3%A1%20encontra-se%20totalmente%20liberada.%0AQualquer%20d%C3%BAvida%2C%20nossa%20equipe%20est%C3%A1%20%C3%A0%20disposi%C3%A7%C3%A3o.
+[MESSAGING] Email Receipt text for joao@teste.com: 
+Assunto: Recibo de Pagamento - Cooperativa Simulacao Ltd
+
+Prezado(a) Jo├úo Cliente Cooperado,
+
+Registramos o pagamento da sua fatura no valor de R$ 500,00.
+Sua conta est├í ativa e em situa├º├úo regular.
+
+Atenciosamente,
+Cooperativa Simulacao Ltd
+2026-08-22 12:52:52,953 INFO sqlalchemy.engine.Engine COMMIT
+2026-08-22 12:52:52,953 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-08-22 12:52:52,953 INFO sqlalchemy.engine.Engine SELECT billing_invoices.id, billing_invoices.business_id, billing_invoices.cooperado_id, billing_invoices.invoice_type, billing_invoices.customer_name, billing_invoices.customer_phone, billing_invoices.customer_email, billing_invoices.customer_doc, billing_invoices.amount, billing_invoices.due_date, billing_invoices.status, billing_invoices.pix_code, billing_invoices.pix_qr_url, billing_invoices.payment_method, billing_invoices.description, billing_invoices.notification_count, billing_invoices.last_notification_sent_at, billing_invoices.created_by_id, billing_invoices.created_by_name, billing_invoices.updated_by_id, billing_invoices.updated_by_name, billing_invoices.created_at, billing_invoices.updated_at 
+FROM billing_invoices 
+WHERE billing_invoices.id = ?
+2026-08-22 12:52:52,953 INFO sqlalchemy.engine.Engine [generated in 0.00013s] ('c0d9259d54cc41cda86805622eb210e4',)
+2026-08-22 12:52:52,960 INFO sqlalchemy.engine.Engine SELECT cooperados.id, cooperados.business_id, cooperados.name, cooperados.document, cooperados.email, cooperados.phone, cooperados.status, cooperados.created_at, cooperados.updated_at 
+FROM cooperados 
+WHERE cooperados.id = ?
+2026-08-22 12:52:52,960 INFO sqlalchemy.engine.Engine [generated in 0.00016s] ('c3e0bcfd56ed433c968d4d4cc5d2511a',)
+
+­ƒöÑ RESULTADOS DA RECONCILIA├ç├âO B2B2C:
+Ô×£ Status da Fatura: PAID
+Ô×£ Status do Cooperado: ATIVO
+Ô×£ Faturas Baixadas no Log: 1
+­ƒÜÇ SUCESSO ABSOLUTO! O pipeline automatizado atualizou o cliente e disparou mensagens via background.
+2026-08-22 12:52:52,962 INFO sqlalchemy.engine.Engine DELETE FROM billing_invoices WHERE billing_invoices.id = ?
+2026-08-22 12:52:52,962 INFO sqlalchemy.engine.Engine [generated in 0.00016s] ('c0d9259d54cc41cda86805622eb210e4',)
+2026-08-22 12:52:52,962 INFO sqlalchemy.engine.Engine DELETE FROM businesses WHERE businesses.id = ?
+2026-08-22 12:52:52,962 INFO sqlalchemy.engine.Engine [generated in 0.00012s] ('7b17188afb05483dad211be34f6a7790',)
+2026-08-22 12:52:52,962 INFO sqlalchemy.engine.Engine DELETE FROM cooperados WHERE cooperados.id = ?
+2026-08-22 12:52:52,962 INFO sqlalchemy.engine.Engine [generated in 0.00011s] ('c3e0bcfd56ed433c968d4d4cc5d2511a',)
+2026-08-22 12:52:52,962 INFO sqlalchemy.engine.Engine COMMIT

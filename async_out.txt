@@ -1,0 +1,12 @@
+inho err:  (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InvalidSchemaNameError'>: schema "inho" does not exist
+[SQL: ALTER TABLE inho.users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255) DEFAULT 'OrbeAdmin';]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+public err:  (sqlalchemy.dialects.postgresql.asyncpg.Error) <class 'asyncpg.exceptions.InFailedSQLTransactionError'>: current transaction is aborted, commands ignored until end of transaction block
+[SQL: ALTER TABLE public.users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255) DEFAULT 'OrbeAdmin';]
+(Background on this error at: https://sqlalche.me/e/20/dbapi)
+
+--ERR--
+time="2026-08-23T13:50:09Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+ inho_backend copy async_schema.py to inho_backend:/app/async_schema.py Copying
+ inho_backend copy async_schema.py to inho_backend:/app/async_schema.py Copied
+time="2026-08-23T13:50:12Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."

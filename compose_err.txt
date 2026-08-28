@@ -1,0 +1,6 @@
+time="2026-08-19T21:41:58Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+ Container orbe_redis  Creating
+ Container orbe_postgres  Creating
+ Container orbe_postgres  Error response from daemon: Conflict. The container name "/orbe_postgres" is already in use by container "202449cb35b3d2e663834090a59be120953c28a44bb528fd97586b916ebcd77c". You have to remove (or rename) that container to be able to reuse that name.
+Error response from daemon: Conflict. The container name "/orbe_postgres" is already in use by container "202449cb35b3d2e663834090a59be120953c28a44bb528fd97586b916ebcd77c". You have to remove (or rename) that container to be able to reuse that name.
+failed to run commands: exit status 1

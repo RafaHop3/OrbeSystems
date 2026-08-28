@@ -1,0 +1,1 @@
+{"DocumentName": "AWS-RunShellScript", "Targets": [{"Key": "InstanceIds", "Values": ["i-058e26140671b3254"]}], "Parameters": {"commands": ["sudo docker compose -f /home/ubuntu/orbe-systems/docker-compose.yml ps", "sudo docker compose -f /home/ubuntu/orbe-systems/docker-compose.yml logs --tail 40 inho_backend"]}}

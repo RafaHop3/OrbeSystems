@@ -1,3 +1,4 @@
+from sqlalchemy.dialects.postgresql import UUID
 """
 models/test_event.py — Test Event Model
 ════════════════════════════════════════════════
@@ -13,7 +14,7 @@ from database import Base
 class TestEvent(Base):
     __tablename__ = "test_events"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
     event_type = Column(String, nullable=False, index=True)  # e.g., "simulation", "auth", "fuzzing", "z3_proof"
     service = Column(String, nullable=False, index=True)     # e.g., "gateway", "imobverse", "imortal", "powershell_bot"
     status = Column(String, nullable=False, index=True)      # e.g., "success", "failed", "warning", "info"
