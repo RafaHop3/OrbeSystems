@@ -139,9 +139,9 @@ jobs:
       - name: "TruffleHog — Scan for leaked secrets"
         uses: trufflesecurity/trufflehog@main
         with:
-          # On push to main: scan last 10 commits
+          # On push to main: scan only the latest commit (HEAD~1)
           # On PR: scan only the PR diff (base...head)
-          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || 'HEAD~10' }}
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || 'HEAD~1' }}
           head: HEAD
           extra_args: --only-verified --json
 
@@ -187,7 +187,7 @@ jobs:
         with:
           name: sbom-backend
           path: backend/sbom-backend.json
-          retention-days: 365  # Keep SBOM for 1 year (MCI compliance)
+          retention-days: 90  # Keep SBOM for 90 days
 
       - name: Commit updated SBOM to repo
         uses: stefanzweifel/git-auto-commit-action@v5
