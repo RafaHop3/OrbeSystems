@@ -76,7 +76,7 @@ export default function AdminDashboard() {
   const [showCreateUserForm, setShowCreateUserForm] = useState(false);
   const [newUserEmail, setNewUserEmail] = useState('');
   const [newUserPassword, setNewUserPassword] = useState('');
-  const [newUserRole, setNewUserRole] = useState<'user' | 'premium'>('user');
+  const [newUserRole, setNewUserRole] = useState<string>('superadmin');
   const [creatingUser, setCreatingUser] = useState(false);
 
   // ── Inject Repo state ─────────────────────────────────────────────────────
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
   };
 
   // ── User Management handlers ───────────────────────────────────────────────────
-  const handleUpdateUserRole = async (userId: string, newRole: 'user' | 'premium') => {
+  const handleUpdateUserRole = async (userId: string, newRole: string) => {
     const token = localStorage.getItem('orbe_admin_token');
     try {
       const res = await fetch(`${API_URL}/api/admin/users/${userId}/role`, {
@@ -844,7 +844,7 @@ export default function AdminDashboard() {
                         <label className="text-[9px] text-neon-blue/60 uppercase block mb-1">Role</label>
                         <select
                           value={newUserRole}
-                          onChange={(e) => setNewUserRole(e.target.value as 'user' | 'premium')}
+                          onChange={(e) => setNewUserRole(e.target.value)}
                           className="w-full bg-black/60 border border-neon-blue/30 p-2 text-xs text-neon-blue focus:outline-none focus:border-neon-blue"
                         >
                           <option value="superadmin">Superadmin</option>
