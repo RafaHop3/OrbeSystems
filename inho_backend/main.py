@@ -81,6 +81,7 @@ app.add_middleware(
         "http://localhost:3001",
         "http://127.0.0.1:3001",
         "https://orbesystems.com.br",
+        "https://www.orbesystems.com.br",
         "https://inho.orbesystems.com.br",
         "https://inho-api.orbesystems.com.br",
     ],
