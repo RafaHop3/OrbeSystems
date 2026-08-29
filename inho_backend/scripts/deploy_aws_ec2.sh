@@ -47,7 +47,7 @@ docker run -d \
     -v "$APP_DIR:/workspace" \
     -w "/workspace" \
     "$IMAGE_TAG" \
-    sh -c "pip install -q asyncpg psycopg2-binary || pip install -q --break-system-packages asyncpg psycopg2-binary || true; uvicorn main:app --host 0.0.0.0 --port 8000"
+    sh -c "pip install -q -r requirements.txt || pip install -q --break-system-packages -r requirements.txt || true; uvicorn main:app --host 0.0.0.0 --port 8000"
 
 # 3. Health Check pós-deploy na nova instância
 HEALTH_CHECK_URL="http://localhost:$NEW_PORT$HEALTH_CHECK_URI"
