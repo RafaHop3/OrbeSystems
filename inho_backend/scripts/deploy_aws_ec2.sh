@@ -35,8 +35,8 @@ OLD_CONTAINER="inho-backend-$OLD_COLOR"
 echo "🔄 Deploying $NEW_COLOR environment (Port: $NEW_PORT)..."
 
 # 2. Compilar e Subir o novo contêiner
-echo "🔨 Construindo nova imagem Docker..."
-docker build -t "$IMAGE_TAG" .
+echo "🔨 Usando Imagem ECR Monolítica (Bypass Docker Build) + Montagem Local..."
+IMAGE_TAG="982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest"
 
 docker rm -f "$NEW_CONTAINER" 2>/dev/null || true
 docker run -d \
@@ -44,7 +44,10 @@ docker run -d \
     --restart always \
     -p $NEW_PORT:8000 \
     --env-file .env \
-    "$IMAGE_TAG"
+    -v "$APP_DIR:/workspace" \
+    -w "/workspace" \
+    "$IMAGE_TAG" \
+    sh -c "uvicorn main:app --host 0.0.0.0 --port 8000"
 
 # 3. Health Check pós-deploy na nova instância
 HEALTH_CHECK_URL="http://localhost:$NEW_PORT$HEALTH_CHECK_URI"
