@@ -6,7 +6,7 @@
 set -e
 
 APP_DIR="/home/ubuntu/orbe-systems/inho_backend"
-HEALTH_CHECK_URI="/api/v1/health"
+HEALTH_CHECK_URI="/health"
 IMAGE_TAG="inho-backend:latest"
 PREVIOUS_TAG="inho-backend:previous"
 NGINX_CONTAINER="inho-nginx"
