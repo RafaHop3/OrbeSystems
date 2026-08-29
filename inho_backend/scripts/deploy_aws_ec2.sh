@@ -53,7 +53,7 @@ docker run -d \
 HEALTH_CHECK_URL="http://localhost:$NEW_PORT$HEALTH_CHECK_URI"
 echo "🩺 Executando Health Check HTTP na API ($HEALTH_CHECK_URL)..."
 HEALTH_PASSED=false
-for i in {1..15}; do
+for i in {1..60}; do
     if curl -s -f "$HEALTH_CHECK_URL" >/dev/null; then
         HEALTH_PASSED=true
         echo "✅ Health Check Aprovado (HTTP 200 OK em ${i}s)!"
@@ -64,7 +64,9 @@ done
 
 # 4. Rollback Instantâneo (se falhar, apenas descartamos o novo contêiner)
 if [ "$HEALTH_PASSED" = false ]; then
-    echo "❌ FALHA NO HEALTH CHECK! Acionando Rollback..."
+    echo "❌ FALHA NO HEALTH CHECK! Logs do container em falha:"
+    docker logs --tail 60 "$NEW_CONTAINER"
+    echo "Acionando Rollback..."
     docker rm -f "$NEW_CONTAINER" || true
     echo "⏪ O tráfego continua sendo servido normalmente pelo ambiente $OLD_COLOR ($OLD_CONTAINER)."
     exit 1
