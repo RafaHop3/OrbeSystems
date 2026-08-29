@@ -42,6 +42,7 @@ docker rm -f "$NEW_CONTAINER" 2>/dev/null || true
 docker run -d \
     --name "$NEW_CONTAINER" \
     --restart always \
+    --user root \
     -p $NEW_PORT:8000 \
     --env-file .env \
     -v "$APP_DIR:/workspace" \
