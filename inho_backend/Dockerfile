@@ -5,7 +5,7 @@
 # ══════════════════════════════════════════════════════════════════
 
 # ── Stage 1: Builder ─────────────────────────────────────────────
-FROM python:3.12-slim AS builder
+FROM python:3.11-slim AS builder
 
 # System deps for psycopg2 compilation (asyncpg is pure Python, but
 # psycopg2-binary bundles its own libs — kept slim here)
@@ -25,7 +25,7 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # ── Stage 2: Runtime ─────────────────────────────────────────────
-FROM python:3.12-slim AS runtime
+FROM python:3.11-slim AS runtime
 
 # Only the minimal OS packages needed at runtime
 RUN apt-get update && apt-get install -y --no-install-recommends \
