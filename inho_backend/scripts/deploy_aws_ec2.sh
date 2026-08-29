@@ -111,7 +111,6 @@ if ! docker ps --format '{{.Names}}' | grep -q "^$NGINX_CONTAINER$"; then
     docker run -d --name "$NGINX_CONTAINER" --restart always --network host -v "$APP_DIR/nginx/nginx.conf:/etc/nginx/nginx.conf:ro" nginx:alpine
 else
     echo "⚡ Recarregando config do Nginx (Zero Downtime reload)..."
-    docker cp "$APP_DIR/nginx/nginx.conf" "$NGINX_CONTAINER":/etc/nginx/nginx.conf
     docker exec "$NGINX_CONTAINER" nginx -s reload
 fi
 
