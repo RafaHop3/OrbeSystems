@@ -23,6 +23,7 @@ class Settings(BaseSettings):
 
     # ── Database (PostgreSQL) ────────────────────────────────────
     DATABASE_URL: str = "postgresql+asyncpg://inho_user:inho_pass@localhost:5432/inho_db"
+    SCHEMA: str = "public"
 
     # ── CORS ────────────────────────────────────────────────────
     ALLOWED_ORIGINS: list[str] = [
