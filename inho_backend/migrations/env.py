@@ -29,7 +29,7 @@ _raw_url = os.environ.get("DATABASE_URL", settings.DATABASE_URL)
 # Normaliza: converte driver asyncpg → psycopg2 para o engine síncrono do Alembic
 _migration_url = _raw_url.replace("postgresql+asyncpg://", "postgresql+psycopg2://")
 
-config.set_main_option("sqlalchemy.url", _migration_url)
+config.set_main_option("sqlalchemy.url", _migration_url.replace("%", "%%"))
 target_metadata = Base.metadata
 
 
