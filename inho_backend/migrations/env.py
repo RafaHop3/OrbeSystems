@@ -26,8 +26,8 @@ if config.config_file_name is not None:
 #   alembic upgrade head
 _raw_url = os.environ.get("DATABASE_URL", settings.DATABASE_URL)
 
-# Normaliza: converte driver asyncpg → psycopg2 para o engine síncrono do Alembic
-_migration_url = _raw_url.replace("postgresql+asyncpg://", "postgresql+psycopg2://")
+# URL maintains the native async driver required by async_engine_from_config
+_migration_url = _raw_url
 
 config.set_main_option("sqlalchemy.url", _migration_url.replace("%", "%%"))
 target_metadata = Base.metadata
