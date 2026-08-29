@@ -34,7 +34,10 @@ OLD_CONTAINER="inho-backend-$OLD_COLOR"
 
 echo "🔄 Deploying $NEW_COLOR environment (Port: $NEW_PORT)..."
 
-# 2. Subir o novo contêiner sem derrubar o atual
+# 2. Compilar e Subir o novo contêiner
+echo "🔨 Construindo nova imagem Docker..."
+docker build -t "$IMAGE_TAG" .
+
 docker rm -f "$NEW_CONTAINER" 2>/dev/null || true
 docker run -d \
     --name "$NEW_CONTAINER" \
