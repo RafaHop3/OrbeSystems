@@ -45,7 +45,7 @@ class AuditAction(str, enum.Enum):
 class User(Base):
     __tablename__ = "users"
 
-    id              = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email           = Column(String(255), unique=True, nullable=False, index=True)
     full_name       = Column(String(255), nullable=False)
     hashed_password = Column(String(255), nullable=False)
