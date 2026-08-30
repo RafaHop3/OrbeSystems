@@ -9,7 +9,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
     const [error, setError] = useState<string | null>(null);
 
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'client' });
+    const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'operator' });
     const [creating, setCreating] = useState(false);
 
     // Authentication State for INHO backend
@@ -159,7 +159,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
 
             await fetchUsers(inhoToken);
             setShowCreateForm(false);
-            setForm({ email: '', full_name: '', password: '', role: 'USER' });
+            setForm({ email: '', full_name: '', password: '', role: 'operator' });
         } catch (err: any) {
             alert(err.message);
         } finally {
@@ -272,8 +272,8 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                                 value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}
                                 className="bg-black border border-green-500/30 text-green-400 text-[10px] focus:outline-none focus:border-green-400 p-2 uppercase"
                             >
-                                <option value="inho_admin">ASSINANTE INHO (ADMIN)</option>
-                                <option value="inho_operator">OPERADOR INHO (FUNC.)</option>
+                                <option value="admin">ASSINANTE INHO (ADMIN)</option>
+                                <option value="operator">OPERADOR INHO (FUNC.)</option>
                             </select>
                             <button
                                 onClick={handleCreate} disabled={creating}
@@ -314,8 +314,8 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                                             onChange={e => handleRoleChange(u.id, e.target.value)}
                                             className="flex-1 bg-black text-[9px] text-green-500/80 border border-green-500/20 px-2 py-1 focus:outline-none uppercase"
                                         >
-                                            <option value="inho_admin">ROLE: ASSINANTE INHO (ADMIN)</option>
-                                            <option value="inho_operator">ROLE: OPERADOR INHO</option>
+                                            <option value="admin">ROLE: ASSINANTE INHO (ADMIN)</option>
+                                            <option value="operator">ROLE: OPERADOR INHO</option>
                                         </select>
                                     )}
                                     {currentUserRole === 'superadmin' && (

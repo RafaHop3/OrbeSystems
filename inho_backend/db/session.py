@@ -17,9 +17,8 @@ def _build_ssl_context() -> ssl.SSLContext:
     """
     ctx = ssl.create_default_context()
     if settings.APP_ENV == "production":
-        # Producao: verificacao completa de certificado
-        ctx.check_hostname = True
-        ctx.verify_mode = ssl.CERT_REQUIRED
+        ctx.check_hostname = False
+        ctx.verify_mode = ssl.CERT_NONE
     else:
         # Dev/staging: aceita cert auto-assinado do Supabase pooler
         ctx.check_hostname = False
@@ -42,7 +41,7 @@ if not settings.DATABASE_URL.startswith("sqlite"):
     })
     
     engine_kwargs.setdefault("connect_args", {})
-    engine_kwargs["connect_args"]["server_settings"] = {"search_path": getattr(settings, "SCHEMA", "inho") + ", public"}
+    engine_kwargs["connect_args"]["server_settings"] = {"search_path": getattr(settings, "SCHEMA", "public")}
     engine_kwargs["connect_args"]["prepared_statement_cache_size"] = 0
     
     # Only apply SSL for production databases (Supabase, Render, etc.)
@@ -64,7 +63,8 @@ AsyncSessionLocal = async_sessionmaker(
 from sqlalchemy import MetaData
 
 class Base(DeclarativeBase):
-    metadata = MetaData(schema="inho" if not settings.DATABASE_URL.startswith("sqlite") else None)
+    metadata = MetaData(schema=getattr(settings, "SCHEMA", "inho"))
+
 
 
 async def get_db() -> AsyncSession:

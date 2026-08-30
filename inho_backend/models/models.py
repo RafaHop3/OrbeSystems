@@ -45,7 +45,7 @@ class AuditAction(str, enum.Enum):
 class User(Base):
     __tablename__ = "users"
 
-    id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id              = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     email           = Column(String(255), unique=True, nullable=False, index=True)
     full_name       = Column(String(255), nullable=False)
     hashed_password = Column(String(255), nullable=False)
@@ -88,7 +88,7 @@ class Business(Base):
     __tablename__ = "businesses"
 
     id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id    = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id    = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     name       = Column(String(255), nullable=False)
     cnpj       = Column(String(20), nullable=True)
     category   = Column(Enum(BusinessCategory), nullable=False, default=BusinessCategory.OUTROS)
@@ -112,7 +112,7 @@ class AuditLog(Base):
 
     id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id= Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=True)
-    user_id    = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    user_id    = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     user_name  = Column(String(255), nullable=True)
     user_role  = Column(String(100), nullable=True)
     action     = Column(Enum(AuditAction), nullable=False)
@@ -218,7 +218,7 @@ class CashRegister(Base):
 
     id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id     = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
-    operator_id     = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    operator_id     = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     opening_balance = Column(Numeric(precision=20, scale=8), nullable=False, default=0)
     closing_balance = Column(Numeric(precision=20, scale=8), nullable=True)
     status          = Column(Enum(CashRegisterStatus), nullable=False, default=CashRegisterStatus.OPEN)
@@ -319,9 +319,9 @@ class BillingInvoice(Base):
     last_notification_sent_at= Column(DateTime(timezone=True), nullable=True)
     
     # Audit fields: quem e quando criou / editou
-    created_by_id   = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_by_id   = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     created_by_name = Column(String(255), nullable=True)
-    updated_by_id   = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    updated_by_id   = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     updated_by_name = Column(String(255), nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -369,7 +369,7 @@ class PrivacyRequest(Base):
     __tablename__ = "privacy_requests"
 
     id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id         = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
+    user_id         = Column(String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     broker_id       = Column(UUID(as_uuid=True), ForeignKey("data_brokers.id", ondelete="CASCADE"), nullable=False)
     status          = Column(Enum(PrivacyRequestStatus), nullable=False, default=PrivacyRequestStatus.PENDING)
     sent_at         = Column(DateTime(timezone=True), nullable=True)
