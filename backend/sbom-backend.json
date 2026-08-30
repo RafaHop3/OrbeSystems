@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:dfe35c36-df41-4ef9-856e-d72256fcbe88",
+  "serialNumber": "urn:uuid:dfbe0258-0171-4638-8684-ab21cb2d14ce",
   "metadata": {
-    "timestamp": "2026-08-29T19:23:40.597348+00:00",
+    "timestamp": "2026-08-30T22:37:38.101568+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -2015,8 +2015,8 @@
     {
       "type": "library",
       "name": "wrapt",
-      "version": "2.3.0",
-      "purl": "pkg:pypi/wrapt@2.3.0",
+      "version": "2.4.0",
+      "purl": "pkg:pypi/wrapt@2.4.0",
       "licenses": [
         {
           "license": {
@@ -2033,7 +2033,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "79722ae30f164728d4021ab1f26981d192bd539d390f8f270e61ab3946ce57b1"
+          "content": "2e821228c1569b9daee1f6d37562ac3623ca10ea416f388cf4e2c71cf64decf2"
         }
       ]
     },
