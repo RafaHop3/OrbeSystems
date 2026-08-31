@@ -9,7 +9,7 @@ services:
     environment:
     - REDIS_URL=redis://redis:6379/0
     - DATABASE_URL=postgresql://postgres.bjidrhoniciczqkhazqv:Muhammadalivsroyjonesjr%23Ju.130798@aws-1-us-west-2.pooler.supabase.com:6543/postgres
-    image: 982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest
+    build: ./backend
     ports:
     - 8000:8000
     restart: always
