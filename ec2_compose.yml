@@ -17,6 +17,7 @@ services:
     - ./backend/data:/app/data
     - ./backend/main.py:/app/main.py
     - ./backend/routes/auth.py:/app/routes/auth.py
+    - ./backend/security/auth.py:/app/security/auth.py
     - ./backend/routes/admin_inho.py:/app/routes/admin_inho.py
     - ./backend/inho_database.py:/app/inho_database.py
   db:
