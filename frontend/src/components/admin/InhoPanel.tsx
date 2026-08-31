@@ -70,7 +70,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
     const fetchUsers = async (token: string) => {
         try {
             setLoading(true);
-            const res = await fetch(`${INHO_API_URL}/users/`, {
+            const res = await fetch(`${INHO_API_URL}/users`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
