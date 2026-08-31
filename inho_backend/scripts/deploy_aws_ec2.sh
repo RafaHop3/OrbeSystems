@@ -73,64 +73,54 @@ if [ "$HEALTH_PASSED" = false ]; then
     exit 1
 fi
 
-echo "🌐 Atualizando rota do Nginx para apontar para $NEW_COLOR (porta $NEW_PORT)..."
+echo "🌐 Atualizando config nativa do Nginx para apontar inho-api para $NEW_COLOR (porta $NEW_PORT)..."
 
-# 5. Configurar e rotear via Nginx
-cat <<EOF > "$APP_DIR/nginx/nginx.conf"
-worker_processes auto;
-events {
-    worker_connections 1024;
+# 5. Configurar e rotear NGINX Nativo
+sudo cat <<EOF > /etc/nginx/sites-available/default
+# Main API (orbe_backend)
+server {
+    listen 80;
+    server_name api.orbesystems.com.br;
+
+    location / {
+        proxy_pass http://localhost:8000;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
 }
-http {
-    upstream inho_api {
-        server 127.0.0.1:$NEW_PORT;
-    }
-    upstream orbe_api {
-        server 127.0.0.1:8080;
-    }
 
-    server {
-        listen 80;
-        server_name api.orbesystems.com.br;
-        server_tokens off;
+# INHO API (inho_backend)
+server {
+    listen 80;
+    server_name inho-api.orbesystems.com.br;
 
-        location / {
-            proxy_pass http://orbe_api;
-            proxy_http_version 1.1;
-            proxy_set_header Host \$host;
-            proxy_set_header X-Real-IP \$remote_addr;
-            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto \$scheme;
-        }
-    }
-
-    server {
-        listen 80 default_server;
-        
-        # Oculta informações do Nginx
-        server_tokens off;
-
-        location / {
-            proxy_pass http://inho_api;
-            proxy_http_version 1.1;
-            proxy_set_header Host \$host;
-            proxy_set_header X-Real-IP \$remote_addr;
-            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto \$scheme;
-        }
+    location / {
+        proxy_pass http://localhost:$NEW_PORT;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
     }
 }
 EOF
 
-# Inicia ou atualiza o proxy Nginx
-if ! docker ps --format '{{.Names}}' | grep -q "^$NGINX_CONTAINER$"; then
-    docker rm -f "$NGINX_CONTAINER" 2>/dev/null || true
-    echo "🚀 Iniciando proxy Nginx pela primeira vez..."
-    docker run -d --name "$NGINX_CONTAINER" --restart always --network host -v "$APP_DIR/nginx/nginx.conf:/etc/nginx/nginx.conf:ro" nginx:alpine
-else
-    echo "⚡ Recarregando config do Nginx (Zero Downtime reload)..."
-    docker exec "$NGINX_CONTAINER" nginx -s reload
-fi
+sudo systemctl reload nginx || sudo systemctl restart nginx
+echo "⚡ Recarregando config do Nginx Nativo (Zero Downtime reload)..."
+
+# 6. Desligar contêiner antigo com segurança
+docker rm -f "$NGINX_CONTAINER" 2>/dev/null || true
 
 # 6. Desligar contêiner antigo com segurança
 if docker ps -a --format '{{.Names}}' | grep -q "$OLD_CONTAINER"; then
