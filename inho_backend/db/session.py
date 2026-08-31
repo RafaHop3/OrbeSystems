@@ -62,8 +62,9 @@ AsyncSessionLocal = async_sessionmaker(
 
 from sqlalchemy import MetaData
 
+is_sqlite = settings.DATABASE_URL.startswith("sqlite")
 class Base(DeclarativeBase):
-    metadata = MetaData(schema=getattr(settings, "SCHEMA", "inho"))
+    metadata = MetaData(schema=None if is_sqlite else getattr(settings, "SCHEMA", "inho"))
 
 
 
