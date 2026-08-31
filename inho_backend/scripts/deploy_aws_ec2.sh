@@ -85,9 +85,27 @@ http {
     upstream inho_api {
         server 127.0.0.1:$NEW_PORT;
     }
+    upstream orbe_api {
+        server 127.0.0.1:8080;
+    }
 
     server {
         listen 80;
+        server_name api.orbesystems.com.br;
+        server_tokens off;
+
+        location / {
+            proxy_pass http://orbe_api;
+            proxy_http_version 1.1;
+            proxy_set_header Host \$host;
+            proxy_set_header X-Real-IP \$remote_addr;
+            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto \$scheme;
+        }
+    }
+
+    server {
+        listen 80 default_server;
         
         # Oculta informações do Nginx
         server_tokens off;
