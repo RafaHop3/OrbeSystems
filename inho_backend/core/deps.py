@@ -23,8 +23,12 @@ async def get_current_user(
     token = credentials.credentials
     payload = decode_token(token)
 
-    if not payload or payload.get("type") != "access":
+    if not payload:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido ou expirado")
+    
+    jwt_type = payload.get("type")
+    if jwt_type and jwt_type != "access":
+         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Acesso invalido via Token reverso")
 
     user_id = payload.get("sub")
     if isinstance(user_id, str):
