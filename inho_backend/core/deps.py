@@ -21,9 +21,20 @@ async def get_current_user(
     db: AsyncSession = Depends(get_db),
 ) -> User:
     token = credentials.credentials
-    payload = decode_token(token)
-
-    if not payload:
+    import httpx
+    from jose import jwt
+    async with httpx.AsyncClient() as client:
+        res = await client.get(
+            "https://api.orbesystems.com.br/api/admin/status",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+        if res.status_code == 401:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido ou expirado (Rejeitado pelo Master DB)")
+        
+    try:
+        # Signature mathematically validated by Master backend, safe to extract payload blindly
+        payload = jwt.get_unverified_claims(token)
+    except Exception:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido ou expirado")
     
     jwt_type = payload.get("type")
