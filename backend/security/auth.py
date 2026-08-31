@@ -102,7 +102,8 @@ async def get_current_admin_user(token: str = Depends(oauth2_scheme)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
-        is_superadmin = payload.get("is_superadmin", False)
+        role: str = payload.get("role")
+        is_superadmin = payload.get("is_superadmin", False) or (role == "superadmin")
         if username is None:
             raise credentials_exception
     except JWTError:
