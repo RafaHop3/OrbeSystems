@@ -33,11 +33,26 @@ async def get_current_user(
         except ValueError:
             pass
 
-    result = await db.execute(select(User).where(User.id == user_id))
-    user: User | None = result.scalar_one_or_none()
+    from sqlalchemy import text
+    user_id_str = str(user_id) if isinstance(user_id, uuid.UUID) else user_id
 
-    if not user or not user.is_active:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario nao encontrado ou inativo")
+    # SSO Proxy Bypass: Query master Orbe Hub schema natively instead of INHO mapped schema
+    query = text("SELECT id, email, role, is_email_verified, is_mfa_enabled FROM public.users WHERE id = :id")
+    result = await db.execute(query, {"id": user_id_str})
+    row = result.fetchone()
+
+    if not row:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario nao encontrado no Master DB (Orbe Hub)")
+
+    # Construct transient User to satisfy downstream INHO dependencies
+    user = User(
+        id=uuid.UUID(row[0]) if isinstance(row[0], str) else row[0],
+        email=row[1],
+        role=UserRole(row[2]) if row[2] else UserRole.OPERATOR,
+        is_active=True,
+        is_verified=row[3],
+        is_mfa_enabled=row[4] if row[4] is not None else False
+    )
 
     return user
 
