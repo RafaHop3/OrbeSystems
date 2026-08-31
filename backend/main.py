@@ -367,7 +367,9 @@ app.include_router(offline_agent_router)
 from routes.chat_logs import router as chat_logs_router
 app.include_router(chat_logs_router)
 
-
+# ── Encapsulated INHO Database (Zero-Trust Master DB routing) ───────
+from routes.admin_inho import router as admin_inho_router
+app.include_router(admin_inho_router, prefix="/api/admin/inho", tags=["admin-inho"])
 
 @app.get("/health", tags=["health"])
 async def health_check():
