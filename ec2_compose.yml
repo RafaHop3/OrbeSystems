@@ -18,9 +18,6 @@ services:
     - ./backend/main.py:/app/main.py
     - ./backend/routes/admin_inho.py:/app/routes/admin_inho.py
     - ./backend/inho_database.py:/app/inho_database.py
-    restart: always
-    volumes:
-    - ./backend/data:/app/data
   db:
     container_name: orbe_postgres
     environment:
