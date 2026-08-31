@@ -5,9 +5,11 @@ import { Menu, X, LayoutGrid, Lightbulb, Mail, LogIn, LogOut, Crown, Zap, Buildi
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { logoutAction } from '@/lib/auth-actions';
+import { Trash2 } from 'lucide-react';
 
 const NAV_LINKS = [
   { label: 'Workspace', href: '/workspace', icon: LayoutGrid },
+  { label: 'Cleaner', href: '/orbe-cleaner', icon: Trash2 },
   { label: 'Skills', href: '/skills', icon: Cpu },
   { label: 'Inovações', href: '/inovacoes', icon: Lightbulb },
   { label: 'Contato', href: '/#contact', icon: Mail },

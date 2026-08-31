@@ -67,6 +67,17 @@ const sites = [
         accentBorder: 'rgba(255, 69, 58, 0.25)',
         badge: '📰 News',
     },
+    {
+        name: 'Orbe Cleaner',
+        tagline: 'Otimização de Disco · Limpeza 3D',
+        url: '/orbe-cleaner',
+        image: '/featured-orbecleaner.jpg',
+        accent: '#ff9900',
+        accentBg: 'rgba(255, 153, 0, 0.08)',
+        accentBorder: 'rgba(255, 153, 0, 0.35)',
+        badge: '🧹 SysTool',
+        isAnimated: true,
+    },
 ];
 
 export default function FeaturedSitesSection() {
