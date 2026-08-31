@@ -9,9 +9,15 @@ services:
     environment:
     - REDIS_URL=redis://redis:6379/0
     - DATABASE_URL=postgresql://postgres.bjidrhoniciczqkhazqv:Muhammadalivsroyjonesjr%23Ju.130798@aws-1-us-west-2.pooler.supabase.com:6543/postgres
-    build: ./backend
+    image: 982534388133.dkr.ecr.us-east-1.amazonaws.com/orbe-systems-api:latest
     ports:
     - 8000:8000
+    restart: always
+    volumes:
+    - ./backend/data:/app/data
+    - ./backend/main.py:/app/main.py
+    - ./backend/routes/admin_inho.py:/app/routes/admin_inho.py
+    - ./backend/inho_database.py:/app/inho_database.py
     restart: always
     volumes:
     - ./backend/data:/app/data
