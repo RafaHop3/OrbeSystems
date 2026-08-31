@@ -21,7 +21,10 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
     const INHO_API_URL = 'https://inho-api.orbesystems.com.br/api/v1';
 
     useEffect(() => {
-        const savedToken = localStorage.getItem('inho_admin_token');
+        // SSO Bridge: Natively ingest the global Orbe Admin Token to seamlessly bypass secondary INHO login
+        const globalOrbeToken = localStorage.getItem('orbe_admin_token') || localStorage.getItem('orbe_token');
+        const savedToken = globalOrbeToken || localStorage.getItem('inho_admin_token');
+
         if (savedToken) {
             setInhoToken(savedToken);
         } else {
@@ -194,12 +197,6 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                                     {showCreateForm ? 'CANCEL' : 'NOVA IDENTIDADE INHO'}
                                 </button>
                             )}
-                            <button
-                                onClick={handleLogout}
-                                className="text-[10px] text-red-500/80 border border-red-500/20 px-2 py-1 rounded hover:bg-red-500/10 transition-colors"
-                            >
-                                LOGOUT INHO
-                            </button>
                         </>
                     )}
                 </div>
