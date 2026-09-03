@@ -20,7 +20,16 @@ router = APIRouter(prefix="/users", tags=["Users"])
 @router.get("/me", response_model=UserOut)
 async def get_me(
     current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
 ):
+    from models.models import BusinessOperator, UserRole
+    
+    if current_user.role == UserRole.OPERATOR:
+        result = await db.execute(select(BusinessOperator).where(BusinessOperator.user_id == str(current_user.id)))
+        biz_op = result.scalar_one_or_none()
+        if biz_op:
+            current_user.business_id = biz_op.business_id
+    
     return current_user
 
 
@@ -53,6 +62,13 @@ async def create_user(
     )
     db.add(user)
     await db.flush()
+
+    from models.models import BusinessOperator, UserRole
+    role_val = user.role.value if hasattr(user.role, "value") else str(user.role)
+    if role_val == UserRole.OPERATOR and body.business_id:
+        biz_op = BusinessOperator(business_id=body.business_id, user_id=user.id)
+        db.add(biz_op)
+        user.business_id = body.business_id
 
     await write_audit(
         db, AuditAction.CREATE, "User",

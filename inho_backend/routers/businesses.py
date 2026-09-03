@@ -27,18 +27,13 @@ class BusinessResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-# TODO: Replace with dependency that gets current OrbeSystems premium user
-async def get_current_user_placeholder(db: AsyncSession = Depends(get_db)):
-    # Placeholder mock for user
-    users = await db.execute(select(User).limit(1))
-    return users.scalar_one_or_none()
-
+from core.deps import get_current_user
 
 @router.post("/", response_model=BusinessResponse)
 async def create_business(
     item: BusinessCreate,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user_placeholder)
+    current_user: User = Depends(get_current_user)
 ):
     if not current_user:
         raise HTTPException(status_code=401, detail="Usuario nao autenticado.")
@@ -74,7 +69,7 @@ async def create_business(
 @router.get("/")
 async def list_businesses(
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user_placeholder)
+    current_user: User = Depends(get_current_user)
 ):
     if not current_user:
         raise HTTPException(status_code=401, detail="Usuario nao autenticado.")

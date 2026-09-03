@@ -52,13 +52,14 @@ class MFAVerifyRequest(BaseModel):
 class UserOut(BaseModel):
     id: UUID
     email: str
-    full_name: str
-    role: UserRole
+    full_name: Optional[str] = "Administrador"
+    role: str
     role_label: Optional[str] = None
-    is_active: bool
-    is_verified: bool
-    created_at: datetime
-    updated_at: datetime
+    is_active: Optional[bool] = True
+    is_verified: Optional[bool] = True
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    business_id: Optional[UUID] = None
 
     class Config:
         from_attributes = True
@@ -76,6 +77,7 @@ class UserCreate(BaseModel):
     password: str = Field(..., min_length=8)
     role: UserRole = UserRole.OPERATOR
     is_active: bool = True
+    business_id: Optional[UUID] = None
 
 
 # ── AuditLog ──────────────────────────────────────────────────────
