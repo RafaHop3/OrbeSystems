@@ -2,7 +2,7 @@
 # INHO API – Multi-Stage Docker Build
 # ══════════════════════════════════════════════════════════════════
 
-FROM python:3.11 AS builder
+FROM python:3.11-slim AS builder
 
 ENV VIRTUAL_ENV=/opt/venv
 RUN python -m venv $VIRTUAL_ENV
@@ -13,9 +13,7 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # ── Stage 2: Runtime ─────────────────────────────────────────────
-FROM python:3.11 AS runtime
-# Using full python:3.11 bypasses the need for apt-get install libpq5 
-# which avoids the overlayfs layer corruption on this EC2 instance.
+FROM python:3.11-slim AS runtime
 
 ENV VIRTUAL_ENV=/opt/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
