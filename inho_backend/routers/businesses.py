@@ -66,7 +66,7 @@ async def create_business(
 
     return new_business
 
-@router.get("/")
+@router.get("/", response_model=list[BusinessResponse])
 async def list_businesses(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
