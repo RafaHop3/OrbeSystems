@@ -141,7 +141,7 @@ class AuditLog(Base):
 
     id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id= Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=True)
-    user_id    = Column(UUID(as_uuid=True), nullable=True)  # no cross-schema FK constraint
+    user_id    = Column(String(36), nullable=True)  # MATCH User.id which is String(36)
     user_name  = Column(String(255), nullable=True)
     user_role  = Column(String(100), nullable=True)
     action     = Column(Enum(AuditAction), nullable=False)
