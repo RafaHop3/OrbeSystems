@@ -137,6 +137,10 @@ async def health_check(request: Request):
 async def root():
     return {"message": "INHO API - Gestão Empresarial e Impacto Social Global", "docs": "/docs"}
 
+@app.get("/favicon.ico", include_in_schema=False)
+async def favicon():
+    from fastapi.responses import Response
+    return Response(content=b"", media_type="image/x-icon", status_code=204)
 
 # ── AWS Lambda Handler ────────────────────────────────────────────
 # Mangum translates Lambda/API-Gateway events → ASGI → FastAPI.
