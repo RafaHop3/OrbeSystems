@@ -143,7 +143,7 @@ async def refresh(
     user_id = payload.get("sub")
     if isinstance(user_id, str):
         try:
-            user_id = uuid.UUID(user_id)
+            uuid_val = uuid.UUID(user_id)
         except ValueError:
             pass
 

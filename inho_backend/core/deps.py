@@ -33,7 +33,7 @@ async def get_current_user(
     user_id = payload.get("sub")
     if isinstance(user_id, str):
         try:
-            user_id = uuid.UUID(user_id)
+            uuid_val = uuid.UUID(user_id)
         except ValueError:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="ID de usuario invalido (UUID esperado)")
 

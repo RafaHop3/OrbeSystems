@@ -36,7 +36,8 @@ async def write_audit(
 
     if isinstance(user_id, str):
         try:
-            user_id = UUID(user_id)
+            # validate format, but keep as string for SQLAlchemy String(36) mapping
+            uuid_val = UUID(user_id)
         except ValueError:
             pass
 
