@@ -49,7 +49,7 @@ async def login(
     if not user:
         raise HTTPException(status_code=403, detail="PAYMENT_REQUIRED")
 
-    if not verify_password(body.password, user.hashed_password):
+    if not verify_password(body.password, user.password_hash):
         await write_audit(
             db, AuditAction.FAILED_LOGIN, "User",
             detail={"email": body.email}, request=request,
@@ -266,11 +266,10 @@ async def webhook_provision(
 
     user = User(
         email=body.email,
-        full_name=body.full_name,
-        hashed_password=body.hashed_password,
+        password_hash=body.hashed_password,
         role=UserRole.ADMIN,  # Provisioned as master
         is_active=True,
-        is_verified=True,
+        is_email_verified=True,
     )
     db.add(user)
     await db.flush()
