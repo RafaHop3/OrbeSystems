@@ -294,7 +294,7 @@ class InvoiceType(str, enum.Enum):
     TAXA_MANUTENCAO        = "TAXA_MANUTENCAO"
     OUTROS                 = "OUTROS"
 
-# ── NIBBOS: CRM Contacts (Emp/Sup/Cust) ─────────────────────────
+# ── ORBE INHO: CRM Contacts (Emp/Sup/Cust) ─────────────────────────
 class ContactCategory(str, enum.Enum):
     EMPLOYEE = "EMPLOYEE"
     SUPPLIER = "SUPPLIER"
