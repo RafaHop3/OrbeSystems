@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:e5e29bcf-8fda-4acd-ba7f-f3ff415960ca",
+  "serialNumber": "urn:uuid:72cf414a-125f-4c94-8141-159b416b5428",
   "metadata": {
-    "timestamp": "2026-09-08T13:31:53.958693+00:00",
+    "timestamp": "2026-09-08T21:38:06.347521+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -1525,8 +1525,8 @@
     {
       "type": "library",
       "name": "rich-toolkit",
-      "version": "0.20.4",
-      "purl": "pkg:pypi/rich-toolkit@0.20.4",
+      "version": "0.20.5",
+      "purl": "pkg:pypi/rich-toolkit@0.20.5",
       "licenses": [
         {
           "license": {
@@ -1538,7 +1538,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "efd2801babe43a31c4777ee8e0d62fc6965f373769ec67076679f963282f0d54"
+          "content": "1506a4047db2f13887697cbb739898cb91c3ffb65c2a618a45aa097cd8debfc5"
         }
       ]
     },
