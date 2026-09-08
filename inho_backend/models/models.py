@@ -103,7 +103,7 @@ class Business(Base):
     user_id    = Column(String(36), ForeignKey("public.users.id", ondelete="CASCADE"), nullable=False)
     name       = Column(String(255), nullable=False)
     cnpj       = Column(String(20), nullable=True)
-    category   = Column(Enum(BusinessCategory), nullable=False, default=BusinessCategory.OUTROS)
+    category   = Column(Enum(BusinessCategory, schema="inho"), nullable=False, default=BusinessCategory.OUTROS)
 
     
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -144,7 +144,7 @@ class AuditLog(Base):
     user_id    = Column(String(36), nullable=True)  # MATCH User.id which is String(36)
     user_name  = Column(String(255), nullable=True)
     user_role  = Column(String(100), nullable=True)
-    action     = Column(Enum(AuditAction), nullable=False)
+    action     = Column(Enum(AuditAction, schema="inho"), nullable=False)
     entity     = Column(String(100), nullable=False)
     entity_id  = Column(String(255), nullable=True)
     detail     = Column(Text, nullable=True)
@@ -181,7 +181,7 @@ class Contract(Base):
     frequency    = Column(String(20), nullable=True)
     start_date   = Column(DateTime(timezone=True), nullable=False)
     end_date     = Column(DateTime(timezone=True), nullable=True)
-    status       = Column(Enum(ContractStatus), nullable=False, default=ContractStatus.ACTIVE)
+    status       = Column(Enum(ContractStatus, schema="inho"), nullable=False, default=ContractStatus.ACTIVE)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),

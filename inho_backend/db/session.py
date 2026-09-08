@@ -41,7 +41,8 @@ if not settings.DATABASE_URL.startswith("sqlite"):
     })
     
     engine_kwargs.setdefault("connect_args", {})
-    engine_kwargs["connect_args"]["server_settings"] = {"search_path": getattr(settings, "SCHEMA", "public")}
+    schema_name = getattr(settings, "SCHEMA", "inho")
+    engine_kwargs["connect_args"]["server_settings"] = {"search_path": f"{schema_name}, public"}
     engine_kwargs["connect_args"]["prepared_statement_cache_size"] = 0
     
     # Only apply SSL for production databases (Supabase, Render, etc.)
