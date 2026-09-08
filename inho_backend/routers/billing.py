@@ -264,6 +264,38 @@ async def notify_email(
         status="SENT"
     )
 
+@router.get("/{invoice_id}/receipt/pdf")
+async def generate_pdf_receipt(
+    invoice_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    business = await _get_user_business(db, current_user)
+    result = await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.id == invoice_id,
+            BillingInvoice.business_id == business.id
+        )
+    )
+    invoice = result.scalar_one_or_none()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Cobrança não encontrada")
+
+    if invoice.status != BillingStatus.PAID:
+        raise HTTPException(status_code=400, detail="Recibo só pode ser gerado para faturas pagas.")
+
+    # MOCK PDF Generation response (Should integrate with ReportLab/FPDF in production)
+    receipt_data = {
+        "title": f"RECIBO DE PAGAMENTO - {business.name}",
+        "customer": invoice.customer_name,
+        "amount": f"R$ {invoice.amount:,.2f}",
+        "paid_at": invoice.updated_at.strftime("%d/%m/%Y %H:%M"),
+        "transaction_id": str(invoice.id),
+        "download_url": f"https://api.inho.com/v1/billing/{invoice.id}/download_file"
+    }
+
+    return receipt_data
+
 @router.get("/stats", response_model=BillingStatsOut)
 async def get_billing_stats(
     db: AsyncSession = Depends(get_db),
@@ -283,9 +315,15 @@ async def get_billing_stats(
 
     for inv in invoices:
         notifications_count += inv.notification_count
+        
+        # Ensure UTC timezone awareness for safe comparison
+        inv_due = inv.due_date
+        if hasattr(inv_due, "tzinfo") and inv_due.tzinfo is None:
+            inv_due = inv_due.replace(tzinfo=timezone.utc)
+            
         if inv.status == BillingStatus.PAID:
             paid_sum += inv.amount
-        elif inv.status == BillingStatus.OVERDUE or (inv.status == BillingStatus.PENDING and inv.due_date < now):
+        elif inv.status == BillingStatus.OVERDUE or (inv.status == BillingStatus.PENDING and inv_due < now):
             overdue_sum += inv.amount
         elif inv.status == BillingStatus.PENDING:
             pending_sum += inv.amount

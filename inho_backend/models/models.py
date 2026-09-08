@@ -50,6 +50,7 @@ class User(Base):
     password_hash   = Column(String(255), nullable=False)
     role            = Column(String(50), nullable=True, default="user")
     is_email_verified = Column(Boolean, default=False, nullable=False)
+    subscription_status = Column(String(50), nullable=False, default="active")
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
@@ -100,10 +101,10 @@ class Business(Base):
     __tablename__ = "businesses"
 
     id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id    = Column(String(36), ForeignKey("public.users.id", ondelete="CASCADE"), nullable=False)
+    user_id    = Column(UUID(as_uuid=True), ForeignKey("public.users.id", ondelete="CASCADE"), nullable=False)
     name       = Column(String(255), nullable=False)
     cnpj       = Column(String(20), nullable=True)
-    category   = Column(Enum(BusinessCategory, schema="inho"), nullable=False, default=BusinessCategory.OUTROS)
+    category   = Column(Enum(BusinessCategory, schema="public"), nullable=False, default=BusinessCategory.OUTROS)
 
     
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -123,7 +124,7 @@ class BusinessOperator(Base):
 
     id          = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
-    user_id     = Column(String(36), ForeignKey("public.users.id", ondelete="CASCADE"), nullable=False)
+    user_id     = Column(UUID(as_uuid=True), ForeignKey("public.users.id", ondelete="CASCADE"), nullable=False)
     
     created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
@@ -141,10 +142,10 @@ class AuditLog(Base):
 
     id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id= Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=True)
-    user_id    = Column(String(36), nullable=True)  # MATCH User.id which is String(36)
+    user_id    = Column(UUID(as_uuid=True), nullable=True)
     user_name  = Column(String(255), nullable=True)
     user_role  = Column(String(100), nullable=True)
-    action     = Column(Enum(AuditAction, schema="inho"), nullable=False)
+    action     = Column(Enum(AuditAction), nullable=False)
     entity     = Column(String(100), nullable=False)
     entity_id  = Column(String(255), nullable=True)
     detail     = Column(Text, nullable=True)
@@ -181,7 +182,7 @@ class Contract(Base):
     frequency    = Column(String(20), nullable=True)
     start_date   = Column(DateTime(timezone=True), nullable=False)
     end_date     = Column(DateTime(timezone=True), nullable=True)
-    status       = Column(Enum(ContractStatus, schema="inho"), nullable=False, default=ContractStatus.ACTIVE)
+    status       = Column(Enum(ContractStatus), nullable=False, default=ContractStatus.ACTIVE)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
@@ -247,7 +248,7 @@ class CashRegister(Base):
 
     id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id     = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
-    operator_id     = Column(String(36), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
+    operator_id     = Column(UUID(as_uuid=True), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
     opening_balance = Column(Numeric(precision=20, scale=8), nullable=False, default=0)
     closing_balance = Column(Numeric(precision=20, scale=8), nullable=True)
     status          = Column(Enum(CashRegisterStatus), nullable=False, default=CashRegisterStatus.OPEN)
@@ -293,6 +294,34 @@ class InvoiceType(str, enum.Enum):
     TAXA_MANUTENCAO        = "TAXA_MANUTENCAO"
     OUTROS                 = "OUTROS"
 
+# ── NIBBOS: CRM Contacts (Emp/Sup/Cust) ─────────────────────────
+class ContactCategory(str, enum.Enum):
+    EMPLOYEE = "EMPLOYEE"
+    SUPPLIER = "SUPPLIER"
+    CUSTOMER = "CUSTOMER"
+
+class CRMContact(Base):
+    __tablename__ = "crm_contacts"
+
+    id           = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id  = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    category     = Column(Enum(ContactCategory), nullable=False)
+    name         = Column(String(255), nullable=False)
+    document     = Column(String(50), nullable=True)
+    email        = Column(String(255), nullable=True)
+    phone        = Column(String(50), nullable=True)
+    bank_details = Column(Text, nullable=True)
+    notes        = Column(Text, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_crm_contacts_business", "business_id"),
+        Index("ix_crm_contacts_category", "category"),
+    )
+
 # ── B2B2C Domain: Cooperado Pipeline ──────────────────────────────
 class CooperadoStatus(str, enum.Enum):
     PROPOSTA_CADASTRADA       = "PROPOSTA_CADASTRADA"
@@ -312,6 +341,8 @@ class Cooperado(Base):
     document     = Column(String(50), nullable=False) # CPF or CNPJ
     email        = Column(String(255), nullable=True)
     phone        = Column(String(50), nullable=True)
+    bank_details = Column(Text, nullable=True)
+    notes        = Column(Text, nullable=True)
     status       = Column(Enum(CooperadoStatus), nullable=False, default=CooperadoStatus.PROPOSTA_CADASTRADA)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -332,6 +363,7 @@ class BillingInvoice(Base):
     id                       = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id              = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
     cooperado_id             = Column(UUID(as_uuid=True), ForeignKey("cooperados.id", ondelete="CASCADE"), nullable=True)
+    crm_contact_id           = Column(UUID(as_uuid=True), ForeignKey("crm_contacts.id", ondelete="CASCADE"), nullable=True)
     invoice_type             = Column(Enum(InvoiceType), nullable=False, default=InvoiceType.OUTROS)
     customer_name            = Column(String(255), nullable=False)
     customer_phone           = Column(String(50), nullable=True)
@@ -348,9 +380,9 @@ class BillingInvoice(Base):
     last_notification_sent_at= Column(DateTime(timezone=True), nullable=True)
     
     # Audit fields: quem e quando criou / editou
-    created_by_id   = Column(String(36), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
+    created_by_id   = Column(UUID(as_uuid=True), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
     created_by_name = Column(String(255), nullable=True)
-    updated_by_id   = Column(String(36), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
+    updated_by_id   = Column(UUID(as_uuid=True), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
     updated_by_name = Column(String(255), nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -361,6 +393,33 @@ class BillingInvoice(Base):
         Index("ix_billing_invoices_status", "status"),
         Index("ix_billing_invoices_business", "business_id"),
         Index("ix_billing_invoices_due", "due_date"),
+    )
+
+
+class PayableStatus(str, enum.Enum):
+    PENDING   = "PENDING"
+    PAID      = "PAID"
+    CANCELLED = "CANCELLED"
+
+class AccountPayable(Base):
+    __tablename__ = "accounts_payable"
+
+    id                       = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id              = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    supplier_id              = Column(UUID(as_uuid=True), ForeignKey("crm_contacts.id", ondelete="CASCADE"), nullable=True)
+    description              = Column(Text, nullable=False)
+    amount                   = Column(Numeric(precision=20, scale=8), nullable=False)
+    due_date                 = Column(DateTime(timezone=True), nullable=False)
+    paid_date                = Column(DateTime(timezone=True), nullable=True)
+    status                   = Column(Enum(PayableStatus), nullable=False, default=PayableStatus.PENDING)
+    
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_accounts_payable_status", "status"),
+        Index("ix_accounts_payable_business", "business_id"),
     )
 
 
@@ -398,7 +457,7 @@ class PrivacyRequest(Base):
     __tablename__ = "privacy_requests"
 
     id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id         = Column(String(36), ForeignKey("public.users.id", ondelete="CASCADE"), nullable=False)
+    user_id         = Column(UUID(as_uuid=True), ForeignKey("public.users.id", ondelete="CASCADE"), nullable=False)
     broker_id       = Column(UUID(as_uuid=True), ForeignKey("data_brokers.id", ondelete="CASCADE"), nullable=False)
     status          = Column(Enum(PrivacyRequestStatus), nullable=False, default=PrivacyRequestStatus.PENDING)
     sent_at         = Column(DateTime(timezone=True), nullable=True)

@@ -25,7 +25,7 @@ async def get_me(
     from models.models import BusinessOperator, UserRole
     
     if current_user.role == UserRole.OPERATOR:
-        result = await db.execute(select(BusinessOperator).where(BusinessOperator.user_id == str(current_user.id)))
+        result = await db.execute(select(BusinessOperator).where(BusinessOperator.user_id == current_user.id))
         biz_op = result.scalar_one_or_none()
         if biz_op:
             current_user.business_id = biz_op.business_id
@@ -54,11 +54,9 @@ async def create_user(
 
     user = User(
         email=body.email,
-        full_name=body.full_name,
-        hashed_password=hash_password(body.password),
+        password_hash=hash_password(body.password),
         role=body.role,
-        is_active=body.is_active,
-        is_verified=True,
+        is_email_verified=True,
     )
     db.add(user)
     await db.flush()
@@ -102,7 +100,11 @@ async def update_user(
     changes = body.model_dump(exclude_unset=True)
     if "password" in changes and changes["password"]:
         from core.security import hash_password
-        changes["hashed_password"] = hash_password(changes.pop("password"))
+        changes["password_hash"] = hash_password(changes.pop("password"))
+    
+    # Remove unsupported schema fields injected by older UserUpdate schemas
+    changes.pop("full_name", None)
+    changes.pop("is_active", None)
 
     for field, value in changes.items():
         setattr(user, field, value)

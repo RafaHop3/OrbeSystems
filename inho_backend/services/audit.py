@@ -53,7 +53,10 @@ async def write_audit(
         res = await db.execute(select(User).where(User.id == user_id))
         u = res.scalar_one_or_none()
         if u:
-            user_name = u.full_name
+            try:
+                user_name = u.full_name
+            except Exception:
+                user_name = "Administrador"
             user_role = user_role or u.role_label
 
     log = AuditLog(

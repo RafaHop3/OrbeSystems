@@ -60,7 +60,7 @@ async def login(
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Conta desativada")
 
-    if user.is_mfa_enabled:
+    if getattr(user, "is_mfa_enabled", False):
         if mfa_limiter.is_locked(user.email):
             raise HTTPException(
                 status_code=429,

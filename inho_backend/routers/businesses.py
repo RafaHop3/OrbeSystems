@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import func
+from sqlalchemy import func, cast, String
 from pydantic import BaseModel
 import traceback
 
@@ -41,7 +41,7 @@ async def create_business(
     # 1. Enforce the limit of 3 businesses per premium user
     count_query = await db.execute(
         select(func.count(Business.id))
-        .where(Business.user_id == current_user.id)
+        .where(cast(Business.user_id, String) == str(current_user.id))
     )
     current_count = count_query.scalar() or 0
 
@@ -75,7 +75,7 @@ async def list_businesses(
         raise HTTPException(status_code=401, detail="Usuario nao autenticado.")
         
     result = await db.execute(
-        select(Business).where(Business.user_id == current_user.id)
+        select(Business).where(cast(Business.user_id, String) == str(current_user.id))
     )
     businesses = result.scalars().all()
     return businesses

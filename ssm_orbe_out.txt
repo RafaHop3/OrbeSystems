@@ -1,0 +1,17 @@
+Deploying Updated Orbe Backend from ECR...
+Saved working directory and index state WIP on main: 181583a chore(security): auto-update SBOM [skip ci]
+HEAD is now at 181583a chore(security): auto-update SBOM [skip ci]
+Orbe Backend build and restart complete.
+
+----------ERROR-------
+From https://github.com/RafaHop3/OrbeSystems
+ * branch            main       -> FETCH_HEAD
+Error response from daemon: No such container: orbe_backend
+time="2026-09-08T01:54:57Z" level=warning msg="The \"K1dJv\" variable is not set. Defaulting to a blank string."
+time="2026-09-08T01:54:57Z" level=warning msg="The \"K1dJv\" variable is not set. Defaulting to a blank string."
+No stopped containers
+time="2026-09-08T01:54:57Z" level=warning msg="The \"K1dJv\" variable is not set. Defaulting to a blank string."
+ Container orbe_backend  Creating
+ Container orbe_backend  Created
+ Container orbe_backend  Starting
+ Container orbe_backend  Started

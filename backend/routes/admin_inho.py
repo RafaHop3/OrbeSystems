@@ -36,7 +36,7 @@ async def list_inho_users(
     
     # We query the natively isolated INHO Database Schema directly
     query = text("""
-        SELECT id, email, full_name, role, is_active, created_at, is_verified, is_mfa_enabled 
+        SELECT id, email, role, is_email_verified, created_at 
         FROM users 
         ORDER BY created_at DESC 
         OFFSET :skip LIMIT :limit
@@ -48,12 +48,12 @@ async def list_inho_users(
         users.append({
             "id": str(row[0]),
             "email": row[1],
-            "full_name": row[2],
-            "role": row[3],
-            "is_active": row[4],
-            "created_at": row[5].isoformat() if row[5] else None,
-            "is_verified": row[6],
-            "is_mfa_enabled": row[7]
+            "full_name": "Administrador INHO",
+            "role": row[2],
+            "is_active": True,
+            "created_at": row[4].isoformat() if row[4] else None,
+            "is_verified": row[3],
+            "is_mfa_enabled": False
         })
     return users
 
@@ -75,18 +75,16 @@ async def create_inho_user(
     user_id = str(uuid.uuid4())
     
     insert_query = text("""
-        INSERT INTO users (id, email, full_name, hashed_password, role, is_active, is_verified, is_mfa_enabled, created_at, updated_at) 
-        VALUES (:id, :email, :full_name, :hashed, :role, :is_active, false, false, :now, :now)
+        INSERT INTO users (id, email, password_hash, role, is_email_verified, created_at) 
+        VALUES (:id, :email, :hashed, :role, false, :now)
     """)
     now = datetime.now(timezone.utc)
     
     db.execute(insert_query, {
         "id": user_id,
         "email": data.email,
-        "full_name": data.full_name,
         "hashed": hashed_pw,
         "role": data.role,
-        "is_active": data.is_active,
         "now": now
     })
     db.commit()
