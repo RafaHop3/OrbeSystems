@@ -5,14 +5,14 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy import select
+from sqlalchemy import select, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_user
 from db.session import get_db
 from models.models import (
     Contract, ContractStatus, User,
-    AuditAction
+    AuditAction, BusinessOperator
 )
 from schemas.schemas import ContractCreate, ContractOut
 from services.audit import write_audit
@@ -27,7 +27,12 @@ async def create_contract(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    contract = Contract(**body.model_dump())
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        raise HTTPException(status_code=403, detail="Operador não associado a uma cooperativa")
+
+    contract = Contract(**body.model_dump(), business_id=biz_op.business_id)
     db.add(contract)
     await db.flush()
     await write_audit(
@@ -45,7 +50,12 @@ async def list_contracts(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    result = await db.execute(select(Contract).order_by(Contract.created_at.desc()))
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        return []
+
+    result = await db.execute(select(Contract).where(Contract.business_id == biz_op.business_id).order_by(Contract.created_at.desc()))
     return result.scalars().all()
 
 
@@ -55,7 +65,12 @@ async def get_contract(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    result = await db.execute(select(Contract).where(Contract.id == contract_id))
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        raise HTTPException(status_code=404, detail="Contrato não encontrado")
+
+    result = await db.execute(select(Contract).where(Contract.id == contract_id, Contract.business_id == biz_op.business_id))
     contract = result.scalar_one_or_none()
     if not contract:
         raise HTTPException(status_code=404, detail="Contrato não encontrado")
@@ -70,7 +85,12 @@ async def activate_contract(
     current_user: User = Depends(get_current_user),
 ):
     """Ativa o contrato."""
-    result = await db.execute(select(Contract).where(Contract.id == contract_id))
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        raise HTTPException(status_code=404, detail="Contrato não encontrado")
+
+    result = await db.execute(select(Contract).where(Contract.id == contract_id, Contract.business_id == biz_op.business_id))
     contract = result.scalar_one_or_none()
     if not contract:
         raise HTTPException(status_code=404, detail="Contrato não encontrado")
@@ -98,7 +118,12 @@ async def update_contract_status(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    result = await db.execute(select(Contract).where(Contract.id == contract_id))
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        raise HTTPException(status_code=404, detail="Contrato não encontrado")
+
+    result = await db.execute(select(Contract).where(Contract.id == contract_id, Contract.business_id == biz_op.business_id))
     contract = result.scalar_one_or_none()
     if not contract:
         raise HTTPException(status_code=404, detail="Contrato não encontrado")
