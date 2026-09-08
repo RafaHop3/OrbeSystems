@@ -5,13 +5,13 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy import select
+from sqlalchemy import select, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_user
 from db.session import get_db
 from models.models import (
-    SalesOrder, SalesOrderStatus, User, AuditAction
+    SalesOrder, SalesOrderStatus, User, AuditAction, BusinessOperator
 )
 from schemas.schemas import SalesOrderCreate, SalesOrderOut
 from services.audit import write_audit
@@ -27,7 +27,12 @@ async def create_sales_order(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    order = SalesOrder(**body.model_dump(), status=SalesOrderStatus.DRAFT)
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        raise HTTPException(status_code=403, detail="Operador não associado a uma cooperativa")
+        
+    order = SalesOrder(**body.model_dump(), business_id=biz_op.business_id, status=SalesOrderStatus.DRAFT)
     db.add(order)
     await db.flush()
     await write_audit(
@@ -47,7 +52,12 @@ async def list_sales_orders(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    query = select(SalesOrder)
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        return []
+
+    query = select(SalesOrder).where(SalesOrder.business_id == biz_op.business_id)
     if status:
         query = query.where(SalesOrder.status == status)
     result = await db.execute(query.order_by(SalesOrder.created_at.desc()))
@@ -60,7 +70,12 @@ async def get_sales_order(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    result = await db.execute(select(SalesOrder).where(SalesOrder.id == order_id))
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+
+    result = await db.execute(select(SalesOrder).where(SalesOrder.id == order_id, SalesOrder.business_id == biz_op.business_id))
     order = result.scalar_one_or_none()
     if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
@@ -75,7 +90,12 @@ async def confirm_sales_order(
     current_user: User = Depends(get_current_user),
 ):
     """Confirma o pedido."""
-    result = await db.execute(select(SalesOrder).where(SalesOrder.id == order_id))
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+
+    result = await db.execute(select(SalesOrder).where(SalesOrder.id == order_id, SalesOrder.business_id == biz_op.business_id))
     order = result.scalar_one_or_none()
     if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
@@ -103,7 +123,12 @@ async def invoice_sales_order(
     current_user: User = Depends(get_current_user),
 ):
     """Emite a NF-e (mock na v1) para o pedido confirmado."""
-    result = await db.execute(select(SalesOrder).where(SalesOrder.id == order_id))
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+
+    result = await db.execute(select(SalesOrder).where(SalesOrder.id == order_id, SalesOrder.business_id == biz_op.business_id))
     order = result.scalar_one_or_none()
     if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
@@ -133,7 +158,12 @@ async def cancel_sales_order(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    result = await db.execute(select(SalesOrder).where(SalesOrder.id == order_id))
+    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
+    biz_op = biz_op_res.scalars().first()
+    if not biz_op:
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
+
+    result = await db.execute(select(SalesOrder).where(SalesOrder.id == order_id, SalesOrder.business_id == biz_op.business_id))
     order = result.scalar_one_or_none()
     if not order:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
