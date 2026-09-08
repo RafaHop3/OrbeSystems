@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:ef95495a-7245-4249-bf1c-fb55f43cb6e0",
+  "serialNumber": "urn:uuid:e5e29bcf-8fda-4acd-ba7f-f3ff415960ca",
   "metadata": {
-    "timestamp": "2026-09-03T22:49:31.457809+00:00",
+    "timestamp": "2026-09-08T13:31:53.958693+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -140,8 +140,8 @@
     {
       "type": "library",
       "name": "anyio",
-      "version": "4.15.0",
-      "purl": "pkg:pypi/anyio@4.15.0",
+      "version": "4.15.1",
+      "purl": "pkg:pypi/anyio@4.15.1",
       "licenses": [
         {
           "license": {
@@ -153,7 +153,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "4fdb5251f5f7163a4ea1181e8ca4d38e2100ca2905aa566214430fee761e0b4d"
+          "content": "555274d62998d9151f9499ad307d679609039eb5c6e4f72ae6d80508b8948127"
         }
       ]
     },
@@ -1525,8 +1525,8 @@
     {
       "type": "library",
       "name": "rich-toolkit",
-      "version": "0.20.3",
-      "purl": "pkg:pypi/rich-toolkit@0.20.3",
+      "version": "0.20.4",
+      "purl": "pkg:pypi/rich-toolkit@0.20.4",
       "licenses": [
         {
           "license": {
@@ -1538,7 +1538,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "080a21fef1b43384f372a02fbe99d88573d80cd911b86104efc62aac9fdda988"
+          "content": "efd2801babe43a31c4777ee8e0d62fc6965f373769ec67076679f963282f0d54"
         }
       ]
     },
@@ -1875,8 +1875,8 @@
     {
       "type": "library",
       "name": "ujson",
-      "version": "5.13.0",
-      "purl": "pkg:pypi/ujson@5.13.0",
+      "version": "6.0.0",
+      "purl": "pkg:pypi/ujson@6.0.0",
       "licenses": [
         {
           "license": {
@@ -1893,7 +1893,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "1511165320991b09942dce87113d918142a1e0ed037326c99bd8c6391e748d89"
+          "content": "8161bb8b8fa02d6941d78b4f9d199fe830736e50d09d20dffcb396f88f7c017c"
         }
       ]
     },
