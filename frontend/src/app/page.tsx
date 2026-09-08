@@ -5,8 +5,9 @@ import ScrollNarrativeEngine from '@/components/ScrollNarrativeEngine';
 import FreedomSection from '@/components/FreedomSection';
 import FeaturedSitesSection from '@/components/FeaturedSitesSection';
 import GhostEnginePromo from '@/components/GhostEnginePromo';
-import InhoPromo from '@/components/InhoPromo';
+import InhoPromo from '@/components\InhoPromo';
 import OrbeCleanerHero from './orbe-cleaner/page';
+import OrbeKnightPromo from '@/components/OrbeKnightPromo';
 
 export default function HomePage() {
   return (
@@ -15,6 +16,7 @@ export default function HomePage() {
       <GhostEnginePromo />
       <InhoPromo />
       <OrbeCleanerHero />
+      <OrbeKnightPromo />
       <ScrollNarrativeEngine>
         <HeroSection />
       </ScrollNarrativeEngine>
