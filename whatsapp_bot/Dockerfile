@@ -1,15 +1,7 @@
-FROM node:18-alpine
-
+FROM node:20-alpine
 WORKDIR /app
-
-# Instalar pacotes de sistema necessários pro Baileys se preciso (Alpine)
 RUN apk add --no-cache git
-
 COPY package*.json ./
-RUN npm install
-
+RUN npm install --omit=dev
 COPY . .
-
-EXPOSE 3001
-
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
