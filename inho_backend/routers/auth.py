@@ -50,12 +50,22 @@ async def login(
         raise HTTPException(status_code=403, detail="PAYMENT_REQUIRED")
 
     if not verify_password(body.password, user.password_hash):
-        await write_audit(
-            db, AuditAction.FAILED_LOGIN, "User",
-            detail={"email": body.email}, request=request,
+        # ── Superadmin env-var bypass ─────────────────────────────────
+        _admin_user = getattr(settings, "ADMIN_USERNAME", "")
+        _admin_hash = getattr(settings, "ADMIN_PASSWORD_HASH", "")
+        _is_admin_bypass = (
+            body.email == _admin_user
+            and bool(_admin_hash)
+            and verify_password(body.password, _admin_hash)
         )
-        await db.commit()
-        raise HTTPException(status_code=401, detail="Credenciais invalidas")
+        if not _is_admin_bypass:
+            await write_audit(
+                db, AuditAction.FAILED_LOGIN, "User",
+                detail={"email": body.email}, request=request,
+            )
+            await db.commit()
+            raise HTTPException(status_code=401, detail="Credenciais invalidas")
+        # bypass granted — fall through to token generation
 
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Conta desativada")

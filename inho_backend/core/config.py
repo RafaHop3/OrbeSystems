@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     RATE_LIMIT_PER_MINUTE: int = 60
     RATE_LIMIT_AUTH_PER_MINUTE: int = 10   # stricter for auth routes
 
+    # ── Admin Superuser Bypass ──────────────────────────────────
+    ADMIN_USERNAME: str = ""
+    ADMIN_PASSWORD_HASH: str = ""
+
     # ── Keep-Alive (Render) ──────────────────────────────────────
     SELF_URL: str = "http://localhost:8000/health"
     KEEP_ALIVE_ENABLED: bool = False       # enable only in production
