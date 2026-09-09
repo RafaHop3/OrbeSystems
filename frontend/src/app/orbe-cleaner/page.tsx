@@ -108,16 +108,16 @@ export default function OrbeCleanerHero() {
 
                 {/* Buttons */}
                 <div className="flex flex-col md:flex-row gap-4 w-full layer-3">
-                    <button className="bg-transparent border border-[#00fff5] text-[#00fff5] font-mono font-bold py-3 px-6 rounded w-full flex items-center justify-center gap-2 hover:bg-[#00fff5] hover:text-[#0b0d17] transition-all duration-300 uppercase shadow-[0_0_10px_rgba(0,255,245,0.2),inset_0_0_10px_rgba(0,255,245,0.1)] hover:shadow-[0_0_20px_rgba(0,255,245,0.6),inset_0_0_10px_rgba(0,255,245,0.8)] [text-shadow:0_0_0] hover:[text-shadow:0_0_5px_rgba(0,0,0,0.5)] group relative overflow-hidden">
+                    <a href="/downloads/orbe-cleaner-win.bat" download="orbe-cleaner-win.bat" className="bg-transparent border border-[#00fff5] text-[#00fff5] font-mono font-bold py-3 px-6 rounded w-full flex items-center justify-center gap-2 hover:bg-[#00fff5] hover:text-[#0b0d17] transition-all duration-300 uppercase shadow-[0_0_10px_rgba(0,255,245,0.2),inset_0_0_10px_rgba(0,255,245,0.1)] hover:shadow-[0_0_20px_rgba(0,255,245,0.6),inset_0_0_10px_rgba(0,255,245,0.8)] [text-shadow:0_0_0] hover:[text-shadow:0_0_5px_rgba(0,0,0,0.5)] group relative overflow-hidden">
                         <svg className="w-5 h-5 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                         Windows
-                    </button>
-                    <button className="bg-transparent border border-[#bc13fe] text-[#bc13fe] font-mono font-bold py-3 px-6 rounded w-full flex items-center justify-center gap-2 hover:bg-[#bc13fe] hover:text-[#0b0d17] transition-all duration-300 uppercase shadow-[0_0_10px_rgba(188,19,254,0.2),inset_0_0_10px_rgba(188,19,254,0.1)] hover:shadow-[0_0_20px_rgba(188,19,254,0.6),inset_0_0_10px_rgba(188,19,254,0.8)] [text-shadow:0_0_0] hover:[text-shadow:0_0_5px_rgba(0,0,0,0.5)] group relative overflow-hidden">
+                    </a>
+                    <a href="/downloads/orbe-cleaner-mac.sh" download="orbe-cleaner-mac.sh" className="bg-transparent border border-[#bc13fe] text-[#bc13fe] font-mono font-bold py-3 px-6 rounded w-full flex items-center justify-center gap-2 hover:bg-[#bc13fe] hover:text-[#0b0d17] transition-all duration-300 uppercase shadow-[0_0_10px_rgba(188,19,254,0.2),inset_0_0_10px_rgba(188,19,254,0.1)] hover:shadow-[0_0_20px_rgba(188,19,254,0.6),inset_0_0_10px_rgba(188,19,254,0.8)] [text-shadow:0_0_0] hover:[text-shadow:0_0_5px_rgba(0,0,0,0.5)] group relative overflow-hidden">
                         <svg className="w-3 h-4 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 384 512">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="48" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
                         </svg>
                         Mac OS
-                    </button>
+                    </a>
                 </div>
 
                 <div className="mt-8 font-mono text-xs text-[#0066ff] layer-1 flex items-center gap-2 opacity-70">
