@@ -4,7 +4,7 @@ from uuid import UUID
 from typing import List
 from db.session import get_db
 from models.models import CRMContact, AccountPayable, User
-from security.auth import get_current_user
+from core.deps import get_current_user
 from schemas.crm_schemas import (
     CRMContactCreate, CRMContactUpdate, CRMContactOut,
     AccountPayableCreate, AccountPayableUpdate, AccountPayableOut
