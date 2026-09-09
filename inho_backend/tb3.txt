@@ -1,0 +1,82 @@
+﻿.venv\Scripts\python.
+exe : D:\OrbeSystems\
+orbe-systems\inho_bac
+kend\.venv\lib\site-p
+ackages\pytest_asynci
+o\plugin.py:208: Pyte
+stDeprecationWarning:
+ The configuration 
+option "asyncio_defau
+lt_fixture_loop_scope
+" is unset.
+No linha:1 
+caractere:1
++ .venv\Scripts\pytho
+n.exe -m pytest tests
+/test_settings.py -v 
+--tb=sho ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : 
+NotSpecified:     
+(D:\OrbeSystems\...c 
+   ope" is 
+unset.:Strin    g) 
+[], RemoteExcepti    
+on
+    + 
+FullyQualifiedErro   
+ rId : 
+NativeCommandE    
+rror
+ 
+The event loop scope 
+for asynchronous 
+fixtures will 
+default to the 
+fixture caching 
+scope. Future 
+versions of 
+pytest-asyncio will 
+default the loop 
+scope for 
+asynchronous 
+fixtures to function 
+scope. Set the 
+default fixture loop 
+scope explicitly in 
+order to avoid 
+unexpected behavior 
+in the future. Valid 
+fixture loop scopes 
+are: "function", 
+"class", "module", 
+"package", "session"
+
+  warnings.warn(Pytes
+tDeprecationWarning(_
+DEFAULT_FIXTURE_LOOP_
+SCOPE_UNSET))
+============================= test session starts =============================
+platform win32 -- Python 3.10.0, pytest-8.3.4, pluggy-1.6.0 -- D:\OrbeSystems\orbe-systems\inho_backend\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: D:\OrbeSystems\orbe-systems\inho_backend
+configfile: pytest.ini
+plugins: anyio-4.14.2, asyncio-0.24.0
+asyncio: mode=auto, default_loop_scope=None
+collecting ... collected 3 items
+
+tests/test_settings.py::test_update_business_settings SKIPPED (Auth ...) [ 33%]
+tests/test_settings.py::test_api_token_creation SKIPPED (Auth token ...) [ 66%]
+tests/test_settings.py::test_bank_integration_crud SKIPPED (Auth tok...) [100%]
+
+============================== warnings summary ===============================
+.venv\lib\site-packages\pydantic\_internal\_config.py:295
+  D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\pydantic\_internal\_config.py:295: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.10/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 3 skipped, 1 warning in 0.11s ========================

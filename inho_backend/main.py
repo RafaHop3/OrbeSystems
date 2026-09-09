@@ -17,6 +17,7 @@ from keep_alive import start_keep_alive, stop_keep_alive
 from routers import (
     auth, users, audit, contracts, sales_orders, pdv, admin, pco, businesses, billing, ghost_engine, crm
 )
+from routers import cooperados, categories, notes, recurrences, accounting, reports, settings as settings_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger("inho")
@@ -114,9 +115,13 @@ app.include_router(pdv.router, prefix="/api/v1")
 app.include_router(pco.router, prefix="/api/v1")
 app.include_router(businesses.router, prefix="/api/v1")
 app.include_router(billing.router, prefix="/api/v1/billing", tags=["Billing"])
+app.include_router(recurrences.router, prefix="/api/v1/recurrences", tags=["Recurrences"])
 app.include_router(ghost_engine.router, prefix="/api/v1")
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["Admin"])
 app.include_router(crm.router, prefix="/api/v1")
+app.include_router(cooperados.router)   # /api/v1/crm/cooperados
+app.include_router(categories.router)  # /api/v1/categories
+app.include_router(notes.router)       # /api/v1/notes
 
 
 # ── Health Check ──────────────────────────────────────────────────
@@ -143,7 +148,10 @@ async def favicon():
     from fastapi.responses import Response
     return Response(content=b"", media_type="image/x-icon", status_code=204)
 
-# ── AWS Lambda Handler ────────────────────────────────────────────
+# ── Module 4 e 6: Contabilidade e Relatórios ────────────────────────
+app.include_router(accounting.router, prefix="/api/v1/accounting", tags=["Accounting & Month Close"])
+app.include_router(reports.router, prefix="/api/v1/reports", tags=["Business Intelligence & Reports"])
+app.include_router(settings_router.router, prefix="/api/v1/settings", tags=["Money Layer & Global Settings"])
 # Mangum translates Lambda/API-Gateway events → ASGI → FastAPI.
 # Used in production (AWS Lambda). Ignored when running with uvicorn locally.
 from mangum import Mangum  # noqa: E402

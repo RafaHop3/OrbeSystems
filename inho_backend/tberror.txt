@@ -1,0 +1,3532 @@
+============================= test session starts =============================
+platform win32 -- Python 3.10.0, pytest-8.3.4, pluggy-1.6.0
+rootdir: D:\OrbeSystems\orbe-systems\inho_backend
+configfile: pytest.ini
+plugins: anyio-4.14.2, asyncio-0.24.0
+asyncio: mode=auto, default_loop_scope=None
+collected 1 item
+
+tests/test_crm.py::test_payable_crud_and_totals 
+------------------------------- live log setup --------------------------------
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("users")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("businesses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("business_operators")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("api_tokens")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("bank_integrations")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("audit_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("contracts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("sales_orders")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("cash_registers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pdv_sales")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("crm_contacts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("cooperados")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("billing_invoices")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("accounts_payable")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("data_brokers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("privacy_requests")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("webhook_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("account_categories")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("entity_notes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("entity_files")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("recurrences")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("month_closes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_surveys")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_questions")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_responses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_answers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE pco_answers
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE pco_responses
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE pco_questions
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE recurrences
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE accounts_payable
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE billing_invoices
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE pdv_sales
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE pco_surveys
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00039s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE month_closes
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00026s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE entity_files
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE entity_notes
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00031s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE account_categories
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00023s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE cooperados
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00026s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE crm_contacts
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE cash_registers
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE sales_orders
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00020s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE contracts
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE audit_logs
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00023s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE bank_integrations
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE api_tokens
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE business_operators
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE privacy_requests
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00032s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE businesses
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE webhook_logs
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE data_brokers
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE users
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("users")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("users")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("businesses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("businesses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("business_operators")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("business_operators")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("api_tokens")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("api_tokens")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("bank_integrations")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("bank_integrations")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("audit_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("audit_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("contracts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("contracts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("sales_orders")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("sales_orders")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("cash_registers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("cash_registers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pdv_sales")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("pdv_sales")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("crm_contacts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("crm_contacts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("cooperados")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("cooperados")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("billing_invoices")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("billing_invoices")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("accounts_payable")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("accounts_payable")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("data_brokers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("data_brokers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("privacy_requests")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("privacy_requests")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("webhook_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("webhook_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("account_categories")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("account_categories")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("entity_notes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("entity_notes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("entity_files")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("entity_files")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("recurrences")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("recurrences")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("month_closes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("month_closes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_surveys")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("pco_surveys")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_questions")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("pco_questions")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_responses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("pco_responses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_answers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("pco_answers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE users (
+	id VARCHAR(36) NOT NULL, 
+	email VARCHAR(255) NOT NULL, 
+	password_hash VARCHAR(255) NOT NULL, 
+	role VARCHAR(50), 
+	is_email_verified BOOLEAN NOT NULL, 
+	subscription_status VARCHAR(50) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE UNIQUE INDEX ix_users_email ON users (email)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00036s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE data_brokers (
+	id UUID NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	dpo_email VARCHAR(255), 
+	delete_url TEXT, 
+	method VARCHAR(5) NOT NULL, 
+	category VARCHAR(100) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	UNIQUE (name)
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE webhook_logs (
+	id UUID NOT NULL, 
+	event_id VARCHAR(255) NOT NULL, 
+	provider VARCHAR(50) NOT NULL, 
+	payload TEXT NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	error_message TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE UNIQUE INDEX ix_webhook_logs_event_id ON webhook_logs (event_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE businesses (
+	id UUID NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	cnpj VARCHAR(20), 
+	category VARCHAR(11) NOT NULL, 
+	municipal_registration VARCHAR(50), 
+	state_registration VARCHAR(50), 
+	logo_url VARCHAR(500), 
+	cashflow_horizon_months INTEGER NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_businesses_user ON businesses (user_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00032s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE privacy_requests (
+	id UUID NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	broker_id UUID NOT NULL, 
+	status VARCHAR(15) NOT NULL, 
+	sent_at DATETIME, 
+	last_checked_at DATETIME, 
+	notes TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE, 
+	FOREIGN KEY(broker_id) REFERENCES data_brokers (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_privacy_requests_status ON privacy_requests (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_privacy_requests_user ON privacy_requests (user_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_privacy_requests_broker ON privacy_requests (broker_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE business_operators (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE UNIQUE INDEX ix_business_operators_keys ON business_operators (business_id, user_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE api_tokens (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	name VARCHAR(100) NOT NULL, 
+	token_hash VARCHAR(100) NOT NULL, 
+	created_by_id VARCHAR(36), 
+	expires_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_api_tokens_biz ON api_tokens (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE bank_integrations (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	bank_name VARCHAR(50) NOT NULL, 
+	api_key_encrypted TEXT NOT NULL, 
+	webhook_url VARCHAR(500), 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_bank_integrations_biz ON bank_integrations (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE audit_logs (
+	id UUID NOT NULL, 
+	business_id UUID, 
+	user_id VARCHAR(36), 
+	user_name VARCHAR(255), 
+	user_role VARCHAR(100), 
+	action VARCHAR(12) NOT NULL, 
+	entity VARCHAR(100) NOT NULL, 
+	entity_id VARCHAR(255), 
+	detail TEXT, 
+	ip_address VARCHAR(45), 
+	user_agent VARCHAR(512), 
+	timestamp DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00027s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_audit_timestamp ON audit_logs (timestamp)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00023s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_audit_user_action ON audit_logs (user_id, action)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_audit_entity ON audit_logs (entity, entity_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE contracts (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	title VARCHAR(255) NOT NULL, 
+	contact_name VARCHAR(255) NOT NULL, 
+	contact_doc VARCHAR(20), 
+	record_type VARCHAR(20) NOT NULL, 
+	total_value NUMERIC(20, 8) NOT NULL, 
+	installments INTEGER NOT NULL, 
+	frequency VARCHAR(20), 
+	start_date DATETIME NOT NULL, 
+	end_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00031s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_contracts_business ON contracts (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_contracts_status ON contracts (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE sales_orders (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_doc VARCHAR(20), 
+	description TEXT, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	invoice_number VARCHAR(100), 
+	nfe_key VARCHAR(50), 
+	nfe_status VARCHAR(50), 
+	issue_date DATETIME NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_sales_orders_status ON sales_orders (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_sales_orders_business ON sales_orders (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE cash_registers (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	operator_id VARCHAR(36), 
+	opening_balance NUMERIC(20, 8) NOT NULL, 
+	closing_balance NUMERIC(20, 8), 
+	status VARCHAR(6) NOT NULL, 
+	opened_at DATETIME NOT NULL, 
+	closed_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(operator_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_cash_registers_status ON cash_registers (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_cash_registers_business ON cash_registers (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE crm_contacts (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	category VARCHAR(8) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50), 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	bank_details TEXT, 
+	notes TEXT, 
+	is_active BOOLEAN NOT NULL, 
+	address VARCHAR(500), 
+	city VARCHAR(100), 
+	state VARCHAR(50), 
+	zip_code VARCHAR(20), 
+	role_title VARCHAR(100), 
+	admission_date DATETIME, 
+	vacation_start_date DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_crm_contacts_business ON crm_contacts (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_crm_contacts_active ON crm_contacts (is_active)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_crm_contacts_category ON crm_contacts (category)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE cooperados (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50) NOT NULL, 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	bank_details TEXT, 
+	notes TEXT, 
+	status VARCHAR(25) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_cooperados_document ON cooperados (document)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_cooperados_business ON cooperados (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_cooperados_status ON cooperados (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE account_categories (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	parent_id UUID, 
+	name VARCHAR(255) NOT NULL, 
+	type VARCHAR(8) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(parent_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00020s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_account_categories_type ON account_categories (type)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_account_categories_business ON account_categories (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE entity_notes (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id VARCHAR(36) NOT NULL, 
+	content TEXT NOT NULL, 
+	author_id VARCHAR(36) NOT NULL, 
+	author_name VARCHAR(255) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00028s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_entity_notes_business ON entity_notes (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_entity_notes_entity ON entity_notes (entity_type, entity_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE entity_files (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id VARCHAR(36) NOT NULL, 
+	filename VARCHAR(500) NOT NULL, 
+	file_url TEXT NOT NULL, 
+	file_category VARCHAR(100), 
+	file_size INTEGER, 
+	uploaded_by VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_entity_files_entity ON entity_files (entity_type, entity_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_entity_files_business ON entity_files (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE month_closes (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	period_year INTEGER NOT NULL, 
+	period_month INTEGER NOT NULL, 
+	closed_by_id VARCHAR(36) NOT NULL, 
+	closed_by_name VARCHAR(255) NOT NULL, 
+	checksum VARCHAR(64) NOT NULL, 
+	summary_json TEXT, 
+	closed_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE UNIQUE INDEX ix_month_closes_business_period ON month_closes (business_id, period_year, period_month)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE pco_surveys (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	created_by VARCHAR(36), 
+	title VARCHAR(255) NOT NULL, 
+	description TEXT, 
+	status VARCHAR(8) NOT NULL, 
+	is_anonymous BOOLEAN NOT NULL, 
+	opens_at DATETIME, 
+	closes_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00022s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_surveys_created_by ON pco_surveys (created_by)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_surveys_status ON pco_surveys (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE pdv_sales (
+	id UUID NOT NULL, 
+	cash_register_id UUID NOT NULL, 
+	customer_name VARCHAR(255), 
+	total_amount NUMERIC(20, 8) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(cash_register_id) REFERENCES cash_registers (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pdv_sales_register ON pdv_sales (cash_register_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pdv_sales_created ON pdv_sales (created_at)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE billing_invoices (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	cooperado_id UUID, 
+	crm_contact_id UUID, 
+	category_id UUID, 
+	invoice_type VARCHAR(22) NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_phone VARCHAR(50), 
+	customer_email VARCHAR(255), 
+	customer_doc VARCHAR(20), 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	data_competencia DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	pix_code TEXT, 
+	pix_qr_url TEXT, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	project_id VARCHAR(100), 
+	notification_count INTEGER NOT NULL, 
+	last_notification_sent_at DATETIME, 
+	viewed_at DATETIME, 
+	remaining_balance NUMERIC(20, 8), 
+	created_by_id VARCHAR(36), 
+	created_by_name VARCHAR(255), 
+	updated_by_id VARCHAR(36), 
+	updated_by_name VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE CASCADE, 
+	FOREIGN KEY(crm_contact_id) REFERENCES crm_contacts (id) ON DELETE CASCADE, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL, 
+	FOREIGN KEY(updated_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00032s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_billing_invoices_business ON billing_invoices (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_billing_invoices_bi ON billing_invoices (due_date, status, category_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_billing_invoices_status ON billing_invoices (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE accounts_payable (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	supplier_id UUID, 
+	category_id UUID, 
+	description TEXT NOT NULL, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	data_competencia DATETIME, 
+	paid_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	is_reimbursable BOOLEAN NOT NULL, 
+	payment_account VARCHAR(255), 
+	project_id VARCHAR(100), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(supplier_id) REFERENCES crm_contacts (id) ON DELETE CASCADE, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_accounts_payable_business ON accounts_payable (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00028s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_accounts_payable_bi ON accounts_payable (due_date, status, category_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_accounts_payable_status ON accounts_payable (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE recurrences (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	crm_contact_id UUID, 
+	cooperado_id UUID, 
+	category_id UUID, 
+	description TEXT NOT NULL, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	frequency VARCHAR(7) NOT NULL, 
+	first_due_date DATETIME NOT NULL, 
+	next_due_date DATETIME, 
+	parcel_total INTEGER, 
+	parcel_current INTEGER NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(crm_contact_id) REFERENCES crm_contacts (id) ON DELETE SET NULL, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE SET NULL, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_recurrences_next_due ON recurrences (next_due_date)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_recurrences_status ON recurrences (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_recurrences_business ON recurrences (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE pco_questions (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	indicator VARCHAR(15) NOT NULL, 
+	q_type VARCHAR(6) NOT NULL, 
+	text TEXT NOT NULL, 
+	options TEXT, 
+	order_index SMALLINT NOT NULL, 
+	required BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00020s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_questions_indicator ON pco_questions (indicator)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_questions_survey ON pco_questions (survey_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00031s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE pco_responses (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	respondent_id VARCHAR(36), 
+	submitted_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE, 
+	FOREIGN KEY(respondent_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_responses_survey ON pco_responses (survey_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00020s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_responses_submitted ON pco_responses (submitted_at)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE pco_answers (
+	id UUID NOT NULL, 
+	response_id UUID NOT NULL, 
+	question_id UUID NOT NULL, 
+	score SMALLINT, 
+	bool_value BOOLEAN, 
+	text_value TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(response_id) REFERENCES pco_responses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(question_id) REFERENCES pco_questions (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00020s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_answers_question ON pco_answers (question_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00034s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_answers_response ON pco_answers (response_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00023s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+-------------------------------- live log call --------------------------------
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO users (id, email, password_hash, role, is_email_verified, subscription_status, created_at) VALUES (?, ?, ?, ?, 1, 'active', datetime('now'))
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00033s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21', 'test@inho.io', '$2b$12$fvDiMb5Bq1.RGyxjkx9u3embyXIiBRcgahBfq0B3qn9PYFTVp1SKe', 'admin')
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO businesses (id, user_id, name, category, cashflow_horizon_months, created_at, updated_at) VALUES (?, ?, 'Test Business', 'OUTROS', 6, datetime('now'), datetime('now'))
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00049s] ('bb6df16984b14630a139848080a06716', '67d8bd05-aeb4-481b-a662-6c002eabbd21')
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO business_operators (id, business_id, user_id, created_at) VALUES (?, ?, ?, datetime('now'))
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00031s] ('9a05d24fdc634c6b85af4e4b50c50776', 'bb6df16984b14630a139848080a06716', '67d8bd05-aeb4-481b-a662-6c002eabbd21')
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE users.email = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00043s] ('test@inho.io',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE users.id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00030s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO audit_logs (id, business_id, user_id, user_name, user_role, action, entity, entity_id, detail, ip_address, user_agent, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00037s] ('22f8d41aacda49ff850924be532f859b', None, '67d8bd05-aeb4-481b-a662-6c002eabbd21', 'Administrador INHO', 'Usuário Mestre (Administrador)', 'LOGIN', 'User', '67d8bd05-aeb4-481b-a662-6c002eabbd21', '{"email": "test@inho.io"}', '127.0.0.1', 'python-httpx/0.28.0', '2026-09-09 16:24:20.335651')
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+INFO     httpx:_client.py:1742 HTTP Request: POST http://test/api/v1/auth/login "HTTP/1.1 200 OK"
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00026s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE businesses.user_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00047s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO accounts_payable (id, business_id, supplier_id, category_id, description, amount, due_date, data_competencia, paid_date, status, is_reimbursable, payment_account, project_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00044s] ('c355e9be1afa4a6ab47f27c7ae3a79c4', 'bb6df16984b14630a139848080a06716', None, None, 'Aluguel escritório', 3500.0, '2026-09-15 00:00:00.000000', '2026-09-01 00:00:00.000000', None, 'PENDING', 0, 'Conta Inter', None, '2026-09-09 16:24:20.358460', '2026-09-09 16:24:20.358460')
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00026s] ('c355e9be1afa4a6ab47f27c7ae3a79c4',)
+INFO     sqlalchemy.engine.Engine:base.py:1125 ROLLBACK
+INFO     httpx:_client.py:1742 HTTP Request: POST http://test/api/v1/crm/payable/ "HTTP/1.1 201 Created"
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 0.0274s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE businesses.user_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 0.02745s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.id = ? AND accounts_payable.business_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00025s] ('c355e9be1afa4a6ab47f27c7ae3a79c4', 'bb6df16984b14630a139848080a06716')
+INFO     sqlalchemy.engine.Engine:base.py:1899 UPDATE accounts_payable SET is_reimbursable=?, updated_at=? WHERE accounts_payable.id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00037s] (1, '2026-09-09 16:24:20.386288', 'c355e9be1afa4a6ab47f27c7ae3a79c4')
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 0.02691s ago] ('c355e9be1afa4a6ab47f27c7ae3a79c4',)
+INFO     sqlalchemy.engine.Engine:base.py:1125 ROLLBACK
+INFO     httpx:_client.py:1742 HTTP Request: PUT http://test/api/v1/crm/payable/c355e9be-1afa-4a6a-b47f-27c7ae3a79c4 "HTTP/1.1 200 OK"
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 0.0526s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE businesses.user_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 0.04735s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.business_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00024s] ('bb6df16984b14630a139848080a06716',)
+INFO     sqlalchemy.engine.Engine:base.py:1125 ROLLBACK
+FAILED                                                                   [100%]
+
+================================== FAILURES ===================================
+________________________ test_payable_crud_and_totals _________________________
+
+client = <httpx.AsyncClient object at 0x000001AA3E2BC400>
+
+    @pytest.mark.asyncio
+    async def test_payable_crud_and_totals(client: AsyncClient):
+        token = await _get_token(client)
+        headers = {"Authorization": f"Bearer {token}"}
+        if not token:
+            pytest.skip("No auth token")
+    
+        # CREATE
+        r = await client.post("/api/v1/crm/payable/", json={
+            "description": "Aluguel escritório",
+            "amount": 3500.00,
+            "due_date": "2026-09-15T00:00:00Z",
+            "data_competencia": "2026-09-01T00:00:00Z",
+            "is_reimbursable": False,
+            "payment_account": "Conta Inter",
+        }, headers=headers)
+        assert r.status_code in [200, 201], r.text
+        payable = r.json()
+        payable_id = payable["id"]
+        assert payable["is_reimbursable"] == False
+    
+        # UPDATE — marcar como reembolsável (spec §3.7)
+        r = await client.put(f"/api/v1/crm/payable/{payable_id}", json={"is_reimbursable": True}, headers=headers)
+        assert r.status_code == 200
+        assert r.json()["is_reimbursable"] == True
+    
+        # TOTALS
+>       r = await client.get("/api/v1/crm/payable/summary/totals", headers=headers)
+
+tests\test_crm.py:193: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <httpx.AsyncClient object at 0x000001AA3E2BC400>
+url = '/api/v1/crm/payable/summary/totals'
+
+    async def get(
+        self,
+        url: URL | str,
+        *,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: RequestExtensions | None = None,
+    ) -> Response:
+        """
+        Send a `GET` request.
+    
+        **Parameters**: See `httpx.request`.
+        """
+>       return await self.request(
+            "GET",
+            url,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            timeout=timeout,
+            extensions=extensions,
+        )
+
+.venv\lib\site-packages\httpx\_client.py:1770: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <httpx.AsyncClient object at 0x000001AA3E2BC400>, method = 'GET'
+url = '/api/v1/crm/payable/summary/totals'
+
+    async def request(
+        self,
+        method: str,
+        url: URL | str,
+        *,
+        content: RequestContent | None = None,
+        data: RequestData | None = None,
+        files: RequestFiles | None = None,
+        json: typing.Any | None = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: RequestExtensions | None = None,
+    ) -> Response:
+        """
+        Build and send a request.
+    
+        Equivalent to:
+    
+        ```python
+        request = client.build_request(...)
+        response = await client.send(request, ...)
+        ```
+    
+        See `AsyncClient.build_request()`, `AsyncClient.send()`
+        and [Merging of configuration][0] for how the various parameters
+        are merged with client-level configuration.
+    
+        [0]: /advanced/clients/#merging-of-configuration
+        """
+    
+        if cookies is not None:  # pragma: no cover
+            message = (
+                "Setting per-request cookies=<...> is being deprecated, because "
+                "the expected behaviour on cookie persistence is ambiguous. Set "
+                "cookies directly on the client instance instead."
+            )
+            warnings.warn(message, DeprecationWarning, stacklevel=2)
+    
+        request = self.build_request(
+            method=method,
+            url=url,
+            content=content,
+            data=data,
+            files=files,
+            json=json,
+            params=params,
+            headers=headers,
+            cookies=cookies,
+            timeout=timeout,
+            extensions=extensions,
+        )
+>       return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+
+.venv\lib\site-packages\httpx\_client.py:1542: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <httpx.AsyncClient object at 0x000001AA3E2BC400>
+request = <Request('GET', 'http://test/api/v1/crm/payable/summary/totals')>
+
+    async def send(
+        self,
+        request: Request,
+        *,
+        stream: bool = False,
+        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
+        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
+    ) -> Response:
+        """
+        Send a request.
+    
+        The request is sent as-is, unmodified.
+    
+        Typically you'll want to build one with `AsyncClient.build_request()`
+        so that any client-level configuration is merged into the request,
+        but passing an explicit `httpx.Request()` is supported as well.
+    
+        See also: [Request instances][0]
+    
+        [0]: /advanced/clients/#request-instances
+        """
+        if self._state == ClientState.CLOSED:
+            raise RuntimeError("Cannot send a request, as the client has been closed.")
+    
+        self._state = ClientState.OPENED
+        follow_redirects = (
+            self.follow_redirects
+            if isinstance(follow_redirects, UseClientDefault)
+            else follow_redirects
+        )
+    
+        self._set_timeout(request)
+    
+        auth = self._build_request_auth(request, auth)
+    
+>       response = await self._send_handling_auth(
+            request,
+            auth=auth,
+            follow_redirects=follow_redirects,
+            history=[],
+        )
+
+.venv\lib\site-packages\httpx\_client.py:1631: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <httpx.AsyncClient object at 0x000001AA3E2BC400>
+request = <Request('GET', 'http://test/api/v1/crm/payable/summary/totals')>
+auth = <httpx.Auth object at 0x000001AA3E2BC190>, follow_redirects = False
+history = []
+
+    async def _send_handling_auth(
+        self,
+        request: Request,
+        auth: Auth,
+        follow_redirects: bool,
+        history: list[Response],
+    ) -> Response:
+        auth_flow = auth.async_auth_flow(request)
+        try:
+            request = await auth_flow.__anext__()
+    
+            while True:
+>               response = await self._send_handling_redirects(
+                    request,
+                    follow_redirects=follow_redirects,
+                    history=history,
+                )
+
+.venv\lib\site-packages\httpx\_client.py:1659: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <httpx.AsyncClient object at 0x000001AA3E2BC400>
+request = <Request('GET', 'http://test/api/v1/crm/payable/summary/totals')>
+follow_redirects = False, history = []
+
+    async def _send_handling_redirects(
+        self,
+        request: Request,
+        follow_redirects: bool,
+        history: list[Response],
+    ) -> Response:
+        while True:
+            if len(history) > self.max_redirects:
+                raise TooManyRedirects(
+                    "Exceeded maximum allowed redirects.", request=request
+                )
+    
+            for hook in self._event_hooks["request"]:
+                await hook(request)
+    
+>           response = await self._send_single_request(request)
+
+.venv\lib\site-packages\httpx\_client.py:1696: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <httpx.AsyncClient object at 0x000001AA3E2BC400>
+request = <Request('GET', 'http://test/api/v1/crm/payable/summary/totals')>
+
+    async def _send_single_request(self, request: Request) -> Response:
+        """
+        Sends a single request, without handling any redirections.
+        """
+        transport = self._transport_for_url(request.url)
+        start = time.perf_counter()
+    
+        if not isinstance(request.stream, AsyncByteStream):
+            raise RuntimeError(
+                "Attempted to send an sync request with an AsyncClient instance."
+            )
+    
+        with request_context(request=request):
+>           response = await transport.handle_async_request(request)
+
+.venv\lib\site-packages\httpx\_client.py:1732: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <httpx.ASGITransport object at 0x000001AA3E2BC160>
+request = <Request('GET', 'http://test/api/v1/crm/payable/summary/totals')>
+
+    async def handle_async_request(
+        self,
+        request: Request,
+    ) -> Response:
+        assert isinstance(request.stream, AsyncByteStream)
+    
+        # ASGI scope.
+        scope = {
+            "type": "http",
+            "asgi": {"version": "3.0"},
+            "http_version": "1.1",
+            "method": request.method,
+            "headers": [(k.lower(), v) for (k, v) in request.headers.raw],
+            "scheme": request.url.scheme,
+            "path": request.url.path,
+            "raw_path": request.url.raw_path.split(b"?")[0],
+            "query_string": request.url.query,
+            "server": (request.url.host, request.url.port),
+            "client": self.client,
+            "root_path": self.root_path,
+        }
+    
+        # Request.
+        request_body_chunks = request.stream.__aiter__()
+        request_complete = False
+    
+        # Response.
+        status_code = None
+        response_headers = None
+        body_parts = []
+        response_started = False
+        response_complete = create_event()
+    
+        # ASGI callables.
+    
+        async def receive() -> dict[str, typing.Any]:
+            nonlocal request_complete
+    
+            if request_complete:
+                await response_complete.wait()
+                return {"type": "http.disconnect"}
+    
+            try:
+                body = await request_body_chunks.__anext__()
+            except StopAsyncIteration:
+                request_complete = True
+                return {"type": "http.request", "body": b"", "more_body": False}
+            return {"type": "http.request", "body": body, "more_body": True}
+    
+        async def send(message: typing.MutableMapping[str, typing.Any]) -> None:
+            nonlocal status_code, response_headers, response_started
+    
+            if message["type"] == "http.response.start":
+                assert not response_started
+    
+                status_code = message["status"]
+                response_headers = message.get("headers", [])
+                response_started = True
+    
+            elif message["type"] == "http.response.body":
+                assert not response_complete.is_set()
+                body = message.get("body", b"")
+                more_body = message.get("more_body", False)
+    
+                if body and request.method != "HEAD":
+                    body_parts.append(body)
+    
+                if not more_body:
+                    response_complete.set()
+    
+        try:
+>           await self.app(scope, receive, send)
+
+.venv\lib\site-packages\httpx\_transports\asgi.py:170: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function ASGITransport.handle_async_request.<locals>.send at 0x000001AA3E1B9AB0>
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if self.root_path:
+            scope["root_path"] = self.root_path
+>       await super().__call__(scope, receive, send)
+
+.venv\lib\site-packages\fastapi\applications.py:1054: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function ASGITransport.handle_async_request.<locals>.send at 0x000001AA3E1B9AB0>
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        scope["app"] = self
+        if self.middleware_stack is None:
+            self.middleware_stack = self.build_middleware_stack()
+>       await self.middleware_stack(scope, receive, send)
+
+.venv\lib\site-packages\starlette\applications.py:113: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001AA3F389A20>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function ASGITransport.handle_async_request.<locals>.send at 0x000001AA3E1B9AB0>
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+    
+        response_started = False
+    
+        async def _send(message: Message) -> None:
+            nonlocal response_started, send
+    
+            if message["type"] == "http.response.start":
+                response_started = True
+            await send(message)
+    
+        try:
+            await self.app(scope, receive, _send)
+        except Exception as exc:
+            request = Request(scope)
+            if self.debug:
+                # In debug mode, return traceback responses.
+                response = self.debug_response(request, exc)
+            elif self.handler is None:
+                # Use our default 500 error handler.
+                response = self.error_response(request, exc)
+            else:
+                # Use an installed 500 error handler.
+                if is_async_callable(self.handler):
+                    response = await self.handler(request, exc)
+                else:
+                    response = await run_in_threadpool(self.handler, request, exc)
+    
+            if not response_started:
+                await response(scope, receive, send)
+    
+            # We always continue to raise the exception.
+            # This allows servers to log the error, or allows test clients
+            # to optionally raise the error within the test case.
+>           raise exc
+
+.venv\lib\site-packages\starlette\middleware\errors.py:187: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.middleware.errors.ServerErrorMiddleware object at 0x000001AA3F389A20>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function ASGITransport.handle_async_request.<locals>.send at 0x000001AA3E1B9AB0>
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+    
+        response_started = False
+    
+        async def _send(message: Message) -> None:
+            nonlocal response_started, send
+    
+            if message["type"] == "http.response.start":
+                response_started = True
+            await send(message)
+    
+        try:
+>           await self.app(scope, receive, _send)
+
+.venv\lib\site-packages\starlette\middleware\errors.py:165: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.middleware.cors.CORSMiddleware object at 0x000001AA3E2BFAF0>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001AA3D8C27A0>
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] != "http":  # pragma: no cover
+            await self.app(scope, receive, send)
+            return
+    
+        method = scope["method"]
+        headers = Headers(scope=scope)
+        origin = headers.get("origin")
+    
+        if origin is None:
+>           await self.app(scope, receive, send)
+
+.venv\lib\site-packages\starlette\middleware\cors.py:85: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <starlette.middleware.exceptions.ExceptionMiddleware object at 0x000001AA3E2BC130>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001AA3D8C27A0>
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if scope["type"] not in ("http", "websocket"):
+            await self.app(scope, receive, send)
+            return
+    
+        scope["starlette.exception_handlers"] = (
+            self._exception_handlers,
+            self._status_handlers,
+        )
+    
+        conn: Request | WebSocket
+        if scope["type"] == "http":
+            conn = Request(scope, receive, send)
+        else:
+            conn = WebSocket(scope, receive, send)
+    
+>       await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+
+.venv\lib\site-packages\starlette\middleware\exceptions.py:62: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001AA3D8C27A0>
+
+    async def wrapped_app(scope: Scope, receive: Receive, send: Send) -> None:
+        response_started = False
+    
+        async def sender(message: Message) -> None:
+            nonlocal response_started
+    
+            if message["type"] == "http.response.start":
+                response_started = True
+            await send(message)
+    
+        try:
+            await app(scope, receive, sender)
+        except Exception as exc:
+            handler = None
+    
+            if isinstance(exc, HTTPException):
+                handler = status_handlers.get(exc.status_code)
+    
+            if handler is None:
+                handler = _lookup_exception_handler(exception_handlers, exc)
+    
+            if handler is None:
+>               raise exc
+
+.venv\lib\site-packages\starlette\_exception_handler.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function ServerErrorMiddleware.__call__.<locals>._send at 0x000001AA3D8C27A0>
+
+    async def wrapped_app(scope: Scope, receive: Receive, send: Send) -> None:
+        response_started = False
+    
+        async def sender(message: Message) -> None:
+            nonlocal response_started
+    
+            if message["type"] == "http.response.start":
+                response_started = True
+            await send(message)
+    
+        try:
+>           await app(scope, receive, sender)
+
+.venv\lib\site-packages\starlette\_exception_handler.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <fastapi.routing.APIRouter object at 0x000001AA3DFBD990>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001AA3F4F7010>
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """
+        The main entry point to the Router class.
+        """
+>       await self.middleware_stack(scope, receive, send)
+
+.venv\lib\site-packages\starlette\routing.py:715: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <fastapi.routing.APIRouter object at 0x000001AA3DFBD990>
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001AA3F4F7010>
+
+    async def app(self, scope: Scope, receive: Receive, send: Send) -> None:
+        assert scope["type"] in ("http", "websocket", "lifespan")
+    
+        if "router" not in scope:
+            scope["router"] = self
+    
+        if scope["type"] == "lifespan":
+            await self.lifespan(scope, receive, send)
+            return
+    
+        partial = None
+    
+        for route in self.routes:
+            # Determine if any route matches the incoming scope,
+            # and hand over to the matching route if found.
+            match, child_scope = route.matches(scope)
+            if match == Match.FULL:
+                scope.update(child_scope)
+>               await route.handle(scope, receive, send)
+
+.venv\lib\site-packages\starlette\routing.py:735: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = APIRoute(path='/api/v1/crm/payable/summary/totals', name='payable_totals', methods=['GET'])
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001AA3F4F7010>
+
+    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+        if self.methods and scope["method"] not in self.methods:
+            headers = {"Allow": ", ".join(self.methods)}
+            if "app" in scope:
+                raise HTTPException(status_code=405, headers=headers)
+            else:
+                response = PlainTextResponse("Method Not Allowed", status_code=405, headers=headers)
+            await response(scope, receive, send)
+        else:
+>           await self.app(scope, receive, send)
+
+.venv\lib\site-packages\starlette\routing.py:288: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001AA3F4F7010>
+
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
+        request = Request(scope, receive, send)
+    
+        async def app(scope: Scope, receive: Receive, send: Send) -> None:
+            response = await f(request)
+            await response(scope, receive, send)
+    
+>       await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+
+.venv\lib\site-packages\starlette\routing.py:76: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001AA3F4F7010>
+
+    async def wrapped_app(scope: Scope, receive: Receive, send: Send) -> None:
+        response_started = False
+    
+        async def sender(message: Message) -> None:
+            nonlocal response_started
+    
+            if message["type"] == "http.response.start":
+                response_started = True
+            await send(message)
+    
+        try:
+            await app(scope, receive, sender)
+        except Exception as exc:
+            handler = None
+    
+            if isinstance(exc, HTTPException):
+                handler = status_handlers.get(exc.status_code)
+    
+            if handler is None:
+                handler = _lookup_exception_handler(exception_handlers, exc)
+    
+            if handler is None:
+>               raise exc
+
+.venv\lib\site-packages\starlette\_exception_handler.py:53: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001AA3F4F7010>
+
+    async def wrapped_app(scope: Scope, receive: Receive, send: Send) -> None:
+        response_started = False
+    
+        async def sender(message: Message) -> None:
+            nonlocal response_started
+    
+            if message["type"] == "http.response.start":
+                response_started = True
+            await send(message)
+    
+        try:
+>           await app(scope, receive, sender)
+
+.venv\lib\site-packages\starlette\_exception_handler.py:42: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+scope = {'app': <fastapi.applications.FastAPI object at 0x000001AA3DFBCCD0>, 'asgi': {'version': '3.0'}, 'client': ('127.0.0.1', 123), 'endpoint': <function payable_totals at 0x000001AA3DE413F0>, ...}
+receive = <function ASGITransport.handle_async_request.<locals>.receive at 0x000001AA3F4BA3B0>
+send = <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x000001AA3F4F7490>
+
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
+>       response = await f(request)
+
+.venv\lib\site-packages\starlette\routing.py:73: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+request = <starlette.requests.Request object at 0x000001AA3F55E410>
+
+    async def app(request: Request) -> Response:
+        response: Union[Response, None] = None
+        async with AsyncExitStack() as file_stack:
+            try:
+                body: Any = None
+                if body_field:
+                    if is_body_form:
+                        body = await request.form()
+                        file_stack.push_async_callback(body.close)
+                    else:
+                        body_bytes = await request.body()
+                        if body_bytes:
+                            json_body: Any = Undefined
+                            content_type_value = request.headers.get("content-type")
+                            if not content_type_value:
+                                json_body = await request.json()
+                            else:
+                                message = email.message.Message()
+                                message["content-type"] = content_type_value
+                                if message.get_content_maintype() == "application":
+                                    subtype = message.get_content_subtype()
+                                    if subtype == "json" or subtype.endswith("+json"):
+                                        json_body = await request.json()
+                            if json_body != Undefined:
+                                body = json_body
+                            else:
+                                body = body_bytes
+            except json.JSONDecodeError as e:
+                validation_error = RequestValidationError(
+                    [
+                        {
+                            "type": "json_invalid",
+                            "loc": ("body", e.pos),
+                            "msg": "JSON decode error",
+                            "input": {},
+                            "ctx": {"error": e.msg},
+                        }
+                    ],
+                    body=e.doc,
+                )
+                raise validation_error from e
+            except HTTPException:
+                # If a middleware raises an HTTPException, it should be raised again
+                raise
+            except Exception as e:
+                http_error = HTTPException(
+                    status_code=400, detail="There was an error parsing the body"
+                )
+                raise http_error from e
+            errors: List[Any] = []
+            async with AsyncExitStack() as async_exit_stack:
+                solved_result = await solve_dependencies(
+                    request=request,
+                    dependant=dependant,
+                    body=body,
+                    dependency_overrides_provider=dependency_overrides_provider,
+                    async_exit_stack=async_exit_stack,
+                    embed_body_fields=embed_body_fields,
+                )
+                errors = solved_result.errors
+                if not errors:
+>                   raw_response = await run_endpoint_function(
+                        dependant=dependant,
+                        values=solved_result.values,
+                        is_coroutine=is_coroutine,
+                    )
+
+.venv\lib\site-packages\fastapi\routing.py:301: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+    async def run_endpoint_function(
+        *, dependant: Dependant, values: Dict[str, Any], is_coroutine: bool
+    ) -> Any:
+        # Only called by get_request_handler. Has been split into its own function to
+        # facilitate profiling endpoints, since inner functions are harder to profile.
+        assert dependant.call is not None, "dependant.call must be a function"
+    
+        if is_coroutine:
+>           return await dependant.call(**values)
+
+.venv\lib\site-packages\fastapi\routing.py:212: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+db = <sqlalchemy.ext.asyncio.session.AsyncSession object at 0x000001AA3F55D4B0>
+current_user = <[DetachedInstanceError('Instance <User at 0x1aa3f58bb20> is not bound to a Session; attribute refresh operation cannot proceed') raised in repr()] User object at 0x1aa3f58bb20>
+
+    @router.get("/payable/summary/totals")
+    async def payable_totals(
+        db: AsyncSession = Depends(get_db),
+        current_user: User = Depends(get_current_user)
+    ):
+        """Total a pagar por status (spec §3.6 — painel de totalização)."""
+        business = await _biz(db, current_user)
+        now = datetime.now(timezone.utc)
+    
+        rows = await db.execute(
+            select(AccountPayable).where(AccountPayable.business_id == business.id)
+        )
+        payables = rows.scalars().all()
+    
+>       pending = sum(float(p.amount) for p in payables if p.status == PayableStatus.PENDING and p.due_date >= now)
+
+routers\crm.py:375: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+.0 = <list_iterator object at 0x000001AA3F55D4E0>
+
+>   pending = sum(float(p.amount) for p in payables if p.status == PayableStatus.PENDING and p.due_date >= now)
+E   TypeError: can't compare offset-naive and offset-aware datetimes
+
+routers\crm.py:375: TypeError
+---------------------------- Captured stdout setup ----------------------------
+2026-09-09 13:24:19,403 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-09-09 13:24:19,404 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("users")
+2026-09-09 13:24:19,404 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,406 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("businesses")
+2026-09-09 13:24:19,407 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,407 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("business_operators")
+2026-09-09 13:24:19,408 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,408 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("api_tokens")
+2026-09-09 13:24:19,409 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,409 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("bank_integrations")
+2026-09-09 13:24:19,409 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,410 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("audit_logs")
+2026-09-09 13:24:19,410 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,411 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("contracts")
+2026-09-09 13:24:19,411 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,412 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("sales_orders")
+2026-09-09 13:24:19,412 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,413 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("cash_registers")
+2026-09-09 13:24:19,413 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,413 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pdv_sales")
+2026-09-09 13:24:19,413 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,415 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("crm_contacts")
+2026-09-09 13:24:19,415 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,416 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("cooperados")
+2026-09-09 13:24:19,416 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,416 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("billing_invoices")
+2026-09-09 13:24:19,417 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,417 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("accounts_payable")
+2026-09-09 13:24:19,417 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,418 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("data_brokers")
+2026-09-09 13:24:19,418 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,419 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("privacy_requests")
+2026-09-09 13:24:19,419 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,420 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("webhook_logs")
+2026-09-09 13:24:19,420 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,421 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("account_categories")
+2026-09-09 13:24:19,421 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,422 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("entity_notes")
+2026-09-09 13:24:19,422 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,423 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("entity_files")
+2026-09-09 13:24:19,423 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,424 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("recurrences")
+2026-09-09 13:24:19,424 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,425 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("month_closes")
+2026-09-09 13:24:19,425 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,426 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_surveys")
+2026-09-09 13:24:19,426 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,426 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_questions")
+2026-09-09 13:24:19,427 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,427 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_responses")
+2026-09-09 13:24:19,427 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,428 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_answers")
+2026-09-09 13:24:19,428 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,429 INFO sqlalchemy.engine.Engine 
+DROP TABLE pco_answers
+2026-09-09 13:24:19,429 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,434 INFO sqlalchemy.engine.Engine 
+DROP TABLE pco_responses
+2026-09-09 13:24:19,434 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,437 INFO sqlalchemy.engine.Engine 
+DROP TABLE pco_questions
+2026-09-09 13:24:19,437 INFO sqlalchemy.engine.Engine [no key 0.00021s] ()
+2026-09-09 13:24:19,441 INFO sqlalchemy.engine.Engine 
+DROP TABLE recurrences
+2026-09-09 13:24:19,441 INFO sqlalchemy.engine.Engine [no key 0.00025s] ()
+2026-09-09 13:24:19,444 INFO sqlalchemy.engine.Engine 
+DROP TABLE accounts_payable
+2026-09-09 13:24:19,445 INFO sqlalchemy.engine.Engine [no key 0.00024s] ()
+2026-09-09 13:24:19,447 INFO sqlalchemy.engine.Engine 
+DROP TABLE billing_invoices
+2026-09-09 13:24:19,447 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,451 INFO sqlalchemy.engine.Engine 
+DROP TABLE pdv_sales
+2026-09-09 13:24:19,451 INFO sqlalchemy.engine.Engine [no key 0.00019s] ()
+2026-09-09 13:24:19,455 INFO sqlalchemy.engine.Engine 
+DROP TABLE pco_surveys
+2026-09-09 13:24:19,455 INFO sqlalchemy.engine.Engine [no key 0.00039s] ()
+2026-09-09 13:24:19,459 INFO sqlalchemy.engine.Engine 
+DROP TABLE month_closes
+2026-09-09 13:24:19,459 INFO sqlalchemy.engine.Engine [no key 0.00026s] ()
+2026-09-09 13:24:19,463 INFO sqlalchemy.engine.Engine 
+DROP TABLE entity_files
+2026-09-09 13:24:19,463 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,466 INFO sqlalchemy.engine.Engine 
+DROP TABLE entity_notes
+2026-09-09 13:24:19,466 INFO sqlalchemy.engine.Engine [no key 0.00031s] ()
+2026-09-09 13:24:19,470 INFO sqlalchemy.engine.Engine 
+DROP TABLE account_categories
+2026-09-09 13:24:19,470 INFO sqlalchemy.engine.Engine [no key 0.00023s] ()
+2026-09-09 13:24:19,474 INFO sqlalchemy.engine.Engine 
+DROP TABLE cooperados
+2026-09-09 13:24:19,474 INFO sqlalchemy.engine.Engine [no key 0.00026s] ()
+2026-09-09 13:24:19,477 INFO sqlalchemy.engine.Engine 
+DROP TABLE crm_contacts
+2026-09-09 13:24:19,477 INFO sqlalchemy.engine.Engine [no key 0.00019s] ()
+2026-09-09 13:24:19,480 INFO sqlalchemy.engine.Engine 
+DROP TABLE cash_registers
+2026-09-09 13:24:19,481 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,484 INFO sqlalchemy.engine.Engine 
+DROP TABLE sales_orders
+2026-09-09 13:24:19,484 INFO sqlalchemy.engine.Engine [no key 0.00020s] ()
+2026-09-09 13:24:19,487 INFO sqlalchemy.engine.Engine 
+DROP TABLE contracts
+2026-09-09 13:24:19,487 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,491 INFO sqlalchemy.engine.Engine 
+DROP TABLE audit_logs
+2026-09-09 13:24:19,491 INFO sqlalchemy.engine.Engine [no key 0.00023s] ()
+2026-09-09 13:24:19,495 INFO sqlalchemy.engine.Engine 
+DROP TABLE bank_integrations
+2026-09-09 13:24:19,495 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,499 INFO sqlalchemy.engine.Engine 
+DROP TABLE api_tokens
+2026-09-09 13:24:19,499 INFO sqlalchemy.engine.Engine [no key 0.00019s] ()
+2026-09-09 13:24:19,502 INFO sqlalchemy.engine.Engine 
+DROP TABLE business_operators
+2026-09-09 13:24:19,502 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,505 INFO sqlalchemy.engine.Engine 
+DROP TABLE privacy_requests
+2026-09-09 13:24:19,505 INFO sqlalchemy.engine.Engine [no key 0.00032s] ()
+2026-09-09 13:24:19,509 INFO sqlalchemy.engine.Engine 
+DROP TABLE businesses
+2026-09-09 13:24:19,509 INFO sqlalchemy.engine.Engine [no key 0.00024s] ()
+2026-09-09 13:24:19,511 INFO sqlalchemy.engine.Engine 
+DROP TABLE webhook_logs
+2026-09-09 13:24:19,512 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,515 INFO sqlalchemy.engine.Engine 
+DROP TABLE data_brokers
+2026-09-09 13:24:19,515 INFO sqlalchemy.engine.Engine [no key 0.00021s] ()
+2026-09-09 13:24:19,518 INFO sqlalchemy.engine.Engine 
+DROP TABLE users
+2026-09-09 13:24:19,518 INFO sqlalchemy.engine.Engine [no key 0.00019s] ()
+2026-09-09 13:24:19,521 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("users")
+2026-09-09 13:24:19,523 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,523 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("users")
+2026-09-09 13:24:19,524 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,524 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("businesses")
+2026-09-09 13:24:19,524 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,525 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("businesses")
+2026-09-09 13:24:19,525 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,526 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("business_operators")
+2026-09-09 13:24:19,526 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,526 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("business_operators")
+2026-09-09 13:24:19,527 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,527 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("api_tokens")
+2026-09-09 13:24:19,527 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,528 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("api_tokens")
+2026-09-09 13:24:19,528 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,529 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("bank_integrations")
+2026-09-09 13:24:19,529 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,530 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("bank_integrations")
+2026-09-09 13:24:19,530 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,530 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("audit_logs")
+2026-09-09 13:24:19,531 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,531 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("audit_logs")
+2026-09-09 13:24:19,531 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,531 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("contracts")
+2026-09-09 13:24:19,533 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,533 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("contracts")
+2026-09-09 13:24:19,533 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,533 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("sales_orders")
+2026-09-09 13:24:19,534 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,534 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("sales_orders")
+2026-09-09 13:24:19,534 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,535 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("cash_registers")
+2026-09-09 13:24:19,535 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,535 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("cash_registers")
+2026-09-09 13:24:19,535 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,537 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pdv_sales")
+2026-09-09 13:24:19,537 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,538 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("pdv_sales")
+2026-09-09 13:24:19,538 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,539 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("crm_contacts")
+2026-09-09 13:24:19,540 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,540 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("crm_contacts")
+2026-09-09 13:24:19,540 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,541 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("cooperados")
+2026-09-09 13:24:19,541 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,543 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("cooperados")
+2026-09-09 13:24:19,543 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,543 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("billing_invoices")
+2026-09-09 13:24:19,543 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,543 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("billing_invoices")
+2026-09-09 13:24:19,545 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,545 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("accounts_payable")
+2026-09-09 13:24:19,545 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,546 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("accounts_payable")
+2026-09-09 13:24:19,546 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,547 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("data_brokers")
+2026-09-09 13:24:19,547 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,548 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("data_brokers")
+2026-09-09 13:24:19,548 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,549 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("privacy_requests")
+2026-09-09 13:24:19,549 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,549 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("privacy_requests")
+2026-09-09 13:24:19,550 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,550 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("webhook_logs")
+2026-09-09 13:24:19,550 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,551 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("webhook_logs")
+2026-09-09 13:24:19,551 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,551 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("account_categories")
+2026-09-09 13:24:19,551 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,553 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("account_categories")
+2026-09-09 13:24:19,553 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,553 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("entity_notes")
+2026-09-09 13:24:19,553 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,554 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("entity_notes")
+2026-09-09 13:24:19,554 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,555 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("entity_files")
+2026-09-09 13:24:19,555 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,557 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("entity_files")
+2026-09-09 13:24:19,557 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,558 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("recurrences")
+2026-09-09 13:24:19,558 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,558 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("recurrences")
+2026-09-09 13:24:19,558 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,559 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("month_closes")
+2026-09-09 13:24:19,559 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,560 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("month_closes")
+2026-09-09 13:24:19,560 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,560 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_surveys")
+2026-09-09 13:24:19,560 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,562 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("pco_surveys")
+2026-09-09 13:24:19,562 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,563 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_questions")
+2026-09-09 13:24:19,563 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,563 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("pco_questions")
+2026-09-09 13:24:19,563 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,564 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_responses")
+2026-09-09 13:24:19,564 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,565 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("pco_responses")
+2026-09-09 13:24:19,565 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,565 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("pco_answers")
+2026-09-09 13:24:19,565 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,567 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("pco_answers")
+2026-09-09 13:24:19,567 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-09 13:24:19,568 INFO sqlalchemy.engine.Engine 
+CREATE TABLE users (
+	id VARCHAR(36) NOT NULL, 
+	email VARCHAR(255) NOT NULL, 
+	password_hash VARCHAR(255) NOT NULL, 
+	role VARCHAR(50), 
+	is_email_verified BOOLEAN NOT NULL, 
+	subscription_status VARCHAR(50) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+2026-09-09 13:24:19,568 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,572 INFO sqlalchemy.engine.Engine CREATE UNIQUE INDEX ix_users_email ON users (email)
+2026-09-09 13:24:19,572 INFO sqlalchemy.engine.Engine [no key 0.00036s] ()
+2026-09-09 13:24:19,576 INFO sqlalchemy.engine.Engine 
+CREATE TABLE data_brokers (
+	id UUID NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	dpo_email VARCHAR(255), 
+	delete_url TEXT, 
+	method VARCHAR(5) NOT NULL, 
+	category VARCHAR(100) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	UNIQUE (name)
+)
+
+
+2026-09-09 13:24:19,576 INFO sqlalchemy.engine.Engine [no key 0.00025s] ()
+2026-09-09 13:24:19,579 INFO sqlalchemy.engine.Engine 
+CREATE TABLE webhook_logs (
+	id UUID NOT NULL, 
+	event_id VARCHAR(255) NOT NULL, 
+	provider VARCHAR(50) NOT NULL, 
+	payload TEXT NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	error_message TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+2026-09-09 13:24:19,579 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,581 INFO sqlalchemy.engine.Engine CREATE UNIQUE INDEX ix_webhook_logs_event_id ON webhook_logs (event_id)
+2026-09-09 13:24:19,583 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,585 INFO sqlalchemy.engine.Engine 
+CREATE TABLE businesses (
+	id UUID NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	cnpj VARCHAR(20), 
+	category VARCHAR(11) NOT NULL, 
+	municipal_registration VARCHAR(50), 
+	state_registration VARCHAR(50), 
+	logo_url VARCHAR(500), 
+	cashflow_horizon_months INTEGER NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,585 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,588 INFO sqlalchemy.engine.Engine CREATE INDEX ix_businesses_user ON businesses (user_id)
+2026-09-09 13:24:19,588 INFO sqlalchemy.engine.Engine [no key 0.00032s] ()
+2026-09-09 13:24:19,593 INFO sqlalchemy.engine.Engine 
+CREATE TABLE privacy_requests (
+	id UUID NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	broker_id UUID NOT NULL, 
+	status VARCHAR(15) NOT NULL, 
+	sent_at DATETIME, 
+	last_checked_at DATETIME, 
+	notes TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE, 
+	FOREIGN KEY(broker_id) REFERENCES data_brokers (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,593 INFO sqlalchemy.engine.Engine [no key 0.00025s] ()
+2026-09-09 13:24:19,595 INFO sqlalchemy.engine.Engine CREATE INDEX ix_privacy_requests_status ON privacy_requests (status)
+2026-09-09 13:24:19,595 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,597 INFO sqlalchemy.engine.Engine CREATE INDEX ix_privacy_requests_user ON privacy_requests (user_id)
+2026-09-09 13:24:19,599 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,601 INFO sqlalchemy.engine.Engine CREATE INDEX ix_privacy_requests_broker ON privacy_requests (broker_id)
+2026-09-09 13:24:19,601 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,604 INFO sqlalchemy.engine.Engine 
+CREATE TABLE business_operators (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,604 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,608 INFO sqlalchemy.engine.Engine CREATE UNIQUE INDEX ix_business_operators_keys ON business_operators (business_id, user_id)
+2026-09-09 13:24:19,608 INFO sqlalchemy.engine.Engine [no key 0.00024s] ()
+2026-09-09 13:24:19,610 INFO sqlalchemy.engine.Engine 
+CREATE TABLE api_tokens (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	name VARCHAR(100) NOT NULL, 
+	token_hash VARCHAR(100) NOT NULL, 
+	created_by_id VARCHAR(36), 
+	expires_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+2026-09-09 13:24:19,610 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,614 INFO sqlalchemy.engine.Engine CREATE INDEX ix_api_tokens_biz ON api_tokens (business_id)
+2026-09-09 13:24:19,614 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,617 INFO sqlalchemy.engine.Engine 
+CREATE TABLE bank_integrations (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	bank_name VARCHAR(50) NOT NULL, 
+	api_key_encrypted TEXT NOT NULL, 
+	webhook_url VARCHAR(500), 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,617 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,620 INFO sqlalchemy.engine.Engine CREATE INDEX ix_bank_integrations_biz ON bank_integrations (business_id)
+2026-09-09 13:24:19,620 INFO sqlalchemy.engine.Engine [no key 0.00019s] ()
+2026-09-09 13:24:19,625 INFO sqlalchemy.engine.Engine 
+CREATE TABLE audit_logs (
+	id UUID NOT NULL, 
+	business_id UUID, 
+	user_id VARCHAR(36), 
+	user_name VARCHAR(255), 
+	user_role VARCHAR(100), 
+	action VARCHAR(12) NOT NULL, 
+	entity VARCHAR(100) NOT NULL, 
+	entity_id VARCHAR(255), 
+	detail TEXT, 
+	ip_address VARCHAR(45), 
+	user_agent VARCHAR(512), 
+	timestamp DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,625 INFO sqlalchemy.engine.Engine [no key 0.00027s] ()
+2026-09-09 13:24:19,628 INFO sqlalchemy.engine.Engine CREATE INDEX ix_audit_timestamp ON audit_logs (timestamp)
+2026-09-09 13:24:19,629 INFO sqlalchemy.engine.Engine [no key 0.00023s] ()
+2026-09-09 13:24:19,632 INFO sqlalchemy.engine.Engine CREATE INDEX ix_audit_user_action ON audit_logs (user_id, action)
+2026-09-09 13:24:19,632 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,635 INFO sqlalchemy.engine.Engine CREATE INDEX ix_audit_entity ON audit_logs (entity, entity_id)
+2026-09-09 13:24:19,635 INFO sqlalchemy.engine.Engine [no key 0.00019s] ()
+2026-09-09 13:24:19,638 INFO sqlalchemy.engine.Engine 
+CREATE TABLE contracts (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	title VARCHAR(255) NOT NULL, 
+	contact_name VARCHAR(255) NOT NULL, 
+	contact_doc VARCHAR(20), 
+	record_type VARCHAR(20) NOT NULL, 
+	total_value NUMERIC(20, 8) NOT NULL, 
+	installments INTEGER NOT NULL, 
+	frequency VARCHAR(20), 
+	start_date DATETIME NOT NULL, 
+	end_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,639 INFO sqlalchemy.engine.Engine [no key 0.00031s] ()
+2026-09-09 13:24:19,643 INFO sqlalchemy.engine.Engine CREATE INDEX ix_contracts_business ON contracts (business_id)
+2026-09-09 13:24:19,643 INFO sqlalchemy.engine.Engine [no key 0.00024s] ()
+2026-09-09 13:24:19,646 INFO sqlalchemy.engine.Engine CREATE INDEX ix_contracts_status ON contracts (status)
+2026-09-09 13:24:19,646 INFO sqlalchemy.engine.Engine [no key 0.00021s] ()
+2026-09-09 13:24:19,649 INFO sqlalchemy.engine.Engine 
+CREATE TABLE sales_orders (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_doc VARCHAR(20), 
+	description TEXT, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	invoice_number VARCHAR(100), 
+	nfe_key VARCHAR(50), 
+	nfe_status VARCHAR(50), 
+	issue_date DATETIME NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,650 INFO sqlalchemy.engine.Engine [no key 0.00019s] ()
+2026-09-09 13:24:19,653 INFO sqlalchemy.engine.Engine CREATE INDEX ix_sales_orders_status ON sales_orders (status)
+2026-09-09 13:24:19,653 INFO sqlalchemy.engine.Engine [no key 0.00019s] ()
+2026-09-09 13:24:19,657 INFO sqlalchemy.engine.Engine CREATE INDEX ix_sales_orders_business ON sales_orders (business_id)
+2026-09-09 13:24:19,657 INFO sqlalchemy.engine.Engine [no key 0.00025s] ()
+2026-09-09 13:24:19,660 INFO sqlalchemy.engine.Engine 
+CREATE TABLE cash_registers (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	operator_id VARCHAR(36), 
+	opening_balance NUMERIC(20, 8) NOT NULL, 
+	closing_balance NUMERIC(20, 8), 
+	status VARCHAR(6) NOT NULL, 
+	opened_at DATETIME NOT NULL, 
+	closed_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(operator_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+2026-09-09 13:24:19,661 INFO sqlalchemy.engine.Engine [no key 0.00024s] ()
+2026-09-09 13:24:19,663 INFO sqlalchemy.engine.Engine CREATE INDEX ix_cash_registers_status ON cash_registers (status)
+2026-09-09 13:24:19,664 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,667 INFO sqlalchemy.engine.Engine CREATE INDEX ix_cash_registers_business ON cash_registers (business_id)
+2026-09-09 13:24:19,667 INFO sqlalchemy.engine.Engine [no key 0.00021s] ()
+2026-09-09 13:24:19,670 INFO sqlalchemy.engine.Engine 
+CREATE TABLE crm_contacts (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	category VARCHAR(8) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50), 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	bank_details TEXT, 
+	notes TEXT, 
+	is_active BOOLEAN NOT NULL, 
+	address VARCHAR(500), 
+	city VARCHAR(100), 
+	state VARCHAR(50), 
+	zip_code VARCHAR(20), 
+	role_title VARCHAR(100), 
+	admission_date DATETIME, 
+	vacation_start_date DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,670 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,674 INFO sqlalchemy.engine.Engine CREATE INDEX ix_crm_contacts_business ON crm_contacts (business_id)
+2026-09-09 13:24:19,674 INFO sqlalchemy.engine.Engine [no key 0.00024s] ()
+2026-09-09 13:24:19,678 INFO sqlalchemy.engine.Engine CREATE INDEX ix_crm_contacts_active ON crm_contacts (is_active)
+2026-09-09 13:24:19,678 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,680 INFO sqlalchemy.engine.Engine CREATE INDEX ix_crm_contacts_category ON crm_contacts (category)
+2026-09-09 13:24:19,680 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,683 INFO sqlalchemy.engine.Engine 
+CREATE TABLE cooperados (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50) NOT NULL, 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	bank_details TEXT, 
+	notes TEXT, 
+	status VARCHAR(25) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,683 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,686 INFO sqlalchemy.engine.Engine CREATE INDEX ix_cooperados_document ON cooperados (document)
+2026-09-09 13:24:19,686 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,690 INFO sqlalchemy.engine.Engine CREATE INDEX ix_cooperados_business ON cooperados (business_id)
+2026-09-09 13:24:19,690 INFO sqlalchemy.engine.Engine [no key 0.00025s] ()
+2026-09-09 13:24:19,694 INFO sqlalchemy.engine.Engine CREATE INDEX ix_cooperados_status ON cooperados (status)
+2026-09-09 13:24:19,694 INFO sqlalchemy.engine.Engine [no key 0.00021s] ()
+2026-09-09 13:24:19,696 INFO sqlalchemy.engine.Engine 
+CREATE TABLE account_categories (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	parent_id UUID, 
+	name VARCHAR(255) NOT NULL, 
+	type VARCHAR(8) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(parent_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+2026-09-09 13:24:19,697 INFO sqlalchemy.engine.Engine [no key 0.00020s] ()
+2026-09-09 13:24:19,699 INFO sqlalchemy.engine.Engine CREATE INDEX ix_account_categories_type ON account_categories (type)
+2026-09-09 13:24:19,701 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,703 INFO sqlalchemy.engine.Engine CREATE INDEX ix_account_categories_business ON account_categories (business_id)
+2026-09-09 13:24:19,703 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,707 INFO sqlalchemy.engine.Engine 
+CREATE TABLE entity_notes (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id VARCHAR(36) NOT NULL, 
+	content TEXT NOT NULL, 
+	author_id VARCHAR(36) NOT NULL, 
+	author_name VARCHAR(255) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,707 INFO sqlalchemy.engine.Engine [no key 0.00028s] ()
+2026-09-09 13:24:19,711 INFO sqlalchemy.engine.Engine CREATE INDEX ix_entity_notes_business ON entity_notes (business_id)
+2026-09-09 13:24:19,711 INFO sqlalchemy.engine.Engine [no key 0.00024s] ()
+2026-09-09 13:24:19,714 INFO sqlalchemy.engine.Engine CREATE INDEX ix_entity_notes_entity ON entity_notes (entity_type, entity_id)
+2026-09-09 13:24:19,714 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,717 INFO sqlalchemy.engine.Engine 
+CREATE TABLE entity_files (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id VARCHAR(36) NOT NULL, 
+	filename VARCHAR(500) NOT NULL, 
+	file_url TEXT NOT NULL, 
+	file_category VARCHAR(100), 
+	file_size INTEGER, 
+	uploaded_by VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,717 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,720 INFO sqlalchemy.engine.Engine CREATE INDEX ix_entity_files_entity ON entity_files (entity_type, entity_id)
+2026-09-09 13:24:19,720 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,724 INFO sqlalchemy.engine.Engine CREATE INDEX ix_entity_files_business ON entity_files (business_id)
+2026-09-09 13:24:19,724 INFO sqlalchemy.engine.Engine [no key 0.00025s] ()
+2026-09-09 13:24:19,727 INFO sqlalchemy.engine.Engine 
+CREATE TABLE month_closes (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	period_year INTEGER NOT NULL, 
+	period_month INTEGER NOT NULL, 
+	closed_by_id VARCHAR(36) NOT NULL, 
+	closed_by_name VARCHAR(255) NOT NULL, 
+	checksum VARCHAR(64) NOT NULL, 
+	summary_json TEXT, 
+	closed_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,727 INFO sqlalchemy.engine.Engine [no key 0.00021s] ()
+2026-09-09 13:24:19,730 INFO sqlalchemy.engine.Engine CREATE UNIQUE INDEX ix_month_closes_business_period ON month_closes (business_id, period_year, period_month)
+2026-09-09 13:24:19,730 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,733 INFO sqlalchemy.engine.Engine 
+CREATE TABLE pco_surveys (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	created_by VARCHAR(36), 
+	title VARCHAR(255) NOT NULL, 
+	description TEXT, 
+	status VARCHAR(8) NOT NULL, 
+	is_anonymous BOOLEAN NOT NULL, 
+	opens_at DATETIME, 
+	closes_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+2026-09-09 13:24:19,734 INFO sqlalchemy.engine.Engine [no key 0.00022s] ()
+2026-09-09 13:24:19,737 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_surveys_created_by ON pco_surveys (created_by)
+2026-09-09 13:24:19,737 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,741 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_surveys_status ON pco_surveys (status)
+2026-09-09 13:24:19,741 INFO sqlalchemy.engine.Engine [no key 0.00025s] ()
+2026-09-09 13:24:19,744 INFO sqlalchemy.engine.Engine 
+CREATE TABLE pdv_sales (
+	id UUID NOT NULL, 
+	cash_register_id UUID NOT NULL, 
+	customer_name VARCHAR(255), 
+	total_amount NUMERIC(20, 8) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(cash_register_id) REFERENCES cash_registers (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,744 INFO sqlalchemy.engine.Engine [no key 0.00019s] ()
+2026-09-09 13:24:19,747 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pdv_sales_register ON pdv_sales (cash_register_id)
+2026-09-09 13:24:19,747 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,750 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pdv_sales_created ON pdv_sales (created_at)
+2026-09-09 13:24:19,750 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,755 INFO sqlalchemy.engine.Engine 
+CREATE TABLE billing_invoices (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	cooperado_id UUID, 
+	crm_contact_id UUID, 
+	category_id UUID, 
+	invoice_type VARCHAR(22) NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_phone VARCHAR(50), 
+	customer_email VARCHAR(255), 
+	customer_doc VARCHAR(20), 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	data_competencia DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	pix_code TEXT, 
+	pix_qr_url TEXT, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	project_id VARCHAR(100), 
+	notification_count INTEGER NOT NULL, 
+	last_notification_sent_at DATETIME, 
+	viewed_at DATETIME, 
+	remaining_balance NUMERIC(20, 8), 
+	created_by_id VARCHAR(36), 
+	created_by_name VARCHAR(255), 
+	updated_by_id VARCHAR(36), 
+	updated_by_name VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE CASCADE, 
+	FOREIGN KEY(crm_contact_id) REFERENCES crm_contacts (id) ON DELETE CASCADE, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL, 
+	FOREIGN KEY(updated_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+2026-09-09 13:24:19,755 INFO sqlalchemy.engine.Engine [no key 0.00032s] ()
+2026-09-09 13:24:19,759 INFO sqlalchemy.engine.Engine CREATE INDEX ix_billing_invoices_business ON billing_invoices (business_id)
+2026-09-09 13:24:19,759 INFO sqlalchemy.engine.Engine [no key 0.00024s] ()
+2026-09-09 13:24:19,763 INFO sqlalchemy.engine.Engine CREATE INDEX ix_billing_invoices_bi ON billing_invoices (due_date, status, category_id)
+2026-09-09 13:24:19,763 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,765 INFO sqlalchemy.engine.Engine CREATE INDEX ix_billing_invoices_status ON billing_invoices (status)
+2026-09-09 13:24:19,765 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,769 INFO sqlalchemy.engine.Engine 
+CREATE TABLE accounts_payable (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	supplier_id UUID, 
+	category_id UUID, 
+	description TEXT NOT NULL, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	data_competencia DATETIME, 
+	paid_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	is_reimbursable BOOLEAN NOT NULL, 
+	payment_account VARCHAR(255), 
+	project_id VARCHAR(100), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(supplier_id) REFERENCES crm_contacts (id) ON DELETE CASCADE, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+2026-09-09 13:24:19,769 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,773 INFO sqlalchemy.engine.Engine CREATE INDEX ix_accounts_payable_business ON accounts_payable (business_id)
+2026-09-09 13:24:19,773 INFO sqlalchemy.engine.Engine [no key 0.00028s] ()
+2026-09-09 13:24:19,776 INFO sqlalchemy.engine.Engine CREATE INDEX ix_accounts_payable_bi ON accounts_payable (due_date, status, category_id)
+2026-09-09 13:24:19,777 INFO sqlalchemy.engine.Engine [no key 0.00021s] ()
+2026-09-09 13:24:19,780 INFO sqlalchemy.engine.Engine CREATE INDEX ix_accounts_payable_status ON accounts_payable (status)
+2026-09-09 13:24:19,780 INFO sqlalchemy.engine.Engine [no key 0.00017s] ()
+2026-09-09 13:24:19,783 INFO sqlalchemy.engine.Engine 
+CREATE TABLE recurrences (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	crm_contact_id UUID, 
+	cooperado_id UUID, 
+	category_id UUID, 
+	description TEXT NOT NULL, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	frequency VARCHAR(7) NOT NULL, 
+	first_due_date DATETIME NOT NULL, 
+	next_due_date DATETIME, 
+	parcel_total INTEGER, 
+	parcel_current INTEGER NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(crm_contact_id) REFERENCES crm_contacts (id) ON DELETE SET NULL, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE SET NULL, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+2026-09-09 13:24:19,783 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,786 INFO sqlalchemy.engine.Engine CREATE INDEX ix_recurrences_next_due ON recurrences (next_due_date)
+2026-09-09 13:24:19,786 INFO sqlalchemy.engine.Engine [no key 0.00016s] ()
+2026-09-09 13:24:19,791 INFO sqlalchemy.engine.Engine CREATE INDEX ix_recurrences_status ON recurrences (status)
+2026-09-09 13:24:19,791 INFO sqlalchemy.engine.Engine [no key 0.00025s] ()
+2026-09-09 13:24:19,794 INFO sqlalchemy.engine.Engine CREATE INDEX ix_recurrences_business ON recurrences (business_id)
+2026-09-09 13:24:19,794 INFO sqlalchemy.engine.Engine [no key 0.00024s] ()
+2026-09-09 13:24:19,798 INFO sqlalchemy.engine.Engine 
+CREATE TABLE pco_questions (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	indicator VARCHAR(15) NOT NULL, 
+	q_type VARCHAR(6) NOT NULL, 
+	text TEXT NOT NULL, 
+	options TEXT, 
+	order_index SMALLINT NOT NULL, 
+	required BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,798 INFO sqlalchemy.engine.Engine [no key 0.00020s] ()
+2026-09-09 13:24:19,800 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_questions_indicator ON pco_questions (indicator)
+2026-09-09 13:24:19,800 INFO sqlalchemy.engine.Engine [no key 0.00019s] ()
+2026-09-09 13:24:19,804 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_questions_survey ON pco_questions (survey_id)
+2026-09-09 13:24:19,804 INFO sqlalchemy.engine.Engine [no key 0.00031s] ()
+2026-09-09 13:24:19,809 INFO sqlalchemy.engine.Engine 
+CREATE TABLE pco_responses (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	respondent_id VARCHAR(36), 
+	submitted_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE, 
+	FOREIGN KEY(respondent_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+2026-09-09 13:24:19,809 INFO sqlalchemy.engine.Engine [no key 0.00025s] ()
+2026-09-09 13:24:19,812 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_responses_survey ON pco_responses (survey_id)
+2026-09-09 13:24:19,812 INFO sqlalchemy.engine.Engine [no key 0.00020s] ()
+2026-09-09 13:24:19,815 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_responses_submitted ON pco_responses (submitted_at)
+2026-09-09 13:24:19,815 INFO sqlalchemy.engine.Engine [no key 0.00018s] ()
+2026-09-09 13:24:19,818 INFO sqlalchemy.engine.Engine 
+CREATE TABLE pco_answers (
+	id UUID NOT NULL, 
+	response_id UUID NOT NULL, 
+	question_id UUID NOT NULL, 
+	score SMALLINT, 
+	bool_value BOOLEAN, 
+	text_value TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(response_id) REFERENCES pco_responses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(question_id) REFERENCES pco_questions (id) ON DELETE CASCADE
+)
+
+
+2026-09-09 13:24:19,818 INFO sqlalchemy.engine.Engine [no key 0.00020s] ()
+2026-09-09 13:24:19,821 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_answers_question ON pco_answers (question_id)
+2026-09-09 13:24:19,821 INFO sqlalchemy.engine.Engine [no key 0.00034s] ()
+2026-09-09 13:24:19,825 INFO sqlalchemy.engine.Engine CREATE INDEX ix_pco_answers_response ON pco_answers (response_id)
+2026-09-09 13:24:19,826 INFO sqlalchemy.engine.Engine [no key 0.00023s] ()
+2026-09-09 13:24:19,828 INFO sqlalchemy.engine.Engine COMMIT
+----------------------------- Captured log setup ------------------------------
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("users")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("businesses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("business_operators")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("api_tokens")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("bank_integrations")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("audit_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("contracts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("sales_orders")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("cash_registers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pdv_sales")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("crm_contacts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("cooperados")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("billing_invoices")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("accounts_payable")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("data_brokers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("privacy_requests")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("webhook_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("account_categories")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("entity_notes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("entity_files")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("recurrences")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("month_closes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_surveys")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_questions")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_responses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_answers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE pco_answers
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE pco_responses
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE pco_questions
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE recurrences
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE accounts_payable
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE billing_invoices
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE pdv_sales
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE pco_surveys
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00039s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE month_closes
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00026s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE entity_files
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE entity_notes
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00031s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE account_categories
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00023s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE cooperados
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00026s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE crm_contacts
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE cash_registers
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE sales_orders
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00020s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE contracts
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE audit_logs
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00023s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE bank_integrations
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE api_tokens
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE business_operators
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE privacy_requests
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00032s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE businesses
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE webhook_logs
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE data_brokers
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+DROP TABLE users
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("users")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("users")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("businesses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("businesses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("business_operators")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("business_operators")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("api_tokens")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("api_tokens")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("bank_integrations")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("bank_integrations")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("audit_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("audit_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("contracts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("contracts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("sales_orders")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("sales_orders")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("cash_registers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("cash_registers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pdv_sales")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("pdv_sales")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("crm_contacts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("crm_contacts")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("cooperados")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("cooperados")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("billing_invoices")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("billing_invoices")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("accounts_payable")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("accounts_payable")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("data_brokers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("data_brokers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("privacy_requests")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("privacy_requests")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("webhook_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("webhook_logs")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("account_categories")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("account_categories")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("entity_notes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("entity_notes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("entity_files")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("entity_files")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("recurrences")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("recurrences")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("month_closes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("month_closes")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_surveys")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("pco_surveys")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_questions")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("pco_questions")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_responses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("pco_responses")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA main.table_info("pco_answers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 PRAGMA temp.table_info("pco_answers")
+INFO     sqlalchemy.engine.Engine:base.py:1904 [raw sql] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE users (
+	id VARCHAR(36) NOT NULL, 
+	email VARCHAR(255) NOT NULL, 
+	password_hash VARCHAR(255) NOT NULL, 
+	role VARCHAR(50), 
+	is_email_verified BOOLEAN NOT NULL, 
+	subscription_status VARCHAR(50) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE UNIQUE INDEX ix_users_email ON users (email)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00036s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE data_brokers (
+	id UUID NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	dpo_email VARCHAR(255), 
+	delete_url TEXT, 
+	method VARCHAR(5) NOT NULL, 
+	category VARCHAR(100) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	UNIQUE (name)
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE webhook_logs (
+	id UUID NOT NULL, 
+	event_id VARCHAR(255) NOT NULL, 
+	provider VARCHAR(50) NOT NULL, 
+	payload TEXT NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	error_message TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE UNIQUE INDEX ix_webhook_logs_event_id ON webhook_logs (event_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE businesses (
+	id UUID NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	cnpj VARCHAR(20), 
+	category VARCHAR(11) NOT NULL, 
+	municipal_registration VARCHAR(50), 
+	state_registration VARCHAR(50), 
+	logo_url VARCHAR(500), 
+	cashflow_horizon_months INTEGER NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_businesses_user ON businesses (user_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00032s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE privacy_requests (
+	id UUID NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	broker_id UUID NOT NULL, 
+	status VARCHAR(15) NOT NULL, 
+	sent_at DATETIME, 
+	last_checked_at DATETIME, 
+	notes TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE, 
+	FOREIGN KEY(broker_id) REFERENCES data_brokers (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_privacy_requests_status ON privacy_requests (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_privacy_requests_user ON privacy_requests (user_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_privacy_requests_broker ON privacy_requests (broker_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE business_operators (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE UNIQUE INDEX ix_business_operators_keys ON business_operators (business_id, user_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE api_tokens (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	name VARCHAR(100) NOT NULL, 
+	token_hash VARCHAR(100) NOT NULL, 
+	created_by_id VARCHAR(36), 
+	expires_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_api_tokens_biz ON api_tokens (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE bank_integrations (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	bank_name VARCHAR(50) NOT NULL, 
+	api_key_encrypted TEXT NOT NULL, 
+	webhook_url VARCHAR(500), 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_bank_integrations_biz ON bank_integrations (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE audit_logs (
+	id UUID NOT NULL, 
+	business_id UUID, 
+	user_id VARCHAR(36), 
+	user_name VARCHAR(255), 
+	user_role VARCHAR(100), 
+	action VARCHAR(12) NOT NULL, 
+	entity VARCHAR(100) NOT NULL, 
+	entity_id VARCHAR(255), 
+	detail TEXT, 
+	ip_address VARCHAR(45), 
+	user_agent VARCHAR(512), 
+	timestamp DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00027s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_audit_timestamp ON audit_logs (timestamp)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00023s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_audit_user_action ON audit_logs (user_id, action)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_audit_entity ON audit_logs (entity, entity_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE contracts (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	title VARCHAR(255) NOT NULL, 
+	contact_name VARCHAR(255) NOT NULL, 
+	contact_doc VARCHAR(20), 
+	record_type VARCHAR(20) NOT NULL, 
+	total_value NUMERIC(20, 8) NOT NULL, 
+	installments INTEGER NOT NULL, 
+	frequency VARCHAR(20), 
+	start_date DATETIME NOT NULL, 
+	end_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00031s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_contracts_business ON contracts (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_contracts_status ON contracts (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE sales_orders (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_doc VARCHAR(20), 
+	description TEXT, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	invoice_number VARCHAR(100), 
+	nfe_key VARCHAR(50), 
+	nfe_status VARCHAR(50), 
+	issue_date DATETIME NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_sales_orders_status ON sales_orders (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_sales_orders_business ON sales_orders (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE cash_registers (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	operator_id VARCHAR(36), 
+	opening_balance NUMERIC(20, 8) NOT NULL, 
+	closing_balance NUMERIC(20, 8), 
+	status VARCHAR(6) NOT NULL, 
+	opened_at DATETIME NOT NULL, 
+	closed_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(operator_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_cash_registers_status ON cash_registers (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_cash_registers_business ON cash_registers (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE crm_contacts (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	category VARCHAR(8) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50), 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	bank_details TEXT, 
+	notes TEXT, 
+	is_active BOOLEAN NOT NULL, 
+	address VARCHAR(500), 
+	city VARCHAR(100), 
+	state VARCHAR(50), 
+	zip_code VARCHAR(20), 
+	role_title VARCHAR(100), 
+	admission_date DATETIME, 
+	vacation_start_date DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_crm_contacts_business ON crm_contacts (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_crm_contacts_active ON crm_contacts (is_active)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_crm_contacts_category ON crm_contacts (category)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE cooperados (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50) NOT NULL, 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	bank_details TEXT, 
+	notes TEXT, 
+	status VARCHAR(25) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_cooperados_document ON cooperados (document)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_cooperados_business ON cooperados (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_cooperados_status ON cooperados (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE account_categories (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	parent_id UUID, 
+	name VARCHAR(255) NOT NULL, 
+	type VARCHAR(8) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(parent_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00020s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_account_categories_type ON account_categories (type)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_account_categories_business ON account_categories (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE entity_notes (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id VARCHAR(36) NOT NULL, 
+	content TEXT NOT NULL, 
+	author_id VARCHAR(36) NOT NULL, 
+	author_name VARCHAR(255) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00028s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_entity_notes_business ON entity_notes (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_entity_notes_entity ON entity_notes (entity_type, entity_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE entity_files (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id VARCHAR(36) NOT NULL, 
+	filename VARCHAR(500) NOT NULL, 
+	file_url TEXT NOT NULL, 
+	file_category VARCHAR(100), 
+	file_size INTEGER, 
+	uploaded_by VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_entity_files_entity ON entity_files (entity_type, entity_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_entity_files_business ON entity_files (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE month_closes (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	period_year INTEGER NOT NULL, 
+	period_month INTEGER NOT NULL, 
+	closed_by_id VARCHAR(36) NOT NULL, 
+	closed_by_name VARCHAR(255) NOT NULL, 
+	checksum VARCHAR(64) NOT NULL, 
+	summary_json TEXT, 
+	closed_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE UNIQUE INDEX ix_month_closes_business_period ON month_closes (business_id, period_year, period_month)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE pco_surveys (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	created_by VARCHAR(36), 
+	title VARCHAR(255) NOT NULL, 
+	description TEXT, 
+	status VARCHAR(8) NOT NULL, 
+	is_anonymous BOOLEAN NOT NULL, 
+	opens_at DATETIME, 
+	closes_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00022s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_surveys_created_by ON pco_surveys (created_by)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_surveys_status ON pco_surveys (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE pdv_sales (
+	id UUID NOT NULL, 
+	cash_register_id UUID NOT NULL, 
+	customer_name VARCHAR(255), 
+	total_amount NUMERIC(20, 8) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(cash_register_id) REFERENCES cash_registers (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pdv_sales_register ON pdv_sales (cash_register_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pdv_sales_created ON pdv_sales (created_at)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE billing_invoices (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	cooperado_id UUID, 
+	crm_contact_id UUID, 
+	category_id UUID, 
+	invoice_type VARCHAR(22) NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_phone VARCHAR(50), 
+	customer_email VARCHAR(255), 
+	customer_doc VARCHAR(20), 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	data_competencia DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	pix_code TEXT, 
+	pix_qr_url TEXT, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	project_id VARCHAR(100), 
+	notification_count INTEGER NOT NULL, 
+	last_notification_sent_at DATETIME, 
+	viewed_at DATETIME, 
+	remaining_balance NUMERIC(20, 8), 
+	created_by_id VARCHAR(36), 
+	created_by_name VARCHAR(255), 
+	updated_by_id VARCHAR(36), 
+	updated_by_name VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE CASCADE, 
+	FOREIGN KEY(crm_contact_id) REFERENCES crm_contacts (id) ON DELETE CASCADE, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL, 
+	FOREIGN KEY(updated_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00032s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_billing_invoices_business ON billing_invoices (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_billing_invoices_bi ON billing_invoices (due_date, status, category_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_billing_invoices_status ON billing_invoices (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE accounts_payable (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	supplier_id UUID, 
+	category_id UUID, 
+	description TEXT NOT NULL, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	data_competencia DATETIME, 
+	paid_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	is_reimbursable BOOLEAN NOT NULL, 
+	payment_account VARCHAR(255), 
+	project_id VARCHAR(100), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(supplier_id) REFERENCES crm_contacts (id) ON DELETE CASCADE, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_accounts_payable_business ON accounts_payable (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00028s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_accounts_payable_bi ON accounts_payable (due_date, status, category_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00021s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_accounts_payable_status ON accounts_payable (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00017s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE recurrences (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	crm_contact_id UUID, 
+	cooperado_id UUID, 
+	category_id UUID, 
+	description TEXT NOT NULL, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	frequency VARCHAR(7) NOT NULL, 
+	first_due_date DATETIME NOT NULL, 
+	next_due_date DATETIME, 
+	parcel_total INTEGER, 
+	parcel_current INTEGER NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(crm_contact_id) REFERENCES crm_contacts (id) ON DELETE SET NULL, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE SET NULL, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_recurrences_next_due ON recurrences (next_due_date)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00016s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_recurrences_status ON recurrences (status)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_recurrences_business ON recurrences (business_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00024s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE pco_questions (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	indicator VARCHAR(15) NOT NULL, 
+	q_type VARCHAR(6) NOT NULL, 
+	text TEXT NOT NULL, 
+	options TEXT, 
+	order_index SMALLINT NOT NULL, 
+	required BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00020s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_questions_indicator ON pco_questions (indicator)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00019s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_questions_survey ON pco_questions (survey_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00031s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE pco_responses (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	respondent_id VARCHAR(36), 
+	submitted_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE, 
+	FOREIGN KEY(respondent_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00025s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_responses_survey ON pco_responses (survey_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00020s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_responses_submitted ON pco_responses (submitted_at)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00018s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 
+CREATE TABLE pco_answers (
+	id UUID NOT NULL, 
+	response_id UUID NOT NULL, 
+	question_id UUID NOT NULL, 
+	score SMALLINT, 
+	bool_value BOOLEAN, 
+	text_value TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(response_id) REFERENCES pco_responses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(question_id) REFERENCES pco_questions (id) ON DELETE CASCADE
+)
+
+
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00020s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_answers_question ON pco_answers (question_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00034s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1899 CREATE INDEX ix_pco_answers_response ON pco_answers (response_id)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [no key 0.00023s] ()
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+---------------------------- Captured stdout call -----------------------------
+2026-09-09 13:24:19,831 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-09-09 13:24:20,053 INFO sqlalchemy.engine.Engine INSERT INTO users (id, email, password_hash, role, is_email_verified, subscription_status, created_at) VALUES (?, ?, ?, ?, 1, 'active', datetime('now'))
+2026-09-09 13:24:20,053 INFO sqlalchemy.engine.Engine [generated in 0.00033s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21', 'test@inho.io', '$2b$12$fvDiMb5Bq1.RGyxjkx9u3embyXIiBRcgahBfq0B3qn9PYFTVp1SKe', 'admin')
+2026-09-09 13:24:20,055 INFO sqlalchemy.engine.Engine INSERT INTO businesses (id, user_id, name, category, cashflow_horizon_months, created_at, updated_at) VALUES (?, ?, 'Test Business', 'OUTROS', 6, datetime('now'), datetime('now'))
+2026-09-09 13:24:20,056 INFO sqlalchemy.engine.Engine [generated in 0.00049s] ('bb6df16984b14630a139848080a06716', '67d8bd05-aeb4-481b-a662-6c002eabbd21')
+2026-09-09 13:24:20,057 INFO sqlalchemy.engine.Engine INSERT INTO business_operators (id, business_id, user_id, created_at) VALUES (?, ?, ?, datetime('now'))
+2026-09-09 13:24:20,057 INFO sqlalchemy.engine.Engine [generated in 0.00031s] ('9a05d24fdc634c6b85af4e4b50c50776', 'bb6df16984b14630a139848080a06716', '67d8bd05-aeb4-481b-a662-6c002eabbd21')
+2026-09-09 13:24:20,057 INFO sqlalchemy.engine.Engine COMMIT
+2026-09-09 13:24:20,070 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-09-09 13:24:20,099 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE users.email = ?
+2026-09-09 13:24:20,099 INFO sqlalchemy.engine.Engine [generated in 0.00043s] ('test@inho.io',)
+2026-09-09 13:24:20,333 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE users.id = ?
+2026-09-09 13:24:20,333 INFO sqlalchemy.engine.Engine [generated in 0.00030s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+2026-09-09 13:24:20,336 INFO sqlalchemy.engine.Engine INSERT INTO audit_logs (id, business_id, user_id, user_name, user_role, action, entity, entity_id, detail, ip_address, user_agent, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-09-09 13:24:20,336 INFO sqlalchemy.engine.Engine [generated in 0.00037s] ('22f8d41aacda49ff850924be532f859b', None, '67d8bd05-aeb4-481b-a662-6c002eabbd21', 'Administrador INHO', 'Usuário Mestre (Administrador)', 'LOGIN', 'User', '67d8bd05-aeb4-481b-a662-6c002eabbd21', '{"email": "test@inho.io"}', '127.0.0.1', 'python-httpx/0.28.0', '2026-09-09 16:24:20.335651')
+2026-09-09 13:24:20,338 INFO sqlalchemy.engine.Engine COMMIT
+2026-09-09 13:24:20,347 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-09-09 13:24:20,347 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+2026-09-09 13:24:20,347 INFO sqlalchemy.engine.Engine [generated in 0.00026s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+2026-09-09 13:24:20,355 INFO sqlalchemy.engine.Engine SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE businesses.user_id = ?
+2026-09-09 13:24:20,355 INFO sqlalchemy.engine.Engine [generated in 0.00047s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+2026-09-09 13:24:20,358 INFO sqlalchemy.engine.Engine INSERT INTO accounts_payable (id, business_id, supplier_id, category_id, description, amount, due_date, data_competencia, paid_date, status, is_reimbursable, payment_account, project_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-09-09 13:24:20,359 INFO sqlalchemy.engine.Engine [generated in 0.00044s] ('c355e9be1afa4a6ab47f27c7ae3a79c4', 'bb6df16984b14630a139848080a06716', None, None, 'Aluguel escritório', 3500.0, '2026-09-15 00:00:00.000000', '2026-09-01 00:00:00.000000', None, 'PENDING', 0, 'Conta Inter', None, '2026-09-09 16:24:20.358460', '2026-09-09 16:24:20.358460')
+2026-09-09 13:24:20,360 INFO sqlalchemy.engine.Engine COMMIT
+2026-09-09 13:24:20,366 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-09-09 13:24:20,367 INFO sqlalchemy.engine.Engine SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.id = ?
+2026-09-09 13:24:20,368 INFO sqlalchemy.engine.Engine [generated in 0.00026s] ('c355e9be1afa4a6ab47f27c7ae3a79c4',)
+2026-09-09 13:24:20,369 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-09-09 13:24:20,374 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-09-09 13:24:20,375 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+2026-09-09 13:24:20,375 INFO sqlalchemy.engine.Engine [cached since 0.0274s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+2026-09-09 13:24:20,381 INFO sqlalchemy.engine.Engine SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE businesses.user_id = ?
+2026-09-09 13:24:20,383 INFO sqlalchemy.engine.Engine [cached since 0.02745s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+2026-09-09 13:24:20,384 INFO sqlalchemy.engine.Engine SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.id = ? AND accounts_payable.business_id = ?
+2026-09-09 13:24:20,384 INFO sqlalchemy.engine.Engine [generated in 0.00025s] ('c355e9be1afa4a6ab47f27c7ae3a79c4', 'bb6df16984b14630a139848080a06716')
+2026-09-09 13:24:20,386 INFO sqlalchemy.engine.Engine UPDATE accounts_payable SET is_reimbursable=?, updated_at=? WHERE accounts_payable.id = ?
+2026-09-09 13:24:20,387 INFO sqlalchemy.engine.Engine [generated in 0.00037s] (1, '2026-09-09 16:24:20.386288', 'c355e9be1afa4a6ab47f27c7ae3a79c4')
+2026-09-09 13:24:20,389 INFO sqlalchemy.engine.Engine COMMIT
+2026-09-09 13:24:20,394 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-09-09 13:24:20,394 INFO sqlalchemy.engine.Engine SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.id = ?
+2026-09-09 13:24:20,394 INFO sqlalchemy.engine.Engine [cached since 0.02691s ago] ('c355e9be1afa4a6ab47f27c7ae3a79c4',)
+2026-09-09 13:24:20,396 INFO sqlalchemy.engine.Engine ROLLBACK
+2026-09-09 13:24:20,400 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-09-09 13:24:20,400 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+2026-09-09 13:24:20,400 INFO sqlalchemy.engine.Engine [cached since 0.0526s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+2026-09-09 13:24:20,401 INFO sqlalchemy.engine.Engine SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE businesses.user_id = ?
+2026-09-09 13:24:20,403 INFO sqlalchemy.engine.Engine [cached since 0.04735s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+2026-09-09 13:24:20,404 INFO sqlalchemy.engine.Engine SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.business_id = ?
+2026-09-09 13:24:20,404 INFO sqlalchemy.engine.Engine [generated in 0.00024s] ('bb6df16984b14630a139848080a06716',)
+2026-09-09 13:24:20,408 INFO sqlalchemy.engine.Engine ROLLBACK
+------------------------------ Captured log call ------------------------------
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO users (id, email, password_hash, role, is_email_verified, subscription_status, created_at) VALUES (?, ?, ?, ?, 1, 'active', datetime('now'))
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00033s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21', 'test@inho.io', '$2b$12$fvDiMb5Bq1.RGyxjkx9u3embyXIiBRcgahBfq0B3qn9PYFTVp1SKe', 'admin')
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO businesses (id, user_id, name, category, cashflow_horizon_months, created_at, updated_at) VALUES (?, ?, 'Test Business', 'OUTROS', 6, datetime('now'), datetime('now'))
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00049s] ('bb6df16984b14630a139848080a06716', '67d8bd05-aeb4-481b-a662-6c002eabbd21')
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO business_operators (id, business_id, user_id, created_at) VALUES (?, ?, ?, datetime('now'))
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00031s] ('9a05d24fdc634c6b85af4e4b50c50776', 'bb6df16984b14630a139848080a06716', '67d8bd05-aeb4-481b-a662-6c002eabbd21')
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE users.email = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00043s] ('test@inho.io',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE users.id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00030s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO audit_logs (id, business_id, user_id, user_name, user_role, action, entity, entity_id, detail, ip_address, user_agent, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00037s] ('22f8d41aacda49ff850924be532f859b', None, '67d8bd05-aeb4-481b-a662-6c002eabbd21', 'Administrador INHO', 'Usuário Mestre (Administrador)', 'LOGIN', 'User', '67d8bd05-aeb4-481b-a662-6c002eabbd21', '{"email": "test@inho.io"}', '127.0.0.1', 'python-httpx/0.28.0', '2026-09-09 16:24:20.335651')
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+INFO     httpx:_client.py:1742 HTTP Request: POST http://test/api/v1/auth/login "HTTP/1.1 200 OK"
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00026s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE businesses.user_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00047s] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO accounts_payable (id, business_id, supplier_id, category_id, description, amount, due_date, data_competencia, paid_date, status, is_reimbursable, payment_account, project_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00044s] ('c355e9be1afa4a6ab47f27c7ae3a79c4', 'bb6df16984b14630a139848080a06716', None, None, 'Aluguel escritório', 3500.0, '2026-09-15 00:00:00.000000', '2026-09-01 00:00:00.000000', None, 'PENDING', 0, 'Conta Inter', None, '2026-09-09 16:24:20.358460', '2026-09-09 16:24:20.358460')
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00026s] ('c355e9be1afa4a6ab47f27c7ae3a79c4',)
+INFO     sqlalchemy.engine.Engine:base.py:1125 ROLLBACK
+INFO     httpx:_client.py:1742 HTTP Request: POST http://test/api/v1/crm/payable/ "HTTP/1.1 201 Created"
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 0.0274s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE businesses.user_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 0.02745s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.id = ? AND accounts_payable.business_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00025s] ('c355e9be1afa4a6ab47f27c7ae3a79c4', 'bb6df16984b14630a139848080a06716')
+INFO     sqlalchemy.engine.Engine:base.py:1899 UPDATE accounts_payable SET is_reimbursable=?, updated_at=? WHERE accounts_payable.id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00037s] (1, '2026-09-09 16:24:20.386288', 'c355e9be1afa4a6ab47f27c7ae3a79c4')
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 0.02691s ago] ('c355e9be1afa4a6ab47f27c7ae3a79c4',)
+INFO     sqlalchemy.engine.Engine:base.py:1125 ROLLBACK
+INFO     httpx:_client.py:1742 HTTP Request: PUT http://test/api/v1/crm/payable/c355e9be-1afa-4a6a-b47f-27c7ae3a79c4 "HTTP/1.1 200 OK"
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 0.0526s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE businesses.user_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 0.04735s ago] ('67d8bd05-aeb4-481b-a662-6c002eabbd21',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT accounts_payable.id, accounts_payable.business_id, accounts_payable.supplier_id, accounts_payable.category_id, accounts_payable.description, accounts_payable.amount, accounts_payable.due_date, accounts_payable.data_competencia, accounts_payable.paid_date, accounts_payable.status, accounts_payable.is_reimbursable, accounts_payable.payment_account, accounts_payable.project_id, accounts_payable.created_at, accounts_payable.updated_at 
+FROM accounts_payable 
+WHERE accounts_payable.business_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00024s] ('bb6df16984b14630a139848080a06716',)
+INFO     sqlalchemy.engine.Engine:base.py:1125 ROLLBACK
+============================== warnings summary ===============================
+.venv\lib\site-packages\pydantic\_internal\_config.py:295: 18 warnings
+  D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\pydantic\_internal\_config.py:295: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.10/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+routers\reports.py:20
+  D:\OrbeSystems\orbe-systems\inho_backend\routers\reports.py:20: DeprecationWarning: `regex` has been deprecated, please use `pattern` instead
+    regime: str = Query("competencia", regex="^(caixa|competencia)$"),
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_crm.py::test_payable_crud_and_totals - TypeError: can't com...
+======================= 1 failed, 19 warnings in 2.62s ========================
+D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\pytest_asyncio\plugin.py:208: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))

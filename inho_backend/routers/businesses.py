@@ -24,8 +24,21 @@ class BusinessResponse(BaseModel):
     name: str
     cnpj: str | None = None
     category: BusinessCategory
+    municipal_registration: str | None = None
+    state_registration: str | None = None
+    logo_url: str | None = None
+    cashflow_horizon_months: int = 6
 
     model_config = ConfigDict(from_attributes=True)
+
+class BusinessSettingsUpdate(BaseModel):
+    name: str | None = None
+    municipal_registration: str | None = None
+    state_registration: str | None = None
+    cashflow_horizon_months: int | None = None
+
+class BusinessLogoUpload(BaseModel):
+    logo_url: str
 
 from core.deps import get_current_user
 
@@ -79,3 +92,43 @@ async def list_businesses(
     )
     businesses = result.scalars().all()
     return businesses
+
+@router.patch("/{id}", response_model=BusinessResponse)
+async def update_business_settings(
+    id: UUID,
+    payload: BusinessSettingsUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    result = await db.execute(
+        select(Business).where(Business.id == id, cast(Business.user_id, String) == str(current_user.id))
+    )
+    biz = result.scalar_one_or_none()
+    if not biz:
+        raise HTTPException(status_code=404, detail="Negócio não encontrado")
+        
+    for k, v in payload.dict(exclude_unset=True).items():
+        setattr(biz, k, v)
+        
+    await db.commit()
+    await db.refresh(biz)
+    return biz
+
+@router.post("/{id}/logo", response_model=BusinessResponse)
+async def update_business_logo(
+    id: UUID,
+    payload: BusinessLogoUpload,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    result = await db.execute(
+        select(Business).where(Business.id == id, cast(Business.user_id, String) == str(current_user.id))
+    )
+    biz = result.scalar_one_or_none()
+    if not biz:
+        raise HTTPException(status_code=404, detail="Negócio não encontrado")
+        
+    biz.logo_url = payload.logo_url
+    await db.commit()
+    await db.refresh(biz)
+    return biz

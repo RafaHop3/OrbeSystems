@@ -13,7 +13,7 @@ from services.audit import write_audit
 from core.deps import get_current_user
 from schemas.billing_schemas import (
     BillingInvoiceCreate, BillingInvoiceOut, BillingInvoiceStatusUpdate,
-    BillingNotificationOut, BillingStatsOut
+    BillingNotificationOut, BillingStatsOut, BulkInvoiceAction, PartialSettle
 )
 
 router = APIRouter()
@@ -178,6 +178,179 @@ async def update_invoice_status(
     )
 
     return invoice
+
+@router.post("/bulk-charge", response_model=List[BillingInvoiceOut])
+async def bulk_charge(
+    payload: BulkInvoiceAction,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    business = await _get_user_business(db, current_user)
+    result = await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.id.in_(payload.invoice_ids),
+            BillingInvoice.business_id == business.id
+        )
+    )
+    invoices = result.scalars().all()
+    
+    # We could send notifications here or just log
+    await write_audit(
+        db,
+        action=AuditAction.UPDATE,
+        entity="billing_invoice",
+        entity_id="bulk",
+        user_id=current_user.id,
+        user_name=current_user.full_name,
+        user_role=current_user.role_label,
+        business_id=business.id,
+        detail={"bulk_charge_count": len(invoices)}
+    )
+    return invoices
+
+@router.post("/bulk-settle", response_model=List[BillingInvoiceOut])
+async def bulk_settle(
+    payload: BulkInvoiceAction,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    business = await _get_user_business(db, current_user)
+    result = await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.id.in_(payload.invoice_ids),
+            BillingInvoice.business_id == business.id
+        )
+    )
+    invoices = result.scalars().all()
+    
+    for inv in invoices:
+        inv.status = BillingStatus.PAID
+        inv.updated_by_id = current_user.id
+        inv.updated_by_name = f"{current_user.full_name} ({current_user.role_label})"
+
+    await db.commit()
+    for inv in invoices:
+        await db.refresh(inv)
+
+    await write_audit(
+        db,
+        action=AuditAction.UPDATE,
+        entity="billing_invoice",
+        entity_id="bulk",
+        user_id=current_user.id,
+        user_name=current_user.full_name,
+        user_role=current_user.role_label,
+        business_id=business.id,
+        detail={"bulk_settle_count": len(invoices)}
+    )
+    return invoices
+
+@router.post("/{invoice_id}/mark-as-loss", response_model=BillingInvoiceOut)
+async def mark_as_loss(
+    invoice_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    business = await _get_user_business(db, current_user)
+    result = await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.id == invoice_id,
+            BillingInvoice.business_id == business.id
+        )
+    )
+    invoice = result.scalar_one_or_none()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Fatura não encontrada")
+        
+    invoice.status = BillingStatus.LOSS
+    invoice.updated_by_id = current_user.id
+    invoice.updated_by_name = f"{current_user.full_name} ({current_user.role_label})"
+    await db.commit()
+    await db.refresh(invoice)
+    
+    await write_audit(
+        db, action=AuditAction.UPDATE, entity="billing_invoice", entity_id=str(invoice.id),
+        user_id=current_user.id, user_name=current_user.full_name, user_role=current_user.role_label,
+        business_id=business.id, detail={"action": "marked_as_loss"}
+    )
+    return invoice
+
+@router.post("/{invoice_id}/partial-settle", response_model=BillingInvoiceOut)
+async def partial_settle(
+    invoice_id: uuid.UUID,
+    payload: PartialSettle,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    business = await _get_user_business(db, current_user)
+    result = await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.id == invoice_id,
+            BillingInvoice.business_id == business.id
+        )
+    )
+    invoice = result.scalar_one_or_none()
+    if not invoice:
+        raise HTTPException(status_code=404, detail="Fatura não encontrada")
+    
+    current_balance = invoice.remaining_balance if invoice.remaining_balance is not None else invoice.amount
+    new_balance = current_balance - payload.amount_paid
+    if new_balance <= 0:
+        invoice.status = BillingStatus.PAID
+        invoice.remaining_balance = Decimal('0.0')
+    else:
+        invoice.remaining_balance = new_balance
+        
+    invoice.updated_by_id = current_user.id
+    invoice.updated_by_name = f"{current_user.full_name} ({current_user.role_label})"
+    await db.commit()
+    await db.refresh(invoice)
+    
+    await write_audit(
+        db, action=AuditAction.UPDATE, entity="billing_invoice", entity_id=str(invoice.id),
+        user_id=current_user.id, user_name=current_user.full_name, user_role=current_user.role_label,
+        business_id=business.id, detail={"action": "partial_settle", "paid": str(payload.amount_paid)}
+    )
+    return invoice
+
+@router.get("/aging-list")
+async def get_aging_list(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    business = await _get_user_business(db, current_user)
+    
+    # Aging logic
+    now = datetime.now(timezone.utc)
+    result = await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.business_id == business.id,
+            BillingInvoice.status == BillingStatus.PENDING,
+            BillingInvoice.due_date < now
+        )
+    )
+    invoices = result.scalars().all()
+    
+    aging = {
+        "1_to_30": 0.0,
+        "31_to_60": 0.0,
+        "61_to_90": 0.0,
+        "90_plus": 0.0
+    }
+    
+    for inv in invoices:
+        days_overdue = (now - inv.due_date).days
+        val = float(inv.remaining_balance if inv.remaining_balance is not None else inv.amount)
+        if days_overdue <= 30:
+            aging["1_to_30"] += val
+        elif days_overdue <= 60:
+            aging["31_to_60"] += val
+        elif days_overdue <= 90:
+            aging["61_to_90"] += val
+        else:
+            aging["90_plus"] += val
+            
+    return {"aging_summary": aging}
 
 @router.post("/{invoice_id}/notify/whatsapp", response_model=BillingNotificationOut)
 async def notify_whatsapp(

@@ -3,6 +3,7 @@ INHO – Database Models
 Business (Tenant) | User (RBAC) | Account | Transaction | AuditLog (immutable)
 """
 import enum
+import os
 import uuid
 from datetime import datetime, timezone
 
@@ -14,6 +15,11 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from db.session import Base
+
+# ── Schema detection (SQLite compat for tests) ───────────────────
+_IS_SQLITE = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+_PUBLIC_SCHEMA = None if _IS_SQLITE else "public"
+_PUBLIC_USERS_FK = "users.id" if _IS_SQLITE else "public.users.id"
 
 
 class UserRole(str, enum.Enum):
@@ -55,9 +61,9 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
     __table_args__ = (
-        Index("ix_users_email", "email"),
-        {"schema": "public"}
+        {"schema": _PUBLIC_SCHEMA}
     )
+
 
 
     def __repr__(self) -> str:
@@ -101,12 +107,15 @@ class Business(Base):
     __tablename__ = "businesses"
 
     id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id    = Column(String(36), ForeignKey("public.users.id", ondelete="CASCADE"), nullable=False)
+    user_id    = Column(String(36), ForeignKey(_PUBLIC_USERS_FK, ondelete="CASCADE"), nullable=False)
     name       = Column(String(255), nullable=False)
     cnpj       = Column(String(20), nullable=True)
-    category   = Column(Enum(BusinessCategory, schema="public"), nullable=False, default=BusinessCategory.OUTROS)
+    category   = Column(Enum(BusinessCategory, schema=_PUBLIC_SCHEMA), nullable=False, default=BusinessCategory.OUTROS)
+    municipal_registration = Column(String(50), nullable=True) # Inscrição Municipal
+    state_registration = Column(String(50), nullable=True)     # Inscrição Estadual
+    logo_url = Column(String(500), nullable=True)
+    cashflow_horizon_months = Column(Integer, nullable=False, default=6)
 
-    
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc), nullable=False)
@@ -124,7 +133,7 @@ class BusinessOperator(Base):
 
     id          = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
-    user_id     = Column(String(36), ForeignKey("public.users.id", ondelete="CASCADE"), nullable=False)
+    user_id     = Column(String(36), ForeignKey(_PUBLIC_USERS_FK, ondelete="CASCADE"), nullable=False)
     
     created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
@@ -135,6 +144,38 @@ class BusinessOperator(Base):
     def __repr__(self) -> str:
         return f"<BusinessOperator biz={self.business_id} user={self.user_id}>"
 
+# ── Configuracoes e Open Banking (Money Layer) ──────────────────────
+class ApiToken(Base):
+    __tablename__ = "api_tokens"
+
+    id          = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    name        = Column(String(100), nullable=False)
+    token_hash  = Column(String(100), nullable=False)
+    created_by_id = Column(String(36), ForeignKey(_PUBLIC_USERS_FK, ondelete="SET NULL"), nullable=True)
+    expires_at  = Column(DateTime(timezone=True), nullable=True)
+    created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_api_tokens_biz", "business_id"),
+    )
+
+class BankIntegration(Base):
+    __tablename__ = "bank_integrations"
+
+    id                = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id       = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    bank_name         = Column(String(50), nullable=False) # INTER, CORA, PJBANK, ITAU
+    api_key_encrypted = Column(Text, nullable=False)
+    webhook_url       = Column(String(500), nullable=True)
+    is_active         = Column(Boolean, nullable=False, default=True)
+    created_at        = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at        = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), 
+                             onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_bank_integrations_biz", "business_id"),
+    )
 
 # ── AuditLog (IMMUTABLE) ──────────────────────────────────────────
 class AuditLog(Base):
@@ -248,7 +289,7 @@ class CashRegister(Base):
 
     id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id     = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
-    operator_id     = Column(String(36), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
+    operator_id     = Column(String(36), ForeignKey(_PUBLIC_USERS_FK, ondelete="SET NULL"), nullable=True)
     opening_balance = Column(Numeric(precision=20, scale=8), nullable=False, default=0)
     closing_balance = Column(Numeric(precision=20, scale=8), nullable=True)
     status          = Column(Enum(CashRegisterStatus), nullable=False, default=CashRegisterStatus.OPEN)
@@ -287,6 +328,7 @@ class BillingStatus(str, enum.Enum):
     PAID      = "PAID"
     OVERDUE   = "OVERDUE"
     CANCELLED = "CANCELLED"
+    LOSS      = "LOSS"  # Crédito irrecuperável (spec §3.9)
 
 class InvoiceType(str, enum.Enum):
     INTEGRALIZACAO_INICIAL = "INTEGRALIZACAO_INICIAL"
@@ -299,6 +341,7 @@ class ContactCategory(str, enum.Enum):
     EMPLOYEE = "EMPLOYEE"
     SUPPLIER = "SUPPLIER"
     CUSTOMER = "CUSTOMER"
+    PARTNER  = "PARTNER"  # Sócio / Cooperado
 
 class CRMContact(Base):
     __tablename__ = "crm_contacts"
@@ -307,11 +350,23 @@ class CRMContact(Base):
     business_id  = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
     category     = Column(Enum(ContactCategory), nullable=False)
     name         = Column(String(255), nullable=False)
-    document     = Column(String(50), nullable=True)
+    document     = Column(String(50), nullable=True)   # CPF / CNPJ
     email        = Column(String(255), nullable=True)
     phone        = Column(String(50), nullable=True)
     bank_details = Column(Text, nullable=True)
     notes        = Column(Text, nullable=True)
+    is_active    = Column(Boolean, default=True, nullable=False)
+
+    # Address fields (spec §2.2)
+    address      = Column(String(500), nullable=True)
+    city         = Column(String(100), nullable=True)
+    state        = Column(String(50), nullable=True)
+    zip_code     = Column(String(20), nullable=True)
+
+    # HR fields — only meaningful for EMPLOYEE category (spec §2.3)
+    role_title          = Column(String(100), nullable=True)
+    admission_date      = Column(DateTime(timezone=True), nullable=True)
+    vacation_start_date = Column(DateTime(timezone=True), nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
@@ -320,6 +375,7 @@ class CRMContact(Base):
     __table_args__ = (
         Index("ix_crm_contacts_business", "business_id"),
         Index("ix_crm_contacts_category", "category"),
+        Index("ix_crm_contacts_active", "is_active"),
     )
 
 # ── B2B2C Domain: Cooperado Pipeline ──────────────────────────────
@@ -364,6 +420,7 @@ class BillingInvoice(Base):
     business_id              = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
     cooperado_id             = Column(UUID(as_uuid=True), ForeignKey("cooperados.id", ondelete="CASCADE"), nullable=True)
     crm_contact_id           = Column(UUID(as_uuid=True), ForeignKey("crm_contacts.id", ondelete="CASCADE"), nullable=True)
+    category_id              = Column(UUID(as_uuid=True), ForeignKey("account_categories.id", ondelete="SET NULL"), nullable=True)
     invoice_type             = Column(Enum(InvoiceType), nullable=False, default=InvoiceType.OUTROS)
     customer_name            = Column(String(255), nullable=False)
     customer_phone           = Column(String(50), nullable=True)
@@ -371,18 +428,23 @@ class BillingInvoice(Base):
     customer_doc             = Column(String(20), nullable=True)
     amount                   = Column(Numeric(precision=20, scale=8), nullable=False)
     due_date                 = Column(DateTime(timezone=True), nullable=False)
+    # Dupla datação obrigatória (spec §8)
+    data_competencia         = Column(DateTime(timezone=True), nullable=True)  # data do fato gerador
     status                   = Column(Enum(BillingStatus), nullable=False, default=BillingStatus.PENDING)
     pix_code                 = Column(Text, nullable=True)
     pix_qr_url               = Column(Text, nullable=True)
     payment_method           = Column(Enum(PaymentMethod), nullable=False, default=PaymentMethod.PIX)
     description              = Column(Text, nullable=True)
+    project_id               = Column(String(100), nullable=True)  # Centro de custo / projeto
     notification_count       = Column(Integer, nullable=False, default=0)
     last_notification_sent_at= Column(DateTime(timezone=True), nullable=True)
-    
+    viewed_at                = Column(DateTime(timezone=True), nullable=True)  # leitura pelo sacado
+    remaining_balance        = Column(Numeric(precision=20, scale=8), nullable=True)  # baixa parcial
+
     # Audit fields: quem e quando criou / editou
-    created_by_id   = Column(String(36), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
+    created_by_id   = Column(String(36), ForeignKey(_PUBLIC_USERS_FK, ondelete="SET NULL"), nullable=True)
     created_by_name = Column(String(255), nullable=True)
-    updated_by_id   = Column(String(36), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
+    updated_by_id   = Column(String(36), ForeignKey(_PUBLIC_USERS_FK, ondelete="SET NULL"), nullable=True)
     updated_by_name = Column(String(255), nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -392,7 +454,8 @@ class BillingInvoice(Base):
     __table_args__ = (
         Index("ix_billing_invoices_status", "status"),
         Index("ix_billing_invoices_business", "business_id"),
-        Index("ix_billing_invoices_due", "due_date"),
+        # Índice composto de alta performance para BI (spec §8)
+        Index("ix_billing_invoices_bi", "due_date", "status", "category_id"),
     )
 
 
@@ -407,12 +470,18 @@ class AccountPayable(Base):
     id                       = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id              = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
     supplier_id              = Column(UUID(as_uuid=True), ForeignKey("crm_contacts.id", ondelete="CASCADE"), nullable=True)
+    category_id              = Column(UUID(as_uuid=True), ForeignKey("account_categories.id", ondelete="SET NULL"), nullable=True)
     description              = Column(Text, nullable=False)
     amount                   = Column(Numeric(precision=20, scale=8), nullable=False)
     due_date                 = Column(DateTime(timezone=True), nullable=False)
+    # Dupla datação obrigatória (spec §8)
+    data_competencia         = Column(DateTime(timezone=True), nullable=True)  # data do fato gerador
     paid_date                = Column(DateTime(timezone=True), nullable=True)
     status                   = Column(Enum(PayableStatus), nullable=False, default=PayableStatus.PENDING)
-    
+    is_reimbursable          = Column(Boolean, default=False, nullable=False)  # spec §3.7
+    payment_account          = Column(String(255), nullable=True)  # conta bancária de débito
+    project_id               = Column(String(100), nullable=True)  # Centro de custo / projeto
+
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc), nullable=False)
@@ -420,6 +489,8 @@ class AccountPayable(Base):
     __table_args__ = (
         Index("ix_accounts_payable_status", "status"),
         Index("ix_accounts_payable_business", "business_id"),
+        # Índice composto de alta performance para BI (spec §8)
+        Index("ix_accounts_payable_bi", "due_date", "status", "category_id"),
     )
 
 
@@ -457,7 +528,7 @@ class PrivacyRequest(Base):
     __tablename__ = "privacy_requests"
 
     id              = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id         = Column(String(36), ForeignKey("public.users.id", ondelete="CASCADE"), nullable=False)
+    user_id         = Column(String(36), ForeignKey(_PUBLIC_USERS_FK, ondelete="CASCADE"), nullable=False)
     broker_id       = Column(UUID(as_uuid=True), ForeignKey("data_brokers.id", ondelete="CASCADE"), nullable=False)
     status          = Column(Enum(PrivacyRequestStatus), nullable=False, default=PrivacyRequestStatus.PENDING)
     sent_at         = Column(DateTime(timezone=True), nullable=True)
@@ -496,3 +567,155 @@ class WebhookLog(Base):
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc), nullable=False)
 
+
+
+# ── AccountCategory (Plano de Contas Hierárquico) ─────────────────
+class AccountCategoryType(str, enum.Enum):
+    REVENUE  = "REVENUE"   # Receitas
+    COST     = "COST"      # Custos Diretos
+    EXPENSE  = "EXPENSE"   # Despesas Operacionais
+    TAX      = "TAX"       # Impostos / Taxas
+    TRANSFER = "TRANSFER"  # Transferências
+
+
+class AccountCategory(Base):
+    """
+    Plano de Contas parametrizável hierárquico (spec §5.2).
+    Um registro sem parent_id é uma categoria raiz.
+    """
+    __tablename__ = "account_categories"
+
+    id          = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    parent_id   = Column(UUID(as_uuid=True), ForeignKey("account_categories.id", ondelete="SET NULL"), nullable=True)
+    name        = Column(String(255), nullable=False)
+    type        = Column(Enum(AccountCategoryType), nullable=False)
+    is_active   = Column(Boolean, default=True, nullable=False)
+
+    created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_account_categories_business", "business_id"),
+        Index("ix_account_categories_type",     "type"),
+    )
+
+
+# ── EntityNote (Anotações Auditadas) ──────────────────────────────
+class EntityNote(Base):
+    """
+    Widget de Anotações transversal (spec §2.4).
+    entity_type: 'crm_contact' | 'cooperado' | 'billing_invoice' | 'account_payable'
+    """
+    __tablename__ = "entity_notes"
+
+    id          = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    entity_type = Column(String(50), nullable=False)
+    entity_id   = Column(String(36), nullable=False)  # UUID as string for polymorphism
+    content     = Column(Text, nullable=False)
+    author_id   = Column(String(36), nullable=False)
+    author_name = Column(String(255), nullable=False)
+
+    created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_entity_notes_entity", "entity_type", "entity_id"),
+        Index("ix_entity_notes_business", "business_id"),
+    )
+
+
+# ── EntityFile (Repositório de Arquivos em Nuvem) ─────────────────
+class EntityFile(Base):
+    """
+    Repositório de Arquivos por entidade (spec §2.4).
+    """
+    __tablename__ = "entity_files"
+
+    id            = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id   = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    entity_type   = Column(String(50), nullable=False)
+    entity_id     = Column(String(36), nullable=False)
+    filename      = Column(String(500), nullable=False)
+    file_url      = Column(Text, nullable=False)     # S3 / cloud storage URL
+    file_category = Column(String(100), nullable=True)  # ex: 'contrato', 'identidade', 'comprovante'
+    file_size     = Column(Integer, nullable=True)    # bytes
+    uploaded_by   = Column(String(255), nullable=True)
+
+    created_at    = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_entity_files_entity", "entity_type", "entity_id"),
+        Index("ix_entity_files_business", "business_id"),
+    )
+
+
+# ── Recurrence (Faturamento Recorrente / Assinaturas) ─────────────
+class RecurrenceFrequency(str, enum.Enum):
+    DAILY   = "DAILY"
+    WEEKLY  = "WEEKLY"
+    MONTHLY = "MONTHLY"
+    ANNUAL  = "ANNUAL"
+
+
+class RecurrenceStatus(str, enum.Enum):
+    ACTIVE    = "ACTIVE"
+    PAUSED    = "PAUSED"
+    COMPLETED = "COMPLETED"
+    CANCELLED = "CANCELLED"
+
+
+class Recurrence(Base):
+    """
+    Faturamento recorrente / mensalidades (spec §3.5).
+    """
+    __tablename__ = "recurrences"
+
+    id                = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id       = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    crm_contact_id    = Column(UUID(as_uuid=True), ForeignKey("crm_contacts.id", ondelete="SET NULL"), nullable=True)
+    cooperado_id      = Column(UUID(as_uuid=True), ForeignKey("cooperados.id", ondelete="SET NULL"), nullable=True)
+    category_id       = Column(UUID(as_uuid=True), ForeignKey("account_categories.id", ondelete="SET NULL"), nullable=True)
+    description       = Column(Text, nullable=False)
+    amount            = Column(Numeric(precision=20, scale=8), nullable=False)
+    frequency         = Column(Enum(RecurrenceFrequency), nullable=False, default=RecurrenceFrequency.MONTHLY)
+    first_due_date    = Column(DateTime(timezone=True), nullable=False)
+    next_due_date     = Column(DateTime(timezone=True), nullable=True)
+    parcel_total      = Column(Integer, nullable=True)    # NULL = prazo indeterminado
+    parcel_current    = Column(Integer, nullable=False, default=0)
+    status            = Column(Enum(RecurrenceStatus), nullable=False, default=RecurrenceStatus.ACTIVE)
+    payment_method    = Column(Enum(PaymentMethod), nullable=False, default=PaymentMethod.PIX)
+
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_recurrences_business", "business_id"),
+        Index("ix_recurrences_status",   "status"),
+        Index("ix_recurrences_next_due", "next_due_date"),
+    )
+
+
+# ── MonthClose (Fechamento de Mês / Trava Criptográfica) ──────────
+class MonthClose(Base):
+    """
+    Fechamento de Mês imutável (spec §4.1).
+    Após criado, nenhum lançamento do período pode ser alterado.
+    checksum = SHA-256(todos os lançamentos do período em JSON)
+    """
+    __tablename__ = "month_closes"
+
+    id           = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    business_id  = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    period_year  = Column(Integer, nullable=False)
+    period_month = Column(Integer, nullable=False)   # 1-12
+    closed_by_id = Column(String(36), nullable=False)
+    closed_by_name = Column(String(255), nullable=False)
+    checksum     = Column(String(64), nullable=False)   # SHA-256 hex
+    summary_json = Column(Text, nullable=True)           # dossiê imutável serializado
+
+    closed_at    = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_month_closes_business_period", "business_id", "period_year", "period_month", unique=True),
+    )

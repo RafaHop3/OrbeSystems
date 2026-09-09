@@ -1,9 +1,118 @@
-Traceback (most recent call last):
-  File "<string>", line 3, in <module>
-  File "D:\OrbeSystems\orbe-systems\inho_backend\main.py", line 17, in <module>
-    from routers import (
-  File "D:\OrbeSystems\orbe-systems\inho_backend\routers\auth.py", line 17, in <module>
-    router = APIRouter(prefix="/auth", tags=["Auth"])
-  File "D:\PY3\lib\site-packages\fastapi\routing.py", line 837, in __init__
-    super().__init__(
-TypeError: Router.__init__() got an unexpected keyword argument 'on_startup'
+﻿.venv\Scripts\python.exe 
+: D:\OrbeSystems\orbe-sys
+tems\inho_backend\.venv\l
+ib\site-packages\pytest_a
+syncio\plugin.py:208: Pyt
+estDeprecationWarning: 
+The configuration option 
+"asyncio_default_fixture_
+loop_scope" is unset.
+No linha:1 caractere:1
++ 
+.venv\Scripts\python.exe 
+-m pytest tests/test_bill
+ing_extended.py -v  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (D:\OrbeSystems\...c   
+ ope" is unset.:Strin    
+g) [], RemoteExcepti    
+on
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 
+The event loop scope for 
+asynchronous fixtures 
+will default to the 
+fixture caching scope. 
+Future versions of 
+pytest-asyncio will 
+default the loop scope 
+for asynchronous 
+fixtures to function 
+scope. Set the default 
+fixture loop scope 
+explicitly in order to 
+avoid unexpected 
+behavior in the future. 
+Valid fixture loop 
+scopes are: "function", 
+"class", "module", 
+"package", "session"
+
+  warnings.warn(PytestDep
+recationWarning(_DEFAULT_
+FIXTURE_LOOP_SCOPE_UNSET)
+)
+============================= test session starts =============================
+platform win32 -- Python 3.10.0, pytest-8.3.4, pluggy-1.6.0 -- D:\OrbeSystems\orbe-systems\inho_backend\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: D:\OrbeSystems\orbe-systems\inho_backend
+configfile: pytest.ini
+plugins: anyio-4.14.2, asyncio-0.24.0
+asyncio: mode=auto, default_loop_scope=None
+collecting ... collected 4 items
+
+tests/test_billing_extended.py::test_bulk_charge_and_settle ERROR        [ 25%]
+tests/test_billing_extended.py::test_partial_settle_mark_loss ERROR      [ 50%]
+tests/test_billing_extended.py::test_aging_list ERROR                    [ 75%]
+tests/test_billing_extended.py::test_recurrences_crud ERROR              [100%]
+
+=================================== ERRORS ====================================
+________________ ERROR at setup of test_bulk_charge_and_settle ________________
+file D:\OrbeSystems\orbe-systems\inho_backend\tests\test_billing_extended.py, line 7
+  @pytest.mark.asyncio
+  async def test_bulk_charge_and_settle(async_client: AsyncClient, admin_token: str):
+      # Skipped tests do to mock setup required for auth. Since we don't have the auth server running, we just skip like the other new tests
+      pytest.skip("Auth token logic requires running integration, validated DDL")
+E       fixture 'async_client' not found
+>       available fixtures: _session_event_loop, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, tests/test_billing_extended.py::<event_loop>, tests::<event_loop>, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+D:\OrbeSystems\orbe-systems\inho_backend\tests\test_billing_extended.py:7
+_______________ ERROR at setup of test_partial_settle_mark_loss _______________
+file D:\OrbeSystems\orbe-systems\inho_backend\tests\test_billing_extended.py, line 12
+  @pytest.mark.asyncio
+  async def test_partial_settle_mark_loss(async_client: AsyncClient, admin_token: str):
+      pytest.skip("Auth token logic requires running integration, validated DDL")
+E       fixture 'async_client' not found
+>       available fixtures: _session_event_loop, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, tests/test_billing_extended.py::<event_loop>, tests::<event_loop>, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+D:\OrbeSystems\orbe-systems\inho_backend\tests\test_billing_extended.py:12
+______________________ ERROR at setup of test_aging_list ______________________
+file D:\OrbeSystems\orbe-systems\inho_backend\tests\test_billing_extended.py, line 16
+  @pytest.mark.asyncio
+  async def test_aging_list(async_client: AsyncClient, admin_token: str):
+      pytest.skip("Auth token logic requires running integration, validated DDL")
+E       fixture 'async_client' not found
+>       available fixtures: _session_event_loop, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, tests/test_billing_extended.py::<event_loop>, tests::<event_loop>, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+D:\OrbeSystems\orbe-systems\inho_backend\tests\test_billing_extended.py:16
+___________________ ERROR at setup of test_recurrences_crud ___________________
+file D:\OrbeSystems\orbe-systems\inho_backend\tests\test_billing_extended.py, line 20
+  @pytest.mark.asyncio
+  async def test_recurrences_crud(async_client: AsyncClient, admin_token: str):
+      pytest.skip("Auth token logic requires running integration, validated DDL")
+E       fixture 'async_client' not found
+>       available fixtures: _session_event_loop, anyio_backend, anyio_backend_name, anyio_backend_options, cache, capfd, capfdbinary, caplog, capsys, capsysbinary, doctest_namespace, event_loop, event_loop_policy, free_tcp_port, free_tcp_port_factory, free_udp_port, free_udp_port_factory, monkeypatch, pytestconfig, record_property, record_testsuite_property, record_xml_attribute, recwarn, tests/test_billing_extended.py::<event_loop>, tests::<event_loop>, tmp_path, tmp_path_factory, tmpdir, tmpdir_factory, unused_tcp_port, unused_tcp_port_factory, unused_udp_port, unused_udp_port_factory
+>       use 'pytest --fixtures [testpath]' for help on them.
+
+D:\OrbeSystems\orbe-systems\inho_backend\tests\test_billing_extended.py:20
+============================== warnings summary ===============================
+.venv\lib\site-packages\pydantic\_internal\_config.py:295
+  D:\OrbeSystems\orbe-systems\inho_backend\.venv\lib\site-packages\pydantic\_internal\_config.py:295: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.10/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/test_billing_extended.py::test_bulk_charge_and_settle
+ERROR tests/test_billing_extended.py::test_partial_settle_mark_loss
+ERROR tests/test_billing_extended.py::test_aging_list
+ERROR tests/test_billing_extended.py::test_recurrences_crud
+======================== 1 warning, 4 errors in 0.11s =========================
