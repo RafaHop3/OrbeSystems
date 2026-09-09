@@ -46,5 +46,14 @@ services:
     ports:
       - "8001:8000"
 
+  whatsapp:
+    build: ./whatsapp_bot
+    container_name: orbe_whatsapp
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./whatsapp_bot/auth_info_baileys:/app/auth_info_baileys
+
 volumes:
   postgres_data:

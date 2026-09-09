@@ -13,6 +13,19 @@ async def async_dispatch_whatsapp_receipt(phone: str, customer_name: str, amount
     encoded_msg = urllib.parse.quote(msg)
     wa_url = f"https://wa.me/{phone}?text={encoded_msg}"
     print(f"[MESSAGING] WhatsApp Receipt Link Generated: {wa_url}")
+    
+    # Auto-dispatch using internal Baileys Zero-Cost microservice
+    import httpx
+    try:
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                "http://orbe_whatsapp:3001/send",
+                json={"phone": phone, "message": msg},
+                timeout=5.0
+            )
+    except Exception as e:
+        print(f"Failed to trigger local Baileys WhatsApp bot: {e}")
+
     return wa_url
 
 async def async_dispatch_email_receipt(email: str, customer_name: str, amount: Decimal, business_name: str):

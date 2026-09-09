@@ -393,6 +393,18 @@ async def notify_whatsapp(
     encoded_msg = urllib.parse.quote(msg)
     wa_url = f"https://wa.me/{phone}?text={encoded_msg}"
 
+    # Auto-dispatch using internal Baileys Zero-Cost microservice
+    import httpx
+    try:
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                "http://orbe_whatsapp:3001/send",
+                json={"phone": phone, "message": msg},
+                timeout=5.0
+            )
+    except Exception as e:
+        print(f"Failed to trigger local Baileys WhatsApp bot: {e}")
+
     # Log notification
     invoice.notification_count += 1
     invoice.last_notification_sent_at = datetime.now(timezone.utc)
