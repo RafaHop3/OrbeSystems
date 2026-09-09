@@ -61,19 +61,31 @@ async def create_checkout_session(
             except Exception as e:
                 payment_logger.warning(f"Skipping stripe customer creation: {e}")
 
-        # ── Checkout Session (Bypass for testing/fixing) ────────────────────────
-        current_user.role = "premium"
-        current_user.subscription_status = "active"
-        db.commit()
-        
-        try:
-            from services.redis_service import set_is_premium
-            await set_is_premium(str(current_user.id), True)
-        except Exception as ex:
-            payment_logger.error(f"Redis update skipped: {ex}")
+        # ── Checkout Session (Stripe Gateway) ───────────────────────────────────
+        checkout_session = stripe.checkout.Session.create(
+            customer=current_user.stripe_customer_id,
+            payment_method_types=["card"],
+            line_items=[
+                {
+                    "price_data": {
+                        "currency": "brl",
+                        "unit_amount": 29000, 
+                        "product_data": {
+                            "name": "Orbe Premium (INHO Business + Orbe Knight SecSuite)",
+                        },
+                        "recurring": {"interval": "month"},
+                    },
+                    "quantity": 1,
+                }
+            ],
+            mode="subscription",
+            success_url=f"{settings.FRONTEND_URL}/assinar/sucesso?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{settings.FRONTEND_URL}/assinar",
+            metadata={"user_id": str(current_user.id)},
+        )
 
-        payment_logger.info(f"Bypassed session created for {current_user.email}")
-        return {"checkout_url": f"{settings.FRONTEND_URL}/assinar/sucesso?session_id=forced_premium"}
+        payment_logger.info(f"Stripe Checkout session created for {current_user.email}")
+        return {"checkout_url": checkout_session.url}
 
     except stripe.error.StripeError as e:
         payment_logger.error(f"Stripe error: {e}")
