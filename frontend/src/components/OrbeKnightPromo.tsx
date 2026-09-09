@@ -36,11 +36,11 @@ export default function OrbeKnightPromo() {
 
                     <div className="flex gap-4 pt-6">
                         <Link
-                            href="/ferramentas-premium/orbe-knight"
+                            href="/assinar"
                             className="group relative inline-flex items-center gap-3 bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-black border border-amber-500 font-bold uppercase tracking-widest text-sm px-8 py-4 transition-all duration-500 overflow-hidden shadow-[0_0_20px_rgba(251,191,36,0.3)] hover:shadow-[0_0_40px_rgba(251,191,36,0.6)]"
                         >
                             <span className="absolute inset-0 w-full h-full -translate-x-full bg-gradient-to-r from-transparent via-white/40 to-transparent group-hover:transition-transform group-hover:duration-700 group-hover:translate-x-full"></span>
-                            Ativar Orbe Knight <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
+                            Ativar Orbe Knight (Premium) <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
                         </Link>
                     </div>
                 </div>

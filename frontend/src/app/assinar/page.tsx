@@ -52,7 +52,7 @@ const PLANS = [
   {
     id: "premium",
     label: "PREMIUM",
-    price: "R$ 29/mês",
+    price: "R$ 290,00/mês",
     color: "#00f2fe",
     glow: "rgba(188,19,254,0.2)",
     badge: "MAIS POPULAR",
@@ -63,6 +63,7 @@ const PLANS = [
       { text: "Perfil pessoal", ok: true },
       { text: "Ghost Engine — Opt-out Automático", ok: true },
       { text: "INHO — Sistema de Inteligência", ok: true },
+      { text: "Orbe Knight Security Suite", ok: true },
       { text: "API rate limit aumentado", ok: true },
       { text: "Suporte prioritário", ok: true },
     ],
