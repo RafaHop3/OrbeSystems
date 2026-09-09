@@ -34,7 +34,7 @@ export default function OrbeCleanerHero() {
 
     return (
         <div
-            className="scene relative flex items-center justify-center min-h-screen bg-[#0b0d17] overflow-hidden"
+            className="scene relative z-10 flex items-center justify-center min-h-screen bg-[#0b0d17] overflow-hidden"
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{ perspective: '2000px' }}

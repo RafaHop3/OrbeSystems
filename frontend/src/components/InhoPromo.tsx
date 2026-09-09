@@ -6,7 +6,7 @@ export default function InhoPromo() {
     const inhoUrl = process.env.NEXT_PUBLIC_INHO_URL || 'https://inho.orbesystems.com.br';
 
     return (
-        <section className="relative w-full py-20 px-6 border-b border-[#8b5cf6]/30 bg-black overflow-hidden group">
+        <section className="relative z-10 w-full py-20 px-6 border-b border-[#8b5cf6]/30 bg-black overflow-hidden group">
             {/* Background Cyberpunk FX */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-[#8b5cf6]/10 to-transparent pointer-events-none" />

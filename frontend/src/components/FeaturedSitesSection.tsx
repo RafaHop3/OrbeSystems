@@ -78,6 +78,17 @@ const sites = [
         badge: '🧹 SysTool',
         isAnimated: true,
     },
+    {
+        name: 'Orbe Knight',
+        tagline: 'Segurança Cibernética · Monitoramento 24/7',
+        url: '/ferramentas-premium/orbe-knight',
+        image: '/featured-orbecleaner.jpg', // Placeholder image until a specific one is provided
+        accent: '#ef4444',
+        accentBg: 'rgba(239, 68, 68, 0.08)',
+        accentBorder: 'rgba(239, 68, 68, 0.35)',
+        badge: '🛡️ Security',
+        isAnimated: true,
+    },
 ];
 
 export default function FeaturedSitesSection() {

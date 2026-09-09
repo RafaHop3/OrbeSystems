@@ -6,7 +6,7 @@ import { AuroraText } from '@/components/ui/aurora-text';
 
 export default function OrbeKnightPromo() {
     return (
-        <section className="relative w-full py-28 px-6 border-y border-amber-500/20 bg-[#0a0a0f] overflow-hidden group">
+        <section className="relative z-10 w-full py-28 px-6 border-y border-amber-500/20 bg-[#0a0a0f] overflow-hidden group">
             {/* Background Cyberpunk FX */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 <div className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-amber-500/10 to-transparent pointer-events-none" />
@@ -29,8 +29,8 @@ export default function OrbeKnightPromo() {
                     </h2>
 
                     <p className="text-slate-300 font-sans leading-relaxed text-lg max-w-xl">
-                        Sistema avançado de segurança cibernética com monitoramento em tempo real, 
-                        análise de vulnerabilidades e resposta automatizada a ameaças. 
+                        Sistema avançado de segurança cibernética com monitoramento em tempo real,
+                        análise de vulnerabilidades e resposta automatizada a ameaças.
                         <strong>Defesa proativa</strong> para infraestruturas críticas.
                     </p>
 
