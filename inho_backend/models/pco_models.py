@@ -51,7 +51,7 @@ class PCOSurvey(Base):
 
     id          = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     business_id = Column(UUID(as_uuid=True), ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
-    created_by  = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
+    created_by  = Column(String(36), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
     title       = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     status      = Column(Enum(PCOSurveyStatus), nullable=False, default=PCOSurveyStatus.DRAFT)
@@ -107,8 +107,8 @@ class PCOResponse(Base):
 
     id         = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     survey_id  = Column(UUID(as_uuid=True), ForeignKey("pco_surveys.id", ondelete="CASCADE"), nullable=False)
-    respondent_id = Column(String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
-    # nullable quando anônimo — IP nunca é armazenado para garantir anonimato
+    respondent_id = Column(String(36), ForeignKey("public.users.id", ondelete="SET NULL"), nullable=True)
+    # nullable quando anônico — IP nunca é armazenado para garantir anonimato
     submitted_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
     survey  = relationship("PCOSurvey", back_populates="responses")
