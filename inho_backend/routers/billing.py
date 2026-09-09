@@ -19,18 +19,33 @@ from schemas.billing_schemas import (
 router = APIRouter()
 
 async def _get_user_business(db: AsyncSession, user: User) -> Business:
-    result = await db.execute(select(Business).where(Business.user_id == user.id))
+    # Safely query since we converted user_id to String(36) in models
+    result = await db.execute(select(Business).where(Business.user_id == str(user.id)))
     business = result.scalars().first()
+    
     if not business:
         # Create a default business for the user if none exists
         business = Business(
             id=uuid.uuid4(),
-            user_id=user.id,
+            user_id=str(user.id),
             name=f"Empresa de {user.full_name}"
         )
         db.add(business)
+        await db.flush() # Flush to lock in the UUID
+        
+        # Also auto-provision the user as a BusinessOperator 
+        # so they never get 403 Forbidden in Contracts/PDV/CRM
+        from models.models import BusinessOperator
+        biz_op = BusinessOperator(
+            id=uuid.uuid4(),
+            business_id=business.id,
+            user_id=str(user.id)
+        )
+        db.add(biz_op)
+        
         await db.commit()
         await db.refresh(business)
+        
     return business
 
 def _generate_mock_pix_code(invoice_id: uuid.UUID, amount: Decimal, customer_name: str) -> str:
