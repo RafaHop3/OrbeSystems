@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Terminal, ShieldAlert } from 'lucide-react';
+import { PROXY_BASE_URL } from '@/lib/api';
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('');
@@ -27,10 +28,7 @@ export default function AdminLogin() {
     while (!success) {
       attempts++;
       try {
-        const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
-        const API_URL = rawUrl.trim().replace(/\/$/, '');
-
-        const res = await fetch(`${API_URL}/api/auth/login`, {
+        const res = await fetch(`${PROXY_BASE_URL}/auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -54,9 +52,7 @@ export default function AdminLogin() {
         success = true;
         router.push('/admin');
       } catch (err: any) {
-        const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
-        const API_URL = rawUrl.trim().replace(/\/$/, '');
-        console.error("[LOGIN DEBUG]", { API_URL, origin: window.location.origin, err });
+        console.error("[LOGIN DEBUG]", { PROXY_BASE_URL, origin: window.location.origin, err });
 
         // If it's a manual error we threw (like ACCESS DENIED), break the loop immediately.
         if (err.message && !err.message.includes('fetch')) {
@@ -64,7 +60,7 @@ export default function AdminLogin() {
           setLoading(false);
           return; // Break out of the loop and end process
         } else {
-          setError(`NETWORK/CORS ERROR: LATEST BUILD UNREACHABLE AT ${API_URL}. RETRYING [ATTEMPT ${attempts}]...`);
+          setError(`NETWORK/CORS ERROR: LATEST BUILD UNREACHABLE AT ${PROXY_BASE_URL}. RETRYING [ATTEMPT ${attempts}]...`);
           // Wait 3 seconds before next loop iteration
           await new Promise(resolve => setTimeout(resolve, 3000));
         }
