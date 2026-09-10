@@ -28,7 +28,7 @@ export default function AdminLogin() {
     while (!success) {
       attempts++;
       try {
-        const res = await fetch(`${PROXY_BASE_URL}/auth/login`, {
+        const res = await fetch(`${PROXY_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
