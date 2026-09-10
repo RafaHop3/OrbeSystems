@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:586c252e-4dda-445a-9c33-124e94e90acf",
+  "serialNumber": "urn:uuid:e6053fbf-9fe6-4fb2-8f37-4003a26782d9",
   "metadata": {
-    "timestamp": "2026-09-09T21:12:59.249113+00:00",
+    "timestamp": "2026-09-10T20:22:21.011577+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -1155,8 +1155,8 @@
     {
       "type": "library",
       "name": "psycopg2-binary",
-      "version": "2.9.12",
-      "purl": "pkg:pypi/psycopg2-binary@2.9.12",
+      "version": "2.9.13",
+      "purl": "pkg:pypi/psycopg2-binary@2.9.13",
       "licenses": [
         {
           "license": {
@@ -1173,7 +1173,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "44f5b689cde3d28fc544f384675c3a541fb290b0a812dd19d590e35ed7bef301"
+          "content": "274f081efb83afbbcf000b89f7ec1af1bac70981606096c4e6e14101904680de"
         }
       ]
     },
@@ -2087,7 +2087,7 @@
     },
     "gpl_flagged": [
       "chardet@3.0.4 (LGPL)",
-      "psycopg2-binary@2.9.12 (LGPL with exceptions)"
+      "psycopg2-binary@2.9.13 (LGPL with exceptions)"
     ],
     "requires_review": true
   }
