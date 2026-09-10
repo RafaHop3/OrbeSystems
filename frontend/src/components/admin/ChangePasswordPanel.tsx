@@ -26,8 +26,7 @@ export default function ChangePasswordPanel() {
 
         try {
             const token = localStorage.getItem('orbe_admin_token');
-            const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
-            const API_URL = rawUrl.trim().replace(/\/$/, '');
+            const API_URL = '/api/proxy';
 
             const res = await fetch(`${API_URL}/api/users/change-password`, {
                 method: 'POST',

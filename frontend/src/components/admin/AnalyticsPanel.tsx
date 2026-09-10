@@ -95,7 +95,7 @@ export default function AnalyticsPanel() {
     const [filterRisk, setFilterRisk] = useState<'all' | 'high' | 'med'>('all');
     const [lastRefresh, setLastRefresh] = useState(new Date());
 
-    const BACKEND = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
+    const BACKEND = '/api/proxy';
 
     const fetchAll = useCallback(async () => {
         try {

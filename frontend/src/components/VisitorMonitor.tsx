@@ -34,8 +34,7 @@ export default function VisitorMonitor() {
   const fetchVisits = async () => {
     try {
       const token = localStorage.getItem('orbe_admin_token');
-      const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
-      const API_URL = rawUrl.trim().replace(/\/$/, '');
+      const API_URL = '/api/proxy';
 
       const [visitsRes, activeRes] = await Promise.all([
         fetch(`${API_URL}/api/analytics/list?limit=20`, {
@@ -131,7 +130,7 @@ export default function VisitorMonitor() {
           activeSessions.length === 0 ? (
             <div className="text-neon-green/40 text-[10px] py-4 italic border border-dashed border-neon-green/10 text-center">No active users detected.</div>
           ) : (
-            activeSessions.map((session) => (
+            activeSessions.map((session: ActiveSession) => (
               <div key={session.session_id} className="border border-neon-green/30 bg-neon-green/10 p-3 hover:bg-neon-green/15 transition-colors group">
                 <div className="flex justify-between items-start mb-2">
                   <span className="text-[10px] font-bold text-neon-green flex items-center gap-1.5 leading-none">

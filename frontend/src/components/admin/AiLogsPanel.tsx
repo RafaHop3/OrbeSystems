@@ -25,7 +25,7 @@ export default function AiLogsPanel() {
     const fetchData = async () => {
         try {
             const token = localStorage.getItem('orbe_admin_token');
-            const BACKEND_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
+            const BACKEND_URL = '/api/proxy';
 
             const [logsRes, statsRes] = await Promise.all([
                 fetch(`${BACKEND_URL}/api/admin/chat-logs`, { headers: { Authorization: `Bearer ${token}` } }),

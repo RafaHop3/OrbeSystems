@@ -13,8 +13,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
     const [creating, setCreating] = useState(false);
 
     // Orbe API is the master connector directly manipulating INHO DB
-    const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
-    const API_URL = `${rawUrl.trim().replace(/\/$/, '')}/api/admin/inho`;
+    const API_URL = '/api/proxy/api/admin/inho';
 
     const getOrbeToken = () => {
         if (typeof window === 'undefined') return null;
@@ -93,7 +92,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                 const errorData = await res.json().catch(() => ({}));
                 throw new Error(errorData.detail || 'Falha ao deletar entidade');
             }
-            setUsers(prev => prev.filter(u => u.id !== userId));
+            setUsers((prev: any[]) => prev.filter((u: any) => u.id !== userId));
         } catch (err: any) {
             alert(err.message || 'Erro ao apagar entidade');
         }
@@ -186,21 +185,21 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                         <div className="border border-green-500/40 bg-black/60 p-4 mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
                             <input
                                 type="text" placeholder="NOME COMPLETO"
-                                value={form.full_name} onChange={e => setForm({ ...form, full_name: e.target.value })}
+                                value={form.full_name} onChange={(e: any) => setForm({ ...form, full_name: e.target.value })}
                                 className="bg-transparent border-b border-green-500/30 text-green-400 text-[10px] focus:outline-none focus:border-green-400 p-2"
                             />
                             <input
                                 type="email" placeholder="E-MAIL"
-                                value={form.email} onChange={e => setForm({ ...form, email: e.target.value })}
+                                value={form.email} onChange={(e: any) => setForm({ ...form, email: e.target.value })}
                                 className="bg-transparent border-b border-green-500/30 text-green-400 text-[10px] focus:outline-none focus:border-green-400 p-2"
                             />
                             <input
                                 type="password" placeholder="SENHA INICIAL"
-                                value={form.password} onChange={e => setForm({ ...form, password: e.target.value })}
+                                value={form.password} onChange={(e: any) => setForm({ ...form, password: e.target.value })}
                                 className="bg-transparent border-b border-green-500/30 text-green-400 text-[10px] focus:outline-none focus:border-green-400 p-2"
                             />
                             <select
-                                value={form.role} onChange={e => setForm({ ...form, role: e.target.value })}
+                                value={form.role} onChange={(e: any) => setForm({ ...form, role: e.target.value })}
                                 className="bg-black border border-green-500/30 text-green-400 text-[10px] focus:outline-none focus:border-green-400 p-2 uppercase"
                             >
                                 <option value="admin">ASSINANTE INHO (ADMIN)</option>
@@ -217,7 +216,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                        {users.map(u => (
+                        {users.map((u: any) => (
                             <div key={u.id} className="border border-green-500/20 bg-black/40 p-4 hover:border-green-500/40 transition-colors">
                                 <div className="flex justify-between items-start mb-3">
                                     <div className="flex items-center gap-2">
@@ -242,7 +241,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                                     {currentUserRole === 'superadmin' && (
                                         <select
                                             value={u.role}
-                                            onChange={e => handleRoleChange(u.id, e.target.value)}
+                                            onChange={(e: any) => handleRoleChange(u.id, e.target.value)}
                                             className="flex-1 bg-black text-[9px] text-green-500/80 border border-green-500/20 px-2 py-1 focus:outline-none uppercase"
                                         >
                                             <option value="admin">ROLE: ASSINANTE INHO (ADMIN)</option>

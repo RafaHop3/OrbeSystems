@@ -19,6 +19,7 @@ import AnalyticsPanel from '@/components/admin/AnalyticsPanel';
 import InhoPanel from '@/components/admin/InhoPanel';
 import SIEMPanel from '@/components/admin/SiemPanel';
 import ChangePasswordPanel from '@/components/admin/ChangePasswordPanel';
+import { PROXY_BASE_URL } from '@/lib/api';
 
 /*
 - [x] Install/Add Backend dependency (`cloudinary`)
@@ -89,8 +90,7 @@ export default function AdminDashboard() {
   const [injectMsg, setInjectMsg] = useState('');
   const router = useRouter();
 
-  const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? 'https://orbe-systems-api.onrender.com';
-  const API_URL = rawUrl.trim().replace(/\/$/, '');
+  const API_URL = PROXY_BASE_URL;
 
   useEffect(() => {
     const fetchData = async () => {
