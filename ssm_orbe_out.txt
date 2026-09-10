@@ -1,18 +1,11 @@
 Deploying Updated Orbe Backend from ECR...
-No local changes to save
-HEAD is now at a31e5d6 fix(auth): loosen get_current_admin_user to accept INHO admin roles for analytics
 orbe_backend
 Orbe Backend build and restart complete.
 
 ----------ERROR-------
-From https://github.com/RafaHop3/OrbeSystems
- * branch            main       -> FETCH_HEAD
-   99aa537..a31e5d6  main       -> origin/main
-time="2026-09-08T22:08:36Z" level=warning msg="The \"K1dJv\" variable is not set. Defaulting to a blank string."
-time="2026-09-08T22:08:36Z" level=warning msg="The \"K1dJv\" variable is not set. Defaulting to a blank string."
-No stopped containers
-time="2026-09-08T22:08:36Z" level=warning msg="The \"K1dJv\" variable is not set. Defaulting to a blank string."
- Container orbe_backend  Creating
- Container orbe_backend  Created
- Container orbe_backend  Starting
- Container orbe_backend  Started
+fatal: not a git repository (or any of the parent directories): .git
+fatal: not a git repository (or any of the parent directories): .git
+fatal: not a git repository (or any of the parent directories): .git
+stat /home/ubuntu/orbe-systems/ec2_compose.yml: no such file or directory
+stat /home/ubuntu/orbe-systems/ec2_compose.yml: no such file or directory
+stat /home/ubuntu/orbe-systems/ec2_compose.yml: no such file or directory
