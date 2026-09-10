@@ -182,6 +182,21 @@ async def lifespan(app: FastAPI):
     except ValueError as e:
         print(f" Configuration error: {e}")
         # Vercel: We do not raise here so the function can still boot and return meaningful errors.
+        
+    # Strict Database Guard against Sandbox configurations in Production
+    import os
+    _is_local_dev = os.environ.get("VERCEL_ENV") == "development" or os.environ.get("ENV") == "development"
+    if not _is_local_dev:
+        db_url = os.environ.get("DATABASE_URL", "")
+        inho_url = os.environ.get("INHO_DATABASE_URL", "")
+        if not db_url or not inho_url:
+            err_msg = "FATAL: Mission critical DATABASE_URL or INHO_DATABASE_URL is missing in production."
+            print(err_msg)
+            raise RuntimeError(err_msg)
+        if "sqlite" in db_url or "sqlite" in inho_url:
+            err_msg = "FATAL: Production mode detected 'sqlite' in database endpoints. Boot sequence aborted to prevent ghost database."
+            print(err_msg)
+            raise RuntimeError(err_msg)
     
     # Run migrations safely
     try:
