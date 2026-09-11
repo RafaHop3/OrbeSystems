@@ -6,10 +6,8 @@ instance_id = "i-058e26140671b3254"
 
 commands = [
     "echo 'Deploying Updated Orbe Backend from ECR...'",
-    "cd /home/ubuntu/orbe-systems",
-    "git stash",
-    "git fetch origin main",
-    "git reset --hard origin/main",
+    "cd /home/ubuntu/OrbeSystems",
+    "sudo -u ubuntu sh -c 'cd /home/ubuntu/OrbeSystems && git stash && git fetch origin main && git reset --hard origin/main'",
     "docker rm -f orbe_backend || true",
     "docker-compose -f ec2_compose.yml stop backend",
     "docker-compose -f ec2_compose.yml rm -f backend",

@@ -50,7 +50,8 @@ async def write_audit(
     # Auto-resolve user_name and user_role if user_id is provided and user_name is missing
     if user_id and not user_name:
         from sqlalchemy import select
-        res = await db.execute(select(User).where(User.id == user_id))
+        from sqlalchemy import cast, String
+        res = await db.execute(select(User).where(cast(User.id, String) == user_id))
         u = res.scalar_one_or_none()
         if u:
             try:

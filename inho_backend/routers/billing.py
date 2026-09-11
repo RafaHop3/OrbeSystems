@@ -1,3 +1,4 @@
+from sqlalchemy import cast, String
 import uuid
 import urllib.parse
 from datetime import datetime, timezone
@@ -20,7 +21,7 @@ router = APIRouter()
 
 async def _get_user_business(db: AsyncSession, user: User) -> Business:
     # Safely query since we converted user_id to String(36) in models
-    result = await db.execute(select(Business).where(Business.user_id == str(user.id)))
+    result = await db.execute(select(Business).where(cast(Business.user_id, String) == str(user.id)))
     business = result.scalars().first()
     
     if not business:

@@ -33,11 +33,12 @@ engine_kwargs = {
     "pool_pre_ping": True,
 }
 
-from sqlalchemy.pool import NullPool
-
 if not settings.DATABASE_URL.startswith("sqlite"):
     engine_kwargs.update({
-        "poolclass": NullPool,
+        "pool_size": 25,
+        "max_overflow": 15,
+        "pool_timeout": 30,
+        "pool_recycle": 1800,  # Preemptively recycles idle connections before Supabase timeout
     })
     
     engine_kwargs.setdefault("connect_args", {})

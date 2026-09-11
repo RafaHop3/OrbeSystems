@@ -1,3 +1,4 @@
+from sqlalchemy import cast, String
 """
 INHO – Users Router (RBAC-protected)
 """
@@ -25,7 +26,7 @@ async def get_me(
     from models.models import BusinessOperator, UserRole
     
     if current_user.role == UserRole.OPERATOR:
-        result = await db.execute(select(BusinessOperator).where(BusinessOperator.user_id == current_user.id))
+        result = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
         biz_op = result.scalar_one_or_none()
         if biz_op:
             current_user.business_id = biz_op.business_id

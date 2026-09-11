@@ -1,3 +1,4 @@
+from sqlalchemy import cast, String
 """
 INHO – Audit Router
 """
@@ -26,7 +27,7 @@ async def list_my_audit_logs(
     current_user: User = Depends(get_current_user),
 ):
     """Lista o log de auditoria do próprio usuário (somente leitura)."""
-    query = select(AuditLog).where(AuditLog.user_id == current_user.id)
+    query = select(AuditLog).where(cast(AuditLog.user_id, String) == str(current_user.id))
     if entity:
         query = query.where(AuditLog.entity == entity)
     query = query.order_by(AuditLog.timestamp.desc()).limit(limit)
@@ -50,7 +51,7 @@ async def list_all_audit_logs(
     if entity:
         query = query.where(AuditLog.entity == entity)
     if user_id:
-        query = query.where(AuditLog.user_id == user_id)
+        query = query.where(cast(AuditLog.user_id, String) == str(user_id))
         
     query = query.order_by(AuditLog.timestamp.desc()).limit(limit)
     result = await db.execute(query)

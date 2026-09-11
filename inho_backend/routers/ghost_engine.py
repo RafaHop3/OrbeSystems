@@ -1,3 +1,4 @@
+from sqlalchemy import cast, String
 """
 INHO – Ghost Engine Router
 GET /ghost/brokers | POST /ghost/requests/dispatch | GET /ghost/requests | POST /ghost/parse-response
@@ -92,7 +93,7 @@ async def dispatch_privacy_request(
     # 3. Create or Update Privacy Request in DB
     existing = await db.execute(
         select(PrivacyRequest).where(
-            PrivacyRequest.user_id == user.id,
+            cast(PrivacyRequest.user_id, String) == str(user.id),
             PrivacyRequest.broker_id == broker.id
         )
     )
@@ -137,7 +138,7 @@ async def list_my_privacy_requests(
     db: AsyncSession = Depends(get_db),
 ):
     """Lista o histórico de solicitações de exclusão do usuário."""
-    result = await db.execute(select(PrivacyRequest).where(PrivacyRequest.user_id == user.id))
+    result = await db.execute(select(PrivacyRequest).where(cast(PrivacyRequest.user_id, String) == str(user.id)))
     return result.scalars().all()
 
 

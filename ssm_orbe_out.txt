@@ -1,11 +1,18 @@
 Deploying Updated Orbe Backend from ECR...
+No local changes to save
+HEAD is now at e95769b chore(security): auto-update SBOM [skip ci]
 orbe_backend
 Orbe Backend build and restart complete.
 
 ----------ERROR-------
-fatal: not a git repository (or any of the parent directories): .git
-fatal: not a git repository (or any of the parent directories): .git
-fatal: not a git repository (or any of the parent directories): .git
-stat /home/ubuntu/orbe-systems/ec2_compose.yml: no such file or directory
-stat /home/ubuntu/orbe-systems/ec2_compose.yml: no such file or directory
-stat /home/ubuntu/orbe-systems/ec2_compose.yml: no such file or directory
+From https://github.com/RafaHop3/OrbeSystems
+ * branch            main       -> FETCH_HEAD
+time="2026-09-10T21:49:16Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+time="2026-09-10T21:49:16Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+No stopped containers
+time="2026-09-10T21:49:16Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+time="2026-09-10T21:49:16Z" level=warning msg="Found orphan containers ([orbe_whatsapp]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container orbe_backend  Creating
+ Container orbe_backend  Created
+ Container orbe_backend  Starting
+ Container orbe_backend  Started
