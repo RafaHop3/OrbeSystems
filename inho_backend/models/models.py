@@ -194,7 +194,7 @@ class AuditLog(Base):
     user_role  = Column(String(100), nullable=True)
     action     = Column(Enum(AuditAction), nullable=False)
     entity     = Column(String(100), nullable=False)
-    entity_id  = Column(String(255), nullable=True)
+    entity_id  = Column(DB_UUID, nullable=True)
     detail     = Column(Text, nullable=True)
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(String(512), nullable=True)
