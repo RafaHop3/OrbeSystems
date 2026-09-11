@@ -1,6 +1,7 @@
+from sqlalchemy import cast, String
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, cast, String, func
 from typing import List
 import uuid
 

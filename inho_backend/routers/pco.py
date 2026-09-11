@@ -1,3 +1,4 @@
+from sqlalchemy import cast, String
 """
 INHO – PCO (Organizational Climate) Router
 """
@@ -5,7 +6,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status, Request
-from sqlalchemy import select
+from sqlalchemy import select, cast, String
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 

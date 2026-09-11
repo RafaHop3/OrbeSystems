@@ -1,3 +1,4 @@
+from sqlalchemy import cast, String
 """
 INHO – Router: CRM Completo (Contatos, Contas a Pagar)
 Full CRUD + filtros + timeline de inadimplência (spec §2)
@@ -9,7 +10,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, status
-from sqlalchemy import select, func
+from sqlalchemy import select, cast, String, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_user

@@ -1,6 +1,7 @@
+from sqlalchemy import cast, String
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_
+from sqlalchemy import select, cast, String, and_
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 from dateutil.relativedelta import relativedelta

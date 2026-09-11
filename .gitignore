@@ -49,3 +49,5 @@ logs/
 .vercel
 .env*
 .aider*
+whatsapp_bot/auth_info_baileys/
+whatsapp_bot/auth_info_baileys/

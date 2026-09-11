@@ -1,3 +1,4 @@
+from sqlalchemy import cast, String
 """
 INHO – Router: Plano de Contas (AccountCategory)
 CRUD hierárquico + seed automático de categorias padrão (spec §5.2)
@@ -7,7 +8,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import select, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_user

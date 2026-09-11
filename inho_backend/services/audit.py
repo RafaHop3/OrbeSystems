@@ -48,6 +48,9 @@ async def write_audit(
             pass
 
     # Auto-resolve user_name and user_role if user_id is provided and user_name is missing
+    if user_id:
+        user_id = str(user_id)
+
     if user_id and not user_name:
         from sqlalchemy import select
         from sqlalchemy import cast, String

@@ -1,3 +1,4 @@
+from sqlalchemy import cast, String
 """
 INHO – Router: EntityNotes & EntityFiles
 Widget de Anotações e Repositório de Arquivos transversal (spec §2.4)
@@ -6,7 +7,7 @@ from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import select, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_user

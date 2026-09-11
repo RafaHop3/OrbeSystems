@@ -1,3 +1,4 @@
+from sqlalchemy import cast, String
 """
 INHO – Router: Cooperados (Dossiê Completo + Extrato de Aportes)
 Spec §2.2 — Dossiê Central do Sócio (Cooperado)
@@ -9,7 +10,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel
-from sqlalchemy import select
+from sqlalchemy import select, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_user

@@ -1,3 +1,4 @@
+from sqlalchemy import cast, String
 import uuid
 import hashlib
 import json
@@ -5,7 +6,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, cast, String
 
 from db.session import get_db
 from models.models import User, Business, MonthClose, BillingInvoice, AccountPayable, AuditAction
