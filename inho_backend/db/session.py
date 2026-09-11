@@ -45,6 +45,9 @@ if not settings.DATABASE_URL.startswith("sqlite"):
     schema_name = getattr(settings, "SCHEMA", "inho")
     engine_kwargs["connect_args"]["server_settings"] = {"search_path": f"{schema_name}, public"}
     engine_kwargs["connect_args"]["prepared_statement_cache_size"] = 0
+    engine_kwargs["connect_args"]["statement_cache_size"] = 0
+    engine_kwargs["connect_args"]["prepared_statement_name_func"] = lambda: ""
+    engine_kwargs["connect_args"]["command_timeout"] = 60
     
     # Only apply SSL for production databases (Supabase, Render, etc.)
     if "supabase" in settings.DATABASE_URL or "render.com" in settings.DATABASE_URL:
