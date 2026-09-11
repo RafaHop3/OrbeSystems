@@ -27,12 +27,20 @@ async function proxyRequest(request: NextRequest, { params }: Params): Promise<N
 
     // Route to correct backend based on path
     const isInhoApi = targetPath.startsWith('api/v1/optout') ||
-                      targetPath.startsWith('api/v1/imortal') ||
-                      targetPath.startsWith('api/v1/imobverse') ||
-                      targetPath.startsWith('api/v1/powershell-bot') ||
-                      targetPath.startsWith('api/v1/billing') ||
-                      targetPath.startsWith('api/v1/suite-inteligente') ||
-                      targetPath.startsWith('api/v1/offline-agent');
+        targetPath.startsWith('api/v1/imortal') ||
+        targetPath.startsWith('api/v1/imobverse') ||
+        targetPath.startsWith('api/v1/powershell-bot') ||
+        targetPath.startsWith('api/v1/billing') ||
+        targetPath.startsWith('api/v1/suite-inteligente') ||
+        targetPath.startsWith('api/v1/auth') ||
+        targetPath.startsWith('api/v1/crm') ||
+        targetPath.startsWith('api/v1/users') ||
+        targetPath.startsWith('api/v1/categories') ||
+        targetPath.startsWith('api/v1/projects') ||
+        targetPath.startsWith('api/v1/analytics') ||
+        targetPath.startsWith('api/v1/upload') ||
+        targetPath.startsWith('api/v1/admin') ||
+        targetPath.startsWith('api/v1/offline-agent');
 
     const baseUrl = isInhoApi ? INHO_API_URL : BACKEND_URL;
 
