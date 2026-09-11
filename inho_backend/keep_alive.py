@@ -69,6 +69,18 @@ def start_keep_alive() -> None:
             id="keep_alive_ping",
             replace_existing=True,
         )
+        
+        # 🤖 Orbe INHO: Régua de Cobrança Automática B2B2C (WhatsApp)
+        from jobs.notification_job import process_billing_reminders
+        _scheduler.add_job(
+            process_billing_reminders,
+            trigger="cron",
+            hour=9,  # Todos os dias às 09:00 AM UTC
+            minute=0,
+            id="billing_reminders_cron",
+            replace_existing=True,
+        )
+        
         _scheduler.start()
         logger.info(
             f"[KeepAlive] 🤖 Robot active — pinging every {PING_INTERVAL_MINUTES} min → {SELF_URL}"

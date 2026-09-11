@@ -42,24 +42,24 @@ async def lifespan(app: FastAPI):
                 # Producao: apenas verifica conectividade — migrações via Alembic
                 await conn.execute(text("SELECT 1"))
 
-            # 🛡️ Orbe Systems Schema Sync Guardrail (PostgreSQL Drift Prevention)
-            from sqlalchemy import inspect
-            def verify_schema_integrity(sync_conn):
-                inspector = inspect(sync_conn)
-                schema = getattr(settings, "SCHEMA", "inho")
-                if inspector.has_table("businesses", schema=schema):
-                    db_columns = [col["name"] for col in inspector.get_columns("businesses", schema=schema)]
-                    required = ["municipal_registration", "state_registration", "cashflow_horizon_months", "logo_url"]
-                    missing = [c for c in required if c not in db_columns]
-                    if missing:
-                        raise RuntimeError(
-                            f"🚨 CRITICAL FATAL DEPLOYMENT HALT: Database Schema Drift Detected! "
-                            f"Table 'businesses' is missing the following columns: {missing}. "
-                            f"You MUST trigger the database migration script before launching this API. "
-                            f"The container will crash to prevent unhandled 500 SQL syntax errors."
-                        )
-            
-            await conn.run_sync(verify_schema_integrity)
+                # 🛡️ Orbe Systems Schema Sync Guardrail (PostgreSQL Drift Prevention)
+                from sqlalchemy import inspect
+                def verify_schema_integrity(sync_conn):
+                    inspector = inspect(sync_conn)
+                    schema = getattr(settings, "SCHEMA", "inho")
+                    if inspector.has_table("businesses", schema=schema):
+                        db_columns = [col["name"] for col in inspector.get_columns("businesses", schema=schema)]
+                        required = ["municipal_registration", "state_registration", "cashflow_horizon_months", "logo_url"]
+                        missing = [c for c in required if c not in db_columns]
+                        if missing:
+                            raise RuntimeError(
+                                f"🚨 CRITICAL FATAL DEPLOYMENT HALT: Database Schema Drift Detected! "
+                                f"Table 'businesses' is missing the following columns: {missing}. "
+                                f"You MUST trigger the database migration script before launching this API. "
+                                f"The container will crash to prevent unhandled 500 SQL syntax errors."
+                            )
+                
+                await conn.run_sync(verify_schema_integrity)
 
         app.state.db_ready = True
         logger.info("Banco de dados conectado e esquema Inho (SaaS) perfeitamente sincronizado com sucesso!")

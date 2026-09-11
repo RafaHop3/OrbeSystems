@@ -370,7 +370,9 @@ async def notify_whatsapp(
     if not invoice:
         raise HTTPException(status_code=404, detail="Cobrança não encontrada")
 
-    phone = (invoice.customer_phone or "").replace("+", "").replace("-", "").replace(" ", "")
+    from services.messaging import format_whatsapp_phone
+    
+    phone = format_whatsapp_phone(invoice.customer_phone or "")
     if not phone:
         phone = "5511999999999" # Default fallback for testing
 

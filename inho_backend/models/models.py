@@ -441,6 +441,11 @@ class BillingInvoice(Base):
     viewed_at                = Column(DateTime(timezone=True), nullable=True)  # leitura pelo sacado
     remaining_balance        = Column(Numeric(precision=20, scale=8), nullable=True)  # baixa parcial
 
+    # Disparos de WhatsApp Anti-Duplicidade (Régua de Cobrança)
+    reminder_before_sent_at = Column(DateTime(timezone=True), nullable=True) # Ex: D-3
+    reminder_due_sent_at    = Column(DateTime(timezone=True), nullable=True) # Ex: D0
+    reminder_after_sent_at  = Column(DateTime(timezone=True), nullable=True) # Ex: D+3
+
     # Audit fields: quem e quando criou / editou
     created_by_id   = Column(String(36), ForeignKey(_PUBLIC_USERS_FK, ondelete="SET NULL"), nullable=True)
     created_by_name = Column(String(255), nullable=True)
