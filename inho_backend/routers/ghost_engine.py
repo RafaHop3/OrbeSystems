@@ -179,7 +179,7 @@ async def parse_dpo_response(
 
 
 async def _run_playwright_background_worker(
-    request_id: UUID,
+    request_id: str,
     broker_name: str,
     user_data: dict,
     db_factory
@@ -217,7 +217,7 @@ async def _run_playwright_background_worker(
 
 @router.post("/dispatch-form/{request_id}", status_code=202)
 async def dispatch_form_request(
-    request_id: UUID,
+    request_id: str,
     background_tasks: BackgroundTasks,
     user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),

@@ -1,0 +1,50 @@
+﻿FROM businesses 
+WHERE CAST(businesses.user_id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 8.217s ago] ('1714b9d1-6b99-44a4-8753-e018517d6c4f',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 INSERT INTO entity_files (id, business_id, entity_type, entity_id, filename, file_url, file_category, file_size, uploaded_by, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00028s] ('56e48fab-8275-4f6d-ae2d-20af5e853f5d', 'da882a0634b94e5a892026bbb573cd5b', 'crm_contact', 'a6c7371b-4380-4414-90a0-e37eb2d701a3', 'contrato_signed.pdf', 'https://s3.amazonaws.com/bucket/contrato_signed.pdf', 'contrato', 204800, 'Administrador INHO', '2026-09-11 19:44:26.402897')
+INFO     sqlalchemy.engine.Engine:base.py:1142 COMMIT
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT entity_files.id, entity_files.business_id, entity_files.entity_type, entity_files.entity_id, entity_files.filename, entity_files.file_url, entity_files.file_category, entity_files.file_size, entity_files.uploaded_by, entity_files.created_at 
+FROM entity_files 
+WHERE entity_files.id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00028s] ('56e48fab-8275-4f6d-ae2d-20af5e853f5d',)
+INFO     sqlalchemy.engine.Engine:base.py:1125 ROLLBACK
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/notes/files/ "HTTP/1.1 201 Created"
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 8.253s ago] ('1714b9d1-6b99-44a4-8753-e018517d6c4f',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE CAST(businesses.user_id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 8.236s ago] ('1714b9d1-6b99-44a4-8753-e018517d6c4f',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT entity_files.id, entity_files.business_id, entity_files.entity_type, entity_files.entity_id, entity_files.filename, entity_files.file_url, entity_files.file_category, entity_files.file_size, entity_files.uploaded_by, entity_files.created_at 
+FROM entity_files 
+WHERE entity_files.business_id = ? AND entity_files.entity_type = ? AND entity_files.entity_id = ? ORDER BY entity_files.created_at DESC
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00023s] ('da882a0634b94e5a892026bbb573cd5b', 'crm_contact', 'a6c7371b-4380-4414-90a0-e37eb2d701a3')
+INFO     sqlalchemy.engine.Engine:base.py:1125 ROLLBACK
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/api/v1/notes/files/?entity_type=crm_contact&entity_id=a6c7371b-4380-4414-90a0-e37eb2d701a3 "HTTP/1.1 200 OK"
+INFO     sqlalchemy.engine.Engine:base.py:1099 BEGIN (implicit)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT users.id, users.email, users.password_hash, users.role, users.is_email_verified, users.subscription_status, users.created_at 
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 8.263s ago] ('1714b9d1-6b99-44a4-8753-e018517d6c4f',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT businesses.id, businesses.user_id, businesses.name, businesses.cnpj, businesses.category, businesses.municipal_registration, businesses.state_registration, businesses.logo_url, businesses.cashflow_horizon_months, businesses.created_at, businesses.updated_at 
+FROM businesses 
+WHERE CAST(businesses.user_id AS VARCHAR) = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [cached since 8.247s ago] ('1714b9d1-6b99-44a4-8753-e018517d6c4f',)
+INFO     sqlalchemy.engine.Engine:base.py:1899 SELECT entity_notes.id, entity_notes.business_id, entity_notes.entity_type, entity_notes.entity_id, entity_notes.content, entity_notes.author_id, entity_notes.author_name, entity_notes.created_at 
+FROM entity_notes 
+WHERE entity_notes.id = ? AND entity_notes.business_id = ?
+INFO     sqlalchemy.engine.Engine:base.py:1904 [generated in 0.00030s] ('d5bd0c9f6b284911841768f1b60b11e1', 'da882a0634b94e5a892026bbb573cd5b')
+INFO     sqlalchemy.engine.Engine:base.py:1125 ROLLBACK
+INFO     httpx:_client.py:1740 HTTP Request: DELETE http://test/api/v1/notes/d5bd0c9f-6b28-4911-8417-68f1b60b11e1 "HTTP/1.1 404 Not Found"
+=========================== short test summary info ===========================
+FAILED tests/test_crm.py::test_contacts_crud - assert 404 == 200
+FAILED tests/test_crm.py::test_payable_crud_and_totals - assert 404 == 200
+FAILED tests/test_crm.py::test_cooperado_crud_and_balance - assert 404 == 200
+FAILED tests/test_crm.py::test_categories_auto_seed_and_crud - sqlalchemy.exc...
+FAILED tests/test_crm.py::test_notes_and_files - assert 404 == 204
+================== 5 failed, 3 passed, 21 warnings in 12.07s ==================

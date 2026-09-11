@@ -32,7 +32,7 @@ DEFAULT_CATEGORIES = [
 ]
 
 
-async def _seed_default_categories(db: AsyncSession, business_id: UUID):
+async def _seed_default_categories(db: AsyncSession, business_id: str):
     """Cria categorias padrão apenas se não existir nenhuma ainda."""
     existing = await db.execute(
         select(AccountCategory).where(AccountCategory.business_id == business_id).limit(1)
@@ -42,7 +42,7 @@ async def _seed_default_categories(db: AsyncSession, business_id: UUID):
 
     for cat in DEFAULT_CATEGORIES:
         db.add(AccountCategory(
-            id=uuid_module.uuid4(),
+            id=str(uuid_module.uuid4()),
             business_id=business_id,
             name=cat["name"],
             type=cat["type"],
@@ -88,7 +88,7 @@ async def create_category(
 
 @router.put("/{category_id}", response_model=AccountCategoryOut)
 async def update_category(
-    category_id: UUID,
+    category_id: str,
     payload: AccountCategoryUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -114,7 +114,7 @@ async def update_category(
 
 @router.delete("/{category_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_category(
-    category_id: UUID,
+    category_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):

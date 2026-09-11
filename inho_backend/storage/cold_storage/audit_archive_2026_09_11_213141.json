@@ -1,0 +1,16 @@
+{
+  "archived_at": "2026-09-11T21:31:41.052659+00:00",
+  "total_records": 1,
+  "compliance_policy": "ISO_27001_LGPD_RETENTION_90_DAYS",
+  "records": [
+    {
+      "id": "log_001",
+      "timestamp": "2026-05-01T12:00:00Z",
+      "user_email": "user@orbesystems.com.br",
+      "action": "USER_LOGIN_SUCCESS",
+      "entity": "Auth",
+      "ip_address": "189.10.20.30",
+      "details": "Login de teste arquivado"
+    }
+  ]
+}

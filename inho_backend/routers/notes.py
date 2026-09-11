@@ -69,7 +69,7 @@ async def list_notes(
 
 @router.delete("/{note_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_note(
-    note_id: UUID,
+    note_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -146,7 +146,7 @@ async def list_files(
 
 @router.delete("/files/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_file(
-    file_id: UUID,
+    file_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):

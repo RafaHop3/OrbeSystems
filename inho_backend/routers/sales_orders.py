@@ -66,7 +66,7 @@ async def list_sales_orders(
 
 @router.get("/{order_id}", response_model=SalesOrderOut)
 async def get_sales_order(
-    order_id: UUID,
+    order_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -85,7 +85,7 @@ async def get_sales_order(
 @router.post("/{order_id}/confirm", response_model=SalesOrderOut)
 async def confirm_sales_order(
     request: Request,
-    order_id: UUID,
+    order_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -118,7 +118,7 @@ async def confirm_sales_order(
 @router.post("/{order_id}/invoice", response_model=SalesOrderOut)
 async def invoice_sales_order(
     request: Request,
-    order_id: UUID,
+    order_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -154,7 +154,7 @@ async def invoice_sales_order(
 @router.delete("/{order_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def cancel_sales_order(
     request: Request,
-    order_id: UUID,
+    order_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):

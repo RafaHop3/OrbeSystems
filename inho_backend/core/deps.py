@@ -23,7 +23,6 @@ async def get_current_user(
     
     # --- INICIO DEV OVERRIDE: Contorno E2E Frontend ---
     if not token or token in ["", "null", "undefined", "Bearer ", "dev-bypass"]:
-        from sqlalchemy import select
         res = await db.execute(select(User).where(User.role.in_([UserRole.SUPER_ADMIN, UserRole.ADMIN])).limit(1))
         db_user = res.scalar_one_or_none()
         if db_user:

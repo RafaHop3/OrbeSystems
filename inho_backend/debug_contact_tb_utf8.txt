@@ -1,0 +1,1033 @@
+___ test_contacts_crud ______________________________
+tests\test_crm.py:102: in test_contacts_crud
+    assert r.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = <Response [404 Not Found]>.status_code
+---------------------------- Captured stdout setup ----------------------------
+DROP TABLE pco_answers
+DROP TABLE pco_responses
+DROP TABLE pco_questions
+DROP TABLE recurrences
+DROP TABLE accounts_payable
+DROP TABLE billing_invoices
+DROP TABLE pdv_sales
+DROP TABLE pco_surveys
+DROP TABLE month_closes
+DROP TABLE entity_files
+DROP TABLE entity_notes
+DROP TABLE account_categories
+DROP TABLE cooperados
+DROP TABLE crm_contacts
+DROP TABLE cash_registers
+DROP TABLE sales_orders
+DROP TABLE contracts
+DROP TABLE audit_logs
+DROP TABLE bank_integrations
+DROP TABLE api_tokens
+DROP TABLE business_operators
+DROP TABLE privacy_requests
+DROP TABLE businesses
+DROP TABLE webhook_logs
+DROP TABLE data_brokers
+DROP TABLE users
+CREATE TABLE users (
+	id VARCHAR(36) NOT NULL, 
+	email VARCHAR(255) NOT NULL, 
+	password_hash VARCHAR(255) NOT NULL, 
+	role VARCHAR(50), 
+	is_email_verified BOOLEAN NOT NULL, 
+	subscription_status VARCHAR(50) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+CREATE TABLE data_brokers (
+	id VARCHAR(36) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	dpo_email VARCHAR(255), 
+	delete_url TEXT, 
+	method VARCHAR(5) NOT NULL, 
+	category VARCHAR(100) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	UNIQUE (name)
+)
+
+
+CREATE TABLE webhook_logs (
+	id VARCHAR(36) NOT NULL, 
+	event_id VARCHAR(255) NOT NULL, 
+	provider VARCHAR(50) NOT NULL, 
+	payload TEXT NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	error_message TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+CREATE TABLE businesses (
+	id VARCHAR(36) NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	cnpj VARCHAR(20), 
+	category VARCHAR(11) NOT NULL, 
+	municipal_registration VARCHAR(50), 
+	state_registration VARCHAR(50), 
+	logo_url VARCHAR(500), 
+	cashflow_horizon_months INTEGER NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE privacy_requests (
+	id VARCHAR(36) NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	broker_id VARCHAR(36) NOT NULL, 
+	status VARCHAR(15) NOT NULL, 
+	sent_at DATETIME, 
+	last_checked_at DATETIME, 
+	notes TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE, 
+	FOREIGN KEY(broker_id) REFERENCES data_brokers (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE business_operators (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE api_tokens (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	name VARCHAR(100) NOT NULL, 
+	token_hash VARCHAR(100) NOT NULL, 
+	created_by_id VARCHAR(36), 
+	expires_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE bank_integrations (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	bank_name VARCHAR(50) NOT NULL, 
+	api_key_encrypted TEXT NOT NULL, 
+	webhook_url VARCHAR(500), 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE audit_logs (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36), 
+	user_id VARCHAR(36), 
+	user_name VARCHAR(255), 
+	user_role VARCHAR(100), 
+	action VARCHAR(12) NOT NULL, 
+	entity VARCHAR(100) NOT NULL, 
+	entity_id VARCHAR(255), 
+	detail TEXT, 
+	ip_address VARCHAR(45), 
+	user_agent VARCHAR(512), 
+	timestamp DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE contracts (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	title VARCHAR(255) NOT NULL, 
+	contact_name VARCHAR(255) NOT NULL, 
+	contact_doc VARCHAR(20), 
+	record_type VARCHAR(20) NOT NULL, 
+	total_value NUMERIC(20, 8) NOT NULL, 
+	installments INTEGER NOT NULL, 
+	frequency VARCHAR(20), 
+	start_date DATETIME NOT NULL, 
+	end_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE sales_orders (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_doc VARCHAR(20), 
+	description TEXT, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	invoice_number VARCHAR(100), 
+	nfe_key VARCHAR(50), 
+	nfe_status VARCHAR(50), 
+	issue_date DATETIME NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE cash_registers (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	operator_id VARCHAR(36), 
+	opening_balance NUMERIC(20, 8) NOT NULL, 
+	closing_balance NUMERIC(20, 8), 
+	status VARCHAR(6) NOT NULL, 
+	opened_at DATETIME NOT NULL, 
+	closed_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(operator_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE crm_contacts (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	category VARCHAR(8) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50), 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	bank_details TEXT, 
+	notes TEXT, 
+	is_active BOOLEAN NOT NULL, 
+	person_type VARCHAR(12), 
+	municipal_registration VARCHAR(50), 
+	state_registration VARCHAR(50), 
+	website VARCHAR(255), 
+	contact_person VARCHAR(150), 
+	nis VARCHAR(30), 
+	correios_matricula VARCHAR(50), 
+	address VARCHAR(500), 
+	street VARCHAR(255), 
+	number VARCHAR(20), 
+	complement VARCHAR(150), 
+	neighborhood VARCHAR(100), 
+	city VARCHAR(100), 
+	state VARCHAR(50), 
+	zip_code VARCHAR(20), 
+	bank_code VARCHAR(10), 
+	bank_agency VARCHAR(20), 
+	bank_account VARCHAR(30), 
+	pix_key_type VARCHAR(20), 
+	pix_key VARCHAR(150), 
+	role_title VARCHAR(100), 
+	admission_date DATETIME, 
+	vacation_start_date DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE cooperados (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50) NOT NULL, 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	bank_details TEXT, 
+	notes TEXT, 
+	status VARCHAR(25) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE account_categories (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	parent_id VARCHAR(36), 
+	name VARCHAR(255) NOT NULL, 
+	type VARCHAR(8) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(parent_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE entity_notes (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id VARCHAR(36) NOT NULL, 
+	content TEXT NOT NULL, 
+	author_id VARCHAR(36) NOT NULL, 
+	author_name VARCHAR(255) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE entity_files (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id VARCHAR(36) NOT NULL, 
+	filename VARCHAR(500) NOT NULL, 
+	file_url TEXT NOT NULL, 
+	file_category VARCHAR(100), 
+	file_size INTEGER, 
+	uploaded_by VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE month_closes (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	period_year INTEGER NOT NULL, 
+	period_month INTEGER NOT NULL, 
+	closed_by_id VARCHAR(36) NOT NULL, 
+	closed_by_name VARCHAR(255) NOT NULL, 
+	checksum VARCHAR(64) NOT NULL, 
+	summary_json TEXT, 
+	closed_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE pco_surveys (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	created_by VARCHAR(36), 
+	title VARCHAR(255) NOT NULL, 
+	description TEXT, 
+	status VARCHAR(8) NOT NULL, 
+	is_anonymous BOOLEAN NOT NULL, 
+	opens_at DATETIME, 
+	closes_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE pdv_sales (
+	id VARCHAR(36) NOT NULL, 
+	cash_register_id VARCHAR(36) NOT NULL, 
+	customer_name VARCHAR(255), 
+	total_amount NUMERIC(20, 8) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(cash_register_id) REFERENCES cash_registers (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE billing_invoices (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	cooperado_id VARCHAR(36), 
+	crm_contact_id VARCHAR(36), 
+	category_id VARCHAR(36), 
+	invoice_type VARCHAR(22) NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_phone VARCHAR(50), 
+	customer_email VARCHAR(255), 
+	customer_doc VARCHAR(20), 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	data_competencia DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	pix_code TEXT, 
+	pix_qr_url TEXT, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	project_id VARCHAR(100), 
+	notification_count INTEGER NOT NULL, 
+	last_notification_sent_at DATETIME, 
+	viewed_at DATETIME, 
+	remaining_balance NUMERIC(20, 8), 
+	reminder_before_sent_at DATETIME, 
+	reminder_due_sent_at DATETIME, 
+	reminder_after_sent_at DATETIME, 
+	created_by_id VARCHAR(36), 
+	created_by_name VARCHAR(255), 
+	updated_by_id VARCHAR(36), 
+	updated_by_name VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE CASCADE, 
+	FOREIGN KEY(crm_contact_id) REFERENCES crm_contacts (id) ON DELETE CASCADE, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL, 
+	FOREIGN KEY(updated_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE accounts_payable (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	supplier_id VARCHAR(36), 
+	category_id VARCHAR(36), 
+	description TEXT NOT NULL, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	data_competencia DATETIME, 
+	paid_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	is_reimbursable BOOLEAN NOT NULL, 
+	payment_account VARCHAR(255), 
+	project_id VARCHAR(100), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(supplier_id) REFERENCES crm_contacts (id) ON DELETE CASCADE, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE recurrences (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	crm_contact_id VARCHAR(36), 
+	cooperado_id VARCHAR(36), 
+	category_id VARCHAR(36), 
+	description TEXT NOT NULL, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	frequency VARCHAR(7) NOT NULL, 
+	first_due_date DATETIME NOT NULL, 
+	next_due_date DATETIME, 
+	parcel_total INTEGER, 
+	parcel_current INTEGER NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(crm_contact_id) REFERENCES crm_contacts (id) ON DELETE SET NULL, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE SET NULL, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE pco_questions (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	indicator VARCHAR(15) NOT NULL, 
+	q_type VARCHAR(6) NOT NULL, 
+	text TEXT NOT NULL, 
+	options TEXT, 
+	order_index SMALLINT NOT NULL, 
+	required BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE pco_responses (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	respondent_id VARCHAR(36), 
+	submitted_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE, 
+	FOREIGN KEY(respondent_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE pco_answers (
+	id UUID NOT NULL, 
+	response_id UUID NOT NULL, 
+	question_id UUID NOT NULL, 
+	score SMALLINT, 
+	bool_value BOOLEAN, 
+	text_value TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(response_id) REFERENCES pco_responses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(question_id) REFERENCES pco_questions (id) ON DELETE CASCADE
+)
+
+
+----------------------------- Captured log setup ------------------------------
+DROP TABLE pco_answers
+DROP TABLE pco_responses
+DROP TABLE pco_questions
+DROP TABLE recurrences
+DROP TABLE accounts_payable
+DROP TABLE billing_invoices
+DROP TABLE pdv_sales
+DROP TABLE pco_surveys
+DROP TABLE month_closes
+DROP TABLE entity_files
+DROP TABLE entity_notes
+DROP TABLE account_categories
+DROP TABLE cooperados
+DROP TABLE crm_contacts
+DROP TABLE cash_registers
+DROP TABLE sales_orders
+DROP TABLE contracts
+DROP TABLE audit_logs
+DROP TABLE bank_integrations
+DROP TABLE api_tokens
+DROP TABLE business_operators
+DROP TABLE privacy_requests
+DROP TABLE businesses
+DROP TABLE webhook_logs
+DROP TABLE data_brokers
+DROP TABLE users
+CREATE TABLE users (
+	id VARCHAR(36) NOT NULL, 
+	email VARCHAR(255) NOT NULL, 
+	password_hash VARCHAR(255) NOT NULL, 
+	role VARCHAR(50), 
+	is_email_verified BOOLEAN NOT NULL, 
+	subscription_status VARCHAR(50) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+CREATE TABLE data_brokers (
+	id VARCHAR(36) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	dpo_email VARCHAR(255), 
+	delete_url TEXT, 
+	method VARCHAR(5) NOT NULL, 
+	category VARCHAR(100) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	UNIQUE (name)
+)
+
+
+CREATE TABLE webhook_logs (
+	id VARCHAR(36) NOT NULL, 
+	event_id VARCHAR(255) NOT NULL, 
+	provider VARCHAR(50) NOT NULL, 
+	payload TEXT NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	error_message TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+CREATE TABLE businesses (
+	id VARCHAR(36) NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	cnpj VARCHAR(20), 
+	category VARCHAR(11) NOT NULL, 
+	municipal_registration VARCHAR(50), 
+	state_registration VARCHAR(50), 
+	logo_url VARCHAR(500), 
+	cashflow_horizon_months INTEGER NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE privacy_requests (
+	id VARCHAR(36) NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	broker_id VARCHAR(36) NOT NULL, 
+	status VARCHAR(15) NOT NULL, 
+	sent_at DATETIME, 
+	last_checked_at DATETIME, 
+	notes TEXT, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE, 
+	FOREIGN KEY(broker_id) REFERENCES data_brokers (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE business_operators (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	user_id VARCHAR(36) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(user_id) REFERENCES users (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE api_tokens (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	name VARCHAR(100) NOT NULL, 
+	token_hash VARCHAR(100) NOT NULL, 
+	created_by_id VARCHAR(36), 
+	expires_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE bank_integrations (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	bank_name VARCHAR(50) NOT NULL, 
+	api_key_encrypted TEXT NOT NULL, 
+	webhook_url VARCHAR(500), 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE audit_logs (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36), 
+	user_id VARCHAR(36), 
+	user_name VARCHAR(255), 
+	user_role VARCHAR(100), 
+	action VARCHAR(12) NOT NULL, 
+	entity VARCHAR(100) NOT NULL, 
+	entity_id VARCHAR(255), 
+	detail TEXT, 
+	ip_address VARCHAR(45), 
+	user_agent VARCHAR(512), 
+	timestamp DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE contracts (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	title VARCHAR(255) NOT NULL, 
+	contact_name VARCHAR(255) NOT NULL, 
+	contact_doc VARCHAR(20), 
+	record_type VARCHAR(20) NOT NULL, 
+	total_value NUMERIC(20, 8) NOT NULL, 
+	installments INTEGER NOT NULL, 
+	frequency VARCHAR(20), 
+	start_date DATETIME NOT NULL, 
+	end_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE sales_orders (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_doc VARCHAR(20), 
+	description TEXT, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	invoice_number VARCHAR(100), 
+	nfe_key VARCHAR(50), 
+	nfe_status VARCHAR(50), 
+	issue_date DATETIME NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE cash_registers (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	operator_id VARCHAR(36), 
+	opening_balance NUMERIC(20, 8) NOT NULL, 
+	closing_balance NUMERIC(20, 8), 
+	status VARCHAR(6) NOT NULL, 
+	opened_at DATETIME NOT NULL, 
+	closed_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(operator_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE crm_contacts (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	category VARCHAR(8) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50), 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	bank_details TEXT, 
+	notes TEXT, 
+	is_active BOOLEAN NOT NULL, 
+	person_type VARCHAR(12), 
+	municipal_registration VARCHAR(50), 
+	state_registration VARCHAR(50), 
+	website VARCHAR(255), 
+	contact_person VARCHAR(150), 
+	nis VARCHAR(30), 
+	correios_matricula VARCHAR(50), 
+	address VARCHAR(500), 
+	street VARCHAR(255), 
+	number VARCHAR(20), 
+	complement VARCHAR(150), 
+	neighborhood VARCHAR(100), 
+	city VARCHAR(100), 
+	state VARCHAR(50), 
+	zip_code VARCHAR(20), 
+	bank_code VARCHAR(10), 
+	bank_agency VARCHAR(20), 
+	bank_account VARCHAR(30), 
+	pix_key_type VARCHAR(20), 
+	pix_key VARCHAR(150), 
+	role_title VARCHAR(100), 
+	admission_date DATETIME, 
+	vacation_start_date DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE cooperados (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	document VARCHAR(50) NOT NULL, 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	bank_details TEXT, 
+	notes TEXT, 
+	status VARCHAR(25) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE account_categories (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	parent_id VARCHAR(36), 
+	name VARCHAR(255) NOT NULL, 
+	type VARCHAR(8) NOT NULL, 
+	is_active BOOLEAN NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(parent_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE entity_notes (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id VARCHAR(36) NOT NULL, 
+	content TEXT NOT NULL, 
+	author_id VARCHAR(36) NOT NULL, 
+	author_name VARCHAR(255) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE entity_files (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id VARCHAR(36) NOT NULL, 
+	filename VARCHAR(500) NOT NULL, 
+	file_url TEXT NOT NULL, 
+	file_category VARCHAR(100), 
+	file_size INTEGER, 
+	uploaded_by VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE month_closes (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	period_year INTEGER NOT NULL, 
+	period_month INTEGER NOT NULL, 
+	closed_by_id VARCHAR(36) NOT NULL, 
+	closed_by_name VARCHAR(255) NOT NULL, 
+	checksum VARCHAR(64) NOT NULL, 
+	summary_json TEXT, 
+	closed_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE pco_surveys (
+	id UUID NOT NULL, 
+	business_id UUID NOT NULL, 
+	created_by VARCHAR(36), 
+	title VARCHAR(255) NOT NULL, 
+	description TEXT, 
+	status VARCHAR(8) NOT NULL, 
+	is_anonymous BOOLEAN NOT NULL, 
+	opens_at DATETIME, 
+	closes_at DATETIME, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(created_by) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE pdv_sales (
+	id VARCHAR(36) NOT NULL, 
+	cash_register_id VARCHAR(36) NOT NULL, 
+	customer_name VARCHAR(255), 
+	total_amount NUMERIC(20, 8) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	created_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(cash_register_id) REFERENCES cash_registers (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE billing_invoices (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	cooperado_id VARCHAR(36), 
+	crm_contact_id VARCHAR(36), 
+	category_id VARCHAR(36), 
+	invoice_type VARCHAR(22) NOT NULL, 
+	customer_name VARCHAR(255) NOT NULL, 
+	customer_phone VARCHAR(50), 
+	customer_email VARCHAR(255), 
+	customer_doc VARCHAR(20), 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	data_competencia DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	pix_code TEXT, 
+	pix_qr_url TEXT, 
+	payment_method VARCHAR(11) NOT NULL, 
+	description TEXT, 
+	project_id VARCHAR(100), 
+	notification_count INTEGER NOT NULL, 
+	last_notification_sent_at DATETIME, 
+	viewed_at DATETIME, 
+	remaining_balance NUMERIC(20, 8), 
+	reminder_before_sent_at DATETIME, 
+	reminder_due_sent_at DATETIME, 
+	reminder_after_sent_at DATETIME, 
+	created_by_id VARCHAR(36), 
+	created_by_name VARCHAR(255), 
+	updated_by_id VARCHAR(36), 
+	updated_by_name VARCHAR(255), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE CASCADE, 
+	FOREIGN KEY(crm_contact_id) REFERENCES crm_contacts (id) ON DELETE CASCADE, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL, 
+	FOREIGN KEY(created_by_id) REFERENCES users (id) ON DELETE SET NULL, 
+	FOREIGN KEY(updated_by_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE accounts_payable (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	supplier_id VARCHAR(36), 
+	category_id VARCHAR(36), 
+	description TEXT NOT NULL, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	due_date DATETIME NOT NULL, 
+	data_competencia DATETIME, 
+	paid_date DATETIME, 
+	status VARCHAR(9) NOT NULL, 
+	is_reimbursable BOOLEAN NOT NULL, 
+	payment_account VARCHAR(255), 
+	project_id VARCHAR(100), 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(supplier_id) REFERENCES crm_contacts (id) ON DELETE CASCADE, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE recurrences (
+	id VARCHAR(36) NOT NULL, 
+	business_id VARCHAR(36) NOT NULL, 
+	crm_contact_id VARCHAR(36), 
+	cooperado_id VARCHAR(36), 
+	category_id VARCHAR(36), 
+	description TEXT NOT NULL, 
+	amount NUMERIC(20, 8) NOT NULL, 
+	frequency VARCHAR(7) NOT NULL, 
+	first_due_date DATETIME NOT NULL, 
+	next_due_date DATETIME, 
+	parcel_total INTEGER, 
+	parcel_current INTEGER NOT NULL, 
+	status VARCHAR(9) NOT NULL, 
+	payment_method VARCHAR(11) NOT NULL, 
+	created_at DATETIME NOT NULL, 
+	updated_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(business_id) REFERENCES businesses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(crm_contact_id) REFERENCES crm_contacts (id) ON DELETE SET NULL, 
+	FOREIGN KEY(cooperado_id) REFERENCES cooperados (id) ON DELETE SET NULL, 
+	FOREIGN KEY(category_id) REFERENCES account_categories (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE pco_questions (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	indicator VARCHAR(15) NOT NULL, 
+	q_type VARCHAR(6) NOT NULL, 
+	text TEXT NOT NULL, 
+	options TEXT, 
+	order_index SMALLINT NOT NULL, 
+	required BOOLEAN NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE
+)
+
+
+CREATE TABLE pco_responses (
+	id UUID NOT NULL, 
+	survey_id UUID NOT NULL, 
+	respondent_id VARCHAR(36), 
+	submitted_at DATETIME NOT NULL, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(survey_id) REFERENCES pco_surveys (id) ON DELETE CASCADE, 
+	FOREIGN KEY(respondent_id) REFERENCES users (id) ON DELETE SET NULL
+)
+
+
+CREATE TABLE pco_answers (
+	id UUID NOT NULL, 
+	response_id UUID NOT NULL, 
+	question_id UUID NOT NULL, 
+	score SMALLINT, 
+	bool_value BOOLEAN, 
+	text_value TEXT, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(response_id) REFERENCES pco_responses (id) ON DELETE CASCADE, 
+	FOREIGN KEY(question_id) REFERENCES pco_questions (id) ON DELETE CASCADE
+)
+
+
+---------------------------- Captured stdout call -----------------------------
+FROM users 
+WHERE users.email = ?
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+FROM businesses 
+WHERE CAST(businesses.user_id AS VARCHAR) = ?
+FROM crm_contacts 
+WHERE crm_contacts.id = ?
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+FROM businesses 
+WHERE CAST(businesses.user_id AS VARCHAR) = ?
+FROM crm_contacts 
+WHERE crm_contacts.business_id = ?
+ LIMIT ? OFFSET ?
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+FROM businesses 
+WHERE CAST(businesses.user_id AS VARCHAR) = ?
+FROM crm_contacts 
+WHERE crm_contacts.id = ? AND crm_contacts.business_id = ?
+------------------------------ Captured log call ------------------------------
+FROM users 
+WHERE users.email = ?
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/auth/login "HTTP/1.1 200 OK"
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+FROM businesses 
+WHERE CAST(businesses.user_id AS VARCHAR) = ?
+FROM crm_contacts 
+WHERE crm_contacts.id = ?
+INFO     httpx:_client.py:1740 HTTP Request: POST http://test/api/v1/crm/contacts/ "HTTP/1.1 201 Created"
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+FROM businesses 
+WHERE CAST(businesses.user_id AS VARCHAR) = ?
+FROM crm_contacts 
+WHERE crm_contacts.business_id = ?
+ LIMIT ? OFFSET ?
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/api/v1/crm/contacts/ "HTTP/1.1 200 OK"
+FROM users 
+WHERE CAST(users.id AS VARCHAR) = ?
+FROM businesses 
+WHERE CAST(businesses.user_id AS VARCHAR) = ?
+FROM crm_contacts 
+WHERE crm_contacts.id = ? AND crm_contacts.business_id = ?
+INFO     httpx:_client.py:1740 HTTP Request: GET http://test/api/v1/crm/contacts/0c6daa80-faf5-421d-a22e-f1f4281e77b5 "HTTP/1.1 404 Not Found"

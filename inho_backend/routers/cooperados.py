@@ -45,8 +45,8 @@ class CooperadoUpdate(BaseModel):
 
 
 class CooperadoOut(BaseModel):
-    id:          UUID
-    business_id: UUID
+    id: str
+    business_id: str
     name:        str
     document:    str
     email:       Optional[str]
@@ -104,7 +104,7 @@ async def list_cooperados(
 
 @router.get("/{cooperado_id}", response_model=CooperadoOut)
 async def get_cooperado(
-    cooperado_id: UUID,
+    cooperado_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -123,7 +123,7 @@ async def get_cooperado(
 
 @router.put("/{cooperado_id}", response_model=CooperadoOut)
 async def update_cooperado(
-    cooperado_id: UUID,
+    cooperado_id: str,
     payload: CooperadoUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -149,7 +149,7 @@ async def update_cooperado(
 
 @router.delete("/{cooperado_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_cooperado(
-    cooperado_id: UUID,
+    cooperado_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -171,7 +171,7 @@ async def delete_cooperado(
 
 @router.get("/{cooperado_id}/balance", summary="Extrato financeiro últimos 12 meses")
 async def get_cooperado_balance(
-    cooperado_id: UUID,
+    cooperado_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):

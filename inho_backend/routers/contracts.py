@@ -61,7 +61,7 @@ async def list_contracts(
 
 @router.get("/{contract_id}", response_model=ContractOut)
 async def get_contract(
-    contract_id: UUID,
+    contract_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -80,7 +80,7 @@ async def get_contract(
 @router.post("/{contract_id}/activate", response_model=ContractOut)
 async def activate_contract(
     request: Request,
-    contract_id: UUID,
+    contract_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -113,7 +113,7 @@ async def activate_contract(
 @router.patch("/{contract_id}/status", response_model=ContractOut)
 async def update_contract_status(
     request: Request,
-    contract_id: UUID,
+    contract_id: str,
     new_status: ContractStatus,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),

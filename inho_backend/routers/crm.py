@@ -103,7 +103,7 @@ async def list_contacts(
 
 @router.get("/contacts/{contact_id}", response_model=CRMContactOut)
 async def get_contact(
-    contact_id: UUID,
+    contact_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -122,7 +122,7 @@ async def get_contact(
 
 @router.put("/contacts/{contact_id}", response_model=CRMContactOut)
 async def update_contact(
-    contact_id: UUID,
+    contact_id: str,
     payload: CRMContactUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -148,7 +148,7 @@ async def update_contact(
 
 @router.delete("/contacts/{contact_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_contact(
-    contact_id: UUID,
+    contact_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -168,7 +168,7 @@ async def delete_contact(
 
 @router.get("/contacts/{contact_id}/timeline")
 async def get_contact_timeline(
-    contact_id: UUID,
+    contact_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -274,7 +274,7 @@ async def create_payable(
 @router.get("/payable/", response_model=List[AccountPayableOut])
 async def list_payables(
     status_filter: Optional[PayableStatus] = Query(None),
-    supplier_id: Optional[UUID]            = Query(None),
+    supplier_id: Optional[str]            = Query(None),
     overdue_only: bool                     = Query(False),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, le=500),
@@ -301,7 +301,7 @@ async def list_payables(
 
 @router.get("/payable/{payable_id}", response_model=AccountPayableOut)
 async def get_payable(
-    payable_id: UUID,
+    payable_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
@@ -320,7 +320,7 @@ async def get_payable(
 
 @router.put("/payable/{payable_id}", response_model=AccountPayableOut)
 async def update_payable(
-    payable_id: UUID,
+    payable_id: str,
     payload: AccountPayableUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -346,7 +346,7 @@ async def update_payable(
 
 @router.delete("/payable/{payable_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_payable(
-    payable_id: UUID,
+    payable_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):

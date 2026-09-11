@@ -20,7 +20,7 @@ class BusinessCreate(BaseModel):
     category: BusinessCategory = BusinessCategory.OUTROS
 
 class BusinessResponse(BaseModel):
-    id: UUID
+    id: str
     name: str
     cnpj: str | None = None
     category: BusinessCategory
@@ -95,7 +95,7 @@ async def list_businesses(
 
 @router.patch("/{id}", response_model=BusinessResponse)
 async def update_business_settings(
-    id: UUID,
+    id: str,
     payload: BusinessSettingsUpdate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
@@ -116,7 +116,7 @@ async def update_business_settings(
 
 @router.post("/{id}/logo", response_model=BusinessResponse)
 async def update_business_logo(
-    id: UUID,
+    id: str,
     payload: BusinessLogoUpload,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)

@@ -41,7 +41,7 @@ async def list_active_surveys(
 @router.post("/surveys/{survey_id}/submit", status_code=status.HTTP_201_CREATED)
 async def submit_survey_response(
     request: Request,
-    survey_id: UUID,
+    survey_id: str,
     body: PCOResponseSubmit,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),

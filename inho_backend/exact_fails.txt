@@ -1,0 +1,5 @@
+FAILED tests/test_crm.py::test_contacts_crud - assert 404 == 200
+FAILED tests/test_crm.py::test_payable_crud_and_totals - assert 404 == 200
+FAILED tests/test_crm.py::test_cooperado_crud_and_balance - assert 404 == 200
+FAILED tests/test_crm.py::test_categories_auto_seed_and_crud - sqlalchemy.exc...
+FAILED tests/test_crm.py::test_notes_and_files - assert 404 == 204

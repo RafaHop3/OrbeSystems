@@ -92,7 +92,7 @@ async def get_open_session(
 @router.post("/sale", response_model=PDVSaleOut, status_code=status.HTTP_201_CREATED)
 async def register_sale(
     request: Request,
-    register_id: UUID,
+    register_id: str,
     body: PDVSaleCreate,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -129,7 +129,7 @@ async def register_sale(
 
 @router.get("/sales", response_model=List[PDVSaleOut])
 async def list_sales(
-    register_id: UUID,
+    register_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -143,7 +143,7 @@ async def list_sales(
 @router.post("/close", response_model=CashRegisterOut)
 async def close_register(
     request: Request,
-    register_id: UUID,
+    register_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
@@ -180,7 +180,7 @@ async def close_register(
 
 @router.get("/report/{register_id}")
 async def get_register_report(
-    register_id: UUID,
+    register_id: str,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
