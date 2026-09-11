@@ -297,6 +297,7 @@ app.add_middleware(
         "https://orbesystems.com.br",
         "https://www.orbesystems.com.br",
         "http://localhost:3000",
+        "http://127.0.0.1:3000",
         "http://localhost:8000",
         "https://orbe-systems-fuc5.vercel.app",
         "https://inho.orbesystems.com.br",

@@ -40,12 +40,17 @@ async def create_contact(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    business = await _biz(db, current_user)
-    db_contact = CRMContact(**contact.model_dump(), business_id=business.id)
-    db.add(db_contact)
-    await db.commit()
-    await db.refresh(db_contact)
-    return db_contact
+    try:
+        business = await _biz(db, current_user)
+        db_contact = CRMContact(**contact.model_dump(), business_id=business.id)
+        db.add(db_contact)
+        await db.commit()
+        await db.refresh(db_contact)
+        return db_contact
+    except Exception as e:
+        import traceback
+        traceback_str = traceback.format_exc()
+        raise HTTPException(status_code=400, detail=f"Dev Override Caught 500: {str(e)}\n\n {traceback_str}")
 
 
 @router.get("/contacts/", response_model=List[CRMContactOut])

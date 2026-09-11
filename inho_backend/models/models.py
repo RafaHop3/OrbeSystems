@@ -343,6 +343,11 @@ class ContactCategory(str, enum.Enum):
     CUSTOMER = "CUSTOMER"
     PARTNER  = "PARTNER"  # Sócio / Cooperado
 
+class PersonType(str, enum.Enum):
+    INDIVIDUAL = "PESSOA_FISICA"
+    LEGAL_ENTITY = "PESSOA_JURIDICA"
+    FOREIGN = "EXTERIOR"
+
 class CRMContact(Base):
     __tablename__ = "crm_contacts"
 
@@ -357,11 +362,31 @@ class CRMContact(Base):
     notes        = Column(Text, nullable=True)
     is_active    = Column(Boolean, default=True, nullable=False)
 
-    # Address fields (spec §2.2)
+    # ── New Expansion Fields (B2B2C CRM) ── 
+    person_type = Column(Enum(PersonType), default=PersonType.INDIVIDUAL, nullable=True)
+    municipal_registration = Column(String(50), nullable=True)
+    state_registration = Column(String(50), nullable=True)
+    website = Column(String(255), nullable=True)
+    contact_person = Column(String(150), nullable=True)
+    nis = Column(String(30), nullable=True)                   # Número de Identificação Social
+    correios_matricula = Column(String(50), nullable=True)    # Matrícula de logística Correios
+
+    # Address fields (spec §2.2) + Expansions
     address      = Column(String(500), nullable=True)
+    street       = Column(String(255), nullable=True)
+    number       = Column(String(20), nullable=True)
+    complement   = Column(String(150), nullable=True)
+    neighborhood = Column(String(100), nullable=True)
     city         = Column(String(100), nullable=True)
     state        = Column(String(50), nullable=True)
     zip_code     = Column(String(20), nullable=True)
+
+    # Banking properties for payouts / distribution
+    bank_code    = Column(String(10), nullable=True)
+    bank_agency  = Column(String(20), nullable=True)
+    bank_account = Column(String(30), nullable=True)
+    pix_key_type = Column(String(20), nullable=True)
+    pix_key      = Column(String(150), nullable=True)
 
     # HR fields — only meaningful for EMPLOYEE category (spec §2.3)
     role_title          = Column(String(100), nullable=True)

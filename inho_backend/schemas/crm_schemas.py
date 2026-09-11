@@ -9,6 +9,9 @@ from models.models import (
 
 
 # ── CRM Contacts ──────────────────────────────────────────────────
+from pydantic import BaseModel, EmailStr, field_validator
+import re
+
 class CRMContactBase(BaseModel):
     category:     ContactCategory
     name:         str
@@ -19,16 +22,54 @@ class CRMContactBase(BaseModel):
     notes:        Optional[str] = None
     is_active:    bool = True
 
+    # ---- B2B2C Corporate/Entity Extensions ----
+    person_type:            Optional[str] = None
+    municipal_registration: Optional[str] = None
+    state_registration:     Optional[str] = None
+    website:                Optional[str] = None
+    contact_person:         Optional[str] = None
+    nis:                    Optional[str] = None
+    correios_matricula:     Optional[str] = None
+
     # Address fields (spec §2.2)
-    address:  Optional[str] = None
-    city:     Optional[str] = None
-    state:    Optional[str] = None
-    zip_code: Optional[str] = None
+    address:      Optional[str] = None
+    street:                 Optional[str] = None
+    number:                 Optional[str] = None
+    complement:             Optional[str] = None
+    neighborhood:           Optional[str] = None
+    city:         Optional[str] = None
+    state:        Optional[str] = None
+    zip_code:     Optional[str] = None
+
+    # Banking / Liquidation fields
+    bank_code:              Optional[str] = None
+    bank_agency:            Optional[str] = None
+    bank_account:           Optional[str] = None
+    pix_key_type:           Optional[str] = None
+    pix_key:                Optional[str] = None
 
     # HR fields (spec §2.3 — relevant for EMPLOYEE)
     role_title:          Optional[str]      = None
     admission_date:      Optional[datetime] = None
     vacation_start_date: Optional[datetime] = None
+
+    @field_validator('phone', mode='before')
+    @classmethod
+    def sanitize_whatsapp(cls, v: Optional[str]) -> Optional[str]:
+        if not v:
+            return v
+        nums = re.sub(r'\D', '', v)
+        
+        # 1. Se chegou limpo como DDD + Num (Ex: 51984743957 - 11 digitos) ou Fixo (10 digitos)
+        if len(nums) in [10, 11] and not nums.startswith('55'):
+            nums = '55' + nums
+            
+        # 2. Se for 13 digitos no padrão Orbe/Baileys com '55' no início e '9' extra
+        # Regra do 9º Dígito: Removemos a 5º casa (que é o 9) para forçar o padrao 12-chars de API
+        if len(nums) == 13 and nums.startswith('55') and nums[4] == '9':
+            return nums[:4] + nums[5:]
+            
+        return nums
 
 
 class CRMContactCreate(CRMContactBase):
