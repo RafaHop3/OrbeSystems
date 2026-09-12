@@ -8,6 +8,7 @@ import GhostEnginePromo from '@/components/GhostEnginePromo';
 import InhoPromo from '@/components/InhoPromo';
 import OrbeCleanerHero from './orbe-cleaner/page';
 import OrbeKnightPromo from '@/components/OrbeKnightPromo';
+import OrbeStudioPromo from '@/components/OrbeStudioPromo';
 import dynamic from 'next/dynamic';
 
 const StarryBackground = dynamic(() => import('@/components/StarryBackground'), {
@@ -19,6 +20,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-transparent pt-16 relative">
       <StarryBackground />
       <Header />
+      <OrbeStudioPromo />
       <GhostEnginePromo />
       <InhoPromo />
       <OrbeCleanerHero />

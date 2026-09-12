@@ -6,7 +6,7 @@ import { AuroraText } from '@/components/ui/aurora-text';
 
 export default function GhostEnginePromo() {
     return (
-        <section className="relative z-10 w-full py-28 px-6 border-y border-[#00f2fe]/20 bg-[#050510] overflow-hidden group">
+        <section className="relative z-10 w-full py-28 px-6 border-y border-[#00f2fe]/20 bg-transparent backdrop-blur-[2px] overflow-hidden group">
             {/* Background Cyberpunk FX */}
             <div className="absolute inset-0 z-0 overflow-hidden">
                 <div className="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-indigo-500/10 to-transparent pointer-events-none" />
