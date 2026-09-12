@@ -9,7 +9,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { loginAction, registerAction, passkeyLoginAction } from "@/lib/auth-actions";
+import { loginAction, passkeyLoginAction } from "@/lib/auth-actions";
 import { Eye, EyeOff, Key } from "lucide-react";
 
 export default function LoginPage() {
@@ -18,7 +18,6 @@ export default function LoginPage() {
   const redirectTo = searchParams.get("redirect") ?? "/";
   const isExpired = searchParams.get("expired") === "1";
 
-  const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +34,7 @@ export default function LoginPage() {
     setError(null);
 
     startTransition(async () => {
-      const action = mode === "login" ? loginAction : registerAction;
+      const action = loginAction;
       const result = await action(email, password);
 
       if (!result.success) {
@@ -63,7 +62,7 @@ export default function LoginPage() {
     await sleep(350);
     const challenge = new Uint8Array(32);
     window.crypto.getRandomValues(challenge);
-    emit(`[SYS]  Challenge: 0x${Array.from(challenge.slice(0,8)).map(b=>b.toString(16).padStart(2,'0')).join('')}...`);
+    emit(`[SYS]  Challenge: 0x${Array.from(challenge.slice(0, 8)).map(b => b.toString(16).padStart(2, '0')).join('')}...`);
     await sleep(400);
     emit("[FIDO2] allowCredentials: [] — modo de credencial residente ativado.");
     await sleep(350);
@@ -93,7 +92,7 @@ export default function LoginPage() {
           if (response.userHandle) {
             const decoded = new TextDecoder().decode(response.userHandle);
             resolvedEmail = decoded;
-            emit(`[TPM]  Identidade extraída do userHandle: ${decoded.substring(0,4)}****`);
+            emit(`[TPM]  Identidade extraída do userHandle: ${decoded.substring(0, 4)}****`);
           } else {
             emit("[SYS]  userHandle ausente — usando credentialId para lookup.");
             resolvedEmail = btoa(String.fromCharCode.apply(null, Array.from(new Uint8Array(assertion.rawId)))).substring(0, 32);
@@ -144,7 +143,7 @@ export default function LoginPage() {
     }
 
     emit("[OK]   Acesso concedido! Token de sessão sincronizado.");
-    emit(`[SYS]  Identidade: ${resolvedEmail.substring(0,4)}**** | Dispositivo memorizado.`);
+    emit(`[SYS]  Identidade: ${resolvedEmail.substring(0, 4)}**** | Dispositivo memorizado.`);
     await sleep(900);
     router.push(redirectTo);
     router.refresh();
@@ -183,12 +182,12 @@ export default function LoginPage() {
                 {passkeyLogs.map((log, idx) => (
                   <div key={idx} style={{
                     ...styles.consoleLine,
-                    color: log.includes("[OK]") 
-                      ? "#39ff14" 
-                      : log.includes("[ERROR]") 
-                        ? "#ff5f57" 
-                        : log.includes("[WARNING]") 
-                          ? "#febc2e" 
+                    color: log.includes("[OK]")
+                      ? "#39ff14"
+                      : log.includes("[ERROR]")
+                        ? "#ff5f57"
+                        : log.includes("[WARNING]")
+                          ? "#febc2e"
                           : "#00fff5"
                   }}>
                     {log}
@@ -196,9 +195,9 @@ export default function LoginPage() {
                 ))}
                 <div style={styles.consoleBlinkCursor} />
               </div>
-              <button 
-                type="button" 
-                onClick={() => setPasskeyLoading(false)} 
+              <button
+                type="button"
+                onClick={() => setPasskeyLoading(false)}
                 style={styles.cancelBtn}
               >
                 [ ABORTAR OPERAÇÃO ]
@@ -206,30 +205,6 @@ export default function LoginPage() {
             </div>
           ) : (
             <>
-              {/* Mode toggle */}
-              <div style={styles.modeToggle}>
-                <button
-                  id="login-tab"
-                  style={{
-                    ...styles.modeBtn,
-                    ...(mode === "login" ? styles.modeBtnActive : {}),
-                  }}
-                  onClick={() => { setMode("login"); setError(null); }}
-                >
-                  &gt; LOGIN
-                </button>
-                <button
-                  id="register-tab"
-                  style={{
-                    ...styles.modeBtn,
-                    ...(mode === "register" ? styles.modeBtnActive : {}),
-                  }}
-                  onClick={() => { setMode("register"); setError(null); }}
-                >
-                  &gt; CADASTRAR
-                </button>
-              </div>
-
               {/* Form */}
               <form onSubmit={handleSubmit} style={styles.form}>
                 <div style={styles.fieldGroup}>
@@ -261,8 +236,8 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
-                      autoComplete={mode === "login" ? "current-password" : "new-password"}
-                      placeholder={mode === "register" ? "Mínimo 8 caracteres" : "••••••••"}
+                      autoComplete="current-password"
+                      placeholder="••••••••"
                       style={styles.inputWithIcon}
                       onFocus={(e) => Object.assign(e.target.style, styles.inputFocus)}
                       onBlur={(e) => Object.assign(e.target.style, styles.input)}
@@ -297,16 +272,14 @@ export default function LoginPage() {
                   {isPending ? (
                     <>
                       <span style={styles.spinner}>◌</span>
-                      {mode === "login" ? "AUTENTICANDO..." : "CRIANDO CONTA..."}
+                      AUTENTICANDO...
                     </>
-                  ) : mode === "login" ? (
-                    "[ AUTENTICAR ]"
                   ) : (
-                    "[ CRIAR CONTA ]"
+                    "[ AUTENTICAR ]"
                   )}
                 </button>
 
-                {mode === "login" && (
+                {true && (
                   <>
                     <div style={styles.divider}>
                       <span style={styles.dividerLine} />
@@ -333,21 +306,6 @@ export default function LoginPage() {
             </>
           )}
 
-          {/* Footer */}
-          <div style={styles.footer}>
-            <span style={styles.footerText}>
-              {mode === "login"
-                ? "Não tem conta? "
-                : "Já tem conta? "}
-              <button
-                style={styles.switchLink}
-                disabled={passkeyLoading}
-                onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(null); }}
-              >
-                {mode === "login" ? "Cadastre-se" : "Fazer login"}
-              </button>
-            </span>
-          </div>
         </div>
 
         {/* Decorative */}

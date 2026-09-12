@@ -67,37 +67,7 @@ export async function loginAction(
   }
 }
 
-export async function registerAction(
-  email: string,
-  password: string
-): Promise<{ success: boolean; error?: string; user?: AuthUser }> {
-  try {
-    const res = await fetch(`${API_URL}/api/users/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
 
-    if (!res.ok) {
-      const data = await res.json();
-      return { success: false, error: data.detail ?? "Registration failed." };
-    }
-
-    const data = await res.json();
-    await setAuthCookie(data.access_token);
-
-    return {
-      success: true,
-      user: {
-        email: data.user.email,
-        role: data.user.role,
-        is_premium: data.user.role === "premium",
-      },
-    };
-  } catch {
-    return { success: false, error: "Connection error. Try again." };
-  }
-}
 
 export async function logoutAction(): Promise<void> {
   await clearAuthCookie();
