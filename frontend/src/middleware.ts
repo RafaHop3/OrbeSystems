@@ -102,7 +102,8 @@ export function middleware(request: NextRequest) {
   }
 
   // Has token but no premium → redirect to upgrade page with source path
-  if (isPremiumRoute && !payload.is_premium) {
+  // Bypass premium check in local development to allow testing premium features easily
+  if (isPremiumRoute && !payload.is_premium && process.env.NODE_ENV === "production") {
     const upgradeUrl = new URL(UPGRADE_PAGE, request.url);
     upgradeUrl.searchParams.set("from", pathname);
     return NextResponse.redirect(upgradeUrl);

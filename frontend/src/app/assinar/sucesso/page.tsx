@@ -7,54 +7,44 @@
  * Verifica o session_id e mostra confirmação do upgrade.
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CheckCircle, Loader2 } from "lucide-react";
-
-const rawUrl = process.env.NEXT_PUBLIC_API_URL ?? "https://orbe-systems-api.onrender.com";
-const API_URL = rawUrl.trim().replace(/\/$/, "");
+import { getMeAction } from "@/lib/auth-actions";
 
 export default function AssinarSucessoPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
-    const verifyUpgrade = async () => {
-      try {
-        const token = document.cookie
-          .split("; ")
-          .find((c) => c.startsWith("orbe_auth_token="))
-          ?.split("=")[1];
+    const verifyUpgrade = () => {
+      startTransition(async () => {
+        try {
+          const res = await getMeAction();
 
-        if (!token) {
-          router.push("/login?redirect=/assinar/sucesso");
-          return;
-        }
-
-        // Verificar se o usuário foi atualizado para premium
-        const res = await fetch(`${API_URL}/api/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (res.ok) {
-          const userData = await res.json();
-          if (userData.role === "premium") {
-            setLoading(false);
-          } else {
-            // Se ainda não foi atualizado, aguardar e verificar novamente
-            setTimeout(verifyUpgrade, 2000);
+          if (res.error === "unauthorized") {
+            router.push("/login?redirect=/assinar/sucesso");
+            return;
           }
-        } else {
-          setError("Erro ao verificar status da assinatura.");
+
+          if (res.user) {
+            if (res.user.role === "premium") {
+              setLoading(false);
+            } else {
+              // Se ainda não foi atualizado, aguardar e verificar novamente
+              setTimeout(verifyUpgrade, 2000);
+            }
+          } else {
+            setError("Erro ao verificar status da assinatura.");
+            setLoading(false);
+          }
+        } catch {
+          setError("Erro de conexão. Tente novamente.");
           setLoading(false);
         }
-      } catch {
-        setError("Erro de conexão. Tente novamente.");
-        setLoading(false);
-      }
+      });
     };
 
     verifyUpgrade();

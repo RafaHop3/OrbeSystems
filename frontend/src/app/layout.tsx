@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import "@designcodeio/threeui/style.css";
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import MouseAtomTrail from '@/components/MouseAtomTrail';
 import dynamic from 'next/dynamic';
@@ -33,7 +34,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
-      <body className="bg-terminal-bg text-[#c8d6e3] antialiased selection:bg-neon-cyan selection:text-black bg-cyber-grid bg-fixed font-sans">
+      <body suppressHydrationWarning className="bg-terminal-bg text-[#c8d6e3] antialiased selection:bg-neon-cyan selection:text-black bg-cyber-grid bg-fixed font-sans">
         <AnalyticsTracker />
         <MouseAtomTrail />
         {children}

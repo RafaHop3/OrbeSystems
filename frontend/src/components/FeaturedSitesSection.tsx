@@ -5,6 +5,17 @@ import { ExternalLink } from 'lucide-react';
 
 const sites = [
     {
+        name: 'Orbe Visual Studio',
+        tagline: 'Audio-Reatividade · Computação Gráfica WebGL',
+        url: '/ferramentas-premium/orbe-visual-studio',
+        image: '/featured-orbecleaner.jpg', // Temporário
+        accent: '#eab308',
+        accentBg: 'rgba(234, 179, 8, 0.08)',
+        accentBorder: 'rgba(234, 179, 8, 0.4)',
+        badge: '🌟 NOVO! FREE',
+        isAnimated: true,
+    },
+    {
         name: 'Ghost Engine',
         tagline: 'Automação Integrada · Remoção de Dados (LGPD)',
         url: '/ghost-engine',

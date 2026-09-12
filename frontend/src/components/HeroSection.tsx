@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Code2, Database, Shield, Zap } from 'lucide-react';
+import { Code2, Database, Shield, Zap, Sparkles } from 'lucide-react';
 import { colorMap } from '@/lib/utils';
 import { MagicCard } from '@/components/ui/magic-card';
 import { AuroraText } from '@/components/ui/aurora-text';
@@ -82,6 +82,13 @@ export default function HeroSection() {
           >
             <Shield size={16} className="text-navy-shine" />
             Auditoria SAST
+          </Link>
+          <Link
+            href="/ferramentas-premium/orbe-visual-studio"
+            className="inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wider border border-[#eab308] text-[#eab308] drop-shadow-[0_0_10px_rgba(234,179,8,0.4)] px-8 py-4 rounded-xl hover:bg-[#eab308]/20 hover:border-[#eab308] hover:shadow-[0_0_40px_rgba(234,179,8,0.6)] hover:text-white transition-all duration-500 bg-navy-deep/60 backdrop-blur-lg hover:-translate-y-1"
+          >
+            <Sparkles size={16} className="text-[#eab308]" />
+            Orbe Studio (Free Beta)
           </Link>
         </div>
       </div>
