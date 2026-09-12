@@ -43,7 +43,12 @@ async def create_contact(
 ):
     try:
         business = await _biz(db, current_user)
-        db_contact = CRMContact(**contact.model_dump(), business_id=business.id)
+        
+        # fix asyncpg datatype mismatch
+        from uuid import UUID
+        b_id = UUID(business.id) if isinstance(business.id, str) else business.id
+        
+        db_contact = CRMContact(**contact.model_dump(), business_id=b_id)
         db.add(db_contact)
         await db.commit()
         await db.refresh(db_contact)
@@ -234,8 +239,10 @@ async def import_contacts_csv(
     for row in reader:
         try:
             category = ContactCategory(row.get("category", "CUSTOMER").upper())
+            from uuid import UUID
+            b_id = UUID(business.id) if isinstance(business.id, str) else business.id
             contact = CRMContact(
-                business_id=business.id,
+                business_id=b_id,
                 category=category,
                 name=row["name"],
                 document=row.get("document"),
@@ -264,7 +271,17 @@ async def create_payable(
     current_user: User = Depends(get_current_user)
 ):
     business = await _biz(db, current_user)
-    db_payable = AccountPayable(**payable.model_dump(), business_id=business.id)
+    
+    from uuid import UUID
+    b_id = UUID(business.id) if isinstance(business.id, str) else business.id
+    
+    data = payable.model_dump()
+    if data.get("supplier_id") and isinstance(data["supplier_id"], str):
+        data["supplier_id"] = UUID(data["supplier_id"])
+    if data.get("category_id") and isinstance(data["category_id"], str):
+        data["category_id"] = UUID(data["category_id"])
+        
+    db_payable = AccountPayable(**data, business_id=b_id)
     db.add(db_payable)
     await db.commit()
     await db.refresh(db_payable)
