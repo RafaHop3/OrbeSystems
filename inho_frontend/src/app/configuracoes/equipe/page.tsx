@@ -21,7 +21,8 @@ export default function EquipeAcessosPage() {
         setIsLoading(true);
         try {
             const token = localStorage.getItem('token') || localStorage.getItem('orbe_token') || '';
-            const res = await fetch('http://localhost:8000/api/v1/users/', {
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://inho-api.orbesystems.com.br';
+            const res = await fetch(`${API_URL}/api/v1/users/`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -48,7 +49,8 @@ export default function EquipeAcessosPage() {
                 role
             };
 
-            const res = await fetch('http://localhost:8000/api/v1/users/', {
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://inho-api.orbesystems.com.br';
+            const res = await fetch(`${API_URL}/api/v1/users/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

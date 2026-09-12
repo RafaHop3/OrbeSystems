@@ -52,7 +52,8 @@ export default function ModalNovoSocio({ onClose, category = 'PARTNER' }: { onCl
 
         try {
             const token = localStorage.getItem('orbe_token') || localStorage.getItem('token') || 'dev-bypass';
-            const res = await fetch('http://localhost:8000/api/v1/crm/contacts/', {
+            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://inho-api.orbesystems.com.br';
+            const res = await fetch(`${API_URL}/api/v1/crm/contacts/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
