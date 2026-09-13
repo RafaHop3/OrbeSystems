@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Users, ShoppingCart, Monitor, Bell, FileText, Shield, User, LogOut, BarChart2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Users, ShoppingCart, Monitor, Bell, FileText, Shield, User, LogOut, BarChart2, Building } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import OrbeLogo from './OrbeLogo';
@@ -156,6 +156,10 @@ export default function Sidebar() {
                     </div>
 
                     <div className="space-y-1 pl-2">
+                        <Link href="/configuracoes/negocio" className={`flex items-center gap-4 px-4 py-2.5 rounded-md transition-colors ${pathname === '/configuracoes/negocio' ? 'bg-[#1a1f26] text-white border-l-2 border-[#bc13fe]' : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'}`}>
+                            <Building size={16} className={pathname === '/configuracoes/negocio' ? 'text-[#bc13fe]' : 'text-[#6e7681]'} />
+                            <span className="text-[12px] uppercase tracking-wide font-medium leading-tight">MINHA EMPRESA</span>
+                        </Link>
                         <Link href="/configuracoes/equipe" className={`flex items-center gap-4 px-4 py-2.5 rounded-md transition-colors ${pathname === '/configuracoes/equipe' ? 'bg-[#1a1f26] text-white border-l-2 border-[#00fff5]' : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'}`}>
                             <Users size={16} className={pathname === '/configuracoes/equipe' ? 'text-[#00fff5]' : 'text-[#6e7681]'} />
                             <span className="text-[12px] uppercase tracking-wide font-medium leading-tight">CONFIG. GLOBAIS (EQUIPE)</span>
