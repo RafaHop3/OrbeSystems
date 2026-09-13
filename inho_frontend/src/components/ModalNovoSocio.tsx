@@ -52,7 +52,13 @@ export default function ModalNovoSocio({ onClose, category = 'PARTNER' }: { onCl
 
         try {
             const token = localStorage.getItem('orbe_token') || localStorage.getItem('token') || 'dev-bypass';
-            const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://inho-api.orbesystems.com.br';
+            let API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://inho-api.orbesystems.com.br';
+            
+            // Força HTTPS se a página estiver rodando em contexto seguro (Mixed Content Fixifier)
+            if (typeof window !== 'undefined' && window.location.protocol === 'https:' && API_URL.startsWith('http://')) {
+                API_URL = API_URL.replace('http://', 'https://');
+            }
+            
             const res = await fetch(`${API_URL}/api/v1/crm/contacts/`, {
                 method: 'POST',
                 headers: {
