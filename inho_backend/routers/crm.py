@@ -476,3 +476,32 @@ async def update_deal(
     await db.commit()
     await db.refresh(deal)
     return deal
+
+# ── WHATSAPP CENTRAL PROXY ───────────────────────────────────────
+import httpx
+from pydantic import BaseModel
+
+class WhatsAppDirectMessage(BaseModel):
+    phone: str
+    message: str
+
+@router.post("/whatsapp/send")
+async def proxy_whatsapp_message(
+    payload: WhatsAppDirectMessage,
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Despacha a mensagem digitada pelo Usuário diretamente para a API Baileys
+    no container `orbe_whatsapp:3001` rodando na AWS.
+    """
+    try:
+        from services.messaging import format_whatsapp_phone
+        clean_phone = format_whatsapp_phone(payload.phone)
+        async with httpx.AsyncClient() as client:
+            res = await client.post("http://orbe_whatsapp:3001/send", json={
+                "phone": clean_phone,
+                "message": payload.message
+            }, timeout=10.0)
+            return {"status": "success", "code": res.status_code, "bot_response": res.text}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro de comunicação com o Baileys: {str(e)}")
