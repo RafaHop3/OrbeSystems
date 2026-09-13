@@ -23,7 +23,7 @@ export default function Sidebar() {
         </div>
     );
 
-    const renderLink = (label: string, href: string, Icon: any, color: string, indent: boolean = false) => {
+    const renderLink = (label: string, href: string, Icon: React.ElementType, color: string, indent: boolean = false) => {
         const isActive = pathname === href;
         return (
             <Link key={href} href={href}
