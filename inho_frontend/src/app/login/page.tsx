@@ -18,16 +18,16 @@ export default function InhoLoginPage() {
         setIsPending(true);
 
         try {
-            const formData = new URLSearchParams();
-            formData.append("username", email);
-            formData.append("password", password);
-
             const res = await fetch("https://inho-api.orbesystems.com.br/api/v1/auth/login", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/x-www-form-urlencoded",
+                    "Content-Type": "application/json",
                 },
-                body: formData.toString(),
+                body: JSON.stringify({
+                    email: email,
+                    password: password,
+                    domain: ""
+                }),
             });
 
             if (!res.ok) {

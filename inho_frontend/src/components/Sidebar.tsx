@@ -1,11 +1,12 @@
-'use client';
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import {
     User, Users, Briefcase, Shield,
     ArrowDownLeft, CalendarCheck, Barcode, FileText,
     ArrowUpRight, CalendarClock, Inbox, Wallet, LineChart,
     Clock, Archive, Gavel, Columns, MessageCircle,
-    FileCheck, ListTodo, LogOut, LayoutDashboard, Settings
+    FileCheck, ListTodo, LogOut, LayoutDashboard, Settings,
+    ChevronDown, ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -14,14 +15,36 @@ import OrbeLogo from './OrbeLogo';
 export default function Sidebar() {
     const pathname = usePathname();
 
-    const renderHeader = (title: string, color: string, subtitle: string = "") => (
-        <div className="pt-4 border-t border-[#1a1f26]/50 mt-4 px-2 mb-2">
-            <div className="flex flex-col gap-1">
-                <span className="text-[11px] font-mono font-bold uppercase tracking-widest" style={{ color }}>{title}</span>
-                {subtitle && <span className="text-[9px] text-[#6e7681] uppercase tracking-wider">{subtitle}</span>}
-            </div>
-        </div>
-    );
+    // State to handle collapsible sections
+    const [expanded, setExpanded] = useState<Record<string, boolean>>({
+        comercial: true,
+        entidades: true,
+        financeiro: true,
+        inteligencia: true
+    });
+
+    const toggleSection = (section: string) => {
+        setExpanded(prev => ({ ...prev, [section]: !prev[section] }));
+    };
+
+    const renderHeader = (id: string, title: string, color: string, subtitle: string = "") => {
+        const isExp = expanded[id];
+        return (
+            <button
+                onClick={() => toggleSection(id)}
+                className="w-full text-left pt-4 border-t border-[#1a1f26]/50 mt-4 px-2 mb-2 flex items-center justify-between group hover:bg-[#12161c] rounded-md transition-colors"
+                style={{ cursor: "pointer" }}
+            >
+                <div className="flex flex-col gap-1 w-full p-1">
+                    <span className="text-[11px] font-mono font-bold uppercase tracking-widest transition-colors" style={{ color }}>{title}</span>
+                    {subtitle && <span className="text-[9px] text-[#6e7681] uppercase tracking-wider">{subtitle}</span>}
+                </div>
+                <div className="pr-2 opacity-50 group-hover:opacity-100 transition-opacity">
+                    {isExp ? <ChevronDown size={14} color={color} /> : <ChevronRight size={14} color={color} />}
+                </div>
+            </button>
+        );
+    };
 
     const renderLink = (label: string, href: string, Icon: React.ElementType, color: string, indent: boolean = false) => {
         const isActive = pathname === href;
@@ -63,58 +86,64 @@ export default function Sidebar() {
                 </div>
 
                 {/* 1. COMERCIAL E VENDAS */}
-                {renderHeader('1. COMERCIAL & VENDAS', '#00fff5', 'A Máquina de Atração')}
-                <div className="space-y-0.5">
-                    {renderLink('Funil de Negócios', '/vendas/funil', Columns, '#00fff5')}
-                    {renderLink('Central WhatsApp', '/vendas/whatsapp', MessageCircle, '#00fff5')}
-                    {renderLink('Propostas & Orçamentos', '/vendas/propostas', FileCheck, '#00fff5')}
-                    {renderLink('Minhas Tarefas', '/vendas/tarefas', ListTodo, '#00fff5')}
-                </div>
+                {renderHeader('comercial', '1. COMERCIAL & VENDAS', '#00fff5', 'A Máquina de Atração')}
+                {expanded.comercial && (
+                    <div className="space-y-0.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                        {renderLink('Funil de Negócios', '/vendas/funil', Columns, '#00fff5')}
+                        {renderLink('Central WhatsApp', '/vendas/whatsapp', MessageCircle, '#00fff5')}
+                        {renderLink('Propostas & Orçamentos', '/vendas/propostas', FileCheck, '#00fff5')}
+                        {renderLink('Minhas Tarefas', '/vendas/tarefas', ListTodo, '#00fff5')}
+                    </div>
+                )}
 
                 {/* 2. ENTIDADES & CRM */}
-                {renderHeader('2. ENTIDADES & CRM', '#bc13fe', 'A Base de Pessoas')}
-                <div className="space-y-0.5">
-                    {renderLink('Clientes', '/clientes', User, '#bc13fe')}
-                    {renderLink('Fornecedores', '/fornecedores', Users, '#bc13fe')}
-                    {renderLink('Funcionários (RH)', '/funcionarios', Briefcase, '#bc13fe')}
-                    {renderLink('Sócios & Cooperados', '/socios', Shield, '#bc13fe')}
-                </div>
+                {renderHeader('entidades', '2. ENTIDADES & CRM', '#bc13fe', 'A Base de Pessoas')}
+                {expanded.entidades && (
+                    <div className="space-y-0.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                        {renderLink('Clientes', '/clientes', User, '#bc13fe')}
+                        {renderLink('Fornecedores', '/fornecedores', Users, '#bc13fe')}
+                        {renderLink('Funcionários (RH)', '/funcionarios', Briefcase, '#bc13fe')}
+                        {renderLink('Sócios & Cooperados', '/socios', Shield, '#bc13fe')}
+                    </div>
+                )}
 
                 {/* 3. OPERAÇÃO FINANCEIRA */}
-                {renderHeader('3. OPERAÇÃO FINANCEIRA', '#10b981', 'Entradas e Saídas')}
-                <div className="space-y-0.5">
-                    {renderLink('Caixa de Entrada', '/caixa/inbox', Inbox, '#10b981')}
-                    {renderLink('Gestão de Caixa & PDV', '/caixa/gestao', Wallet, '#10b981')}
+                {renderHeader('financeiro', '3. OPERAÇÃO FINANCEIRA', '#10b981', 'Entradas e Saídas')}
+                {expanded.financeiro && (
+                    <div className="space-y-0.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                        {renderLink('Caixa de Entrada', '/caixa/inbox', Inbox, '#10b981')}
+                        {renderLink('Gestão de Caixa & PDV', '/caixa/gestao', Wallet, '#10b981')}
 
-                    {/* Recebimentos Block */}
-                    <div className="py-1 px-3">
-                        <span className="text-[10px] font-bold text-[#6e7681] uppercase tracking-wide">▼ Recebimentos</span>
+                        <div className="py-1 px-3">
+                            <span className="text-[10px] font-bold text-[#6e7681] uppercase tracking-wide">▼ Recebimentos</span>
+                        </div>
+                        {renderLink('Receber', '/recebimentos/receber', ArrowDownLeft, '#10b981', true)}
+                        {renderLink('Agendar', '/recebimentos/agendar', CalendarCheck, '#10b981', true)}
+                        {renderLink('Boletos', '/recebimentos/boletos', Barcode, '#10b981', true)}
+                        {renderLink('NFS-e Emitidas', '/recebimentos/nfse', FileText, '#10b981', true)}
+
+                        <div className="py-1 px-3 mt-1">
+                            <span className="text-[10px] font-bold text-[#6e7681] uppercase tracking-wide">▼ Pagamentos</span>
+                        </div>
+                        {renderLink('Pagar', '/pagamentos/pagar', ArrowUpRight, '#ef4444', true)}
+                        {renderLink('Agendar / Reembolsos', '/pagamentos/agendar', CalendarClock, '#ef4444', true)}
+
+                        <div className="mt-2" />
+                        {renderLink('Contratos Recorrentes', '/contratos', FileCheck, '#10b981')}
                     </div>
-                    {renderLink('Receber', '/recebimentos/receber', ArrowDownLeft, '#10b981', true)}
-                    {renderLink('Agendar', '/recebimentos/agendar', CalendarCheck, '#10b981', true)}
-                    {renderLink('Boletos', '/recebimentos/boletos', Barcode, '#10b981', true)}
-                    {renderLink('NFS-e Emitidas', '/recebimentos/nfse', FileText, '#10b981', true)}
-
-                    {/* Pagamentos Block */}
-                    <div className="py-1 px-3 mt-1">
-                        <span className="text-[10px] font-bold text-[#6e7681] uppercase tracking-wide">▼ Pagamentos</span>
-                    </div>
-                    {renderLink('Pagar', '/pagamentos/pagar', ArrowUpRight, '#ef4444', true)}
-                    {renderLink('Agendar / Reembolsos', '/pagamentos/agendar', CalendarClock, '#ef4444', true)}
-
-                    <div className="mt-2" />
-                    {renderLink('Contratos Recorrentes', '/contratos', FileCheck, '#10b981')}
-                </div>
+                )}
 
                 {/* 4. INTELIGÊNCIA & GOVERNANÇA */}
-                {renderHeader('4. INTELIGÊNCIA & GOVERNANÇA', '#f59e0b', 'A Camada de Decisão')}
-                <div className="space-y-0.5">
-                    {renderLink('Painel DRE (Caixa vs Realizado)', '/relatorios/dre', LineChart, '#f59e0b')}
-                    {renderLink('Envelhecimento (Aging List)', '/relatorios/aging', Clock, '#f59e0b')}
-                    {renderLink('Fechamento de Mês', '/auditoria/fechamento', Archive, '#a855f7')}
-                    {renderLink('Portal do Contador', '/auditoria/contador', Gavel, '#a855f7')}
-                    {renderLink('Configurações Globais / Equipe', '/configuracoes/equipe', Settings, '#3b82f6')}
-                </div>
+                {renderHeader('inteligencia', '4. INTELIGÊNCIA & GOVERNANÇA', '#f59e0b', 'A Camada de Decisão')}
+                {expanded.inteligencia && (
+                    <div className="space-y-0.5 animate-in fade-in slide-in-from-top-2 duration-300">
+                        {renderLink('Painel DRE (Caixa vs Realizado)', '/relatorios/dre', LineChart, '#f59e0b')}
+                        {renderLink('Envelhecimento (Aging List)', '/relatorios/aging', Clock, '#f59e0b')}
+                        {renderLink('Fechamento de Mês', '/auditoria/fechamento', Archive, '#a855f7')}
+                        {renderLink('Portal do Contador', '/auditoria/contador', Gavel, '#a855f7')}
+                        {renderLink('Configurações Globais / Equipe', '/configuracoes/equipe', Settings, '#3b82f6')}
+                    </div>
+                )}
             </nav>
 
             {/* Footer Profile */}
