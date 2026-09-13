@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Plus, X, Lock, Shield, Mail } from 'lucide-react';
 
+interface UserData { email: string; role: string; created_at: string; }
+
 export default function EquipeAcessosPage() {
-    const [users, setUsers] = useState<any[]>([]);
+    const [users, setUsers] = useState<UserData[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -12,10 +14,6 @@ export default function EquipeAcessosPage() {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('OPERATOR');
     const [isSubmitting, setIsSubmitting] = useState(false);
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
 
     const fetchUsers = async () => {
         setIsLoading(true);
@@ -42,6 +40,12 @@ export default function EquipeAcessosPage() {
         }
         setIsLoading(false);
     };
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchUsers();
+    }, []);
+
 
     const handleCreateUser = async (e: React.FormEvent) => {
         e.preventDefault();

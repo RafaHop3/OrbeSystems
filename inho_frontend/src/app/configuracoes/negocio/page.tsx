@@ -13,10 +13,6 @@ export default function MeuNegocioPage() {
     const [municipalReg, setMunicipalReg] = useState('');
     const [stateReg, setStateReg] = useState('');
 
-    useEffect(() => {
-        fetchBusiness();
-    }, []);
-
     const fetchBusiness = async () => {
         setIsLoading(true);
         try {
@@ -49,6 +45,12 @@ export default function MeuNegocioPage() {
         }
         setIsLoading(false);
     };
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        fetchBusiness();
+    }, []);
+
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
