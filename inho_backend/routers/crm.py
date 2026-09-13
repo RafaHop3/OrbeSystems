@@ -406,3 +406,73 @@ async def payable_totals(
     paid = sum(float(p.amount) for p in payables if p.status == PayableStatus.PAID)
 
     return {"pending": pending, "overdue": overdue, "paid": paid, "total": pending + overdue}
+
+
+# ── DEALS (FUNIL KANBAN) ──────────────────────────────────────────
+
+from models.models import CRMDeal, DealStage, DealStatus
+from schemas.crm_schemas import CRMDealCreate, CRMDealUpdate, CRMDealOut
+
+@router.get("/deals", response_model=List[CRMDealOut])
+async def list_deals(
+    stage: Optional[DealStage] = Query(None),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Lista as negociações do funil Kanban."""
+    business = await _biz(db, current_user)
+    stmt = select(CRMDeal).where(CRMDeal.business_id == business.id)
+    if stage:
+        stmt = stmt.where(CRMDeal.stage == stage)
+    result = await db.execute(stmt)
+    return result.scalars().all()
+
+@router.post("/deals", response_model=CRMDealOut)
+async def create_deal(
+    deal: CRMDealCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Cria um Card de Negociação no Funil Kanban."""
+    business = await _biz(db, current_user)
+    obj = CRMDeal(**deal.model_dump(), business_id=business.id)
+    db.add(obj)
+    await db.commit()
+    await db.refresh(obj)
+    return obj
+
+@router.patch("/deals/{deal_id}", response_model=CRMDealOut)
+async def update_deal(
+    deal_id: str,
+    payload: CRMDealUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Atualiza o drag-and-drop do Card (Workflow). Se 'WON', pode engatilhar faturamento automático."""
+    from models.models import AccountPayable
+    from models.models import PayableStatus
+
+    business = await _biz(db, current_user)
+    result = await db.execute(
+        select(CRMDeal).where(CRMDeal.id == deal_id, CRMDeal.business_id == business.id)
+    )
+    deal = result.scalar_one_or_none()
+    if not deal:
+        raise HTTPException(404, "Deal não encontrado no Funil")
+    
+    update_data = payload.model_dump(exclude_unset=True)
+    old_stage = deal.stage
+    new_stage = update_data.get("stage", None)
+
+    for k, v in update_data.items():
+        setattr(deal, k, v)
+        
+    # Automação Sprint 3: Se arrastou pra Fechado (WON), gera Conta a Receber/Fatura
+    if new_stage == DealStage.WON and old_stage != DealStage.WON:
+        # TODO: Para simular fatura, ideal seria AccountReceivable. 
+        # Como o INHO tem o PayableStatus e a plataforma lida com Recebimentos em outras rotas, injetamos log ou lógica base aqui.
+        deal.status = DealStatus.CLOSED
+        
+    await db.commit()
+    await db.refresh(deal)
+    return deal

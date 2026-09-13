@@ -264,3 +264,35 @@ class RecurrenceOut(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ── CRM Deals (Funil Kanban) ──────────────────────────────────────
+from models.models import DealStage, DealStatus
+
+class CRMDealBase(BaseModel):
+    contact_id:  Optional[UUID] = None
+    title:       str
+    value:       float = 0.0
+    stage:       DealStage = DealStage.PROSPECTING
+    status:      DealStatus = DealStatus.ACTIVE
+    loss_reason: Optional[str] = None
+
+class CRMDealCreate(CRMDealBase):
+    pass
+
+class CRMDealUpdate(BaseModel):
+    contact_id:  Optional[UUID] = None
+    title:       Optional[str] = None
+    value:       Optional[float] = None
+    stage:       Optional[DealStage] = None
+    status:      Optional[DealStatus] = None
+    loss_reason: Optional[str] = None
+
+class CRMDealOut(CRMDealBase):
+    id:          UUID
+    business_id: UUID
+    created_at:  datetime
+    updated_at:  datetime
+
+    class Config:
+        from_attributes = True

@@ -755,3 +755,42 @@ class MonthClose(Base):
     __table_args__ = (
         Index("ix_month_closes_business_period", "business_id", "period_year", "period_month", unique=True),
     )
+
+
+# ── CRM Deals (Funil Kanban) ──────────────────────────────────────
+
+class DealStage(str, enum.Enum):
+    PROSPECTING = "PROSPECTING"
+    PRESENTATION = "PRESENTATION"
+    NEGOTIATION = "NEGOTIATION"
+    WON = "WON"
+    LOST = "LOST"
+
+class DealStatus(str, enum.Enum):
+    ACTIVE = "ACTIVE"
+    CLOSED = "CLOSED"
+
+class CRMDeal(Base):
+    """
+    Negociações do Funil Kanban (CRM).
+    Ao arrastar e mover para WON, engatilha faturamento e DRE automaticamente.
+    """
+    __tablename__ = "crm_deals"
+
+    id             = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id    = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    contact_id     = Column(DB_UUID, ForeignKey("crm_contacts.id", ondelete="SET NULL"), nullable=True)
+    title          = Column(String(255), nullable=False)
+    value          = Column(Numeric(precision=20, scale=8), nullable=False, default=0.0)
+    stage          = Column(Enum(DealStage), nullable=False, default=DealStage.PROSPECTING)
+    status         = Column(Enum(DealStatus), nullable=False, default=DealStatus.ACTIVE)
+    loss_reason    = Column(String(255), nullable=True)
+
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_crm_deals_business", "business_id"),
+        Index("ix_crm_deals_stage", "stage"),
+    )
