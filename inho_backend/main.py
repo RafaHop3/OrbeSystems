@@ -95,7 +95,16 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 class XForwardedProtoMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        import json
         forwarded_proto = request.headers.get("x-forwarded-proto")
+        if not forwarded_proto:
+            cf_visitor = request.headers.get("cf-visitor")
+            if cf_visitor:
+                try:
+                    cf_data = json.loads(cf_visitor)
+                    forwarded_proto = cf_data.get("scheme")
+                except:
+                    pass
         if forwarded_proto:
             request.scope["scheme"] = forwarded_proto
         return await call_next(request)
