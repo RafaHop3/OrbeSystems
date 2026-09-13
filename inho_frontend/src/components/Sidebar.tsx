@@ -11,6 +11,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import OrbeLogo from './OrbeLogo';
+import NavigationControls from './NavigationControls';
 
 export default function Sidebar() {
     const pathname = usePathname();
@@ -64,16 +65,18 @@ export default function Sidebar() {
     return (
         <aside className="w-[280px] min-h-screen bg-[#020406] border-r border-[#1a1f26] text-[#b3b9c5] font-sans select-none flex flex-col relative z-20">
             {/* Brand Logo & Status */}
-            <div className="px-6 py-6 flex items-center justify-between pointer-events-none sticky top-0 bg-[#020406]/90 backdrop-blur-sm z-30 border-b border-[#1a1f26]/50">
-                <div className="flex items-center gap-3">
+            <div className="px-6 py-4 flex items-center justify-between sticky top-0 bg-[#020406]/90 backdrop-blur-sm z-30 pt-6">
+                <div className="flex items-center gap-3 pointer-events-none">
                     <OrbeLogo className="w-8 h-8 shrink-0" />
                     <span className="text-white font-bold text-[18px] tracking-[0.2em] font-mono">ORBE</span>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 pointer-events-none">
                     <div className="w-1.5 h-1.5 bg-[#39ff14] rounded-full shadow-[0_0_8px_rgba(57,255,20,0.8)] animate-pulse" />
                     <span className="text-[10px] font-mono text-[#00fff5] uppercase">Online</span>
                 </div>
             </div>
+
+            <NavigationControls />
 
             <nav className="flex-1 px-3 space-y-1 overflow-y-auto custom-scrollbar mt-4 pb-10">
 
