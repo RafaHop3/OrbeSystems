@@ -1,0 +1,12 @@
+HTTP/1.1 404 Not Found
+Server: nginx/1.24.0 (Ubuntu)
+Date: Fri, 11 Sep 2026 22:42:03 GMT
+Content-Type: application/json
+Content-Length: 22
+Connection: keep-alive
+
+
+----------ERROR-------
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0    22    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0

@@ -1,0 +1,35 @@
+ OrbeSystems API starting up...
+ Configuration error: STRIPE_SECRET_KEY deve começar com 'sk_'
+INFO: [Database] Initializing tables and schemas...
+INFO: [Migration] Schema is up to date.
+INFO: [RLS] Supabase detectado — aplicando lockdown PostgREST (modo dinâmico)...
+INFO: [RLS] Lockdown dinâmico aplicado em 36 tabela(s) públicas.
+2026-09-11 22:25:19,737 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-11 22:25:19,741 - apscheduler.scheduler - INFO - Added job "_ping" to job store "default"
+2026-09-11 22:25:19,741 - apscheduler.scheduler - INFO - Scheduler started
+2026-09-11 22:25:19,745 - keep_alive - INFO - [KeepAlive] 🤖 Robot active — pinging every 14 min → https://orbesystems.com.br/api/health
+2026-09-11 22:25:19,752 - offline_agent - INFO - [OfflineAgent] Daemon consumidor de filas iniciado com sucesso.
+2026-09-11 22:25:19,752 - offline_agent - INFO - [OfflineAgent] Agente Proativo Offline de Background Inicializado [OK].
+2026-09-11 22:25:19,752 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-11 22:25:19,752 - apscheduler.scheduler - INFO - Added job "escalation_check_job" to job store "default"
+2026-09-11 22:25:19,752 - apscheduler.scheduler - INFO - Scheduler started
+ OrbeSystems API starting up...
+ Configuration error: STRIPE_SECRET_KEY deve começar com 'sk_'
+INFO: [Database] Initializing tables and schemas...
+INFO: [Migration] Schema is up to date.
+INFO: [RLS] Supabase detectado — aplicando lockdown PostgREST (modo dinâmico)...
+INFO: [RLS] Lockdown dinâmico aplicado em 36 tabela(s) públicas.
+2026-09-11 22:25:25,717 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-11 22:25:25,718 - apscheduler.scheduler - INFO - Added job "_ping" to job store "default"
+2026-09-11 22:25:25,718 - apscheduler.scheduler - INFO - Scheduler started
+2026-09-11 22:25:25,718 - keep_alive - INFO - [KeepAlive] 🤖 Robot active — pinging every 14 m
+---Output truncated---
+----------ERROR-------
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started parent process [1]
+INFO:     Started server process [9]
+INFO:     Started server process [8]
+INFO:     Waiting for application startup.
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Application startup complete.

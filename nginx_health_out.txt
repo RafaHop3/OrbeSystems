@@ -1,0 +1,42 @@
+● nginx.service - A high performance web server and a reverse proxy server
+     Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; preset: enabled)
+     Active: active (running) since Fri 2026-09-11 22:24:56 UTC; 6min ago
+       Docs: man:nginx(8)
+    Process: 709337 ExecStartPre=/usr/sbin/nginx -t -q -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+    Process: 709339 ExecStart=/usr/sbin/nginx -g daemon on; master_process on; (code=exited, status=0/SUCCESS)
+    Process: 711200 ExecReload=/usr/sbin/nginx -g daemon on; master_process on; -s reload (code=exited, status=0/SUCCESS)
+   Main PID: 709340 (nginx)
+      Tasks: 3 (limit: 627)
+     Memory: 3.0M (peak: 9.5M)
+        CPU: 77ms
+     CGroup: /system.slice/nginx.service
+             ├─709340 "nginx: master process /usr/sbin/nginx -g daemon on; master_process on;"
+             ├─711203 "nginx: worker process"
+             └─711204 "nginx: worker process"
+
+Sep 11 22:24:56 ip-10-0-1-219 systemd[1]: Starting nginx.service - A high performance web server and a reverse proxy server...
+Sep 11 22:24:56 ip-10-0-1-219 systemd[1]: Started nginx.service - A high performance web server and a reverse proxy server.
+Se
+---Output truncated---
+----------ERROR-------
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+curl: (56) Recv failure: Connection reset by peer
+    return self.main(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.11/site-packages/click/core.py", line 1552, in main
+    rv = self.invoke(ctx)
+         ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.11/site-packages/click/core.py", line 1415, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.11/site-packages/click/core.py", line 910, in invoke
+    return callback(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.11/site-packages/uvicorn/main.py", line 412, in main
+    run(
+  File "/opt/venv/lib/python3.11/site-packages/uvicorn/main.py", line 5
+---Error truncated----

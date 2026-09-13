@@ -1,0 +1,2 @@
+Fail public fk: column "business_id" does not exist
+MIGRATION COMPLETE

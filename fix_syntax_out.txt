@@ -1,0 +1,26 @@
+2026-09-11 22:34:37,672 INFO sqlalchemy.engine.Engine [cached since 3.342s ago] ('recurrencestatus', 'pg_catalog')
+2026-09-11 22:34:37,867 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = $1::VARCHAR AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != $2::VARCHAR
+2026-09-11 22:34:37,867 INFO sqlalchemy.engine.Engine [cached since 3.537s ago] ('pcosurveystatus', 'pg_catalog')
+2026-09-11 22:34:38,062 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = $1::VARCHAR AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != $2::VARCHAR
+2026-09-11 22:34:38,062 INFO sqlalchemy.engine.Engine [cached since 3.732s ago] ('pcoindicator', 'pg_catalog')
+2026-09-11 22:34:38,257 INFO sqlalchemy.engine.Engine SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg
+---Output truncated---
+----------ERROR-------
+time="2026-09-11T22:35:40Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+ Container inho_backend  Restarting
+ Container inho_backend  Started
+2026-09-11 22:34:37,672 | INFO | sqlalchemy.engine.Engine | [cached since 3.342s ago] ('recurrencestatus', 'pg_catalog')
+2026-09-11 22:34:37,867 | INFO | sqlalchemy.engine.Engine | SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = $1::VARCHAR AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != $2::VARCHAR
+2026-09-11 22:34:37,867 | INFO | sqlalchemy.engine.Engine | [cached since 3.537s ago] ('pcosurveystatus', 'pg_catalog')
+2026-09-11 22:34:38,062 | INFO | sqlalchemy.engine.Engine | SELECT pg_catalog.pg_type.typname 
+FROM pg_catalog.pg_type JOIN pg_catalog.pg_namespace ON pg_catalog.pg_namespace.oid = pg_catalog.pg_type.typnamespace 
+WHERE pg_catalog.pg_type.typname = $1::VARCHAR AND pg_catalog.pg_type_is_visible(pg_catalog.pg_type.oid) AND pg_catalog.pg_namespace.nspname != $2::VARCHAR
+2026
+---Error truncated----

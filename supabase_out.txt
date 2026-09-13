@@ -1,0 +1,2 @@
+EXCEPTION: foreign key constraint "audit_logs_business_id_fkey" cannot be implemented
+DETAIL:  Key columns "business_id" and "id" are of incompatible types: character varying and uuid.

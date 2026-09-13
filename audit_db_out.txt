@@ -1,0 +1,30 @@
+2026-09-11 22:50:45,735 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2026-09-11 22:50:45,742 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-11 22:50:45,999 INFO sqlalchemy.engine.Engine select current_schema()
+2026-09-11 22:50:45,999 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-11 22:50:46,378 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2026-09-11 22:50:46,380 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-11 22:50:46,632 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-09-11 22:50:46,641 INFO sqlalchemy.engine.Engine INSERT INTO inho.audit_logs (id, business_id, user_id, user_name, user_role, action, entity, entity_id, detail, ip_address, user_agent, timestamp) VALUES ($1::VARCHAR, $2::VARCHAR, $3::VARCHAR, $4::VARCHAR, $5::VARCHAR, $6::auditaction, $7::VARCHAR, $8::VARCHAR, $9::VARCHAR, $10::VARCHAR, $11::VARCHAR, $12::TIMESTAMP WITH TIME ZONE)
+2026-09-11 22:50:46,642 INFO sqlalchemy.engine.Engine [generated in 0.00182s] ('f6dab9a8-0f2e-4bdb-88ac-20aa0163e36f', None, None, None, None, 'FAILED_LOGIN', 'Auth', None, None, '127.0.0.1', None, datetime.datetime(2026, 9, 11, 22, 50, 46, 641391, tzinfo=datetime.timezone.utc))
+2026-09-11 22:50:46,841 INFO sqlalchemy.engine.Engine ROLLBACK
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 510, in _prepare_and_execute
+    prepared_stmt, attributes = await adapt_connection._prepare(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 738, in _prepare
+    prepared_stmt = await self._connection.prepare(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.11/site-packages/asyncpg/connection.py", line 635, in prepare
+    return await self._prepare(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.11/site-packages/asyncpg/connection.py", line 653, in _prepare
+    stmt = await self._get_statement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.11/site-packages/asyncpg/connection.py", line 432, in _get_statement
+    statement = await self._protocol.prepare(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 165, in prepare
+asyncpg.exceptions.DatatypeMismatchError: column "id" is of type uuid but expression is of type character varying
+HINT:  You will need to rewr
+---Output truncated---

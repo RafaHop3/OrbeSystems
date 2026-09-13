@@ -1,0 +1,14 @@
+
+----------ERROR-------
+time="2026-09-11T22:30:40Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+time="2026-09-11T22:30:41Z" level=warning msg="Found orphan containers ([orbe_whatsapp]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container orbe_postgres  Running
+ Container inho_backend  Recreate
+ Container inho_backend  Recreated
+ Container inho_backend  Starting
+ Container inho_backend  Started
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+curl: (56) Recv failure: Connection reset by peer
+failed to run commands: exit status 56

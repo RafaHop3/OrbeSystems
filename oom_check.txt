@@ -1,0 +1,4 @@
+OOMKilled: false | ExitCode: 0 | Status: running
+               total        used        free      shared  buff/cache   available
+Mem:             909         790         109          20         146         119
+Swap:              0           0           0

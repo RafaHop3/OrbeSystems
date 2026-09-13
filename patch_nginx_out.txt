@@ -1,0 +1,10 @@
+
+----------ERROR-------
+time="2026-09-11T22:24:57Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+time="2026-09-11T22:24:57Z" level=warning msg="Found orphan containers ([orbe_whatsapp]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+ Container orbe_redis  Running
+ Container orbe_postgres  Running
+ Container orbe_backend  Recreate
+ Container orbe_backend  Recreated
+ Container orbe_backend  Starting
+ Container orbe_backend  Started

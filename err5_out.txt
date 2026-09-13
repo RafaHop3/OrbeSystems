@@ -1,0 +1,22 @@
+
+----------ERROR-------
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.11/site-packages/asyncpg/connection.py", line 432, in _get_statement
+    statement = await self._protocol.prepare(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "asyncpg/protocol/protocol.pyx", line 165, in prepare
+asyncpg.exceptions.DuplicatePreparedStatementError: prepared statement "__asyncpg_stmt_5__" already exists
+HINT:  
+NOTE: pgbouncer with pool_mode set to "transaction" or
+"statement" does not support prepared statements properly.
+You have two options:
+
+* if you are using pgbouncer for connection pooling to a
+  single server, switch to the connection pool functionality
+  provided by asyncpg, it is a much better option for this
+  purpose;
+
+* if you have no option of avoiding the use of pgbouncer,
+  then you can set statement_cache_size to 0 when creating
+  the asyncpg connection object.
+

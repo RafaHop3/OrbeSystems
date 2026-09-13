@@ -1,0 +1,6 @@
+{'table_schema': 'inho', 'table_name': 'audit_logs', 'column_name': 'id', 'data_type': 'character varying'}
+{'table_schema': 'inho', 'table_name': 'businesses', 'column_name': 'id', 'data_type': 'uuid'}
+{'table_schema': 'inho', 'table_name': 'users', 'column_name': 'id', 'data_type': 'uuid'}
+{'table_schema': 'public', 'table_name': 'audit_logs', 'column_name': 'id', 'data_type': 'character varying'}
+{'table_schema': 'public', 'table_name': 'businesses', 'column_name': 'id', 'data_type': 'uuid'}
+{'table_schema': 'public', 'table_name': 'users', 'column_name': 'id', 'data_type': 'character varying'}

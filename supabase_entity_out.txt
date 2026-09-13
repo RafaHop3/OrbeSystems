@@ -1,0 +1,2 @@
+Fail public entity_id: column "entity_id" does not exist
+MIGRATION COMPLETE

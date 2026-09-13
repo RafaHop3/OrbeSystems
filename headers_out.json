@@ -1,0 +1,21 @@
+{
+  "status": 200,
+  "headers": {
+    "Date": "Fri, 11 Sep 2026 22:45:12 GMT",
+    "Content-Type": "text/plain; charset=utf-8",
+    "Content-Length": "2",
+    "Connection": "close",
+    "Server": "cloudflare",
+    "Nel": "{\"report_to\":\"cf-nel\",\"success_fraction\":0.0,\"max_age\":604800}",
+    "vary": "Origin",
+    "access-control-allow-methods": "DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT",
+    "access-control-max-age": "600",
+    "access-control-allow-credentials": "true",
+    "access-control-allow-origin": "https://inho.orbesystems.com.br",
+    "access-control-allow-headers": "content-type",
+    "cf-cache-status": "DYNAMIC",
+    "Report-To": "{\"group\":\"cf-nel\",\"max_age\":604800,\"endpoints\":[{\"url\":\"https://a.nel.cloudflare.com/report/v4?s=A31frfPyekx87M%2F%2FTiagLAwRCR%2FRMY6pNJK1AaPNcVWvC4H4TriLk8n%2FSynj1RwLmsjfd727RgEALyXFQMSV%2Fn%2By7D9MN4Lr7q6E4ZJYNOOA25a%2BO%2FCrFzflA6YWdW8uXyh7iwALmfha2GbANvtzrc01bu285Krv9LQ%3D\"}]}",
+    "CF-RAY": "a39a3390ef284f61-POA",
+    "alt-svc": "h3=\":443\"; ma=86400"
+  }
+}
