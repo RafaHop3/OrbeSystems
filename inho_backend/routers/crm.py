@@ -477,31 +477,81 @@ async def update_deal(
     await db.refresh(deal)
     return deal
 
-# ── WHATSAPP CENTRAL PROXY ───────────────────────────────────────
+# ── OMNICHANNEL CENTRAL PROXY (WHATSAPP + EMAIL) ───────────────────────────────
 import httpx
+import os
+import asyncio
 from pydantic import BaseModel
+from typing import Optional
 
-class WhatsAppDirectMessage(BaseModel):
+class OmnichannelDirectMessage(BaseModel):
     phone: str
+    email: Optional[str] = None
+    subject: Optional[str] = "Orbe Systems - Nova Mensagem"
     message: str
 
 @router.post("/whatsapp/send")
-async def proxy_whatsapp_message(
-    payload: WhatsAppDirectMessage,
+async def proxy_omnichannel_message(
+    payload: OmnichannelDirectMessage,
     current_user: User = Depends(get_current_user)
 ):
     """
-    Despacha a mensagem digitada pelo Usuário diretamente para a API Baileys
-    no container `orbe_whatsapp:3001` rodando na AWS.
+    Despacha a mensagem digitada pelo Usuário para:
+    1. A API Baileys no container `orbe_whatsapp:3001` (WhatsApp)
+    2. A API Resend para E-mail B2B
     """
     try:
         from services.messaging import format_whatsapp_phone
         clean_phone = format_whatsapp_phone(payload.phone)
+        
+        wa_status = None
+        email_status = None
+        
         async with httpx.AsyncClient() as client:
-            res = await client.post("http://orbe_whatsapp:3001/send", json={
-                "phone": clean_phone,
-                "message": payload.message
-            }, timeout=10.0)
-            return {"status": "success", "code": res.status_code, "bot_response": res.text}
+            # 1. Disparo WhatsApp (Sem bloqueio)
+            try:
+                wa_res = await client.post("http://orbe_whatsapp:3001/send", json={
+                    "phone": clean_phone,
+                    "message": payload.message
+                }, timeout=10.0)
+                wa_status = wa_res.status_code
+            except Exception as e:
+                wa_status = f"Baileys Error: {str(e)}"
+                
+            # 2. Disparo Resend (E-mail)
+            resend_key = os.environ.get("RESEND_API_KEY", "")
+            if payload.email and resend_key:
+                try:
+                    html_msg = f"""
+                    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+                        <h2 style="color: #00fff5; background: #020406; padding: 15px; border-radius: 8px;">Orbe Systems - Central B2B</h2>
+                        <p>Olá,</p>
+                        <p>{payload.message.replace(chr(10), '<br>')}</p>
+                        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+                        <p style="font-size: 11px; color: #888;">Esta é uma mensagem enviada pela Central Omnichannel Orbe Systems.</p>
+                    </div>
+                    """
+                    em_res = await client.post(
+                        "https://api.resend.com/emails",
+                        headers={"Authorization": f"Bearer {resend_key}"},
+                        json={
+                            "from": "INHO <suporte@orbesystems.com.br>",
+                            "to": [payload.email],
+                            "subject": payload.subject,
+                            "html": html_msg
+                        },
+                        timeout=10.0
+                    )
+                    email_status = em_res.status_code
+                except Exception as e:
+                    email_status = f"Resend Error: {str(e)}"
+            else:
+                email_status = "Ignorado (Sem E-mail ou Sem RESEND_API_KEY)"
+                
+        return {
+            "status": "success",
+            "whatsapp_delivery_code": wa_status,
+            "email_delivery_code": email_status
+        }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Erro de comunicação com o Baileys: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Falha Crítica no Omnichannel: {str(e)}")
