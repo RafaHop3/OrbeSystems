@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Users, ShoppingCart, Monitor, Bell, FileText, Shield, User, LogOut, BarChart2, Building } from 'lucide-react';
+import { ChevronDown, ChevronUp, Users, ShoppingCart, Monitor, Bell, FileText, Shield, User, LogOut, BarChart2, Building, Columns, MessageCircle, FileCheck, ListTodo, LineChart } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import OrbeLogo from './OrbeLogo';
@@ -41,89 +41,25 @@ export default function Sidebar() {
                     </button>
                 </div>
 
-                {/* CRM & ENTIDADES Accordion (Legacy Combined) */}
+                {/* VENDAS & CRM */}
                 <div>
                     <div
                         onClick={() => setIsCrmOpen(!isCrmOpen)}
                         className="flex items-center justify-between px-2 cursor-pointer mb-3 group"
                     >
                         <div className="flex items-center gap-2">
-                            <Users size={14} className="text-[#00fff5]" />
-                            <span className="text-[11px] font-mono tracking-widest uppercase text-[#b3b9c5] group-hover:text-[#00fff5] transition-colors">CRM & ENTIDADES</span>
+                            <div className="w-2 h-2 rounded-full border border-[#00fff5] shadow-[0_0_8px_rgba(0,255,245,0.8)]" />
+                            <span className="text-[11px] font-mono tracking-widest uppercase text-[#b3b9c5] group-hover:text-[#00fff5] transition-colors">VENDAS & CRM</span>
                         </div>
-                        {isCrmOpen ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-500" />}
+                        {isCrmOpen ? <ChevronUp size={14} className="text-[#00fff5]" /> : <ChevronDown size={14} className="text-gray-500" />}
                     </div>
 
-                    <div className={`space-y-1 transition-all duration-300 ease-in-out pl-6 ${isCrmOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                    <div className={`space-y-1 transition-all duration-300 ease-in-out pl-4 ${isCrmOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
                         {[
-                            { label: 'CLIENTES', href: '/clientes' },
-                            { label: 'FORNECEDORES', href: '/fornecedores' },
-                            { label: 'FUNCIONÁRIOS', href: '/funcionarios' },
-                            { label: 'SÓCIOS', href: '/socios' },
-                        ].map((item) => {
-                            const isActive = pathname === item.href;
-                            return (
-                                <Link key={item.href} href={item.href} className={`block px-4 py-2 text-[13px] rounded transition-colors ${isActive ? 'bg-[#1a1f26] text-white font-medium' : 'text-[#8b949e] hover:text-[#c9d1d9] hover:bg-[#12161c]'}`}>
-                                    {item.label}
-                                </Link>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* RECEBIMENTOS Accordion (Legacy Combined) */}
-                <div>
-                    <div
-                        onClick={() => setIsRecOpen(!isRecOpen)}
-                        className="flex items-center justify-between px-2 cursor-pointer mb-3 group"
-                    >
-                        <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full border-2 border-[#39ff14] flex items-center justify-center shadow-[0_0_8px_rgba(57,255,20,0.4)]">
-                                <div className="w-1 h-1 bg-[#39ff14] rounded-full" />
-                            </div>
-                            <span className="text-[11px] font-mono tracking-widest uppercase text-[#b3b9c5] group-hover:text-[#39ff14] transition-colors">RECEBIMENTOS</span>
-                        </div>
-                        {isRecOpen ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-500" />}
-                    </div>
-
-                    <div className={`space-y-1 transition-all duration-300 ease-in-out pl-6 ${isRecOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-                        {[
-                            { label: 'Receber', href: '/receber' },
-                            { label: 'Agendar', href: '/agendamentos' },
-                            { label: 'Boletos', href: '/boletos' },
-                            { label: 'NFS-e', href: '/nfse' },
-                        ].map((item) => {
-                            const isActive = pathname === item.href;
-                            return (
-                                <Link key={item.href} href={item.href} className={`block px-4 py-2 text-[13px] rounded transition-colors ${isActive ? 'bg-[#1a1f26] text-white font-medium' : 'text-[#8b949e] hover:text-[#c9d1d9] hover:bg-[#12161c]'}`}>
-                                    {item.label}
-                                </Link>
-                            );
-                        })}
-                    </div>
-                </div>
-
-                {/* ORGANIZAÇÃO Accordion (New Hub Layout) */}
-                <div className="pt-2 border-t border-[#1a1f26]/50">
-                    <div
-                        onClick={() => setIsOrgOpen(!isOrgOpen)}
-                        className="flex items-center justify-between px-2 cursor-pointer mb-3 group mt-4"
-                    >
-                        <div className="flex items-center gap-2">
-                            <div className="w-1 h-3 bg-[#bc13fe] rounded-full shadow-[0_0_8px_rgba(188,19,254,0.6)]" />
-                            <span className="text-[11px] font-mono font-bold text-[#bc13fe] uppercase tracking-widest">ORGANIZAÇÃO</span>
-                        </div>
-                        {isOrgOpen ? <ChevronUp size={14} className="text-purple-400" /> : <ChevronDown size={14} className="text-gray-500" />}
-                    </div>
-
-                    <div className={`space-y-1 transition-all duration-300 ease-in-out pl-2 ${isOrgOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-                        {[
-                            { label: 'GESTÃO DE CONTATOS', icon: Users, href: '/contatos' },
-                            { label: 'PEDIDOS DE VENDA', icon: ShoppingCart, href: '/pedidos' },
-                            { label: 'FRENTE DE CAIXA (PDV)', icon: Monitor, href: '/pdv' },
-                            { label: 'COBRANÇAS E AVISOS', icon: Bell, href: '/cobrancas' },
-                            { label: 'CONTAS A PAGAR', icon: FileText, href: '/pagar' },
-                            { label: 'ASSIST. E CONTRATOS', icon: Shield, href: '/contratos' },
+                            { label: 'Funil de Negócios (Kanban)', icon: Columns, href: '/vendas/funil' },
+                            { label: 'Central WhatsApp (Inbox)', icon: MessageCircle, href: '/vendas/whatsapp' },
+                            { label: 'Propostas & Orçamentos', icon: FileCheck, href: '/vendas/propostas' },
+                            { label: 'Minhas Tarefas (Follow-ups)', icon: ListTodo, href: '/vendas/tarefas' },
                         ].map((item) => {
                             const Icon = item.icon;
                             const isActive = pathname === item.href;
@@ -131,38 +67,84 @@ export default function Sidebar() {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className={`flex items-center gap-4 px-4 py-2.5 rounded-md transition-colors ${isActive
-                                        ? 'bg-[#1a1f26] text-white border-l-2 border-teal-500'
+                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors ${isActive
+                                        ? 'bg-[#1a1f26] text-white border-l-2 border-[#00fff5]'
                                         : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'
                                         }`}
                                 >
-                                    <Icon size={16} className={isActive ? 'text-teal-400' : 'text-[#6e7681]'} />
-                                    <span className="text-[13px] font-medium leading-tight max-w-[150px]">{item.label}</span>
+                                    <Icon size={16} className={isActive ? 'text-[#00fff5]' : 'text-[#6e7681]'} />
+                                    <span className="text-[13px] font-medium leading-tight">{item.label}</span>
                                 </Link>
                             );
                         })}
                     </div>
                 </div>
 
-                {/* SISTEMA Accordion */}
-                <div className="pt-2 border-t border-[#1a1f26]/50">
+                {/* ORGANIZAÇÃO Accordion */}
+                <div className="pt-3 border-t border-[#1a1f26]/50 mt-4">
                     <div
-                        className="flex items-center justify-between px-2 cursor-pointer mb-3 group mt-4"
+                        onClick={() => setIsOrgOpen(!isOrgOpen)}
+                        className="flex items-center justify-between px-2 cursor-pointer mb-3 group"
+                    >
+                        <div className="flex items-center gap-2">
+                            <div className="w-1 h-3 bg-[#bc13fe] rounded-full shadow-[0_0_8px_rgba(188,19,254,0.6)]" />
+                            <span className="text-[11px] font-mono font-bold text-[#bc13fe] uppercase tracking-widest">ORGANIZAÇÃO</span>
+                        </div>
+                        {isOrgOpen ? <ChevronUp size={14} className="text-[#bc13fe]" /> : <ChevronDown size={14} className="text-gray-500" />}
+                    </div>
+
+                    <div className={`space-y-1 transition-all duration-300 ease-in-out pl-4 ${isOrgOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                        {[
+                            { label: 'Contatos', icon: Users, href: '/contatos' },
+                            { label: 'Pedidos & Frente de Caixa', icon: ShoppingCart, href: '/pdv' },
+                            { label: 'Cobranças & Régua Automática', icon: Bell, href: '/cobrancas' },
+                            { label: 'Contas a Pagar', icon: FileText, href: '/pagar' },
+                            { label: 'Contratos Recorrentes', icon: Shield, href: '/contratos' },
+                        ].map((item) => {
+                            const Icon = item.icon;
+                            const isActive = pathname === item.href;
+                            return (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors ${isActive
+                                        ? 'bg-[#1a1f26] text-white border-l-2 border-[#bc13fe]'
+                                        : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'
+                                        }`}
+                                >
+                                    <Icon size={16} className={isActive ? 'text-[#bc13fe]' : 'text-[#6e7681]'} />
+                                    <span className="text-[13px] font-medium leading-tight">{item.label}</span>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                {/* INTELIGÊNCIA & CONFIGURAÇÕES */}
+                <div className="pt-3 border-t border-[#1a1f26]/50 mt-4">
+                    <div
+                        onClick={() => setIsRecOpen(!isRecOpen)}
+                        className="flex items-center justify-between px-2 cursor-pointer mb-3 group"
                     >
                         <div className="flex items-center gap-2">
                             <div className="w-1 h-3 bg-[#0066ff] rounded-full shadow-[0_0_8px_rgba(0,102,255,0.6)]" />
-                            <span className="text-[11px] font-mono font-bold text-[#0066ff] uppercase tracking-widest">SISTEMA</span>
+                            <span className="text-[11px] font-mono font-bold text-[#0066ff] uppercase tracking-widest">INTELIGÊNCIA & CONFIG.</span>
                         </div>
+                        {isRecOpen ? <ChevronUp size={14} className="text-[#0066ff]" /> : <ChevronDown size={14} className="text-gray-500" />}
                     </div>
 
-                    <div className="space-y-1 pl-2">
-                        <Link href="/configuracoes/negocio" className={`flex items-center gap-4 px-4 py-2.5 rounded-md transition-colors ${pathname === '/configuracoes/negocio' ? 'bg-[#1a1f26] text-white border-l-2 border-[#bc13fe]' : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'}`}>
-                            <Building size={16} className={pathname === '/configuracoes/negocio' ? 'text-[#bc13fe]' : 'text-[#6e7681]'} />
-                            <span className="text-[12px] uppercase tracking-wide font-medium leading-tight">MINHA EMPRESA</span>
+                    <div className={`space-y-1 transition-all duration-300 ease-in-out pl-4 ${isRecOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                        <Link href="/inteligencia/dre" className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors ${pathname === '/inteligencia/dre' ? 'bg-[#1a1f26] text-white border-l-2 border-[#0066ff]' : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'}`}>
+                            <LineChart size={16} className={pathname === '/inteligencia/dre' ? 'text-[#0066ff]' : 'text-[#6e7681]'} />
+                            <span className="text-[13px] font-medium leading-tight">DRE & Balanço</span>
                         </Link>
-                        <Link href="/configuracoes/equipe" className={`flex items-center gap-4 px-4 py-2.5 rounded-md transition-colors ${pathname === '/configuracoes/equipe' ? 'bg-[#1a1f26] text-white border-l-2 border-[#00fff5]' : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'}`}>
-                            <Users size={16} className={pathname === '/configuracoes/equipe' ? 'text-[#00fff5]' : 'text-[#6e7681]'} />
-                            <span className="text-[12px] uppercase tracking-wide font-medium leading-tight">CONFIG. GLOBAIS (EQUIPE)</span>
+                        <Link href="/configuracoes/negocio" className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors ${pathname === '/configuracoes/negocio' ? 'bg-[#1a1f26] text-white border-l-2 border-[#0066ff]' : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'}`}>
+                            <Building size={16} className={pathname === '/configuracoes/negocio' ? 'text-[#0066ff]' : 'text-[#6e7681]'} />
+                            <span className="text-[13px] font-medium leading-tight">Minha Empresa / Negócio</span>
+                        </Link>
+                        <Link href="/configuracoes/equipe" className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors ${pathname === '/configuracoes/equipe' ? 'bg-[#1a1f26] text-white border-l-2 border-[#0066ff]' : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'}`}>
+                            <Users size={16} className={pathname === '/configuracoes/equipe' ? 'text-[#0066ff]' : 'text-[#6e7681]'} />
+                            <span className="text-[13px] font-medium leading-tight">Configurações de Equipe</span>
                         </Link>
                     </div>
                 </div>
