@@ -10,6 +10,44 @@ import {
 
 export default function WhatsAppCentralPage() {
     const [messageInput, setMessageInput] = useState("");
+    const [messages, setMessages] = useState([
+        { id: 1, sender: "Juliana Rodrigues", text: "Qual o valor da mensalidade?", time: "14:10", isOut: false },
+        { id: 2, sender: "Você", text: "Fica R$ 290 fixos! Segue a nossa proposta e a chave Pix para garantir o setup inicial hoje.", time: "14:11", isOut: true }
+    ]);
+    const [isSending, setIsSending] = useState(false);
+
+    const handleSendMessage = async () => {
+        if (!messageInput.trim() || isSending) return;
+        const outMsg = messageInput.trim();
+        setMessageInput("");
+        setIsSending(true);
+
+        // Optimistic UI update
+        const newMsg = {
+            id: Date.now(),
+            sender: "Você (Omnichannel)",
+            text: outMsg,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isOut: true
+        };
+        setMessages((prev) => [...prev, newMsg]);
+
+        try {
+            await fetch("https://inho-api.orbesystems.com.br/api/v1/crm/whatsapp/send", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    phone: "51984743957",
+                    email: "juliana@orbesystems.com.br",
+                    message: outMsg
+                })
+            });
+        } catch (error) {
+            console.error("Erro no envio omnichannel:", error);
+        } finally {
+            setIsSending(false);
+        }
+    };
 
     return (
         <div className="flex h-screen bg-[#06080A] text-[#e6edf3] font-mono selection:bg-[#00fff5]/30 overflow-hidden relative">
@@ -50,11 +88,11 @@ export default function WhatsAppCentralPage() {
                             {/* Active Chat Item */}
                             <div className="flex items-center gap-3 p-4 border-l-2 border-[#00fff5] bg-[#1a1f26]/40 cursor-pointer hover:bg-[#1a1f26]/60 transition-colors">
                                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#00fff5]/20 to-[#bc13fe]/20 border border-[#00fff5]/30 flex items-center justify-center shrink-0 object-cover overflow-hidden">
-                                    <span className="text-xs font-bold text-[#00fff5]">OJ</span>
+                                    <span className="text-xs font-bold text-[#00fff5]">JR</span>
                                 </div>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex justify-between items-start">
-                                        <h3 className="text-sm font-bold text-white truncate">Oficina do João</h3>
+                                        <h3 className="text-sm font-bold text-white truncate">Juliana Rodrigues</h3>
                                         <span className="text-[10px] text-[#00fff5]">14:11</span>
                                     </div>
                                     <p className="text-xs text-[#8b949e] truncate mt-1">Você: Fica R$ 290 fixos! Segue...</p>
@@ -115,21 +153,16 @@ export default function WhatsAppCentralPage() {
                                 </button>
                             </div>
 
-                            {/* Incoming Message */}
-                            <div className="flex flex-col items-start gap-1">
-                                <span className="text-[10px] text-[#6e7681] ml-1">João - 14:10</span>
-                                <div className="bg-[#1a1f26] text-[#e6edf3] p-3 rounded-2xl rounded-tl-sm max-w-[70%] border border-[#1a1f26]/50 shadow-sm">
-                                    <p className="text-sm leading-relaxed">Qual o valor da mensalidade?</p>
+                            {messages.map((msg) => (
+                                <div key={msg.id} className={`flex flex-col ${msg.isOut ? 'items-end' : 'items-start'} gap-1`}>
+                                    <span className={`text-[10px] text-[#6e7681] ${msg.isOut ? 'mr-1' : 'ml-1'}`}>{msg.sender} - {msg.time}</span>
+                                    <div className={`p-3 rounded-2xl max-w-[80%] border shadow-sm ${msg.isOut
+                                        ? 'bg-[#00fff5]/10 text-white border-[#00fff5]/20 rounded-tr-sm border-r-2 border-r-[#00fff5]'
+                                        : 'bg-[#1a1f26] text-[#e6edf3] border-[#1a1f26]/50 rounded-tl-sm'}`}>
+                                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                                    </div>
                                 </div>
-                            </div>
-
-                            {/* Outgoing Message */}
-                            <div className="flex flex-col items-end gap-1">
-                                <span className="text-[10px] text-[#6e7681] mr-1">Atendente Lucas - 14:11</span>
-                                <div className="bg-[#00fff5]/10 text-white p-3 rounded-2xl rounded-tr-sm max-w-[70%] border border-[#00fff5]/20 shadow-sm border-r-2 border-r-[#00fff5]">
-                                    <p className="text-sm leading-relaxed">Fica R$ 290 fixos! Segue a nossa proposta e a chave Pix para garantir o setup inicial hoje.</p>
-                                </div>
-                            </div>
+                            ))}
                         </div>
 
                         {/* Chat Input & Fast Actions */}
@@ -150,11 +183,20 @@ export default function WhatsAppCentralPage() {
                                     <textarea
                                         value={messageInput}
                                         onChange={(e) => setMessageInput(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                e.preventDefault();
+                                                handleSendMessage();
+                                            }
+                                        }}
                                         placeholder="Digite a mensagem..."
                                         className="w-full bg-transparent p-3 text-sm text-white resize-none outline-none overflow-hidden h-12 custom-scrollbar"
                                     />
                                 </div>
-                                <button className="h-12 w-12 flex items-center justify-center bg-[#00fff5] hover:bg-[#00e5dd] text-[#020406] rounded-xl transition-colors shadow-[0_0_15px_rgba(0,255,245,0.4)] shrink-0">
+                                <button
+                                    onClick={handleSendMessage}
+                                    disabled={isSending || !messageInput.trim()}
+                                    className="h-12 w-12 flex items-center justify-center bg-[#00fff5] hover:bg-[#00e5dd] disabled:opacity-50 text-[#020406] rounded-xl transition-colors shadow-[0_0_15px_rgba(0,255,245,0.4)] shrink-0">
                                     <Send size={18} className="translate-x-0.5" />
                                 </button>
                             </div>
@@ -172,13 +214,13 @@ export default function WhatsAppCentralPage() {
                             {/* Profile Details */}
                             <div className="flex flex-col items-center text-center">
                                 <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-tr from-[#00fff5]/20 to-[#bc13fe]/20 border-2 border-[#1a1f26] flex items-center justify-center mb-3">
-                                    <span className="text-xl font-bold text-white">OJ</span>
+                                    <span className="text-xl font-bold text-white">JR</span>
                                 </div>
-                                <h3 className="text-lg font-bold text-white">João da Silva</h3>
+                                <h3 className="text-lg font-bold text-white">Juliana Rodrigues</h3>
                                 <p className="text-xs text-[#00fff5] mt-1 relative inline-flex items-center gap-1">
                                     <span className="w-1.5 h-1.5 bg-[#00fff5] rounded-full blur-[2px] absolute -left-3"></span>
                                     <span className="w-1.5 h-1.5 bg-[#00fff5] rounded-full"></span>
-                                    Auto Peças Silva
+                                    Verde Pulse
                                 </p>
                             </div>
 
