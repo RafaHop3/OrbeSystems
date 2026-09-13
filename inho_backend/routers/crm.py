@@ -44,9 +44,11 @@ async def create_contact(
     try:
         business = await _biz(db, current_user)
         
-        # fix asyncpg datatype mismatch
+        # fix asyncpg datatype mismatch while preserving sqlite pytests compatibility
+        import os
         from uuid import UUID
-        b_id = UUID(business.id) if isinstance(business.id, str) else business.id
+        is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+        b_id = str(business.id) if is_sqlite else (UUID(business.id) if isinstance(business.id, str) else business.id)
         
         db_contact = CRMContact(**contact.model_dump(), business_id=b_id)
         db.add(db_contact)
@@ -239,8 +241,10 @@ async def import_contacts_csv(
     for row in reader:
         try:
             category = ContactCategory(row.get("category", "CUSTOMER").upper())
+            import os
             from uuid import UUID
-            b_id = UUID(business.id) if isinstance(business.id, str) else business.id
+            is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+            b_id = str(business.id) if is_sqlite else (UUID(business.id) if isinstance(business.id, str) else business.id)
             contact = CRMContact(
                 business_id=b_id,
                 category=category,
@@ -272,14 +276,16 @@ async def create_payable(
 ):
     business = await _biz(db, current_user)
     
+    import os
     from uuid import UUID
-    b_id = UUID(business.id) if isinstance(business.id, str) else business.id
+    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+    b_id = str(business.id) if is_sqlite else (UUID(business.id) if isinstance(business.id, str) else business.id)
     
     data = payable.model_dump()
     if data.get("supplier_id") and isinstance(data["supplier_id"], str):
-        data["supplier_id"] = UUID(data["supplier_id"])
+        data["supplier_id"] = str(data["supplier_id"]) if is_sqlite else UUID(data["supplier_id"])
     if data.get("category_id") and isinstance(data["category_id"], str):
-        data["category_id"] = UUID(data["category_id"])
+        data["category_id"] = str(data["category_id"]) if is_sqlite else UUID(data["category_id"])
         
     db_payable = AccountPayable(**data, business_id=b_id)
     db.add(db_payable)

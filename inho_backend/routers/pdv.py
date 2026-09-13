@@ -20,6 +20,7 @@ from models.models import (
 )
 from schemas.schemas import OpenRegisterRequest, PDVSaleCreate, PDVSaleOut, CashRegisterOut
 from services.audit import write_audit
+from routers.billing import _get_user_business
 
 router = APIRouter(prefix="/pdv", tags=["PDV"])
 
@@ -31,15 +32,12 @@ async def open_register(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
-    biz_op = biz_op_res.scalars().first()
-    if not biz_op:
-        raise HTTPException(status_code=403, detail="Operador não associado a uma cooperativa")
+    business = await _get_user_business(db, current_user)
 
     # Verifica se já existe caixa aberto
     existing = await db.execute(
         select(CashRegister).where(
-            CashRegister.business_id == biz_op.business_id,
+            CashRegister.business_id == business.id,
             CashRegister.operator_id == current_user.id,
             CashRegister.status == CashRegisterStatus.OPEN
         )
@@ -48,7 +46,7 @@ async def open_register(
         raise HTTPException(status_code=400, detail="Já existe um caixa aberto para este operador")
 
     register = CashRegister(
-        business_id=biz_op.business_id,
+        business_id=business.id,
         operator_id=current_user.id,
         opening_balance=body.opening_balance,
         status=CashRegisterStatus.OPEN,
@@ -71,14 +69,11 @@ async def get_open_session(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
-    biz_op = biz_op_res.scalars().first()
-    if not biz_op:
-        raise HTTPException(status_code=404, detail="Nenhum caixa aberto encontrado")
+    business = await _get_user_business(db, current_user)
 
     result = await db.execute(
         select(CashRegister).where(
-            CashRegister.business_id == biz_op.business_id,
+            CashRegister.business_id == business.id,
             CashRegister.operator_id == current_user.id,
             CashRegister.status == CashRegisterStatus.OPEN
         )
@@ -184,12 +179,9 @@ async def get_register_report(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    biz_op_res = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
-    biz_op = biz_op_res.scalars().first()
-    if not biz_op:
-        raise HTTPException(status_code=404, detail="Caixa não encontrado")
+    business = await _get_user_business(db, current_user)
 
-    reg_result = await db.execute(select(CashRegister).where(CashRegister.id == register_id, CashRegister.business_id == biz_op.business_id))
+    reg_result = await db.execute(select(CashRegister).where(CashRegister.id == register_id, CashRegister.business_id == business.id))
     register = reg_result.scalar_one_or_none()
     if not register:
         raise HTTPException(status_code=404, detail="Caixa não encontrado")
