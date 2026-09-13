@@ -49,8 +49,9 @@ export default function InhoLoginPage() {
             } else {
                 throw new Error("Token não recebido da API");
             }
-        } catch (err: any) {
-            setError(err.message || "Erro desconhecido ao tentar autenticar");
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : "Erro desconhecido ao tentar autenticar";
+            setError(errorMessage);
         } finally {
             setIsPending(false);
         }
