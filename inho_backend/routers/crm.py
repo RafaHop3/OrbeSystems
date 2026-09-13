@@ -501,36 +501,34 @@ async def proxy_omnichannel_message(
     2. A API Resend para E-mail B2B
     """
     try:
-        from services.messaging import format_whatsapp_phone
-        clean_phone = format_whatsapp_phone(payload.phone)
-        
-        wa_status = None
+        import re
+        digits = re.sub(r'\D', '', payload.phone)
+        if len(digits) in [10, 11]:
+            digits = "55" + digits
+            
+        phones_to_try = [digits]
+        if len(digits) == 13 and digits.startswith("55"):
+            sem_9 = digits[:4] + digits[5:]
+            phones_to_try.append(sem_9)
+            
+        wa_status = []
         email_status = None
         
         async with httpx.AsyncClient() as client:
-            # 1. Disparo WhatsApp (Sem bloqueio)
-            try:
-                wa_res = await client.post("http://orbe_whatsapp:3001/send", json={
-                    "phone": clean_phone,
-                    "message": payload.message
-                }, timeout=10.0)
-                wa_status = wa_res.status_code
-            except Exception as e:
-                wa_status = f"Baileys Error: {str(e)}"
+            for num in phones_to_try:
+                try:
+                    wa_res = await client.post("http://orbe_whatsapp:3001/send", json={
+                        "phone": num,
+                        "message": payload.message
+                    }, timeout=10.0)
+                    wa_status.append(f"{num}:{wa_res.status_code}")
+                except Exception as e:
+                    wa_status.append(f"{num}:Erro")
                 
-            # 2. Disparo Resend (E-mail)
             resend_key = os.environ.get("RESEND_API_KEY", "")
             if payload.email and resend_key:
                 try:
-                    html_msg = f"""
-                    <div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
-                        <h2 style="color: #00fff5; background: #020406; padding: 15px; border-radius: 8px;">Orbe Systems - Central B2B</h2>
-                        <p>Olá,</p>
-                        <p>{payload.message.replace(chr(10), '<br>')}</p>
-                        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
-                        <p style="font-size: 11px; color: #888;">Esta é uma mensagem enviada pela Central Omnichannel Orbe Systems.</p>
-                    </div>
-                    """
+                    html_msg = f"<div style='font-family: Arial, sans-serif; padding: 20px; color: #333;'><h2 style='color: #00fff5; background: #020406; padding: 15px; border-radius: 8px;'>Orbe Systems - Central B2B</h2><p>Ola,</p><p>{payload.message}</p><hr style='border: top: 1px solid #eee; margin: 20px 0;'><p style='font-size: 11px; color: #888;'>Orbe Systems Central Omnichannel.</p></div>"
                     em_res = await client.post(
                         "https://api.resend.com/emails",
                         headers={"Authorization": f"Bearer {resend_key}"},
@@ -546,7 +544,7 @@ async def proxy_omnichannel_message(
                 except Exception as e:
                     email_status = f"Resend Error: {str(e)}"
             else:
-                email_status = "Ignorado (Sem E-mail ou Sem RESEND_API_KEY)"
+                email_status = "Ignorado"
                 
         return {
             "status": "success",
@@ -554,4 +552,4 @@ async def proxy_omnichannel_message(
             "email_delivery_code": email_status
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Falha Crítica no Omnichannel: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
