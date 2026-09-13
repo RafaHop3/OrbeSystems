@@ -91,6 +91,17 @@ app = FastAPI(
 )
 
 # ── Middleware ────────────────────────────────────────────────────
+from starlette.middleware.base import BaseHTTPMiddleware
+
+class XForwardedProtoMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        forwarded_proto = request.headers.get("x-forwarded-proto")
+        if forwarded_proto:
+            request.scope["scheme"] = forwarded_proto
+        return await call_next(request)
+
+app.add_middleware(XForwardedProtoMiddleware)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
