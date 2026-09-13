@@ -22,6 +22,49 @@ export default function ModalNovoSocio({ onClose, category = 'PARTNER' }: { onCl
     };
 
     const [isSaving, setIsSaving] = useState(false);
+    const [isSearchingDoc, setIsSearchingDoc] = useState(false);
+
+    const handleSearchDoc = async () => {
+        const doc = formData.documento.replace(/\D/g, '');
+        if (doc.length !== 14 && doc.length !== 11) {
+            alert('Por favor, informe um CPF ou CNPJ com número de dígitos válido.');
+            return;
+        }
+
+        setIsSearchingDoc(true);
+        try {
+            if (doc.length === 14) {
+                const res = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${doc}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setFormData(prev => ({
+                        ...prev,
+                        nome: data.razao_social || data.nome_fantasia || prev.nome,
+                        cep: data.cep || prev.cep,
+                        rua: data.logradouro || prev.rua,
+                        numero: data.numero || prev.numero,
+                        comp: data.complemento || prev.comp,
+                        bairro: data.bairro || prev.bairro,
+                        cidade: data.municipio || prev.cidade,
+                        estado: data.uf || prev.estado,
+                        email: (data.email || prev.email)?.toLowerCase(),
+                        celular: data.ddd_telefone_1 || data.ddd_telefone_2 || prev.celular,
+                    }));
+                } else {
+                    alert('CNPJ não encontrado ou indisponível.');
+                }
+            } else {
+                // Para CPF normalmente APIs publicas não retornam dados livremente devido LGPD, 
+                // mas podemos buscar apenas caso exista algo em cache interno depois.
+                alert('A busca automática por CPF é restrita. Por favor, preencha manualmente.');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Falha ao comunicar com API de documentos.');
+        } finally {
+            setIsSearchingDoc(false);
+        }
+    };
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -53,12 +96,12 @@ export default function ModalNovoSocio({ onClose, category = 'PARTNER' }: { onCl
         try {
             const token = localStorage.getItem('orbe_token') || localStorage.getItem('token') || 'dev-bypass';
             let API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://inho-api.orbesystems.com.br';
-            
+
             // Força HTTPS se a página estiver rodando em contexto seguro (Mixed Content Fixifier)
             if (typeof window !== 'undefined' && window.location.protocol === 'https:' && API_URL.startsWith('http://')) {
                 API_URL = API_URL.replace('http://', 'https://');
             }
-            
+
             const res = await fetch(`${API_URL}/api/v1/crm/contacts/`, {
                 method: 'POST',
                 headers: {
@@ -131,8 +174,12 @@ export default function ModalNovoSocio({ onClose, category = 'PARTNER' }: { onCl
                                     type="text" name="documento" value={formData.documento} onChange={hCh}
                                     className="flex-1 bg-[#161b22] border border-[#30363d] border-r-0 rounded-l-md px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                                 />
-                                <button className="bg-[#21262d] border border-[#30363d] rounded-r-md px-3 text-sm text-blue-400 hover:bg-[#30363d] transition-colors flex items-center gap-1">
-                                    Buscar <Search size={14} />
+                                <button
+                                    onClick={handleSearchDoc}
+                                    disabled={isSearchingDoc}
+                                    className="bg-[#21262d] border border-[#30363d] rounded-r-md px-3 text-sm text-blue-400 hover:bg-[#30363d] transition-colors flex items-center gap-1 disabled:opacity-50"
+                                >
+                                    {isSearchingDoc ? 'Buscando...' : 'Buscar'} <Search size={14} />
                                 </button>
                             </div>
                         </div>
