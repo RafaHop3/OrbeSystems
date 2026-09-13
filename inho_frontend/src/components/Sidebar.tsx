@@ -1,62 +1,42 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import {
-    ChevronDown, ChevronUp, User, Users, Briefcase, Shield,
+    User, Users, Briefcase, Shield,
     ArrowDownLeft, CalendarCheck, Barcode, FileText,
     ArrowUpRight, CalendarClock, Inbox, Wallet, LineChart,
-    PieChart, TrendingUp, Clock, TrendingDown,
-    Building, Layers, FolderOpen, CreditCard, Settings,
-    Lock, Sliders, Archive, Gavel, Columns, MessageCircle,
-    FileCheck, ListTodo, BarChart2, LogOut, LayoutDashboard
+    Clock, Archive, Gavel, Columns, MessageCircle,
+    FileCheck, ListTodo, LogOut, LayoutDashboard, Settings
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import OrbeLogo from './OrbeLogo';
 
 export default function Sidebar() {
-    const [isCrmOpen, setIsCrmOpen] = useState(true);
-    const [isEntOpen, setIsEntOpen] = useState(true);
-    const [isRecOpen, setIsRecOpen] = useState(true);
-    const [isPagOpen, setIsPagOpen] = useState(true);
-    const [isCxOpen, setIsCxOpen] = useState(true);
-    const [isRelOpen, setIsRelOpen] = useState(true);
-    const [isConfOpen, setIsConfOpen] = useState(false);
-    const [isAudOpen, setIsAudOpen] = useState(false);
-
     const pathname = usePathname();
 
-    const renderAccordion = (
-        title: string, color: string,
-        isOpen: boolean, toggle: () => void,
-        items: { label: string, icon: any, href: string }[]
-    ) => (
-        <div className="pt-2 border-t border-[#1a1f26]/50 mt-3">
-            <div onClick={toggle} className="flex items-center justify-between px-2 cursor-pointer mb-2 group">
-                <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-3 rounded-full opacity-80" style={{ backgroundColor: color, boxShadow: `0 0 10px ${color}` }} />
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-widest transition-colors group-hover:brightness-150" style={{ color }}>{title}</span>
-                </div>
-                {isOpen ? <ChevronUp size={14} style={{ color }} /> : <ChevronDown size={14} className="text-gray-500" />}
-            </div>
-            <div className={`space-y-0.5 transition-all duration-300 ease-in-out pl-4 ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-                {items.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    return (
-                        <Link key={item.href} href={item.href}
-                            style={isActive ? { borderLeft: `2px solid ${color}` } : {}}
-                            className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive
-                                ? 'bg-[#1a1f26] text-white'
-                                : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'
-                                }`}>
-                            <Icon size={14} style={isActive ? { color } : { color: '#6e7681' }} />
-                            <span className="text-[12px] font-medium leading-tight">{item.label}</span>
-                        </Link>
-                    )
-                })}
+    const renderHeader = (title: string, color: string, subtitle: string = "") => (
+        <div className="pt-4 border-t border-[#1a1f26]/50 mt-4 px-2 mb-2">
+            <div className="flex flex-col gap-1">
+                <span className="text-[11px] font-mono font-bold uppercase tracking-widest" style={{ color }}>{title}</span>
+                {subtitle && <span className="text-[9px] text-[#6e7681] uppercase tracking-wider">{subtitle}</span>}
             </div>
         </div>
     );
+
+    const renderLink = (label: string, href: string, Icon: any, color: string, indent: boolean = false) => {
+        const isActive = pathname === href;
+        return (
+            <Link key={href} href={href}
+                style={isActive ? { borderLeft: `2px solid ${color}` } : {}}
+                className={`flex items-center gap-3 py-2 rounded-md transition-colors ${indent ? 'pl-7 pr-3' : 'px-3'} ${isActive
+                    ? 'bg-[#1a1f26] text-white'
+                    : 'text-[#8b949e] hover:bg-[#12161c] hover:text-[#c9d1d9]'
+                    }`}>
+                <Icon size={14} style={isActive ? { color } : { color: '#6e7681' }} />
+                <span className="text-[12px] font-medium leading-tight">{label}</span>
+            </Link>
+        );
+    };
 
     return (
         <aside className="w-[280px] min-h-screen bg-[#020406] border-r border-[#1a1f26] text-[#b3b9c5] font-sans select-none flex flex-col relative z-20">
@@ -72,89 +52,82 @@ export default function Sidebar() {
                 </div>
             </div>
 
-            <nav className="flex-1 px-4 space-y-3 overflow-y-auto custom-scrollbar mt-4 pb-10">
-                {/* Top Buttons (Gestão de Caixa / Dashboard) */}
-                <div className="space-y-2">
-                    <Link href="/" className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg border ${pathname === '/' ? 'border-teal-500/50 bg-[#0A1820] text-teal-400 shadow-[0_0_15px_rgba(20,184,166,0.15)]' : 'border-transparent text-[#6e7681] hover:bg-[#1a1f26]'}`}>
-                        <LayoutDashboard size={16} />
-                        <span className="text-[13px] font-semibold tracking-wide">HUB DE NEGÓCIOS</span>
-                    </Link>
-                    <Link href="/caixa/inbox" className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg border ${pathname === '/caixa/inbox' ? 'border-[#bc13fe]/50 bg-[#160a20] text-[#bc13fe] shadow-[0_0_15px_rgba(188,19,254,0.15)]' : 'border-transparent text-[#6e7681] hover:bg-[#1a1f26]'}`}>
-                        <Inbox size={16} />
-                        <span className="text-[13px] font-semibold tracking-wide">CAIXA DE ENTRADA</span>
-                    </Link>
-                    <Link href="/caixa/gestao" className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-lg border ${pathname === '/caixa/gestao' ? 'border-amber-500/50 bg-[#20180a] text-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.15)]' : 'border-transparent text-[#6e7681] hover:bg-[#1a1f26]'}`}>
-                        <Wallet size={16} />
-                        <span className="text-[13px] font-semibold tracking-wide">GESTÃO DE CAIXA</span>
+            <nav className="flex-1 px-3 space-y-1 overflow-y-auto custom-scrollbar mt-4 pb-10">
+
+                {/* HUB DE NEGÓCIOS */}
+                <div className="px-2 mb-2">
+                    <Link href="/" className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border ${pathname === '/' ? 'border-teal-500/50 bg-[#0A1820] text-teal-400 shadow-[0_0_15px_rgba(20,184,166,0.15)]' : 'border-transparent text-[#6e7681] hover:bg-[#1a1f26]'}`}>
+                        <LayoutDashboard size={15} />
+                        <span className="text-[12px] font-semibold tracking-wide">HUB DE NEGÓCIOS</span>
                     </Link>
                 </div>
 
-                {renderAccordion('Vendas & CRM', '#00fff5', isCrmOpen, () => setIsCrmOpen(!isCrmOpen), [
-                    { label: 'Funil de Negócios', icon: Columns, href: '/vendas/funil' },
-                    { label: 'Central WhatsApp', icon: MessageCircle, href: '/vendas/whatsapp' },
-                    { label: 'Propostas (PDF)', icon: FileCheck, href: '/vendas/propostas' },
-                    { label: 'Minhas Tarefas', icon: ListTodo, href: '/vendas/tarefas' },
-                ])}
+                {/* 1. COMERCIAL E VENDAS */}
+                {renderHeader('1. COMERCIAL & VENDAS', '#00fff5', 'A Máquina de Atração')}
+                <div className="space-y-0.5">
+                    {renderLink('Funil de Negócios', '/vendas/funil', Columns, '#00fff5')}
+                    {renderLink('Central WhatsApp', '/vendas/whatsapp', MessageCircle, '#00fff5')}
+                    {renderLink('Propostas & Orçamentos', '/vendas/propostas', FileCheck, '#00fff5')}
+                    {renderLink('Minhas Tarefas', '/vendas/tarefas', ListTodo, '#00fff5')}
+                </div>
 
-                {renderAccordion('CRM & Entidades', '#bc13fe', isEntOpen, () => setIsEntOpen(!isEntOpen), [
-                    { label: 'Clientes', icon: User, href: '/clientes' },
-                    { label: 'Fornecedores', icon: Users, href: '/fornecedores' },
-                    { label: 'Funcionários (RH)', icon: Briefcase, href: '/funcionarios' },
-                    { label: 'Sócios e Cooperados', icon: Shield, href: '/socios' },
-                ])}
+                {/* 2. ENTIDADES & CRM */}
+                {renderHeader('2. ENTIDADES & CRM', '#bc13fe', 'A Base de Pessoas')}
+                <div className="space-y-0.5">
+                    {renderLink('Clientes', '/clientes', User, '#bc13fe')}
+                    {renderLink('Fornecedores', '/fornecedores', Users, '#bc13fe')}
+                    {renderLink('Funcionários (RH)', '/funcionarios', Briefcase, '#bc13fe')}
+                    {renderLink('Sócios & Cooperados', '/socios', Shield, '#bc13fe')}
+                </div>
 
-                {renderAccordion('Recebimentos', '#10b981', isRecOpen, () => setIsRecOpen(!isRecOpen), [
-                    { label: 'Contas a Receber', icon: ArrowDownLeft, href: '/recebimentos/receber' },
-                    { label: 'Agendar', icon: CalendarCheck, href: '/recebimentos/agendar' },
-                    { label: 'Boletos', icon: Barcode, href: '/recebimentos/boletos' },
-                    { label: 'NFS-e Emitidas', icon: FileText, href: '/recebimentos/nfse' },
-                ])}
+                {/* 3. OPERAÇÃO FINANCEIRA */}
+                {renderHeader('3. OPERAÇÃO FINANCEIRA', '#10b981', 'Entradas e Saídas')}
+                <div className="space-y-0.5">
+                    {renderLink('Caixa de Entrada', '/caixa/inbox', Inbox, '#10b981')}
+                    {renderLink('Gestão de Caixa & PDV', '/caixa/gestao', Wallet, '#10b981')}
 
-                {renderAccordion('Pagamentos', '#ef4444', isPagOpen, () => setIsPagOpen(!isPagOpen), [
-                    { label: 'Contas a Pagar', icon: ArrowUpRight, href: '/pagamentos/pagar' },
-                    { label: 'Agendar e Reembolso', icon: CalendarClock, href: '/pagamentos/agendar' },
-                ])}
+                    {/* Recebimentos Block */}
+                    <div className="py-1 px-3">
+                        <span className="text-[10px] font-bold text-[#6e7681] uppercase tracking-wide">▼ Recebimentos</span>
+                    </div>
+                    {renderLink('Receber', '/recebimentos/receber', ArrowDownLeft, '#10b981', true)}
+                    {renderLink('Agendar', '/recebimentos/agendar', CalendarCheck, '#10b981', true)}
+                    {renderLink('Boletos', '/recebimentos/boletos', Barcode, '#10b981', true)}
+                    {renderLink('NFS-e Emitidas', '/recebimentos/nfse', FileText, '#10b981', true)}
 
-                {renderAccordion('Relatórios e BI', '#f59e0b', isRelOpen, () => setIsRelOpen(!isRelOpen), [
-                    { label: 'Painel Gerencial (DRE)', icon: LineChart, href: '/relatorios/dre' },
-                    { label: 'A Receber (Analítico)', icon: PieChart, href: '/relatorios/receber' },
-                    { label: 'Contas Liquidadas', icon: TrendingUp, href: '/relatorios/recebidas' },
-                    { label: 'Aging List (Atrasos)', icon: Clock, href: '/relatorios/aging' },
-                    { label: 'Perdas (Irrecuperável)', icon: TrendingDown, href: '/relatorios/perdidos' },
-                ])}
+                    {/* Pagamentos Block */}
+                    <div className="py-1 px-3 mt-1">
+                        <span className="text-[10px] font-bold text-[#6e7681] uppercase tracking-wide">▼ Pagamentos</span>
+                    </div>
+                    {renderLink('Pagar', '/pagamentos/pagar', ArrowUpRight, '#ef4444', true)}
+                    {renderLink('Agendar / Reembolsos', '/pagamentos/agendar', CalendarClock, '#ef4444', true)}
 
-                {renderAccordion('Configurações Globais', '#3b82f6', isConfOpen, () => setIsConfOpen(!isConfOpen), [
-                    { label: 'Empresa Institucional', icon: Building, href: '/configuracoes/empresa' },
-                    { label: 'Plano de Contas', icon: Layers, href: '/configuracoes/categorias' },
-                    { label: 'Centros de Custo', icon: FolderOpen, href: '/configuracoes/cc' },
-                    { label: 'Gateways de Cobrança', icon: CreditCard, href: '/configuracoes/cobranca' },
-                    { label: 'Certificado NFS-e', icon: Settings, href: '/configuracoes/nfse' },
-                    { label: 'Tokens de API', icon: Lock, href: '/configuracoes/api' },
-                    { label: 'Usuários e Permissões', icon: Users, href: '/configuracoes/usuarios' },
-                    { label: 'Parâmetros Avançados', icon: Sliders, href: '/configuracoes/avancado' },
-                ])}
+                    <div className="mt-2" />
+                    {renderLink('Contratos Recorrentes', '/contratos', FileCheck, '#10b981')}
+                </div>
 
-                {renderAccordion('Auditoria Contábil', '#a855f7', isAudOpen, () => setIsAudOpen(!isAudOpen), [
-                    { label: 'Fechamento de Mês', icon: Archive, href: '/auditoria/fechamento' },
-                    { label: 'Portal do Contador', icon: Gavel, href: '/auditoria/contador' },
-                ])}
+                {/* 4. INTELIGÊNCIA & GOVERNANÇA */}
+                {renderHeader('4. INTELIGÊNCIA & GOVERNANÇA', '#f59e0b', 'A Camada de Decisão')}
+                <div className="space-y-0.5">
+                    {renderLink('Painel DRE (Caixa vs Realizado)', '/relatorios/dre', LineChart, '#f59e0b')}
+                    {renderLink('Envelhecimento (Aging List)', '/relatorios/aging', Clock, '#f59e0b')}
+                    {renderLink('Fechamento de Mês', '/auditoria/fechamento', Archive, '#a855f7')}
+                    {renderLink('Portal do Contador', '/auditoria/contador', Gavel, '#a855f7')}
+                    {renderLink('Configurações Globais / Equipe', '/configuracoes/equipe', Settings, '#3b82f6')}
+                </div>
             </nav>
 
             {/* Footer Profile */}
             <div className="p-4 mt-auto border-t border-[#1a1f26] bg-[#06080A]">
-                <div className="flex items-center gap-3 px-2 py-2">
-                    <div className="w-9 h-9 rounded-md bg-[#0A1820] border border-teal-500/30 flex items-center justify-center">
-                        <User size={16} className="text-teal-400" />
-                    </div>
+                <div className="flex items-center justify-between">
                     <div className="flex flex-col">
-                        <span className="text-[13px] font-semibold text-white">Admnistrador INHO</span>
-                        <span className="text-[9px] font-bold text-green-500 uppercase border border-green-500/30 bg-green-500/10 rounded px-1.5 py-[1px] w-max mt-1">Super Admin</span>
+                        <span className="text-[12px] font-semibold text-[#8b949e]">admin@orbesystems.com.br</span>
                     </div>
+                    <button className="flex items-center justify-center gap-1 py-1 px-2 text-[10px] font-bold text-[#ef4444] border border-[#ef4444]/30 bg-[#ef4444]/10 hover:bg-[#ef4444]/20 rounded transition-colors">
+                        <LogOut size={10} />
+                        [Encerrar]
+                    </button>
                 </div>
-                <button className="mt-2 w-full flex items-center justify-center gap-2 py-2 text-xs font-medium text-[#6e7681] hover:text-red-400 hover:bg-[#1a1f26] rounded-md transition-colors">
-                    <LogOut size={12} />
-                    [→ SAIR DA CONTA]
-                </button>
             </div>
         </aside>
     );
