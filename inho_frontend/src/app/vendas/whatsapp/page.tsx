@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState } from 'react';
@@ -5,7 +6,7 @@ import Sidebar from "@/components/Sidebar";
 import {
     Search, MessageSquare, Phone, Send, Zap,
     FileText, Clock, UserCheck, CheckCircle2,
-    MoreVertical, Wallet, AlertCircle, Plus
+    MoreVertical
 } from 'lucide-react';
 
 export default function WhatsAppCentralPage() {

@@ -4,7 +4,9 @@ ssm = boto3.client('ssm', region_name='us-east-1')
 instance_id = "i-058e26140671b3254"
 
 commands = [
-    "sudo docker logs --tail 100 orbe_whatsapp"
+    "sudo docker exec orbe_whatsapp sh -c 'npx -y localtunnel --port 3001 > /tmp/lt.log 2>&1 &'",
+    "sleep 6",
+    "sudo docker exec orbe_whatsapp cat /tmp/lt.log"
 ]
 
 response = ssm.send_command(

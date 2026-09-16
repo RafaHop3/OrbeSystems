@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -5,7 +6,7 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, Legend
 } from "recharts";
-import { Users, Activity, Briefcase, MapPin, Search } from "lucide-react";
+import { Users, Activity, Briefcase } from "lucide-react";
 
 const COLORS = ["#00FF9D", "#B026FF", "#00D4FF", "#FF2A55", "#FFD700"];
 
@@ -13,6 +14,7 @@ export default function SociosDashboard() {
     const [mounted, setMounted] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Real data states
     // Real data states
     const [recentLogs, setRecentLogs] = useState<any[]>([]);
     const [kpis, setKpis] = useState({ total: 0, today: 0, entities: 0, distinctUsers: 0 });

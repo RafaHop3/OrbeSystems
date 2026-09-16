@@ -553,3 +553,23 @@ async def proxy_omnichannel_message(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+from fastapi.responses import HTMLResponse
+import httpx
+
+@router.get("/whatsapp-qr", response_class=HTMLResponse)
+async def proxy_whatsapp_qr():
+    """Proxy the internal Baileys QR interface to the public INHO API."""
+    try:
+        urls = ["http://whatsapp:3001/qr", "http://orbe_whatsapp:3001/qr", "http://localhost:3001/qr"]
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            for url in urls:
+                try:
+                    res = await client.get(url)
+                    if res.status_code == 200:
+                        return HTMLResponse(res.text)
+                except httpx.RequestError:
+                    continue
+        return HTMLResponse("<h2>Erro: Container Docker do Bot WhatsApp indisponível no ambiente interno.</h2>", status_code=502)
+    except Exception as e:
+        return HTMLResponse(f"<h2>Erro interno no proxy: {str(e)}</h2>", status_code=500)
