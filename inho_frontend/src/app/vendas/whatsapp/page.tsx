@@ -17,33 +17,37 @@ export default function WhatsAppCentralPage() {
 
     // --- DYNAMIC CONTACT LOGIC ---
     const [searchQuery, setSearchQuery] = useState("");
-    const [contactsList, setContactsList] = useState<any[]>([]);
+    const [allContacts, setAllContacts] = useState<any[]>([
+        { id: "mock1", name: "Juliana Rodrigues", phone: "51984743957", email: "juliana@orbesystems.com.br", category: "Mock Produção" },
+        { id: "mock2", name: "Maria Souza", phone: "5511999999999", email: "maria@orbesystems.com.br", category: "Cliente" },
+        { id: "mock3", name: "Carlos Beta", phone: "5511888888888", email: "carlos@b2b.com", category: "Fornecedor" }
+    ]);
     const [activeContact, setActiveContact] = useState<any>(null);
 
-    const handleSearch = async (query: string) => {
-        setSearchQuery(query);
-        if (query.trim().length === 0) {
-            setContactsList([]);
-            return;
-        }
-
-        try {
-            const token = typeof window !== "undefined" ? localStorage.getItem("token") || "dev-bypass" : "dev-bypass";
-            const res = await fetch(`https://inho-api.orbesystems.com.br/api/v1/crm/contacts/?search=${encodeURIComponent(query)}&limit=10`, {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
-            if (res.ok) {
-                let data = await res.json();
-                // DYNAMIC FALLBACK: Se o DB de Produção não tiver Juliana, injeta o Mock do teste.
-                if (data.length === 0 && query.toLowerCase().includes("juli")) {
-                    data = [{ id: "mock1", name: "Juliana Rodrigues", phone: "51984743957", email: "juliana@orbesystems.com.br", category: "Mock Teste Produção" }];
+    React.useEffect(() => {
+        const fetchAllContacts = async () => {
+            try {
+                const token = typeof window !== "undefined" ? localStorage.getItem("token") || "dev-bypass" : "dev-bypass";
+                const res = await fetch(`https://inho-api.orbesystems.com.br/api/v1/crm/contacts/?limit=100`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        setAllContacts(data); // Overrides mocks with real DB if available
+                    }
                 }
-                setContactsList(data);
+            } catch (error) {
+                console.error("Failed to load contacts:", error);
             }
-        } catch (error) {
-            console.error("Failed to search contacts:", error);
-        }
-    };
+        };
+        fetchAllContacts();
+    }, []);
+
+    const filteredContacts = allContacts.filter(c =>
+        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.phone && c.phone.includes(searchQuery))
+    );
 
     const handleSendMessage = async () => {
         if (!messageInput.trim() || isSending) return;
@@ -128,15 +132,15 @@ export default function WhatsAppCentralPage() {
                                 <input
                                     type="text"
                                     value={searchQuery}
-                                    onChange={(e) => handleSearch(e.target.value)}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Buscar Contatos do CRM..."
                                     className="w-full bg-[#030406] border border-[#1a1f26] rounded-md py-2 pl-9 pr-3 text-xs text-white focus:border-[#00fff5] outline-none transition-colors"
                                 />
                             </div>
                         </div>
                         <div className="flex-1 overflow-y-auto custom-scrollbar">
-                            {contactsList.length > 0 ? (
-                                contactsList.map((contact) => (
+                            {filteredContacts.length > 0 ? (
+                                filteredContacts.map((contact) => (
                                     <div
                                         key={contact.id}
                                         onClick={() => {
