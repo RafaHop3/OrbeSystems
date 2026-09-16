@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:d933d877-70b9-4da4-aa16-5ff252eec6df",
+  "serialNumber": "urn:uuid:f2689d88-a93c-4a32-9c65-693848516ef6",
   "metadata": {
-    "timestamp": "2026-09-13T19:10:32.451393+00:00",
+    "timestamp": "2026-09-16T13:27:07.895892+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -660,8 +660,8 @@
     {
       "type": "library",
       "name": "greenlet",
-      "version": "3.5.5",
-      "purl": "pkg:pypi/greenlet@3.5.5",
+      "version": "3.5.6",
+      "purl": "pkg:pypi/greenlet@3.5.6",
       "licenses": [
         {
           "license": {
@@ -678,7 +678,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "d6606559127e8eae106c12b3974d6ba04c681c268a5df923cb8d7c24142d7ce5"
+          "content": "4c56f112f0deecc6c21366665258f997b613249bbb7ccac9f450e58465f4a9bd"
         }
       ]
     },
@@ -1130,8 +1130,8 @@
     {
       "type": "library",
       "name": "propcache",
-      "version": "0.5.2",
-      "purl": "pkg:pypi/propcache@0.5.2",
+      "version": "0.5.4",
+      "purl": "pkg:pypi/propcache@0.5.4",
       "licenses": [
         {
           "license": {
@@ -1148,7 +1148,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "972cbe7eacefd8d45b0bbc95128ad514bb2c2d0131636b0d2b9a53a4d546e75d"
+          "content": "9ac1487561907b251206f2f0d847efa044091dad9071e64ec7371533b63b5943"
         }
       ]
     },
@@ -1715,8 +1715,8 @@
     {
       "type": "library",
       "name": "SQLAlchemy",
-      "version": "2.0.52",
-      "purl": "pkg:pypi/sqlalchemy@2.0.52",
+      "version": "2.0.54",
+      "purl": "pkg:pypi/sqlalchemy@2.0.54",
       "licenses": [
         {
           "license": {
@@ -1733,7 +1733,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "c1964f976d4047a52f6724a9038347eb25a65518b145679896dae6aa79026c02"
+          "content": "a3b62ffbf57198b018b7891d4daad3df3da6a83e4e0d70b4f8202ccdc0900290"
         }
       ]
     },
@@ -1900,8 +1900,8 @@
     {
       "type": "library",
       "name": "urllib3",
-      "version": "2.7.0",
-      "purl": "pkg:pypi/urllib3@2.7.0",
+      "version": "2.8.0",
+      "purl": "pkg:pypi/urllib3@2.8.0",
       "licenses": [
         {
           "license": {
@@ -1913,7 +1913,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "7cafd154f328c9e59dcc03e51dd139f1c5232215e719820ce6e1a98e8266af15"
+          "content": "015387c3f1e1ff3eea4389f89ecc8fbd9304235d9a5441e320a2c8e33c365b13"
         }
       ]
     },
@@ -2040,8 +2040,8 @@
     {
       "type": "library",
       "name": "yarl",
-      "version": "1.24.5",
-      "purl": "pkg:pypi/yarl@1.24.5",
+      "version": "1.25.1",
+      "purl": "pkg:pypi/yarl@1.25.1",
       "licenses": [
         {
           "license": {
@@ -2058,7 +2058,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "bb570e5e48ee90297f6e91e0f5820481b81f3c61ce4d5b0135640585cdaa741f"
+          "content": "794f435bb6a81ec77a137c75338ae22d73695613272f23ec9501ab7db6788fab"
         }
       ]
     }
