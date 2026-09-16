@@ -2,6 +2,7 @@ from db.session import AsyncSessionLocal
 from models.models import AuditLog, AuditAction
 from uuid import uuid4
 import datetime
+import asyncio
 
 async def seed_data():
     async with AsyncSessionLocal() as db:
