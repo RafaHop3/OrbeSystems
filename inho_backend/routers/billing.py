@@ -27,7 +27,7 @@ async def _get_user_business(db: AsyncSession, user: User) -> Business:
     if not business:
         # Create a default business for the user if none exists
         business = Business(
-            id=uuid.uuid4(),
+            id=str(uuid.uuid4()),
             user_id=str(user.id),
             name=f"Empresa de {user.full_name}"
         )
@@ -38,7 +38,7 @@ async def _get_user_business(db: AsyncSession, user: User) -> Business:
         # so they never get 403 Forbidden in Contracts/PDV/CRM
         from models.models import BusinessOperator
         biz_op = BusinessOperator(
-            id=uuid.uuid4(),
+            id=str(uuid.uuid4()),
             business_id=business.id,
             user_id=str(user.id)
         )
