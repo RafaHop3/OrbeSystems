@@ -152,7 +152,16 @@ app.post('/send', async (req, res) => {
             console.log(`Fallback JID: ${resolvedJid}`);
         }
 
-        await sock.sendMessage(resolvedJid, { text: message });
+        const sentMsg = await sock.sendMessage(resolvedJid, { text: message });
+
+        // Store in LRU cache so E2E retry/decryption requests return the real message
+        if (sentMsg) {
+            if (!sentMessagesStore[resolvedJid]) sentMessagesStore[resolvedJid] = [];
+            sentMessagesStore[resolvedJid].push(sentMsg);
+            if (sentMessagesStore[resolvedJid].length > 50) sentMessagesStore[resolvedJid].shift();
+            console.log(`Mensagem armazenada no cache LRU para JID: ${resolvedJid}`);
+        }
+
         res.json({ success: true, delivered: true, recipient: resolvedJid });
     } catch (e) {
         console.error('Erro de envio:', e);
