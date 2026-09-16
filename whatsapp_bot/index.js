@@ -1,10 +1,20 @@
 const express = require('express');
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, makeInMemoryStore } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const QRCode = require('qrcode');
+const fs = require('fs');
 
 const app = express();
 app.use(express.json());
+
+// IN-MEMORY STORE TO HANDLE MESSAGE RETRIES (Fixes "Aguardando mensagem")
+const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
+if (fs.existsSync('./baileys_store_multi.json')) {
+    store.readFromFile('./baileys_store_multi.json');
+}
+setInterval(() => {
+    store.writeToFile('./baileys_store_multi.json');
+}, 10_000);
 
 let currentQR = null;
 let isConnected = false;
@@ -17,7 +27,16 @@ async function connectToWhatsApp() {
         auth: state,
         logger: pino({ level: 'silent' }),
         printQRInTerminal: true,
+        getMessage: async (key) => {
+            if (store) {
+                const msg = await store.loadMessage(key.remoteJid, key.id);
+                return msg?.message || undefined;
+            }
+            return { conversation: 'hello' };
+        }
     });
+
+    store.bind(sock.ev);
 
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
