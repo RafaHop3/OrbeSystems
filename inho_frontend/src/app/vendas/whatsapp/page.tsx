@@ -176,9 +176,21 @@ export default function WhatsAppCentralPage() {
                                     <h2 className="text-base font-bold text-white">
                                         {activeContact ? activeContact.name : "Nenhum Contato Selecionado"}
                                     </h2>
-                                    <span className="text-xs text-[#00fff5]">
-                                        {activeContact?.phone ? `WABA: ${activeContact.phone}` : "Aguardando seleção..."}
-                                    </span>
+                                    {activeContact ? (
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-xs text-[#00a884] font-bold">WABA DESTINO:</span>
+                                            <input
+                                                type="text"
+                                                value={activeContact.phone || ''}
+                                                onChange={(e) => setActiveContact({ ...activeContact, phone: e.target.value })}
+                                                className="bg-[#1a1f26] border border-[#00fff5]/30 text-[#00fff5] text-xs px-2 py-0.5 rounded outline-none focus:border-[#00fff5] w-32 font-mono"
+                                                title="Edite este número temporariamente para testar o envio para o seu próprio WhatsApp (formato recomendado: 5511999999999)"
+                                            />
+                                            <span className="text-[10px] text-gray-500">(Editável p/ Teste)</span>
+                                        </div>
+                                    ) : (
+                                        <span className="text-xs text-[#00fff5]">Aguardando seleção...</span>
+                                    )}
                                 </div>
                             </div>
                             <div className="flex items-center gap-2">

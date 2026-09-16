@@ -4,9 +4,9 @@ ssm = boto3.client('ssm', region_name='us-east-1')
 instance_id = "i-058e26140671b3254"
 
 commands = [
-    "sudo docker exec orbe_whatsapp sh -c 'npx -y localtunnel --port 3001 > /tmp/lt.log 2>&1 &'",
-    "sleep 6",
-    "sudo docker exec orbe_whatsapp cat /tmp/lt.log"
+    "sudo docker exec orbe_whatsapp sed -i 's/syncFullHistory: false,/syncFullHistory: false, browser: [\"Orbe\", \"Chrome\", \"1.0.0\"],/g' index.js",
+    "sudo docker restart orbe_whatsapp",
+    "echo 'Bot Identity Patched and Restarted!'"
 ]
 
 response = ssm.send_command(
