@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:187b05c1-8f1e-4d4d-87af-c411138fe302",
+  "serialNumber": "urn:uuid:debbf060-bb2f-4943-b81d-89849801881b",
   "metadata": {
-    "timestamp": "2026-09-16T16:13:17.370141+00:00",
+    "timestamp": "2026-09-16T16:26:27.078139+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
