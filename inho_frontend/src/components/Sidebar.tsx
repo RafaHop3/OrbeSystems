@@ -142,6 +142,7 @@ export default function Sidebar() {
                     <div className="space-y-0.5 animate-in fade-in slide-in-from-top-2 duration-300">
                         {renderLink('Painel DRE (Caixa vs Realizado)', '/relatorios/dre', LineChart, '#f59e0b')}
                         {renderLink('Envelhecimento (Aging List)', '/relatorios/aging', Clock, '#f59e0b')}
+                        {renderLink('Dossiê & Auditoria Societária', '/socios/dashboard', Shield, '#bc13fe')}
                         {renderLink('Fechamento de Mês', '/auditoria/fechamento', Archive, '#a855f7')}
                         {renderLink('Portal do Contador', '/auditoria/contador', Gavel, '#a855f7')}
                         {renderLink('Configurações Globais / Equipe', '/configuracoes/equipe', Settings, '#3b82f6')}
