@@ -1,0 +1,2 @@
+Status: 201
+Body: {"id":"5240656b-29b7-4641-a16b-7530a1229564","business_id":"ca1d6f0b-ea70-47b8-9ccd-a3a57bede551","name":"Empresa API Live","document":"55555555000199","email":null,"phone":null,"bank_details":null,"notes":null,"status":"PROPOSTA_CADASTRADA","created_at":"2026-09-16T13:02:18.677031","updated_at":"2026-09-16T13:02:18.677031"}

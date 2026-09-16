@@ -191,22 +191,25 @@ export default function WhatsAppCentralPage() {
                         </div>
 
                         {/* Chat Messages */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-chat-pattern relative">
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-[#0b141a] relative" style={{ backgroundImage: "url('https://i.ibb.co/3YbnB9L/whatsapp-bg.png')", backgroundSize: "300px", backgroundRepeat: "repeat" }}>
                             {activeContact && (
                                 <div className="flex justify-center mb-6">
-                                    <div className="flex items-center gap-2 bg-[#bc13fe]/10 border border-[#bc13fe]/30 px-4 py-1.5 rounded-full text-xs font-bold text-[#bc13fe]">
-                                        <Zap size={14} /> Canal Sincronizado
+                                    <div className="flex items-center gap-2 bg-[#182229] px-4 py-1.5 rounded-lg text-xs font-semibold text-[#8696a0] shadow-sm">
+                                        <Zap size={14} className="text-[#00a884]" /> Canal Sincronizado: WhatsApp E2E
                                     </div>
                                 </div>
                             )}
 
                             {messages.map((msg) => (
-                                <div key={msg.id} className={`flex flex-col ${msg.isOut ? 'items-end' : 'items-start'} gap-1`}>
-                                    <span className={`text-[10px] text-[#6e7681] ${msg.isOut ? 'mr-1' : 'ml-1'}`}>{msg.sender} - {msg.time}</span>
-                                    <div className={`p-3 rounded-2xl max-w-[80%] border shadow-sm ${msg.isOut
-                                        ? 'bg-[#00fff5]/10 text-white border-[#00fff5]/20 rounded-tr-sm border-r-2 border-r-[#00fff5]'
-                                        : 'bg-[#1a1f26] text-[#e6edf3] border-[#1a1f26]/50 rounded-tl-sm'}`}>
-                                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                                <div key={msg.id} className={`flex flex-col ${msg.isOut ? 'items-end' : 'items-start'} mb-2`}>
+                                    <div className={`relative px-3 py-2 rounded-lg max-w-[85%] shadow-sm ${msg.isOut
+                                        ? 'bg-[#005c4b] text-[#e9edef] rounded-tr-none'
+                                        : 'bg-[#202c33] text-[#e9edef] rounded-tl-none'}`}>
+                                        <p className="text-[14.5px] leading-snug whitespace-pre-wrap pr-12">{msg.text}</p>
+                                        <div className="absolute bottom-1 right-2 flex items-center gap-1">
+                                            <span className="text-[10px] text-[#8696a0] font-medium">{msg.time}</span>
+                                            {msg.isOut && <CheckCircle2 size={12} className="text-[#53bdeb]" />}
+                                        </div>
                                     </div>
                                 </div>
                             ))}

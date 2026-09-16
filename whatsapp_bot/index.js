@@ -21,13 +21,41 @@ async function connectToWhatsApp() {
         auth: state,
         logger: pino({ level: 'silent' }),
         printQRInTerminal: true,
+        markOnlineOnConnect: true,
+        syncFullHistory: false,
+        patchMessageBeforeSending: (message) => {
+            const requiresPatch = !!(
+                message.buttonsMessage ||
+                message.templateMessage ||
+                message.listMessage
+            );
+            if (requiresPatch) {
+                message = {
+                    viewOnceMessage: {
+                        message: {
+                            messageContextInfo: {
+                                deviceListMetadataVersion: 2,
+                                deviceListMetadata: {},
+                            },
+                            ...message,
+                        },
+                    },
+                };
+            }
+            return message;
+        },
         getMessage: async (key) => {
             const jid = key.remoteJid;
+            console.log("Recebida solicitação de reenvio E2E/Retry para MSG_ID:", key.id, "JID:", jid);
             if (sentMessagesStore[jid]) {
                 const found = sentMessagesStore[jid].find(m => m.key.id === key.id);
-                if (found) return found.message;
+                if (found) {
+                    console.log("Mensagem encontrada no cache LRU! Retornando payload E2E intacto.");
+                    return found.message;
+                }
             }
-            return { conversation: 'hello' };
+            console.log("Falha no LRU Cache (Mensagem não encontrada). Enviando payload genérico...");
+            return { conversation: 'Esta mensagem foi enviada via Orbe Systems Omnichannel.' };
         }
     });
 
