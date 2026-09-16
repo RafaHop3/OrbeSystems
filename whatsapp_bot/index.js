@@ -1,5 +1,5 @@
 const express = require('express');
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, makeInMemoryStore } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const QRCode = require('qrcode');
 const fs = require('fs');
@@ -7,14 +7,8 @@ const fs = require('fs');
 const app = express();
 app.use(express.json());
 
-// IN-MEMORY STORE TO HANDLE MESSAGE RETRIES (Fixes "Aguardando mensagem")
-const store = makeInMemoryStore({ logger: pino().child({ level: 'silent', stream: 'store' }) });
-if (fs.existsSync('./baileys_store_multi.json')) {
-    store.readFromFile('./baileys_store_multi.json');
-}
-setInterval(() => {
-    store.writeToFile('./baileys_store_multi.json');
-}, 10_000);
+// CUSTOM IN-MEMORY STORE TO HANDLE MESSAGE RETRIES (Fixes "Aguardando mensagem")
+const sentMessagesStore = {};
 
 let currentQR = null;
 let isConnected = false;
@@ -28,15 +22,14 @@ async function connectToWhatsApp() {
         logger: pino({ level: 'silent' }),
         printQRInTerminal: true,
         getMessage: async (key) => {
-            if (store) {
-                const msg = await store.loadMessage(key.remoteJid, key.id);
-                return msg?.message || undefined;
+            const jid = key.remoteJid;
+            if (sentMessagesStore[jid]) {
+                const found = sentMessagesStore[jid].find(m => m.key.id === key.id);
+                if (found) return found.message;
             }
             return { conversation: 'hello' };
         }
     });
-
-    store.bind(sock.ev);
 
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
@@ -55,6 +48,17 @@ async function connectToWhatsApp() {
             console.log('Conectado ao WhatsApp com sucesso!');
             isConnected = true;
             currentQR = null;
+        }
+    });
+
+    sock.ev.on('messages.upsert', ({ messages, type }) => {
+        if (type !== 'append' && type !== 'notify') return;
+        for (const m of messages) {
+            if (!m.message) continue;
+            const jid = m.key.remoteJid;
+            if (!sentMessagesStore[jid]) sentMessagesStore[jid] = [];
+            sentMessagesStore[jid].push(m);
+            if (sentMessagesStore[jid].length > 50) sentMessagesStore[jid].shift();
         }
     });
 
