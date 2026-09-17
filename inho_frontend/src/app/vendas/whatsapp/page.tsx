@@ -212,7 +212,7 @@ export default function WhatsAppCentralPage() {
                         </div>
 
                         {/* Chat Messages */}
-                        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-[#0b141a] relative" style={{ backgroundImage: "url('https://raw.githubusercontent.com/RafaHop3/OrbeSystems/main/imortal/whatsapp-bg.png')", backgroundSize: "300px", backgroundRepeat: "repeat", opacity: 0.8 }}>
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-[#0b141a] relative">
                             {activeContact && (
                                 <div className="flex justify-center mb-6">
                                     <div className="flex items-center gap-2 bg-[#182229] px-4 py-1.5 rounded-lg text-xs font-semibold text-[#8696a0] shadow-sm">
