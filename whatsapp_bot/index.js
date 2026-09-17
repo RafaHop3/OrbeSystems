@@ -1,5 +1,5 @@
 const express = require('express');
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, makeInMemoryStore } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const QRCode = require('qrcode');
 const fs = require('fs');
@@ -14,12 +14,7 @@ let currentQR = null;
 let isConnected = false;
 let sock = null;
 
-// Baileys persistent store
-const store = makeInMemoryStore({ logger: pino({ level: 'silent' }) });
-store.readFromFile('./baileys_store_multi.json');
-setInterval(() => {
-    try { store.writeToFile('./baileys_store_multi.json'); } catch (e) { }
-}, 10_000);
+// Persistent store logic removed. Operating exclusively on volatile memory scaling (LRU Cache).
 
 async function connectToWhatsApp() {
     const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
@@ -63,22 +58,14 @@ async function connectToWhatsApp() {
                 }
             }
 
-            try {
-                const msg = await store.loadMessage(jid, key.id);
-                if (msg && msg.message) {
-                    console.log("Mensagem encontrada no Bailey Store persistente! Retornando payload E2E.");
-                    return msg.message;
-                }
-            } catch (err) {
-                console.error("Erro ao buscar no store:", err);
-            }
+            // O store persistente foi removido; confiamos no sentMessagesStore.
 
             console.log("Falha no Cache (Mensagem não encontrada). Deixando undefined para que o dispositivo principal (celular) responda...");
             return undefined;
         }
     });
 
-    store.bind(sock.ev);
+    // store.bind(sock.ev); removed
 
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
