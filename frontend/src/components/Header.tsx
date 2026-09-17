@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { logoutAction } from '@/lib/auth-actions';
 import { Trash2 } from 'lucide-react';
+import { useEffect } from 'react';
+import { CustomInductionButton } from '@/shaders/neuform-isolated/NeuformIsolatedEffects';
 
 const NAV_LINKS = [
   { label: 'Workspace', href: '/workspace', icon: LayoutGrid },
@@ -19,6 +21,17 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const { user, loading } = useAuth();
+
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.data?.type === 'CUSTOM_INDUCTION_CLICK') {
+        const link = NAV_LINKS.find(l => l.label === e.data.text);
+        if (link) window.location.href = link.href;
+      }
+    };
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/70">
@@ -34,21 +47,12 @@ export default function Header() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
-          {NAV_LINKS.map(({ label, href, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className="relative group flex items-center gap-2 px-4 py-2 bg-[#020b14]/40 border border-cyan-500/30 rounded-[14px] transition-all duration-300 hover:-translate-y-[2px] shadow-[inset_0_0_12px_rgba(0,210,255,0.1),0_0_8px_rgba(0,210,255,0.1)] hover:shadow-[inset_0_0_20px_rgba(0,210,255,0.5),0_0_15px_rgba(0,210,255,0.4)] hover:border-cyan-400/60 backdrop-blur-md overflow-hidden"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
-
-              <Icon size={14} className="relative z-10 text-cyan-400 group-hover:text-cyan-200 transition-colors drop-shadow-[0_0_6px_rgba(0,210,255,0.8)] group-hover:animate-pulse" />
-              <div className="relative z-10 flex">
-                <span className="font-mono text-[10px] 2xl:text-[11px] font-medium uppercase tracking-[0.2em] text-[#d6f6f8] drop-shadow-[0_0_8px_rgba(0,210,255,0.6)]">
-                  {label}
-                </span>
+          {NAV_LINKS.map(({ label, href }) => (
+            <div key={href} title={label} className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
+                <CustomInductionButton mode="dark" text={label} hue={45} />
               </div>
-            </Link>
+            </div>
           ))}
 
           {/* Premium Tools dropdown — visible only to premium users */}

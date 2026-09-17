@@ -1,7 +1,7 @@
 "use client";
 import { InductionButton } from "@/shaders/neuform-isolated/NeuformIsolatedEffects";
 import React from 'react';
-
+import Link from 'next/link';
 export default function VoidFieldPromo() {
     return (
         <section className="relative w-full py-24 flex items-center justify-center overflow-hidden bg-[#030305] border-y border-purple-500/10">
@@ -24,7 +24,7 @@ export default function VoidFieldPromo() {
                     <p className="text-slate-400 text-lg font-light leading-relaxed mb-8">
                         Harness the power of OrbeSystems' proprietary Void Field engine. Experience deterministic forecasting and sub-millisecond analysis rendered in real-time.
                     </p>
-                    <button className="relative group inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-purple-600/10 border border-purple-500/30 hover:bg-purple-600/20 hover:border-purple-500/50 transition-all duration-500 overflow-hidden">
+                    <Link href="/ferramentas-premium/orbe-visual-studio" className="relative group inline-flex items-center gap-3 px-8 py-4 rounded-xl bg-purple-600/10 border border-purple-500/30 hover:bg-purple-600/20 hover:border-purple-500/50 transition-all duration-500 overflow-hidden">
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <span className="text-sm font-semibold tracking-wide text-purple-200 relative z-10 uppercase">
                             Initialize Sequence
@@ -32,7 +32,7 @@ export default function VoidFieldPromo() {
                         <svg className="w-4 h-4 text-purple-300 relative z-10 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                         </svg>
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Right Side: Void Field Visual */}

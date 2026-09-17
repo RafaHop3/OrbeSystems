@@ -241,7 +241,7 @@ function transformThinkingButtonSource(source: string, mode: EffectMode) {
     .replace(
       "  var CX = 1024 - 22, CY = 1024 + 11.5;   /* button centre in the source recording */",
       "  var SCL = 0.49;                          /* hero button -> normal button */\n"
-        + "  var CX = (1024 - 22)/SCL, CY = (1024 + 11.5)/SCL;",
+      + "  var CX = (1024 - 22)/SCL, CY = (1024 + 11.5)/SCL;",
     )
     .replace("    k = S*dpr/REF;", "    k = S*dpr/REF*SCL;")
     /* a touch wider than the source plate, to sit the spinner and the label side by side */
@@ -250,11 +250,11 @@ function transformThinkingButtonSource(source: string, mode: EffectMode) {
     .replace(
       "  var TXT_W = 778, TXT_CAP = 120, TXT_BASE = 1093;",
       "  var TXT_W = 450, TXT_CAP = 79, TXT_BASE = CY + 38;\n"
-        + "  var BR_R = 13, BR_SP = 40, BR_GAP = 78;   /* braille dot radius, cell pitch, gap to label */\n"
-        + "  var BR_W = BR_SP + 2*BR_R, BR_SHIFT = (BR_W + BR_GAP)/2;\n"
-        + "  /* the terminal 'dots' spinner, as raised-dot masks: bit 0..2 = left column top->bottom, 3..5 = right */\n"
-        + "  var BRAILLE = [0x0B,0x19,0x39,0x38,0x3C,0x34,0x26,0x27,0x07,0x0F];\n"
-        + "  var BR_STEPS = 30;                        /* three full spinner cycles per lap, so the loop still joins */",
+      + "  var BR_R = 13, BR_SP = 40, BR_GAP = 78;   /* braille dot radius, cell pitch, gap to label */\n"
+      + "  var BR_W = BR_SP + 2*BR_R, BR_SHIFT = (BR_W + BR_GAP)/2;\n"
+      + "  /* the terminal 'dots' spinner, as raised-dot masks: bit 0..2 = left column top->bottom, 3..5 = right */\n"
+      + "  var BRAILLE = [0x0B,0x19,0x39,0x38,0x3C,0x34,0x26,0x27,0x07,0x0F];\n"
+      + "  var BR_STEPS = 30;                        /* three full spinner cycles per lap, so the loop still joins */",
     )
     .replace(
       "  var glyphs = [], fontPx = 169, tracking = 0, textX = 0;",
@@ -264,24 +264,24 @@ function transformThinkingButtonSource(source: string, mode: EffectMode) {
     .replace(
       "    textX = (CX + 4)*k - TXT_W*k/2 + lead;",
       "    textX = (CX + 4)*k - TXT_W*k/2 + lead + BR_SHIFT*k;\n"
-        + "    brailleX = (CX + 4)*k - (BR_W + BR_GAP + TXT_W)*k/2 + BR_R*k;",
+      + "    brailleX = (CX + 4)*k - (BR_W + BR_GAP + TXT_W)*k/2 + BR_R*k;",
     )
     .replace(
       "  function label(c, ph){",
       "  /* the spinner is drawn as dots rather than braille glyphs, so it never depends\n"
-        + "     on a system face carrying the U+28xx block */\n"
-        + "  function braille(c, ph){\n"
-        + "    var mask = BRAILLE[Math.floor(ph*BR_STEPS) % BRAILLE.length];\n"
-        + "    var cy = (CY - 1.5)*k, r = BR_R*k, sp = BR_SP*k;\n"
-        + "    for(var b=0;b<6;b++){\n"
-        + "      var on = (mask >> b) & 1;\n"
-        + "      c.beginPath();\n"
-        + "      c.arc(brailleX + (b < 3 ? 0 : sp), cy + ((b % 3) - 1)*sp, on ? r : r*0.7, 0, Math.PI*2);\n"
-        + "      c.fillStyle = on ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.16)';\n"
-        + "      c.fill();\n"
-        + "    }\n"
-        + "  }\n\n"
-        + "  function label(c, ph){",
+      + "     on a system face carrying the U+28xx block */\n"
+      + "  function braille(c, ph){\n"
+      + "    var mask = BRAILLE[Math.floor(ph*BR_STEPS) % BRAILLE.length];\n"
+      + "    var cy = (CY - 1.5)*k, r = BR_R*k, sp = BR_SP*k;\n"
+      + "    for(var b=0;b<6;b++){\n"
+      + "      var on = (mask >> b) & 1;\n"
+      + "      c.beginPath();\n"
+      + "      c.arc(brailleX + (b < 3 ? 0 : sp), cy + ((b % 3) - 1)*sp, on ? r : r*0.7, 0, Math.PI*2);\n"
+      + "      c.fillStyle = on ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.16)';\n"
+      + "      c.fill();\n"
+      + "    }\n"
+      + "  }\n\n"
+      + "  function label(c, ph){",
     )
     .replace("    plate(ctx);\n    label(ctx, ph);", "    plate(ctx);\n    braille(ctx, ph);\n    label(ctx, ph);");
 }
@@ -697,7 +697,7 @@ function transformGalleryHeadingSource(
     .replace(
       "  tile: 346,            /* tile side in ring units (R = a)               */",
       "  tile: 346,            /* tile width in ring units (R = a)              */\n"
-        + "  aspect: 0.75,         /* tile height / width — a 4:3 landscape crop    */",
+      + "  aspect: 0.75,         /* tile height / width — a 4:3 landscape crop    */",
     )
     .replace(
       "  roundRectPath(ctx, TS, TS, TS*RING.radius);",
@@ -710,17 +710,17 @@ function transformGalleryHeadingSource(
     .replace(
       "var CAP = 142;          /* headline cap height */\nvar SMALL = 22;         /* small-label cap height */",
       `var HEAD_CAP = 142;     /* authored headline cap height */\n`
-        + `var HEAD_MID = 1093;    /* authored vertical centre of the two-line block */\n`
-        + `var HEAD_SIZE = ${variant.type.headlineSize};   /* headline size multiplier */\n`
-        + `var HEAD_WEIGHT = '${variant.type.weight}'; /* headline weight */\n`
-        + `var HEAD_TRACK = ${variant.type.tracking};   /* headline tracking, in cap heights */\n`
-        + `var HEAD_STYLE = '${variant.field}';\n`
-        + `var HEAD_SHADOW = '${ink[2]}';  /* riso: the plate under the ink */\n`
-        + `var HEAD_GHOST = ['#ff2f6d','#00e6ff'];  /* glitch: the two channel ghosts */\n`
-        + `var PLATES = ${JSON.stringify(variant.palette)};\n`
-        + `var FIELD = '${variant.field}';       /* which painter shades the plates */\n`
-        + `var EASE = ${variant.motion.ease};        /* seconds for the orbit to reach hover speed */\n`
-        + `var SPRING = ${variant.motion.spring ? 1 : 0}, SPRING_K = 26, SPRING_D = 5.7;`,
+      + `var HEAD_MID = 1093;    /* authored vertical centre of the two-line block */\n`
+      + `var HEAD_SIZE = ${variant.type.headlineSize};   /* headline size multiplier */\n`
+      + `var HEAD_WEIGHT = '${variant.type.weight}'; /* headline weight */\n`
+      + `var HEAD_TRACK = ${variant.type.tracking};   /* headline tracking, in cap heights */\n`
+      + `var HEAD_STYLE = '${variant.field}';\n`
+      + `var HEAD_SHADOW = '${ink[2]}';  /* riso: the plate under the ink */\n`
+      + `var HEAD_GHOST = ['#ff2f6d','#00e6ff'];  /* glitch: the two channel ghosts */\n`
+      + `var PLATES = ${JSON.stringify(variant.palette)};\n`
+      + `var FIELD = '${variant.field}';       /* which painter shades the plates */\n`
+      + `var EASE = ${variant.motion.ease};        /* seconds for the orbit to reach hover speed */\n`
+      + `var SPRING = ${variant.motion.spring ? 1 : 0}, SPRING_K = 26, SPRING_D = 5.7;`,
     )
     .replace(
       "var SANS = '\"Helvetica Neue\",Helvetica,\"Inter\",Arial,system-ui,sans-serif';",
@@ -739,10 +739,10 @@ function transformGalleryHeadingSource(
     .replace(
       GALLERY_HEADING_LABEL_BLOCK,
       "function buildLabels(){\n"
-        + "  /* the launch poster's corner marks and flanking notes are dropped; the\n"
-        + "     layer stays so the compositing order below is untouched */\n"
-        + "  labelLayer = mkc(1,1);\n"
-        + "}\n\nfunction resize",
+      + "  /* the launch poster's corner marks and flanking notes are dropped; the\n"
+      + "     layer stays so the compositing order below is untouched */\n"
+      + "  labelLayer = mkc(1,1);\n"
+      + "}\n\nfunction resize",
     )
 
     .replace("var spin = (t/DUR)*Math.PI*2;", `var spin = (t/DUR)*Math.PI*2*${variant.direction};`)
@@ -1915,6 +1915,26 @@ export function PerformanceGauges({ variant = PERFORMANCE_GAUGES_DEFAULTS.varian
 export const LogicCoreField = createEffectComponent(EFFECTS.logicCore);
 export const IgnitionButton = createEffectComponent(EFFECTS.ignition);
 export const InductionButton = createEffectComponent(EFFECTS.induction);
+
+export function CustomInductionButton({ text, ...props }: NeuformIsolatedEffectProps & { text?: string }) {
+  const definition = useMemo<EffectDefinition>(() => ({
+    ...EFFECTS.induction,
+    transformSource: (source, mode) => {
+      let src = source;
+      if (text) {
+        src = src.replace(/ORBE\s+SYSTEMS/g, text);
+      }
+      // Inject click bubbler
+      src = src.replace('</body>', `<script>
+        document.getElementById('btn').addEventListener('click', function() {
+           window.parent.postMessage({ type: 'CUSTOM_INDUCTION_CLICK', text: '${text}' }, '*');
+        });
+      </script></body>`);
+      return src;
+    }
+  }), [text]);
+  return <NeuformIsolatedEffect {...props} definition={definition} />;
+}
 export const PlasmaButton = createEffectComponent(EFFECTS.aetherisLabs);
 export const TactileButton = createEffectComponent(EFFECTS.tactile);
 export const ThinkingButton = createEffectComponent(EFFECTS.thinking);
