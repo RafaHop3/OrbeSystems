@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:b0f7de7a-6bc9-4370-9d7c-aec1c56452c5",
+  "serialNumber": "urn:uuid:25197224-8b15-4e21-870b-7f14b20ecef4",
   "metadata": {
-    "timestamp": "2026-09-17T13:40:24.010545+00:00",
+    "timestamp": "2026-09-17T17:51:34.432886+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -810,8 +810,8 @@
     {
       "type": "library",
       "name": "idna",
-      "version": "3.19",
-      "purl": "pkg:pypi/idna@3.19",
+      "version": "3.20",
+      "purl": "pkg:pypi/idna@3.20",
       "licenses": [
         {
           "license": {
@@ -823,7 +823,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "d5b04f199bad1a5062e1181bd693d196f1e6cf7a15d26edf9506d813e1e090d6"
+          "content": "8a57dd7b57901d68cda564b9bf3ebc250d39d7707951188fba8ac706093a872f"
         }
       ]
     },
