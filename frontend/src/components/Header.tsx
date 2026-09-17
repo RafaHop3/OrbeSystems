@@ -8,13 +8,12 @@ import { logoutAction } from '@/lib/auth-actions';
 import { Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
 import { CustomPlasmaButton } from '@/shaders/neuform-isolated/CustomPlasmaButton';
+import { CustomInductionButton } from '@/shaders/neuform-isolated/NeuformIsolatedEffects';
 import { GlobeCollection } from '@/shaders/globe/GlobeCollection';
 
 const NAV_LINKS = [
   { label: 'Workspace', href: '/workspace', icon: LayoutGrid },
   { label: 'Cleaner', href: '/orbe-cleaner', icon: Trash2 },
-  { label: 'Skills', href: '/skills', icon: Cpu },
-  { label: 'Inovações', href: '/inovacoes', icon: Lightbulb },
   { label: 'Contato', href: '/#contact', icon: Mail },
 ];
 
@@ -114,7 +113,7 @@ export default function Header() {
             {!user && (
               <Link href="/assinar" className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
-                  <CustomPlasmaButton mode="dark" text="PREMIUM" hue={0} saturation={1.2} />
+                  <CustomInductionButton text="PREMIUM" />
                 </div>
               </Link>
             )}
@@ -131,13 +130,13 @@ export default function Header() {
                 className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105"
               >
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
-                  <CustomPlasmaButton mode="dark" text="LOGOUT" hue={0} saturation={1.2} />
+                  <CustomInductionButton text="LOGOUT" />
                 </div>
               </button>
             ) : (
               <Link href="/login" className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
-                  <CustomPlasmaButton mode="dark" text="LOGIN" hue={0} saturation={1.2} />
+                  <CustomInductionButton text="LOGIN" />
                 </div>
               </Link>
             )}
