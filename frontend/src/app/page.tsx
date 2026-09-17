@@ -6,6 +6,7 @@ import FreedomSection from '@/components/FreedomSection';
 import FeaturedSitesSection from '@/components/FeaturedSitesSection';
 import VoidFieldPromo from '@/components/VoidFieldPromo';
 import OrbeStudioPromo from '@/components/OrbeStudioPromo';
+import InhoPromo from '@/components/InhoPromo';
 import dynamic from 'next/dynamic';
 
 const StarryBackground = dynamic(() => import('@/components/StarryBackground'), {
@@ -21,6 +22,7 @@ export default function HomePage() {
       <Header />
       <OrbeStudioPromo />
       <VoidFieldPromo />
+      <InhoPromo />
       <ScrollNarrativeEngine>
         <HeroSection />
       </ScrollNarrativeEngine>

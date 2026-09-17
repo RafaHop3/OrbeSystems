@@ -18,11 +18,7 @@ export default function WhatsAppCentralPage() {
 
     // --- DYNAMIC CONTACT LOGIC ---
     const [searchQuery, setSearchQuery] = useState("");
-    const [allContacts, setAllContacts] = useState<any[]>([
-        { id: "mock1", name: "Juliana Rodrigues", phone: "51984743957", email: "juliana@orbesystems.com.br", category: "Mock Produção" },
-        { id: "mock2", name: "Maria Souza", phone: "5511999999999", email: "maria@orbesystems.com.br", category: "Cliente" },
-        { id: "mock3", name: "Carlos Beta", phone: "5511888888888", email: "carlos@b2b.com", category: "Fornecedor" }
-    ]);
+    const [allContacts, setAllContacts] = useState<any[]>([]);
     const [activeContact, setActiveContact] = useState<any>(null);
 
     React.useEffect(() => {

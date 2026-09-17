@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     User, Users, Briefcase, Shield,
     ArrowDownLeft, CalendarCheck, Barcode, FileText,
@@ -16,13 +16,23 @@ import NavigationControls from './NavigationControls';
 export default function Sidebar() {
     const pathname = usePathname();
 
-    // State to handle collapsible sections
     const [expanded, setExpanded] = useState<Record<string, boolean>>({
         comercial: true,
         entidades: true,
         financeiro: true,
         inteligencia: true
     });
+
+    const [userEmail, setUserEmail] = useState('admin@orbesystems.com.br');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const email = localStorage.getItem('user_email');
+            if (email) {
+                setUserEmail(email);
+            }
+        }
+    }, []);
 
     const toggleSection = (section: string) => {
         setExpanded(prev => ({ ...prev, [section]: !prev[section] }));
@@ -150,11 +160,10 @@ export default function Sidebar() {
                 )}
             </nav>
 
-            {/* Footer Profile */}
             <div className="p-4 mt-auto border-t border-[#1a1f26] bg-[#06080A]">
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col">
-                        <span className="text-[12px] font-semibold text-[#8b949e]">admin@orbesystems.com.br</span>
+                        <span className="text-[12px] font-semibold text-[#8b949e] overflow-hidden text-ellipsis max-w-[130px]">{userEmail}</span>
                     </div>
                     <button className="flex items-center justify-center gap-1 py-1 px-2 text-[10px] font-bold text-[#ef4444] border border-[#ef4444]/30 bg-[#ef4444]/10 hover:bg-[#ef4444]/20 rounded transition-colors">
                         <LogOut size={10} />
