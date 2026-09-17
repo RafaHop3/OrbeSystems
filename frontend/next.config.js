@@ -36,10 +36,10 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://code.iconify.design",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https:",
+      "img-src 'self' data: blob: https: https://picsum.photos https://fastly.picsum.photos",
       "connect-src 'self' data: http://localhost:8000 http://127.0.0.1:8000 http://52.20.22.241 https://api.orbesystems.com.br https://inho-api.orbesystems.com.br https://ipapi.co https://ipinfo.io https://*.vercel.app",
       "frame-src 'none'",
       "object-src 'none'",

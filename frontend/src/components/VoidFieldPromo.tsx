@@ -1,7 +1,6 @@
 "use client";
 import PredictiveArcCanvas from './VoidFieldCanvas';
 import React from 'react';
-import { InductionButton } from "@/shaders/neuform-isolated/NeuformIsolatedEffects";
 
 export default function VoidFieldPromo() {
     return (
@@ -40,13 +39,8 @@ export default function VoidFieldPromo() {
                 <div className="relative w-full aspect-square md:aspect-video lg:aspect-square flex justify-center items-center rounded-[3rem] bg-[#08030c] border border-purple-500/10 overflow-hidden shadow-[inset_0_0_80px_rgba(0,0,0,0.8),0_0_50px_rgba(168,85,247,0.1)] group">
                     <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/20 via-transparent to-fuchsia-900/10 opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
 
-                    <div className="relative w-full h-[350px] mix-blend-screen overflow-hidden group-hover:scale-[1.02] transition-transform duration-1000 ease-out">
-                        <InductionButton
-                            mode="dark"
-                            hue={0}
-                            saturation={1}
-                            brightness={1}
-                        />
+                    <div className="absolute inset-0 mix-blend-screen overflow-hidden group-hover:scale-105 transition-transform duration-1000 ease-out">
+                        <PredictiveArcCanvas />
                     </div>
 
                     {/* Decorative Corner Borders */}
