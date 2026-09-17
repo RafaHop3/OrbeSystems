@@ -34,7 +34,7 @@ export function CustomPlasmaButton({ text, href, mode = "dark", hue = 0, saturat
         We will rely on the Header wrapping link for clicking, but we pass transparent text overlay.
       */}
             <div className="absolute inset-0 z-0 pointer-events-none w-full h-full transform scale-[0.6]">
-                <PlasmaButton mode={mode} hue={hue} saturation={saturation} brightness={brightness} />
+                <PlasmaButton mode={mode} hue={hue} saturation={saturation} brightness={brightness} style={{ background: 'transparent' }} />
             </div>
             <div className="absolute inset-0 z-10 flex items-center justify-center font-semibold text-sm tracking-[.26em] text-[#e2f1ff] pointer-events-auto"
                 style={{ textShadow: "0 1px 12px rgba(0, 16, 40, .85)" }}>

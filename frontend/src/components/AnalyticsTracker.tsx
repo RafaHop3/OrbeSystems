@@ -19,6 +19,8 @@ export default function AnalyticsTracker() {
   const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    if (process.env.NODE_ENV === 'development') return;
+
     // Generate or retrieve session ID
     const getOrCreateSessionId = () => {
       let sessionId = sessionStorage.getItem('orbe_session_id');
@@ -82,6 +84,8 @@ export default function AnalyticsTracker() {
 
   // Track route changes for heartbeat updates
   useEffect(() => {
+    if (process.env.NODE_ENV === 'development') return;
+
     const handleRouteChange = () => {
       if (sessionIdRef.current) {
         const currentPath = window.location.pathname;
@@ -93,13 +97,13 @@ export default function AnalyticsTracker() {
             session_id: sessionIdRef.current,
             event_type: 'page_view'
           }),
-        }).catch(() => {});
+        }).catch(() => { });
       }
     };
 
     // Listen for Next.js route changes
     window.addEventListener('popstate', handleRouteChange);
-    
+
     return () => {
       window.removeEventListener('popstate', handleRouteChange);
     };

@@ -39,7 +39,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-3 group z-50">
           <div className="w-[36px] h-[36px] rounded-full overflow-hidden shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.6)]">
-            <GlobeCollection variant="energy-orb" speed={1.00} scale={1.4} smokeScale={1.5} hue={214} saturation={1.2} brightness={1.1} />
+            <GlobeCollection variant="energy-orb" speed={1.00} scale={1.4} smokeScale={1.5} hue={0} saturation={1.2} brightness={1.1} />
           </div>
           <span className="font-grotesk text-sm font-bold tracking-wide text-white group-hover:text-neon-cyan transition-colors">
             ORBE<span className="text-neon-cyan font-outfit">SYSTEMS</span>
@@ -49,11 +49,11 @@ export default function Header() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map(({ label, href }) => (
-            <div key={href} title={label} className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
+            <Link key={href} href={href} title={label} className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
                 <CustomPlasmaButton mode="dark" text={label} hue={0} saturation={1.2} />
               </div>
-            </div>
+            </Link>
           ))}
 
           {/* Premium Tools dropdown — visible only to premium users */}
