@@ -5,7 +5,7 @@ import ScrollNarrativeEngine from '@/components/ScrollNarrativeEngine';
 import FreedomSection from '@/components/FreedomSection';
 import FeaturedSitesSection from '@/components/FeaturedSitesSection';
 import VoidFieldPromo from '@/components/VoidFieldPromo';
-import OrbeStudioPromo from '@/components/OrbeStudioPromo';
+import OrbeMusicHero from '@/components/OrbeMusicHero';
 import InhoPromo from '@/components/InhoPromo';
 import dynamic from 'next/dynamic';
 
@@ -20,7 +20,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-transparent pt-16 relative">
       <StarryBackground />
       <Header />
-      <OrbeStudioPromo />
+      <OrbeMusicHero />
       <VoidFieldPromo />
       <InhoPromo />
       <ScrollNarrativeEngine>

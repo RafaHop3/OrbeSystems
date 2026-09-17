@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Globe</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            background: #272727;
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            cursor: grab;
+            touch-action: none;
+        }
+
+        canvas.dragging {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="c"></canvas>
+    <script>
+        'use strict';
+        /* =========================================================
+           NETWORK GLOBE 
+           Clean glowing nodes over an empty sphere
+           ========================================================= */
+
+        const FREEZE_T = null;
+        const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        const TAU = Math.PI * 2;
+        const S = 1080;
+        const canvas = document.getElementById('c');
+        const ctx = canvas.getContext('2d');
+        const DPR = Math.min(window.devicePixelRatio || 1, 2);
+        let view = S;
+        function resize() {
+            view = Math.min(innerWidth, innerHeight);
+            canvas.width = view * DPR;
+            canvas.height = view * DPR;
+            canvas.style.width = view + 'px';
+            canvas.style.height = view + 'px';
+        }
+        resize();
+        addEventListener('resize', () => {
+            resize();
+            if (FREEZE_T !== null || REDUCED) draw();
+        });
+
+        const TONE = '#ffffff';
+        const BG = '#272727';
+        const CENTER = S / 2;
+        const R = S * .40;
+        const FOV = R * 3.4;
+
+        const nodes = [];
+        for (let i = 0; i < 400; i++) {
+            const z = Math.random() * 2 - 1;
+            const a = Math.random() * TAU;
+            const s = Math.sqrt(1 - z * z);
+            nodes.push({
+                x: Math.cos(a) * s * R,
+                y: z * R,
+                z: Math.sin(a) * s * R,
+                r: Math.random() * 2 + 1,
+                c: 0,
+            });
+        }
+
+        function updateMatrix(yaw, pitch) {
+            const cy = Math.cos(yaw), sy = Math.sin(yaw);
+            const cx = Math.cos(pitch), sx = Math.sin(pitch);
+            return [
+                cy, 0, sy,
+                sx * sy, cx, -sx * cy,
+                -cx * sy, sx, cx * cy
+            ];
+        }
+
+        let M = updateMatrix(0, -0.35);
+        let yaw = 0, pitch = -0.35;
+        let velYaw = 0.1, velPitch = 0;
+        let dragging = false, dragDX = 0, dragDY = 0;
+        let lastPX = 0, lastPY = 0;
+
+        canvas.addEventListener('pointerdown', e => {
+            dragging = true;
+            canvas.classList.add('dragging');
+            canvas.setPointerCapture(e.pointerId);
+            lastPX = e.clientX; lastPY = e.clientY;
+        });
+        addEventListener('pointermove', e => {
+            if (dragging) {
+                dragDX += e.clientX - lastPX;
+                dragDY += e.clientY - lastPY;
+                lastPX = e.clientX; lastPY = e.clientY;
+            }
+        });
+        addEventListener('pointerup', () => {
+            dragging = false;
+            canvas.classList.remove('dragging');
+        });
+
+        function draw() {
+            const viewM = M;
+            ctx.setTransform(DPR * view / S, 0, 0, DPR * view / S, 0, 0);
+            ctx.fillStyle = BG;
+            ctx.fillRect(0, 0, S, S);
+
+            const proj = [];
+            for (let i = 0; i < nodes.length; i++) {
+                const n = nodes[i];
+                const vx = viewM[0] * n.x + viewM[1] * n.y + viewM[2] * n.z;
+                const vy = viewM[3] * n.x + viewM[4] * n.y + viewM[5] * n.z;
+                const vz = viewM[6] * n.x + viewM[7] * n.y + viewM[8] * n.z;
+                const ps = FOV / (FOV - vz);
+                proj.push({ x: CENTER + vx * ps, y: CENTER + vy * ps, s: ps, z: vz, r: n.r });
+            }
+
+            proj.sort((a, b) => a.z - b.z);
+
+            ctx.fillStyle = TONE;
+            for (const p of proj) {
+                const alpha = Math.max(0.05, (p.z / R + 1) / 2);
+                ctx.globalAlpha = Math.pow(alpha, 1.5);
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r * p.s, 0, TAU);
+                ctx.fill();
+            }
+            ctx.globalAlpha = 1;
+        }
+
+        let last = performance.now();
+        (function loop(now) {
+            const dt = Math.min((now - last) / 1000, .05);
+            last = now;
+            if (dragging) {
+                const dy = dragDX * .004, dp = dragDY * .004;
+                yaw += dy; pitch = Math.max(-1.2, Math.min(1.2, pitch + dp));
+                velYaw = dy / Math.max(dt, 1e-3) * 0.35 + velYaw * 0.65;
+                velPitch = dp / Math.max(dt, 1e-3) * 0.35 + velPitch * 0.65;
+                dragDX = dragDY = 0;
+            } else {
+                yaw += velYaw * dt;
+                pitch = Math.max(-1.2, Math.min(1.2, pitch + velPitch * dt));
+                const decay = Math.pow(.32, dt);
+                velYaw = 0.1 + (velYaw - 0.1) * decay;
+                velPitch *= decay;
+            }
+            M = updateMatrix(yaw, pitch);
+            draw();
+            if (!REDUCED) requestAnimationFrame(loop);
+        })(performance.now());
+    </script>
+</body>
+
+</html>

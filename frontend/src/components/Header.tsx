@@ -7,7 +7,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { logoutAction } from '@/lib/auth-actions';
 import { Trash2 } from 'lucide-react';
 import { useEffect } from 'react';
-import { CustomInductionButton } from '@/shaders/neuform-isolated/NeuformIsolatedEffects';
+import { CustomPlasmaButton } from '@/shaders/neuform-isolated/CustomPlasmaButton';
+import { GlobeCollection } from '@/shaders/globe/GlobeCollection';
 
 const NAV_LINKS = [
   { label: 'Workspace', href: '/workspace', icon: LayoutGrid },
@@ -37,8 +38,8 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/70">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-3 group z-50">
-          <div className="relative w-8 h-8 rounded-full flex items-center justify-center border-2 border-neon-cyan shadow-[0_0_15px_rgba(0,242,254,0.6)] group-hover:scale-110 transition-transform">
-            <Globe className="text-neon-cyan animate-pulse" size={16} />
+          <div className="w-[36px] h-[36px] rounded-full overflow-hidden shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.6)]">
+            <GlobeCollection variant="energy-orb" speed={1.00} scale={1.4} smokeScale={1.5} hue={214} saturation={1.2} brightness={1.1} />
           </div>
           <span className="font-grotesk text-sm font-bold tracking-wide text-white group-hover:text-neon-cyan transition-colors">
             ORBE<span className="text-neon-cyan font-outfit">SYSTEMS</span>
@@ -50,7 +51,7 @@ export default function Header() {
           {NAV_LINKS.map(({ label, href }) => (
             <div key={href} title={label} className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
-                <CustomInductionButton mode="dark" text={label} hue={45} />
+                <CustomPlasmaButton mode="dark" text={label} hue={0} saturation={1.2} />
               </div>
             </div>
           ))}
@@ -111,12 +112,10 @@ export default function Header() {
           {/* Login & Premium buttons (desktop) */}
           <div className="hidden md:flex items-center gap-3">
             {!user && (
-              <Link
-                href="/assinar"
-                className="flex items-center gap-1.5 font-outfit font-bold text-[10px] uppercase tracking-widest text-black bg-neon-cyan hover:bg-white transition-colors border border-glow-cyan rounded px-4 py-2 hover:shadow-neon-cyan"
-              >
-                <Crown size={12} className="text-black" />
-                <span>Premium Access</span>
+              <Link href="/assinar" className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
+                  <CustomPlasmaButton mode="dark" text="PREMIUM" hue={0} saturation={1.2} />
+                </div>
               </Link>
             )}
             {loading ? (
@@ -129,18 +128,17 @@ export default function Header() {
                   await logoutAction();
                   window.location.href = '/';
                 }}
-                className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:text-neon-blue transition-all duration-300 border border-slate-700 rounded px-3 py-1.5 hover:border-glow-purple hover:bg-neon-blue/5"
+                className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105"
               >
-                <LogOut size={12} className="text-neon-blue" />
-                <span>Logout</span>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
+                  <CustomPlasmaButton mode="dark" text="LOGOUT" hue={0} saturation={1.2} />
+                </div>
               </button>
             ) : (
-              <Link
-                href="/login"
-                className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-slate-300 hover:text-neon-cyan transition-all duration-300 border border-slate-700 rounded px-3 py-1.5 hover:border-glow-cyan hover:bg-neon-cyan/5"
-              >
-                <LogIn size={11} className="text-blue-400" />
-                <span>Login</span>
+              <Link href="/login" className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
+                  <CustomPlasmaButton mode="dark" text="LOGIN" hue={0} saturation={1.2} />
+                </div>
               </Link>
             )}
           </div>
