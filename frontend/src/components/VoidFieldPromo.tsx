@@ -40,7 +40,7 @@ export default function VoidFieldPromo() {
                     <div className="absolute inset-0 bg-gradient-to-tr from-purple-900/20 via-transparent to-fuchsia-900/10 opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
 
                     <div className="absolute inset-0 mix-blend-screen overflow-hidden group-hover:scale-105 transition-transform duration-1000 ease-out">
-                        <InductionButton mode="dark" hue={200} saturation={1.0} brightness={1.0} />
+                        <InductionButton mode="dark" saturation={1.0} brightness={1.0} />
                     </div>
 
                     {/* Decorative Corner Borders */}

@@ -57,6 +57,10 @@ body {
     font-family: 'Space Grotesk', sans-serif;
   }
 
+  .font-cinzel {
+    font-family: 'Cinzel', serif;
+  }
+
   .text-neon-cyan {
     color: rgb(var(--color-neon-cyan));
     text-shadow: 0 0 15px rgba(var(--color-neon-cyan), 0.6);
