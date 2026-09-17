@@ -32,6 +32,20 @@ router = APIRouter(prefix="/crm", tags=["CRM & Financials"])
 async def _biz(db: AsyncSession, user: User) -> Business:
     return await _get_user_business(db, user)
 
+def get_uuid(val):
+    import os
+    from uuid import UUID
+    if not val: return val
+    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+    if is_sqlite:
+        return str(val)
+    if isinstance(val, str):
+        try:
+            return UUID(val)
+        except ValueError:
+            return val
+    return val
+
 
 # ── CONTACTS ──────────────────────────────────────────────────────
 
@@ -45,10 +59,7 @@ async def create_contact(
         business = await _biz(db, current_user)
         
         # fix asyncpg datatype mismatch while preserving sqlite pytests compatibility
-        import os
-        from uuid import UUID
-        is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
-        b_id = str(business.id) if is_sqlite else (UUID(business.id) if isinstance(business.id, str) else business.id)
+        b_id = get_uuid(business.id)
         
         db_contact = CRMContact(**contact.model_dump(), business_id=b_id)
         db.add(db_contact)
@@ -73,7 +84,8 @@ async def list_contacts(
     current_user: User       = Depends(get_current_user)
 ):
     business = await _biz(db, current_user)
-    query = select(CRMContact).where(CRMContact.business_id == business.id)
+    b_id = get_uuid(business.id)
+    query = select(CRMContact).where(CRMContact.business_id == b_id)
 
     if category:
         query = query.where(CRMContact.category == ContactCategory(category))
@@ -96,7 +108,7 @@ async def list_contacts(
         overdue_sub = (
             select(BillingInvoice.id)
             .where(
-                BillingInvoice.business_id == business.id,
+                BillingInvoice.business_id == b_id,
                 BillingInvoice.crm_contact_id == CRMContact.id,
                 BillingInvoice.status.in_([BillingStatus.OVERDUE, BillingStatus.PENDING]),
                 BillingInvoice.due_date < datetime.now(timezone.utc)
@@ -117,8 +129,8 @@ async def get_contact(
     business = await _biz(db, current_user)
     result = await db.execute(
         select(CRMContact).where(
-            CRMContact.id == contact_id,
-            CRMContact.business_id == business.id
+            CRMContact.id == get_uuid(contact_id),
+            CRMContact.business_id == get_uuid(business.id)
         )
     )
     contact = result.scalar_one_or_none()
@@ -137,8 +149,8 @@ async def update_contact(
     business = await _biz(db, current_user)
     result = await db.execute(
         select(CRMContact).where(
-            CRMContact.id == contact_id,
-            CRMContact.business_id == business.id
+            CRMContact.id == get_uuid(contact_id),
+            CRMContact.business_id == get_uuid(business.id)
         )
     )
     contact = result.scalar_one_or_none()
@@ -162,8 +174,8 @@ async def delete_contact(
     business = await _biz(db, current_user)
     result = await db.execute(
         select(CRMContact).where(
-            CRMContact.id == contact_id,
-            CRMContact.business_id == business.id
+            CRMContact.id == get_uuid(contact_id),
+            CRMContact.business_id == get_uuid(business.id)
         )
     )
     contact = result.scalar_one_or_none()
@@ -187,8 +199,8 @@ async def get_contact_timeline(
     upcoming_q = await db.execute(
         select(BillingInvoice)
         .where(
-            BillingInvoice.business_id == business.id,
-            BillingInvoice.crm_contact_id == contact_id,
+            BillingInvoice.business_id == get_uuid(business.id),
+            BillingInvoice.crm_contact_id == get_uuid(contact_id),
             BillingInvoice.due_date >= now,
             BillingInvoice.status == BillingStatus.PENDING,
         )
@@ -201,8 +213,8 @@ async def get_contact_timeline(
     last_q = await db.execute(
         select(BillingInvoice)
         .where(
-            BillingInvoice.business_id == business.id,
-            BillingInvoice.crm_contact_id == contact_id,
+            BillingInvoice.business_id == get_uuid(business.id),
+            BillingInvoice.crm_contact_id == get_uuid(contact_id),
             BillingInvoice.status == BillingStatus.PAID,
         )
         .order_by(BillingInvoice.updated_at.desc())
@@ -241,10 +253,7 @@ async def import_contacts_csv(
     for row in reader:
         try:
             category = ContactCategory(row.get("category", "CUSTOMER").upper())
-            import os
-            from uuid import UUID
-            is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
-            b_id = str(business.id) if is_sqlite else (UUID(business.id) if isinstance(business.id, str) else business.id)
+            b_id = get_uuid(business.id)
             contact = CRMContact(
                 business_id=b_id,
                 category=category,
@@ -276,16 +285,13 @@ async def create_payable(
 ):
     business = await _biz(db, current_user)
     
-    import os
-    from uuid import UUID
-    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
-    b_id = str(business.id) if is_sqlite else (UUID(business.id) if isinstance(business.id, str) else business.id)
+    b_id = get_uuid(business.id)
     
     data = payable.model_dump()
     if data.get("supplier_id") and isinstance(data["supplier_id"], str):
-        data["supplier_id"] = str(data["supplier_id"]) if is_sqlite else UUID(data["supplier_id"])
+        data["supplier_id"] = get_uuid(data["supplier_id"])
     if data.get("category_id") and isinstance(data["category_id"], str):
-        data["category_id"] = str(data["category_id"]) if is_sqlite else UUID(data["category_id"])
+        data["category_id"] = get_uuid(data["category_id"])
         
     db_payable = AccountPayable(**data, business_id=b_id)
     db.add(db_payable)
@@ -305,12 +311,12 @@ async def list_payables(
     current_user: User = Depends(get_current_user)
 ):
     business = await _biz(db, current_user)
-    query = select(AccountPayable).where(AccountPayable.business_id == business.id)
+    query = select(AccountPayable).where(AccountPayable.business_id == get_uuid(business.id))
 
     if status_filter:
         query = query.where(AccountPayable.status == status_filter)
     if supplier_id:
-        query = query.where(AccountPayable.supplier_id == supplier_id)
+        query = query.where(AccountPayable.supplier_id == get_uuid(supplier_id))
     if overdue_only:
         now = datetime.now(timezone.utc)
         query = query.where(
@@ -331,8 +337,8 @@ async def get_payable(
     business = await _biz(db, current_user)
     result = await db.execute(
         select(AccountPayable).where(
-            AccountPayable.id == payable_id,
-            AccountPayable.business_id == business.id
+            AccountPayable.id == get_uuid(payable_id),
+            AccountPayable.business_id == get_uuid(business.id)
         )
     )
     payable = result.scalar_one_or_none()
@@ -351,8 +357,8 @@ async def update_payable(
     business = await _biz(db, current_user)
     result = await db.execute(
         select(AccountPayable).where(
-            AccountPayable.id == payable_id,
-            AccountPayable.business_id == business.id
+            AccountPayable.id == get_uuid(payable_id),
+            AccountPayable.business_id == get_uuid(business.id)
         )
     )
     payable = result.scalar_one_or_none()
@@ -376,8 +382,8 @@ async def delete_payable(
     business = await _biz(db, current_user)
     result = await db.execute(
         select(AccountPayable).where(
-            AccountPayable.id == payable_id,
-            AccountPayable.business_id == business.id
+            AccountPayable.id == get_uuid(payable_id),
+            AccountPayable.business_id == get_uuid(business.id)
         )
     )
     payable = result.scalar_one_or_none()
@@ -397,7 +403,7 @@ async def payable_totals(
     now = datetime.now(timezone.utc).replace(tzinfo=None)
 
     rows = await db.execute(
-        select(AccountPayable).where(AccountPayable.business_id == business.id)
+        select(AccountPayable).where(AccountPayable.business_id == get_uuid(business.id))
     )
     payables = rows.scalars().all()
 
@@ -421,7 +427,7 @@ async def list_deals(
 ):
     """Lista as negociações do funil Kanban."""
     business = await _biz(db, current_user)
-    stmt = select(CRMDeal).where(CRMDeal.business_id == business.id)
+    stmt = select(CRMDeal).where(CRMDeal.business_id == get_uuid(business.id))
     if stage:
         stmt = stmt.where(CRMDeal.stage == stage)
     result = await db.execute(stmt)
@@ -435,7 +441,7 @@ async def create_deal(
 ):
     """Cria um Card de Negociação no Funil Kanban."""
     business = await _biz(db, current_user)
-    obj = CRMDeal(**deal.model_dump(), business_id=business.id)
+    obj = CRMDeal(**deal.model_dump(), business_id=get_uuid(business.id))
     db.add(obj)
     await db.commit()
     await db.refresh(obj)
@@ -454,7 +460,7 @@ async def update_deal(
 
     business = await _biz(db, current_user)
     result = await db.execute(
-        select(CRMDeal).where(CRMDeal.id == deal_id, CRMDeal.business_id == business.id)
+        select(CRMDeal).where(CRMDeal.id == get_uuid(deal_id), CRMDeal.business_id == get_uuid(business.id))
     )
     deal = result.scalar_one_or_none()
     if not deal:
