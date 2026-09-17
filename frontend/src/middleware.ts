@@ -71,6 +71,11 @@ export function middleware(request: NextRequest) {
   const isPremiumRoute = PREMIUM_ROUTES.some((r) => pathname.startsWith(r));
   const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r));
 
+  // EXCEÇÃO PÚBLICA: Liberar acesso ao Orbe Visual Studio sem login
+  if (pathname.startsWith("/ferramentas-premium/orbe-visual-studio")) {
+    return NextResponse.next();
+  }
+
   // Public route — let through immediately
   if (!isPremiumRoute && !isAuthRoute) return NextResponse.next();
 
