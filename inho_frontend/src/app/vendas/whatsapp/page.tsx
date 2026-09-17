@@ -68,7 +68,7 @@ export default function WhatsAppCentralPage() {
 
         try {
             const token = typeof window !== "undefined" ? localStorage.getItem("token") || "dev-bypass" : "dev-bypass";
-            await fetch("https://inho-api.orbesystems.com.br/api/v1/crm/whatsapp/send", {
+            const response = await fetch("https://inho-api.orbesystems.com.br/api/v1/crm/whatsapp/send", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -80,8 +80,20 @@ export default function WhatsAppCentralPage() {
                     message: outMsg
                 })
             });
+            const data = await response.json();
+
+            // Validate the WhatsApp Payload array for Failures since the Python endpoint routes 502/500 proxy drops under HTTP 200
+            const waStatusAlert = data.whatsapp_delivery_code && data.whatsapp_delivery_code.some((code: string) => code.includes("Erro") || code.includes("500") || code.includes("502"));
+
+            if (waStatusAlert || !response.ok) {
+                alert(`⚠️ Falha no disparo E2E:\nO Container do WhatsApp Bot (Baileys) parece estar indisponível ou em crash loop no servidor.\n\nLogs API: ${JSON.stringify(data.whatsapp_delivery_code)}`);
+                // Erase the optimistic bubble
+                setMessages((prev) => prev.filter(m => m.id !== newMsg.id));
+            }
+
         } catch (error) {
             console.error("Erro no envio omnichannel:", error);
+            alert("Erro Ominchannel Proxy: " + error);
         } finally {
             setIsSending(false);
         }
