@@ -1,2 +1,2 @@
-orbe_whatsapp
-Bot Identity Patched and Restarted!
+["/home/ubuntu/OrbeSystems/whatsapp_bot/auth_info_baileys:/app/auth_info_baileys:rw"]
+[{"Type":"bind","Source":"/home/ubuntu/OrbeSystems/whatsapp_bot/auth_info_baileys","Destination":"/app/auth_info_baileys","Mode":"rw","RW":true,"Propagation":"rprivate"}]

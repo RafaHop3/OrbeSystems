@@ -1,5 +1,5 @@
 const express = require('express');
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason } = require('@whiskeysockets/baileys');
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, makeInMemoryStore } = require('@whiskeysockets/baileys');
 const pino = require('pino');
 const QRCode = require('qrcode');
 const fs = require('fs');
@@ -13,6 +13,13 @@ const sentMessagesStore = {};
 let currentQR = null;
 let isConnected = false;
 let sock = null;
+
+// Baileys persistent store
+const store = makeInMemoryStore({ logger: pino({ level: 'silent' }) });
+store.readFromFile('./baileys_store_multi.json');
+setInterval(() => {
+    try { store.writeToFile('./baileys_store_multi.json'); } catch (e) { }
+}, 10_000);
 
 async function connectToWhatsApp() {
     const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
@@ -47,17 +54,31 @@ async function connectToWhatsApp() {
         getMessage: async (key) => {
             const jid = key.remoteJid;
             console.log("Recebida solicitação de reenvio E2E/Retry para MSG_ID:", key.id, "JID:", jid);
+
             if (sentMessagesStore[jid]) {
                 const found = sentMessagesStore[jid].find(m => m.key.id === key.id);
                 if (found) {
-                    console.log("Mensagem encontrada no cache LRU! Retornando payload E2E intacto.");
+                    console.log("Mensagem encontrada no cache LRU em memória! Retornando payload E2E intacto.");
                     return found.message;
                 }
             }
-            console.log("Falha no LRU Cache (Mensagem não encontrada). Enviando payload genérico...");
-            return { conversation: 'Esta mensagem foi enviada via Orbe Systems Omnichannel.' };
+
+            try {
+                const msg = await store.loadMessage(jid, key.id);
+                if (msg && msg.message) {
+                    console.log("Mensagem encontrada no Bailey Store persistente! Retornando payload E2E.");
+                    return msg.message;
+                }
+            } catch (err) {
+                console.error("Erro ao buscar no store:", err);
+            }
+
+            console.log("Falha no Cache (Mensagem não encontrada). Deixando undefined para que o dispositivo principal (celular) responda...");
+            return undefined;
         }
     });
+
+    store.bind(sock.ev);
 
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     User, Users, Briefcase, Shield,
     ArrowDownLeft, CalendarCheck, Barcode, FileText,
@@ -15,6 +15,18 @@ import NavigationControls from './NavigationControls';
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const [userEmail, setUserEmail] = useState("Carregando...");
+
+    useEffect(() => {
+        const storedEmail = localStorage.getItem("user_email");
+        if (storedEmail) {
+            setUserEmail(storedEmail);
+        } else {
+            // Se nao encontrar o localStorage, tenta verificar os cookies para SSR fallback
+            const match = document.cookie.match(/(^| )user_email=([^;]+)/);
+            setUserEmail(match ? match[2] : "usuario_desconhecido");
+        }
+    }, []);
 
     // State to handle collapsible sections
     const [expanded, setExpanded] = useState<Record<string, boolean>>({
@@ -154,9 +166,16 @@ export default function Sidebar() {
             <div className="p-4 mt-auto border-t border-[#1a1f26] bg-[#06080A]">
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col">
-                        <span className="text-[12px] font-semibold text-[#8b949e]">admin@orbesystems.com.br</span>
+                        <span className="text-[12px] font-semibold text-[#8b949e]">{userEmail}</span>
                     </div>
-                    <button className="flex items-center justify-center gap-1 py-1 px-2 text-[10px] font-bold text-[#ef4444] border border-[#ef4444]/30 bg-[#ef4444]/10 hover:bg-[#ef4444]/20 rounded transition-colors">
+                    <button className="flex items-center justify-center gap-1 py-1 px-2 text-[10px] font-bold text-[#ef4444] border border-[#ef4444]/30 bg-[#ef4444]/10 hover:bg-[#ef4444]/20 rounded transition-colors"
+                        onClick={() => {
+                            localStorage.removeItem("token");
+                            localStorage.removeItem("user_email");
+                            document.cookie = "access_token=; path=/; max-age=0";
+                            document.cookie = "user_email=; path=/; max-age=0";
+                            window.location.href = "/login";
+                        }}>
                         <LogOut size={10} />
                         [Encerrar]
                     </button>
