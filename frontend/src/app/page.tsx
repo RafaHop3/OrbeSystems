@@ -4,11 +4,7 @@ import Footer from '@/components/Footer';
 import ScrollNarrativeEngine from '@/components/ScrollNarrativeEngine';
 import FreedomSection from '@/components/FreedomSection';
 import FeaturedSitesSection from '@/components/FeaturedSitesSection';
-import GhostEnginePromo from '@/components/GhostEnginePromo';
-import InhoPromo from '@/components/InhoPromo';
 import VoidFieldPromo from '@/components/VoidFieldPromo';
-import OrbeCleanerHero from './orbe-cleaner/page';
-import OrbeKnightPromo from '@/components/OrbeKnightPromo';
 import OrbeStudioPromo from '@/components/OrbeStudioPromo';
 import dynamic from 'next/dynamic';
 
@@ -23,10 +19,6 @@ export default function HomePage() {
       <Header />
       <OrbeStudioPromo />
       <VoidFieldPromo />
-      <GhostEnginePromo />
-      <InhoPromo />
-      <OrbeCleanerHero />
-      <OrbeKnightPromo />
       <ScrollNarrativeEngine>
         <HeroSection />
       </ScrollNarrativeEngine>
