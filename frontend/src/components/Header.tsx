@@ -38,19 +38,15 @@ export default function Header() {
             <Link
               key={href}
               href={href}
-              className="group flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-slate-400 transition-all duration-300 hover:text-neon-cyan"
+              className="relative group flex items-center gap-2 px-4 py-2 bg-[#020b14]/40 border border-cyan-500/30 rounded-[14px] transition-all duration-300 hover:-translate-y-[2px] shadow-[inset_0_0_12px_rgba(0,210,255,0.1),0_0_8px_rgba(0,210,255,0.1)] hover:shadow-[inset_0_0_20px_rgba(0,210,255,0.5),0_0_15px_rgba(0,210,255,0.4)] hover:border-cyan-400/60 backdrop-blur-md overflow-hidden"
             >
-              <Icon size={14} className="group-hover:animate-pulse-neon text-neon-blue group-hover:text-neon-cyan transition-colors" />
-              <div className="flex">
-                {label.split('').map((char, i) => (
-                  <span
-                    key={i}
-                    className="transition-all duration-300 group-hover:-translate-y-[2px]"
-                    style={{ transitionDelay: `${i * 30}ms` }}
-                  >
-                    {char === ' ' ? '\u00A0' : char}
-                  </span>
-                ))}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></div>
+
+              <Icon size={14} className="relative z-10 text-cyan-400 group-hover:text-cyan-200 transition-colors drop-shadow-[0_0_6px_rgba(0,210,255,0.8)] group-hover:animate-pulse" />
+              <div className="relative z-10 flex">
+                <span className="font-mono text-[10px] 2xl:text-[11px] font-medium uppercase tracking-[0.2em] text-[#d6f6f8] drop-shadow-[0_0_8px_rgba(0,210,255,0.6)]">
+                  {label}
+                </span>
               </div>
             </Link>
           ))}
