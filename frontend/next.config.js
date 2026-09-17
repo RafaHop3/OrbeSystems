@@ -68,6 +68,14 @@ const nextConfig = {
       },
     ];
   },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.html$/,
+      resourceQuery: /raw/,
+      type: 'asset/source',
+    });
+    return config;
+  },
 };
 
 module.exports = nextConfig;

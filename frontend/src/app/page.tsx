@@ -12,6 +12,8 @@ const StarryBackground = dynamic(() => import('@/components/StarryBackground'), 
   ssr: false,
 });
 
+import { Skiper30 } from '@/components/v1/skiper30';
+
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-transparent pt-16 relative">
@@ -24,6 +26,7 @@ export default function HomePage() {
       </ScrollNarrativeEngine>
       <FeaturedSitesSection />
       <FreedomSection />
+      <Skiper30 />
       <Footer />
     </main>
   );

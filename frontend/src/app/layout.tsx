@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import "@designcodeio/threeui/style.css";
+import "@/shaders/threeui.css";
 import AnalyticsTracker from '@/components/AnalyticsTracker';
 import MouseAtomTrail from '@/components/MouseAtomTrail';
 import dynamic from 'next/dynamic';

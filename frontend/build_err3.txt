@@ -1,0 +1,2475 @@
+﻿
+> orbe-systems-frontend@0.1.0 build
+> next build
+
+  Ôû▓ Next.js 14.2.3
+
+   Creating an optimized production build ...
+node.exe : Browserslist: 
+browsers data 
+(caniuse-lite) is 6 
+months old. Please run:
+No C:\Program 
+Files\nodejs\npm.ps1:29 
+caractere:3
++   & $NODE_EXE 
+$NPM_CLI_JS $args
++   ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo       
+       : NotSpecified:   
+  (Browserslist: b...l   
+ d. Please run::Strin    
+g) [], RemoteExcepti    
+on
+    + FullyQualifiedErro 
+   rId : NativeCommandE  
+  rror
+ 
+  npx update-browserslist
+-db@latest
+  Why you should do it 
+regularly: https://github
+.com/browserslist/update-
+db#readme
+Failed to compile.
+
+./src/shaders/threeui.css
+Module not found: Can't 
+resolve './fonts/fragment
+-mono.woff2'
+
+https://nextjs.org/docs/m
+essages/module-not-found
+
+Import trace for 
+requested module:
+./src/shaders/threeui.css
+
+./src/shaders/threeui.css
+HookWebpackError: Cannot 
+find module './fonts/frag
+ment-mono.woff2'
+    at 
+tryRunOrWebpackError (C:\
+Users\rafae\OrbeSystems\O
+rbeSystems\frontend\node_
+modules\next\dist\compile
+d\webpack\bundle5.js:28:3
+12989)
+    at __webpack_require_
+module__ (C:\Users\rafae\
+OrbeSystems\OrbeSystems\f
+rontend\node_modules\next
+\dist\compiled\webpack\bu
+ndle5.js:28:131165)
+    at __nested_webpack_r
+equire_153728__ (C:\Users
+\rafae\OrbeSystems\OrbeSy
+stems\frontend\node_modul
+es\next\dist\compiled\web
+pack\bundle5.js:28:130607
+)
+    at C:\Users\rafae\Orb
+eSystems\OrbeSystems\fron
+tend\node_modules\next\di
+st\compiled\webpack\bundl
+e5.js:28:131454
+    at symbolIterator (C:
+\Users\rafae\OrbeSystems\
+OrbeSystems\frontend\node
+_modules\next\dist\compil
+ed\neo-async\async.js:1:1
+4444)
+    at done (C:\Users\raf
+ae\OrbeSystems\OrbeSystem
+s\frontend\node_modules\n
+ext\dist\compiled\neo-asy
+nc\async.js:1:14824)
+    at Hook.eval [as 
+callAsync] (eval at 
+create (C:\Users\rafae\Or
+beSystems\OrbeSystems\fro
+ntend\node_modules\next\d
+ist\compiled\webpack\bund
+le5.js:13:28858), 
+<anonymous>:15:1)
+    at C:\Users\rafae\Orb
+eSystems\OrbeSystems\fron
+tend\node_modules\next\di
+st\compiled\webpack\bundl
+e5.js:28:130328
+    at symbolIterator (C:
+\Users\rafae\OrbeSystems\
+OrbeSystems\frontend\node
+_modules\next\dist\compil
+ed\neo-async\async.js:1:1
+4402)
+    at timesSync (C:\User
+s\rafae\OrbeSystems\OrbeS
+ystems\frontend\node_modu
+les\next\dist\compiled\ne
+o-async\async.js:1:5027)
+-- inner error --
+Error: Cannot find 
+module './fonts/fragment-
+mono.woff2'
+    at 
+webpackMissingModule (C:\
+Users\rafae\OrbeSystems\O
+rbeSystems\frontend\node_
+modules\next\dist\build\w
+ebpack\loaders\css-loader
+\src\index.js??ruleSet[1]
+.rules[13].oneOf[12].use[
+2]!C:\Users\rafae\OrbeSys
+tems\OrbeSystems\frontend
+\node_modules\next\dist\b
+uild\webpack\loaders\post
+css-loader\src\index.js??
+ruleSet[1].rules[13].oneO
+f[12].use[3]!C:\Users\raf
+ae\OrbeSystems\OrbeSystem
+s\frontend\src\shaders\th
+reeui.css:6:50)
+    at 
+Module.<anonymous> (C:\Us
+ers\rafae\OrbeSystems\Orb
+eSystems\frontend\node_mo
+dules\next\dist\build\web
+pack\loaders\css-loader\s
+rc\index.js??ruleSet[1].r
+ules[13].oneOf[12].use[2]
+!C:\Users\rafae\OrbeSyste
+ms\OrbeSystems\frontend\n
+ode_modules\next\dist\bui
+ld\webpack\loaders\postcs
+s-loader\src\index.js??ru
+leSet[1].rules[13].oneOf[
+12].use[3]!C:\Users\rafae
+\OrbeSystems\OrbeSystems\
+frontend\src\shaders\thre
+eui.css:6:152)
+    at C:\Users\rafae\Orb
+eSystems\OrbeSystems\fron
+tend\node_modules\next\di
+st\compiled\webpack\bundl
+e5.js:28:922493
+    at Hook.eval [as 
+call] (eval at create (C:
+\Users\rafae\OrbeSystems\
+OrbeSystems\frontend\node
+_modules\next\dist\compil
+ed\webpack\bundle5.js:13:
+28636), <anonymous>:7:1)
+    at C:\Users\rafae\Orb
+eSystems\OrbeSystems\fron
+tend\node_modules\next\di
+st\compiled\webpack\bundl
+e5.js:28:131198
+    at 
+tryRunOrWebpackError (C:\
+Users\rafae\OrbeSystems\O
+rbeSystems\frontend\node_
+modules\next\dist\compile
+d\webpack\bundle5.js:28:3
+12943)
+    at __webpack_require_
+module__ (C:\Users\rafae\
+OrbeSystems\OrbeSystems\f
+rontend\node_modules\next
+\dist\compiled\webpack\bu
+ndle5.js:28:131165)
+    at __nested_webpack_r
+equire_153728__ (C:\Users
+\rafae\OrbeSystems\OrbeSy
+stems\frontend\node_modul
+es\next\dist\compiled\web
+pack\bundle5.js:28:130607
+)
+    at C:\Users\rafae\Orb
+eSystems\OrbeSystems\fron
+tend\node_modules\next\di
+st\compiled\webpack\bundl
+e5.js:28:131454
+    at symbolIterator (C:
+\Users\rafae\OrbeSystems\
+OrbeSystems\frontend\node
+_modules\next\dist\compil
+ed\neo-async\async.js:1:1
+4444)
+
+Generated code for C:\Use
+rs\rafae\OrbeSystems\Orbe
+Systems\frontend\node_mod
+ules\next\dist\build\webp
+ack\loaders\css-loader\sr
+c\index.js??ruleSet[1].ru
+les[13].oneOf[12].use[2]!
+C:\Users\rafae\OrbeSystem
+s\OrbeSystems\frontend\no
+de_modules\next\dist\buil
+d\webpack\loaders\postcss
+-loader\src\index.js??rul
+eSet[1].rules[13].oneOf[1
+2].use[3]!C:\Users\rafae\
+OrbeSystems\OrbeSystems\f
+rontend\src\shaders\three
+ui.css
+ 1 | __webpack_require__.
+r(__webpack_exports__);
+ 2 | /* harmony import 
+*/ var _node_modules_next
+_dist_build_webpack_loade
+rs_css_loader_src_runtime
+_api_js__WEBPACK_IMPORTED
+_MODULE_0__ = __webpack_r
+equire__("C:\\Users\\rafa
+e\\OrbeSystems\\OrbeSyste
+ms\\frontend\\node_module
+s\\next\\dist\\build\\web
+pack\\loaders\\css-loader
+\\src\\runtime\\api.js");
+ 3 | /* harmony import 
+*/ var _node_modules_next
+_dist_build_webpack_loade
+rs_css_loader_src_runtime
+_api_js__WEBPACK_IMPORTED
+_MODULE_0___default = /*#
+__PURE__*/__webpack_requi
+re__.n(_node_modules_next
+_dist_build_webpack_loade
+rs_css_loader_src_runtime
+_api_js__WEBPACK_IMPORTED
+_MODULE_0__);
+ 4 | /* harmony import 
+*/ var _node_modules_next
+_dist_build_webpack_loade
+rs_css_loader_src_runtime
+_getUrl_js__WEBPACK_IMPOR
+TED_MODULE_1__ = __webpac
+k_require__("C:\\Users\\r
+afae\\OrbeSystems\\OrbeSy
+stems\\frontend\\node_mod
+ules\\next\\dist\\build\\
+webpack\\loaders\\css-loa
+der\\src\\runtime\\getUrl
+.js");
+ 5 | /* harmony import 
+*/ var _node_modules_next
+_dist_build_webpack_loade
+rs_css_loader_src_runtime
+_getUrl_js__WEBPACK_IMPOR
+TED_MODULE_1___default = 
+/*#__PURE__*/__webpack_re
+quire__.n(_node_modules_n
+ext_dist_build_webpack_lo
+aders_css_loader_src_runt
+ime_getUrl_js__WEBPACK_IM
+PORTED_MODULE_1__);
+ 6 | Object(function 
+webpackMissingModule() { 
+var e = new 
+Error("Cannot find 
+module './fonts/fragment-
+mono.woff2'"); e.code = 
+'MODULE_NOT_FOUND'; 
+throw e; }());
+ 7 | // Imports
+ 8 | 
+ 9 | 
+10 | 
+11 | var 
+___CSS_LOADER_EXPORT___ 
+= _node_modules_next_dist
+_build_webpack_loaders_cs
+s_loader_src_runtime_api_
+js__WEBPACK_IMPORTED_MODU
+LE_0___default()(false);
+12 | var ___CSS_LOADER_UR
+L_REPLACEMENT_0___ = _nod
+e_modules_next_dist_build
+_webpack_loaders_css_load
+er_src_runtime_getUrl_js_
+_WEBPACK_IMPORTED_MODULE_
+1___default()(Object(func
+tion 
+webpackMissingModule() { 
+var e = new 
+Error("Cannot find 
+module './fonts/fragment-
+mono.woff2'"); e.code = 
+'MODULE_NOT_FOUND'; 
+throw e; }()));
+13 | // Module
+14 | ___CSS_LOADER_EXPORT
+___.push([module.id, ".th
+reeui-mount,\r\n.terrain-
+plume-component,\r\n.text
+-path-study,\r\n.article-
+headings-component,\r\n.a
+nimated-top-dock-componen
+t,\r\n.typography-vortex-
+component,\r\n.mechanical
+-keyboard,\r\n.retro-meta
+llic,\r\n.landscape-scene
+,\r\n.japanese-tower-land
+scape,\r\n.sakura-branch-
+scene,\r\n.isometric-moti
+on-grid,\r\n.isometric-il
+lustration,\r\n.tetrahedr
+on-365,\r\n.liquid-metal-
+button,\r\n.iso-mail-ligh
+tshafts,\r\n.spark-badge,
+\r\n.hypnotic-loops,\r\n.
+at-the-horizon,\r\n.scala
+bility-bricks,\r\n.threeu
+i-background {\r\n  
+position: relative;\r\n  
+width: 100%;\r\n  
+height: 100%;\r\n  
+min-width: 0;\r\n  
+min-height: 0;\r\n  
+overflow: hidden;\r\n}\r\
+n\r\n.mechanical-keyboard
+ {\r\n  isolation: 
+isolate;\r\n  
+background: #090a0c;\r\n}
+\r\n\r\n.mechanical-keybo
+ard__frame {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#090a0c;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms 
+ease-out;\r\n  
+touch-action: none;\r\n}\
+r\n\r\n.mechanical-keyboa
+rd__frame.is-ready {\r\n 
+ opacity: 1;\r\n}\r\n\r\n
+.retro-metallic {\r\n  
+isolation: isolate;\r\n  
+background: #08090a;\r\n}
+\r\n\r\n.retro-metallic__
+frame {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#08090a;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms 
+ease-out;\r\n  
+touch-action: none;\r\n}\
+r\n\r\n.retro-metallic__f
+rame.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+japanese-tower-landscape 
+{\r\n  isolation: 
+isolate;\r\n  
+background: #ecdcbc;\r\n}
+\r\n\r\n.japanese-tower-l
+andscape__frame {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#ecdcbc;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms ease-out;\r
+\n}\r\n\r\n.japanese-towe
+r-landscape__frame.is-rea
+dy {\r\n  opacity: 1;\r\n
+}\r\n\r\n.landscape-scene
+ {\r\n  isolation: 
+isolate;\r\n  
+background: #ecdcbc;\r\n}
+\r\n\r\n.landscape-scene_
+_frame {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#ecdcbc;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms 
+ease-out;\r\n  
+touch-action: none;\r\n}\
+r\n\r\n.landscape-scene__
+frame.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+sakura-branch-scene 
+{\r\n  isolation: 
+isolate;\r\n  
+background: #d4738a;\r\n}
+\r\n\r\n.sakura-branch-sc
+ene__frame {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#d4738a;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms ease-out;\r
+\n}\r\n\r\n.sakura-branch
+-scene__frame.is-ready 
+{\r\n  opacity: 
+1;\r\n}\r\n\r\n@media 
+(prefers-reduced-motion: 
+reduce) {\r\n  .sakura-br
+anch-scene__frame {\r\n  
+  transition: none;\r\n  
+}\r\n}\r\n\r\n.isometric-
+motion-grid {\r\n  
+isolation: isolate;\r\n  
+background: #08090a;\r\n}
+\r\n\r\n.isometric-motion
+-grid__stage {\r\n  
+position: absolute;\r\n  
+top: 50%;\r\n  left: 
+50%;\r\n  width: 
+1200px;\r\n  height: 
+675px;\r\n  
+transform-origin: 50% 50%
+;\r\n}\r\n\r\n.isometric-
+motion-grid__frame {\r\n 
+ display: block;\r\n  
+width: 100%;\r\n  
+height: 100%;\r\n  
+border: 0;\r\n  
+background: #08090a;\r\n 
+ opacity: 0;\r\n  
+transition: opacity 
+180ms ease-out;\r\n}\r\n\
+r\n.isometric-motion-grid
+__frame.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+isometric-illustration 
+{\r\n  isolation: 
+isolate;\r\n  
+background: #111;\r\n}\r\
+n\r\n.isometric-illustrat
+ion__frame {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#111;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms ease-out;\r
+\n}\r\n\r\n.isometric-ill
+ustration__frame.is-ready
+ {\r\n  opacity: 1;\r\n}\
+r\n\r\n.tetrahedron-365 
+{\r\n  isolation: 
+isolate;\r\n  
+background: #000;\r\n}\r\
+n\r\n.tetrahedron-365__fr
+ame {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#000;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms ease-out;\r
+\n}\r\n\r\n.tetrahedron-3
+65__frame.is-ready {\r\n 
+ opacity: 
+1;\r\n}\r\n\r\n@media 
+(prefers-reduced-motion: 
+reduce) {\r\n  
+.tetrahedron-365__frame 
+{\r\n    transition: 
+none;\r\n  }\r\n}\r\n\r\n
+.liquid-metal-button 
+{\r\n  isolation: 
+isolate;\r\n  
+background: #070708;\r\n}
+\r\n\r\n.liquid-metal-but
+ton__frame {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#070708;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms ease-out;\r
+\n}\r\n\r\n.liquid-metal-
+button__frame.is-ready 
+{\r\n  opacity: 
+1;\r\n}\r\n\r\n@media 
+(prefers-reduced-motion: 
+reduce) {\r\n  .liquid-me
+tal-button__frame {\r\n  
+  transition: none;\r\n  
+}\r\n}\r\n\r\n.iso-mail-l
+ightshafts {\r\n  
+isolation: isolate;\r\n  
+background: #140f0b;\r\n}
+\r\n\r\n.iso-mail-lightsh
+afts__frame {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#140f0b;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms ease-out;\r
+\n}\r\n\r\n.iso-mail-ligh
+tshafts__frame.is-ready 
+{\r\n  opacity: 1;\r\n}\r
+\n\r\n.spark-badge {\r\n 
+ isolation: isolate;\r\n 
+ background: #000;\r\n}\r
+\n\r\n.spark-badge__frame
+ {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#000;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms ease-out;\r
+\n}\r\n\r\n.spark-badge__
+frame.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+hypnotic-loops {\r\n  
+isolation: isolate;\r\n  
+background: #f15a24;\r\n}
+\r\n\r\n.hypnotic-loops__
+frame {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#f15a24;\r\n  opacity: 0;
+\r\n}\r\n\r\n.hypnotic-lo
+ops__frame.is-ready 
+{\r\n  opacity: 1;\r\n}\r
+\n\r\n.at-the-horizon 
+{\r\n  isolation: 
+isolate;\r\n  
+background: #000;\r\n}\r\
+n\r\n.at-the-horizon__fra
+me {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#000;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms ease-out;\r
+\n}\r\n\r\n.at-the-horizo
+n__frame.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+scalability-bricks {\r\n 
+ isolation: isolate;\r\n 
+ background: #0b0b0c;\r\n
+}\r\n\r\n.scalability-bri
+cks__frame {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+#0b0b0c;\r\n  opacity: 
+0;\r\n  transition: 
+opacity 180ms ease-out;\r
+\n}\r\n\r\n.scalability-b
+ricks__frame.is-ready 
+{\r\n  opacity: 1;\r\n}\r
+\n\r\n.text-path-study 
+{\r\n  isolation: 
+isolate;\r\n  
+background: #08090a;\r\n}
+\r\n\r\n.text-path-study-
+-light {\r\n  
+background: #f3f5f8;\r\n}
+\r\n\r\n.text-path-study-
+frame {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  border: 
+0;\r\n  background: 
+transparent;\r\n  
+transform-origin: 50% 50%
+;\r\n}\r\n\r\n.threeui-ba
+ckground {\r\n  
+position: relative;\r\n  
+isolation: isolate;\r\n  
+background: #030304;\r\n}
+\r\n\r\n.threeui-backgrou
+nd.condensation {\r\n  
+background: transparent;\
+r\n}\r\n\r\n.threeui-back
+ground.predictive-arc--li
+ght,\r\n.threeui-backgrou
+nd.data-pixel-arc--light 
+{\r\n  background: #f3f6f
+1;\r\n}\r\n\r\n.typograph
+y-vortex-component.typogr
+aphy-vortex-component--li
+ght {\r\n  background: #e
+ef1f6;\r\n}\r\n\r\n.typog
+raphy-vortex-component--l
+ight .typography-vortex-c
+omponent__hint {\r\n  
+color: rgba(28, 30, 38, 0
+.55);\r\n}\r\n\r\n.threeu
+i-background > canvas 
+{\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 100%;\
+r\n}\r\n\r\n.cross-beam-c
+anvas,\r\n.terrain-plume-
+canvas {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 100%;\
+r\n}\r\n\r\n.terrain-plum
+e-component {\r\n  
+pointer-events: 
+none;\r\n  --fe-bg: 
+#030304;\r\n  --fe-band: 
+clamp(260px, 52cqw, 
+820px);\r\n\r\n  
+isolation: isolate;\r\n  
+container-type: 
+inline-size;\r\n  
+background:\r\n    
+linear-gradient(180deg, 
+#050505 0%, #020202 44%, 
+#000 
+100%);\r\n}\r\n\r\n/* 
+Each scene keeps the 
+same engraved grammar 
+and only moves the 
+ground tone the\r\n   
+body fill and the reveal 
+cover are painted with. *
+/\r\n.terrain-plume-compo
+nent[data-terrain-scene=\
+"river\"] {\r\n  
+--fe-bg: 
+#03070a;\r\n\r\n  
+background:\r\n    
+linear-gradient(180deg, 
+#05090d 0%, #020507 44%, 
+#000 100%);\r\n}\r\n\r\n.
+terrain-plume-component[d
+ata-terrain-scene=\"deser
+t\"] {\r\n  --fe-bg: 
+#0a0603;\r\n\r\n  
+background:\r\n    
+linear-gradient(180deg, 
+#0d0805 0%, #060302 44%, 
+#000 100%);\r\n}\r\n\r\n.
+terrain-plume-component[d
+ata-terrain-scene=\"bridg
+e-city\"] {\r\n  
+--fe-bg: 
+#03050b;\r\n\r\n  
+background:\r\n    
+linear-gradient(180deg, 
+#050810 0%, #020407 44%, 
+#000 
+100%);\r\n}\r\n\r\n/* 
+The authored plume sits 
+at the foot of its own 
+canvas, where the 
+terrain band\r\n   
+buries it. Every scene 
+keeps that exact 
+gradient and only raises 
+the canvas\r\n   until 
+the glow clears the 
+range ÔÇö stopping below 
+the far edge of the 
+hatch so\r\n   the 
+ground line the eye 
+reads as the horizon is 
+also where the sky 
+starts,\r\n   and the 
+canvas edge itself stays 
+behind the terrain. */\r\
+n.terrain-plume-component
+[data-terrain-scene=\"riv
+er\"] .terrain-plume-canv
+as,\r\n.terrain-plume-com
+ponent[data-terrain-scene
+=\"desert\"] .terrain-plu
+me-canvas,\r\n.terrain-pl
+ume-component[data-terrai
+n-scene=\"bridge-city\"] 
+.terrain-plume-canvas 
+{\r\n  top: auto;\r\n  
+bottom: 
+calc(var(--fe-band) * 
+0.33);\r\n}\r\n\r\n/* 
+The footer vignette was 
+tuned to bury the plume 
+behind a range that 
+fills the\r\n   frame. 
+These scenes leave far 
+more open sky, so the 
+same wash is 
+lightened\r\n   until 
+the glow survives it. */\
+r\n.terrain-plume-compone
+nt[data-terrain-scene=\"r
+iver\"]::after,\r\n.terra
+in-plume-component[data-t
+errain-scene=\"desert\"]:
+:after,\r\n.terrain-plume
+-component[data-terrain-s
+cene=\"bridge-city\"]::af
+ter {\r\n  
+background:\r\n    
+radial-gradient(circle 
+at 50% 100%, rgba(255, 
+255, 255, 0.07), 
+transparent 34%),\r\n    
+linear-gradient(180deg, 
+rgba(0, 0, 0, 0.06), 
+rgba(0, 0, 0, 0.3) 72%, 
+rgba(0, 0, 0, 0.62));\r\n
+}\r\n\r\n.terrain-plume-c
+omponent::before,\r\n.ter
+rain-plume-component::aft
+er {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  z-index: 0;\r\n  
+pointer-events: 
+none;\r\n  content: \"\";
+\r\n}\r\n\r\n.terrain-plu
+me-component::before 
+{\r\n  background:\r\n   
+ linear-gradient(90deg, 
+transparent calc(50% - 
+0.5px), rgba(255, 255, 
+255, 0.05) calc(50% - 
+0.5px) calc(50% + 
+0.5px), transparent 
+calc(50% + 0.5px)),\r\n  
+  repeating-linear-gradie
+nt(90deg, rgba(255, 255, 
+255, 0.022) 0 1px, 
+transparent 1px 
+11.5vw),\r\n    repeating
+-linear-gradient(180deg, 
+rgba(255, 255, 255, 
+0.018) 0 1px, 
+transparent 1px 
+5.8rem);\r\n  opacity: 0.
+74;\r\n}\r\n\r\n.terrain-
+plume-component::after 
+{\r\n  background:\r\n   
+ radial-gradient(circle 
+at 50% 100%, rgba(255, 
+255, 255, 0.09), 
+transparent 34%),\r\n    
+linear-gradient(180deg, 
+rgba(0, 0, 0, 0.1), 
+rgba(0, 0, 0, 0.62) 72%, 
+rgba(0, 0, 0, 0.9));\r\n}
+\r\n\r\n.terrain-plume-ca
+nvas {\r\n  z-index: 0;\r
+\n}\r\n\r\n.footer-engrav
+ed-terrain {\r\n  
+position: absolute;\r\n  
+right: 0;\r\n  bottom: 
+0;\r\n  left: 0;\r\n  
+z-index: 1;\r\n  
+display: block;\r\n  
+width: 100%;\r\n  
+height: 
+var(--fe-band);\r\n  
+pointer-events: none;\r\n
+}\r\n\r\n.footer-engraved
+-reveal {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  z-index: 5;\r\n  
+display: block;\r\n  
+width: 100%;\r\n  
+height: 100%;\r\n  
+pointer-events: none;\r\n
+}\r\n\r\n.footer-engraved
+-grain {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  z-index: 6;\r\n  
+pointer-events: 
+none;\r\n  opacity: 
+0.05;\r\n  
+mix-blend-mode: 
+overlay;\r\n  
+background-image: url(\"d
+ata:image/svg+xml;utf8,<s
+vg xmlns='http://www.w3.o
+rg/2000/svg' width='160' 
+height='160'><filter 
+id='n'><feTurbulence 
+type='fractalNoise' 
+baseFrequency='.85' 
+numOctaves='3' stitchTile
+s='stitch'/></filter><rec
+t width='160' 
+height='160' filter='url(
+%23n)'/></svg>\");\r\n  
+background-size: 160px 16
+0px;\r\n}\r\n.sunset-vall
+ey-scene,\r\n.sunset-vall
+ey-canvas {\r\n  
+display: block;\r\n  
+width: 100%;\r\n  
+height: 100%;\r\n}\r\n\r\
+n.sunset-valley-scene 
+{\r\n  position: 
+relative;\r\n  overflow: 
+hidden;\r\n  background: 
+#090d16;\r\n}\r\n\r\n.sun
+set-valley-canvas {\r\n  
+position: relative;\r\n  
+z-index: 1;\r\n  
+opacity: 0;\r\n  
+touch-action: none;\r\n}\
+r\n\r\n.sunset-valley-can
+vas.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\ni
+mg.sunset-valley-fallback
+ {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  
+-o-object-fit: 
+cover;\r\n     
+object-fit: cover;\r\n  
+-o-object-position: 
+center;\r\n     
+object-position: center;\
+r\n}\r\n\r\n.temple-night
+-scene,\r\n.temple-night-
+canvas {\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 100%;\
+r\n}\r\n\r\n.temple-night
+-scene {\r\n  position: 
+relative;\r\n  overflow: 
+hidden;\r\n  background: 
+#05070a;\r\n}\r\n\r\n.tem
+ple-night-canvas {\r\n  
+position: relative;\r\n  
+z-index: 1;\r\n  
+opacity: 0;\r\n  
+touch-action: none;\r\n}\
+r\n\r\n.temple-night-canv
+as.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+temple-night-unavailable 
+{\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+grid;\r\n  place-items: 
+center;\r\n  margin: 
+0;\r\n  color: 
+#a9b2b7;\r\n  
+background: #05070a;\r\n}
+\r\n\r\n.yosemite-sunset-
+scene,\r\n.yosemite-sunse
+t-canvas {\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 100%;\
+r\n}\r\n\r\n.yosemite-sun
+set-scene {\r\n  
+position: relative;\r\n  
+overflow: hidden;\r\n  
+background: #241a26;\r\n}
+\r\n\r\n.yosemite-sunset-
+canvas {\r\n  position: 
+relative;\r\n  z-index: 
+1;\r\n  opacity: 0;\r\n  
+touch-action: none;\r\n}\
+r\n\r\n.yosemite-sunset-c
+anvas.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+yosemite-sunset-unavailab
+le {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+grid;\r\n  place-items: 
+center;\r\n  margin: 
+0;\r\n  color: 
+#e0c3ab;\r\n  
+background: #241a26;\r\n}
+\r\n\r\n.presidio-sunset-
+scene,\r\n.presidio-sunse
+t-canvas {\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 100%;\
+r\n}\r\n\r\n.presidio-sun
+set-scene {\r\n  
+position: relative;\r\n  
+overflow: hidden;\r\n  
+background: #2a1c22;\r\n}
+\r\n\r\n.presidio-sunset-
+canvas {\r\n  position: 
+relative;\r\n  z-index: 
+1;\r\n  opacity: 0;\r\n  
+touch-action: none;\r\n}\
+r\n\r\n.presidio-sunset-c
+anvas.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+presidio-sunset-unavailab
+le {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+grid;\r\n  place-items: 
+center;\r\n  margin: 
+0;\r\n  color: 
+#e6c1ad;\r\n  
+background: #2a1c22;\r\n}
+\r\n\r\n.lake-louise-scen
+e,\r\n.lake-louise-canvas
+ {\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 100%;\
+r\n}\r\n\r\n.lake-louise-
+scene {\r\n  position: 
+relative;\r\n  overflow: 
+hidden;\r\n  background: 
+#171d2c;\r\n}\r\n\r\n.lak
+e-louise-canvas {\r\n  
+position: relative;\r\n  
+z-index: 1;\r\n  
+opacity: 0;\r\n  
+touch-action: none;\r\n}\
+r\n\r\n.lake-louise-canva
+s.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+lake-louise-unavailable 
+{\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  display: 
+grid;\r\n  place-items: 
+center;\r\n  margin: 
+0;\r\n  color: 
+#b9c8d6;\r\n  
+background: #171d2c;\r\n}
+\r\n\r\n.bookshelf,\r\n.b
+ookshelf__canvas,\r\n.ske
+tchbook,\r\n.sketchbook__
+frame {\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 100%;\
+r\n}\r\n\r\n.bookshelf 
+{\r\n  position: 
+relative;\r\n  
+container-type: 
+inline-size;\r\n  
+overflow: hidden;\r\n  
+background: #171a24;\r\n 
+ outline: none;\r\n}\r\n\
+r\n.bookshelf__canvas 
+{\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  opacity: 0;\r\n  
+touch-action: none;\r\n}\
+r\n\r\n.bookshelf__canvas
+.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+bookshelf__source-control
+s {\r\n  display: none;\r
+\n}\r\n\r\n.bookshelf__un
+available {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  display: 
+grid;\r\n  place-items: 
+center;\r\n  margin: 
+0;\r\n  padding: 
+24px;\r\n  color: 
+#f4eee6;\r\n  
+text-align: center;\r\n}\
+r\n\r\n.sketchbook {\r\n 
+ position: relative;\r\n 
+ overflow: hidden;\r\n  
+background: #ece7dc;\r\n}
+\r\n\r\n.sketchbook__fram
+e {\r\n  border: 0;\r\n  
+opacity: 0;\r\n  
+background: #ece7dc;\r\n}
+\r\n\r\n.sketchbook__fram
+e.is-ready {\r\n  
+opacity: 1;\r\n}\r\n\r\n@
+font-face {\r\n  
+font-family: \"ThreeUI 
+Fragment Mono\";\r\n  
+font-style: normal;\r\n  
+font-weight: 400;\r\n  
+font-display: swap;\r\n  
+src: url(" + ___CSS_LOADE
+R_URL_REPLACEMENT_0___ + 
+") format(\"woff2\");\r\n
+}\r\n\r\n.article-heading
+s-component,\r\n.animated
+-top-dock-component,\r\n.
+typography-vortex-compone
+nt {\r\n  
+container-type: 
+inline-size;\r\n  color: 
+#ecece8;\r\n  
+background: #0b0b0b;\r\n 
+ font-family: \"Geist\", 
+\"Helvetica Neue\", 
+Helvetica, Arial, sans-se
+rif;\r\n}\r\n\r\n.article
+-headings-component 
+{\r\n  display: 
+grid;\r\n  
+grid-template-rows: auto 
+1fr 1fr;\r\n  padding: 
+clamp(20px, 5.4cqw, 
+74px) clamp(20px, 
+6.2cqw, 86px);\r\n  
+isolation: isolate;\r\n}\
+r\n\r\n.article-headings-
+component::after,\r\n.ani
+mated-top-dock-component:
+:after,\r\n.typography-vo
+rtex-component::after 
+{\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  z-index: 5;\r\n  
+pointer-events: 
+none;\r\n  content: 
+\"\";\r\n  opacity: 
+0.12;\r\n  
+background-image: url(\"d
+ata:image/svg+xml,%3Csvg 
+viewBox='0 0 180 180' xml
+ns='http://www.w3.org/200
+0/svg'%3E%3Cfilter 
+id='n'%3E%3CfeTurbulence 
+type='fractalNoise' 
+baseFrequency='.85' 
+numOctaves='3' stitchTile
+s='stitch'/%3E%3C/filter%
+3E%3Crect width='100%25' 
+height='100%25' 
+filter='url(%23n)' opacit
+y='.16'/%3E%3C/svg%3E\");
+\r\n  mix-blend-mode: sof
+t-light;\r\n}\r\n\r\n.art
+icle-headings-component__
+header {\r\n  display: 
+flex;\r\n  
+justify-content: 
+space-between;\r\n  
+padding-bottom: 
+clamp(14px, 2.6cqw, 
+30px);\r\n  color: 
+#62625e;\r\n  font: 400 
+clamp(8px, 0.85cqw, 
+10px) / 1 \"ThreeUI 
+Fragment Mono\", 
+ui-monospace, 
+monospace;\r\n  
+letter-spacing: 0.12em;\r
+\n}\r\n\r\n.article-headi
+ngs-component__entry 
+{\r\n  display: 
+grid;\r\n  
+grid-template-columns: 
+clamp(28px, 4cqw, 56px) 
+minmax(0, 1fr) auto;\r\n 
+ align-items: 
+center;\r\n  gap: 
+clamp(10px, 2.2cqw, 
+30px);\r\n  border-top: 
+1px solid #2a2a28;\r\n}\r
+\n\r\n.article-headings-c
+omponent__entry h2 {\r\n 
+ margin: 0;\r\n  color: 
+#e9e9e5;\r\n  font-size: 
+clamp(18px, 3.2cqw, 
+44px);\r\n  font-weight: 
+600;\r\n  line-height: 
+1.08;\r\n  
+letter-spacing: -0.02em;\
+r\n}\r\n\r\n.article-head
+ings-component__index,\r\
+n.article-headings-compon
+ent__meta {\r\n  color: 
+#60605c;\r\n  font: 400 
+clamp(8px, 0.85cqw, 
+10px) / 1.3 \"ThreeUI 
+Fragment Mono\", 
+ui-monospace, 
+monospace;\r\n  
+letter-spacing: 0.06em;\r
+\n}\r\n\r\n.article-headi
+ngs-component__meta 
+{\r\n  text-align: right;
+\r\n}\r\n\r\n.article-hea
+dings-component--light 
+{\r\n  color: 
+#202128;\r\n  
+background: #f3f5f8;\r\n}
+\r\n\r\n.article-headings
+-component--light .articl
+e-headings-component__hea
+der,\r\n.article-headings
+-component--light .articl
+e-headings-component__ind
+ex,\r\n.article-headings-
+component--light .article
+-headings-component__meta
+ {\r\n  color: #71737b;\r
+\n}\r\n\r\n.article-headi
+ngs-component--light .art
+icle-headings-component__
+entry {\r\n  
+border-color: #d9dce3;\r\
+n}\r\n\r\n.article-headin
+gs-component--light .arti
+cle-headings-component__e
+ntry h2 {\r\n  color: #1d
+1f26;\r\n}\r\n\r\n.typogr
+aphy-vortex-component 
+{\r\n  position: 
+relative;\r\n  
+isolation: isolate;\r\n  
+touch-action: none;\r\n  
+cursor: crosshair;\r\n}\r
+\n\r\n.typography-vortex-
+component canvas {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 100%;\
+r\n}\r\n\r\n.typography-v
+ortex-component__hint,\r\
+n.animated-top-dock-compo
+nent__caption {\r\n  
+position: absolute;\r\n  
+z-index: 6;\r\n  color: 
+#62625e;\r\n  font: 400 
+9px/1 \"ThreeUI Fragment 
+Mono\", ui-monospace, 
+monospace;\r\n  
+letter-spacing: 0.1em;\r\
+n}\r\n\r\n.typography-vor
+tex-component__hint 
+{\r\n  right: 18px;\r\n  
+bottom: 16px;\r\n}\r\n\r\
+n.animated-top-dock-compo
+nent {\r\n  position: 
+relative;\r\n  display: 
+grid;\r\n  place-items: 
+center;\r\n  isolation: 
+isolate;\r\n  
+background:\r\n    
+radial-gradient(circle 
+at 50% 20%, rgba(255, 
+255, 255, 0.035), 
+transparent 34%),\r\n    
+#080808;\r\n}\r\n\r\n.ani
+mated-top-dock__nav 
+{\r\n  position: 
+absolute;\r\n  top: 
+clamp(24px, 5cqw, 
+46px);\r\n  left: 
+50%;\r\n  z-index: 
+10;\r\n  display: 
+flex;\r\n  align-items: 
+flex-start;\r\n  gap: 
+3px;\r\n  height: 
+38px;\r\n  padding: 
+4px;\r\n  overflow: 
+visible;\r\n  border: 
+1px solid #292929;\r\n  
+border-radius: 11px;\r\n 
+ background: rgba(14, 
+14, 14, 0.86);\r\n  
+box-shadow: 0 12px 34px 
+rgba(0, 0, 0, 0.48), 
+inset 0 1px rgba(255, 
+255, 255, 0.035);\r\n  
+backdrop-filter: 
+blur(18px) 
+saturate(75%);\r\n  
+transform: 
+translateX(-50%);\r\n  
+isolation: isolate;\r\n}\
+r\n\r\n.animated-top-dock
+__item {\r\n  position: 
+relative;\r\n  z-index: 
+6;\r\n  display: 
+inline-flex;\r\n  flex: 
+none;\r\n  align-items: 
+center;\r\n  
+justify-content: 
+center;\r\n  height: 
+28px;\r\n  min-width: 
+0;\r\n  padding: 0;\r\n  
+border: 1px solid 
+transparent;\r\n  
+border-radius: 7px;\r\n  
+outline: none;\r\n  
+color: #858580;\r\n  
+background: rgba(21, 21, 
+20, 0.9);\r\n  font: 400 
+10px/1 \"ThreeUI 
+Fragment Mono\", 
+ui-monospace, 
+monospace;\r\n  
+letter-spacing: 
+0.1em;\r\n  white-space: 
+nowrap;\r\n  
+backdrop-filter: 
+blur(14px) 
+saturate(70%);\r\n  
+transform-origin: 50% 
+0;\r\n  transition: 
+color 0.15s, 
+border-color 0.18s, 
+background 0.18s, 
+box-shadow 0.18s;\r\n  
+will-change: width, 
+height, transform;\r\n  
+cursor: pointer;\r\n}\r\n
+\r\n.animated-top-dock__i
+tem[data-dock-near=\"true
+\"],\r\n.animated-top-doc
+k__item:focus-visible 
+{\r\n  z-index: 7;\r\n  
+color: #ecece8;\r\n  
+border-color: 
+#41413e;\r\n  
+background: rgba(27, 27, 
+26, 0.94);\r\n  
+box-shadow: 0 7px 16px 
+rgba(0, 0, 0, 0.26);\r\n}
+\r\n\r\n.animated-top-doc
+k__logo {\r\n  width: 
+28px;\r\n  height: 
+28px;\r\n  overflow: 
+hidden;\r\n  background: 
+#e8e8e3;\r\n}\r\n\r\n.ani
+mated-top-dock__logo svg 
+{\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 100%;\
+r\n}\r\n\r\n.animated-top
+-dock__link {\r\n  gap: 
+6px;\r\n  width: 
+94px;\r\n  padding: 0 9px
+;\r\n}\r\n\r\n.animated-t
+op-dock__link[aria-presse
+d=\"true\"] {\r\n  
+color: #111;\r\n  
+border-color: 
+#e8e8e3;\r\n  
+background: #e8e8e3;\r\n 
+ box-shadow: 0 7px 18px 
+rgba(0, 0, 0, 0.28);\r\n}
+\r\n\r\n.animated-top-doc
+k__icon {\r\n  display: 
+inline-flex;\r\n  flex: 
+none;\r\n  align-items: 
+center;\r\n  
+justify-content: 
+center;\r\n  width: 
+13px;\r\n  height: 
+13px;\r\n  opacity: 
+0.62;\r\n  transition: 
+opacity 0.16s;\r\n}\r\n\r
+\n.animated-top-dock__ico
+n svg {\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  fill: 
+none;\r\n  stroke: 
+currentColor;\r\n  
+stroke-width: 1.2;\r\n  
+stroke-linecap: 
+round;\r\n  
+stroke-linejoin: round;\r
+\n}\r\n\r\n.animated-top-
+dock__item[data-dock-near
+=\"true\"] .animated-top-
+dock__icon,\r\n.animated-
+top-dock__item:focus-visi
+ble 
+.animated-top-dock__icon 
+{\r\n  opacity: 1;\r\n}\r
+\n\r\n.animated-top-dock-
+component__caption {\r\n 
+ right: 18px;\r\n  
+bottom: 
+16px;\r\n}\r\n\r\n@media 
+(max-width: 600px) {\r\n 
+ .article-headings-compon
+ent {\r\n    padding: 
+18px;\r\n  }\r\n\r\n  .ar
+ticle-headings-component_
+_entry {\r\n    
+grid-template-columns: 
+24px minmax(0, 1fr);\r\n 
+ }\r\n\r\n  .article-head
+ings-component__entry h2 
+{\r\n    font-size: 
+clamp(17px, 5.5vw, 
+26px);\r\n  }\r\n\r\n  .a
+rticle-headings-component
+__meta {\r\n    display: 
+none;\r\n  }\r\n\r\n  
+.animated-top-dock__nav 
+{\r\n    top: 24px;\r\n  
+  gap: 2px;\r\n    
+height: 36px;\r\n  
+}\r\n\r\n  
+.animated-top-dock__item 
+{\r\n    height: 26px 
+!important;\r\n    
+transform: none 
+!important;\r\n  
+}\r\n\r\n  
+.animated-top-dock__logo 
+{\r\n    width: 26px 
+!important;\r\n    
+height: 26px 
+!important;\r\n  
+}\r\n\r\n  
+.animated-top-dock__link 
+{\r\n    width: auto 
+!important;\r\n    
+padding: 0 7px;\r\n    
+font-size: 8px;\r\n    
+letter-spacing: 
+0.07em;\r\n  }\r\n\r\n  
+.animated-top-dock__icon 
+{\r\n    display: 
+none;\r\n  
+}\r\n}\r\n\r\n@media 
+(prefers-reduced-motion: 
+reduce) {\r\n  
+.animated-top-dock__item 
+{\r\n    transform: none 
+!important;\r\n  
+}\r\n}\r\n\r\n/* ÔöÇÔöÇ 
+Top dock variants ÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ\
+r\n   Every dimension 
+below is a container 
+query unit with a clamp, 
+because these\r\n   bars 
+are shown at anything 
+from a 600 px card to a 
+1920 px capture frame: 
+a\r\n   fixed 56 px bar 
+that reads correctly in 
+the catalogue frame 
+becomes a thin\r\n   
+strip of small type at 
+full width. One scale 
+block feeds all three. */
+\r\n\r\n.animated-top-doc
+k-component.atd-modern,\r
+\n.animated-top-dock-comp
+onent.atd-retro,\r\n.anim
+ated-top-dock-component.a
+td-glass {\r\n  
+--atd-top: clamp(16px, 
+2.6cqw, 46px);\r\n  
+--atd-bar-width: 
+min(1460px, calc(100% - 
+clamp(24px, 4.2cqw, 
+96px)));\r\n  
+--atd-bar-height: 
+clamp(48px, 3.4cqw, 
+68px);\r\n  
+--atd-bar-pad: 
+clamp(5px, 0.42cqw, 
+9px);\r\n  
+--atd-bar-lead: 
+clamp(14px, 1.15cqw, 
+25px);\r\n  
+--atd-item-height: 
+clamp(30px, 2.2cqw, 
+44px);\r\n  
+--atd-item-pad: 
+clamp(10px, 0.86cqw, 
+18px);\r\n  --atd-label: 
+clamp(12px, 0.78cqw, 
+17px);\r\n  --atd-icon: 
+clamp(13px, 0.92cqw, 
+19px);\r\n  --atd-gap: 
+clamp(5px, 0.44cqw, 
+9px);\r\n  --atd-brand: 
+clamp(13px, 0.94cqw, 
+20px);\r\n  --atd-mark: 
+clamp(22px, 1.55cqw, 
+33px);\r\n  
+--atd-action-height: 
+clamp(34px, 2.5cqw, 
+50px);\r\n  display: 
+block;\r\n  overflow: hid
+den;\r\n}\r\n\r\n.atd-mod
+ern__bar,\r\n.atd-retro__
+bar {\r\n  position: 
+absolute;\r\n  top: 
+var(--atd-top);\r\n  
+left: 50%;\r\n  z-index: 
+10;\r\n  display: 
+flex;\r\n  align-items: 
+center;\r\n  
+justify-content: 
+space-between;\r\n  
+width: var(--atd-bar-widt
+h);\r\n  height: var(--at
+d-bar-height);\r\n  
+transform: translateX(-50
+%);\r\n}\r\n\r\n/* 
+Command bar: the bar 
+hugs its own content ÔÇö 
+brand, dock and actions 
+sit in\r\n   one flow 
+with a gap between them 
+rather than being pushed 
+to the far edges of\r\n  
+ a full-bleed strip. 
+That only holds because 
+the dock's track is 
+locked to its\r\n   rest 
+width (lockTrack in the 
+controller): the spring 
+then grows its items\r\n 
+  outside that track 
+instead of widening the 
+bar and shoving the 
+brand and the\r\n   
+actions around on every 
+pointer move. 
+*/\r\n.atd-modern__bar 
+{\r\n  /* space-between 
+is inherited rather than 
+centred on purpose: at 
+its natural\r\n     
+width the three groups 
+already fill the box, 
+and in a shell too 
+narrow for\r\n     them 
+the overflow then runs 
+off the right instead of 
+taking the brand off\r\n 
+    the left as well 
+*/\r\n  width: 
+-moz-max-content;\r\n  
+width: max-content;\r\n  
+max-width: var(--atd-bar-
+width);\r\n  padding: 
+var(--atd-bar-pad) 
+var(--atd-bar-pad) 
+var(--atd-bar-pad) var(--
+atd-bar-lead);\r\n}\r\n\r
+\n.atd-modern__dock 
+{\r\n  display: 
+flex;\r\n  flex: 
+none;\r\n  gap: 
+clamp(2px, 0.2cqw, 
+5px);\r\n  align-items: 
+flex-start;\r\n  /* the 
+track is one item tall 
+and its rest width wide, 
+and the row is 
+centred\r\n     inside 
+it, so a growing item 
+overflows evenly on all 
+four sides without\r\n   
+  moving a single 
+neighbour in the bar 
+*/\r\n  justify-content: 
+center;\r\n  height: var(
+--atd-item-height);\r\n}\
+r\n\r\n.atd-modern__item,
+\r\n.atd-retro__item,\r\n
+.atd-glass__item {\r\n  
+display: 
+inline-flex;\r\n  flex: 
+none;\r\n  gap: 
+var(--atd-gap);\r\n  
+align-items: center;\r\n 
+ justify-content: 
+center;\r\n  height: var(
+--atd-item-height);\r\n  
+padding: 0 
+var(--atd-item-pad);\r\n 
+ outline: none;\r\n  
+white-space: nowrap;\r\n 
+ transform-origin: 50% 
+0;\r\n  will-change: 
+width, height, 
+transform;\r\n  cursor: p
+ointer;\r\n}\r\n\r\n.atd-
+modern__brand,\r\n.atd-gl
+ass__brand,\r\n.atd-retro
+__brand {\r\n  display: 
+inline-flex;\r\n  flex: 
+none;\r\n  gap: 
+clamp(7px, 0.6cqw, 
+13px);\r\n  align-items: 
+center;\r\n  
+text-decoration: none;\r\
+n}\r\n\r\n.atd-modern__ma
+rk,\r\n.atd-glass__mark 
+{\r\n  display: 
+block;\r\n  width: 
+var(--atd-mark);\r\n  
+height: 
+var(--atd-mark);\r\n  
+overflow: hidden;\r\n}\r\
+n\r\n.atd-modern__mark 
+svg,\r\n.atd-glass__mark 
+svg {\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 100%;\
+r\n}\r\n\r\n.atd-modern__
+word,\r\n.atd-glass__word
+ {\r\n  font-size: 
+var(--atd-brand);\r\n  
+font-weight: 600;\r\n  
+letter-spacing: -0.018em;
+\r\n}\r\n\r\n.atd-modern_
+_actions {\r\n  display: 
+inline-flex;\r\n  flex: 
+none;\r\n  gap: 
+clamp(4px, 0.34cqw, 
+8px);\r\n  align-items: c
+enter;\r\n}\r\n\r\n.atd-m
+odern__ghost {\r\n  
+height: var(--atd-action-
+height);\r\n  padding: 0 
+clamp(12px, 0.95cqw, 
+20px);\r\n  border: 
+0;\r\n  border-radius: 
+999px;\r\n  background: 
+transparent;\r\n  font: 
+500 var(--atd-label) / 1 
+inherit;\r\n  
+transition: color 0.16s, 
+background 0.16s;\r\n  
+cursor: pointer;\r\n}\r\n
+\r\n.atd-modern__cta,\r\n
+.atd-glass__cta {\r\n  
+height: var(--atd-action-
+height);\r\n  
+border-radius: 
+999px;\r\n  font: 600 
+var(--atd-label) / 1 
+inherit;\r\n  
+letter-spacing: 
+-0.01em;\r\n  
+white-space: nowrap;\r\n 
+ transition: transform 
+0.18s cubic-bezier(0.22, 
+1, 0.36, 1), box-shadow 
+0.18s;\r\n  cursor: 
+pointer;\r\n}\r\n\r\n/* 
+ÔöÇÔöÇ Modern command 
+bar ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇ */\r\n\r\n.animat
+ed-top-dock-component.atd
+-modern {\r\n  /* a 
+ceiling rather than a 
+width: the command bar 
+sizes itself to its 
+own\r\n     cluster, and 
+only falls back to an 
+inset strip in a shell 
+too narrow to\r\n     
+hold it */\r\n  
+--atd-bar-width: 
+min(1240px, calc(100% - 
+clamp(24px, 5cqw, 
+120px)));\r\n  
+background: #07080c;\r\n}
+\r\n\r\n.atd-modern__auro
+ra {\r\n  position: 
+absolute;\r\n  inset: 
+-24% -12% auto -12%;\r\n 
+ z-index: 1;\r\n  
+height: 82%;\r\n  
+pointer-events: 
+none;\r\n  
+background:\r\n    
+radial-gradient(58% 62% 
+at 22% 36%, rgba(78, 
+116, 255, 0.4), 
+transparent 68%),\r\n    
+radial-gradient(46% 56% 
+at 78% 20%, rgba(186, 
+96, 255, 0.3), 
+transparent 70%),\r\n    
+radial-gradient(40% 48% 
+at 52% 6%, rgba(56, 220, 
+214, 0.2), transparent 
+72%),\r\n    
+radial-gradient(34% 40% 
+at 50% 14%, rgba(255, 
+255, 255, 0.07), 
+transparent 76%);\r\n  
+filter: blur(8px);\r\n}\r
+\n\r\n.atd-modern__bar 
+{\r\n  gap: clamp(14px, 
+2.4cqw, 40px);\r\n  
+border: 1px solid 
+rgba(255, 255, 255, 
+0.045);\r\n  
+border-radius: 
+999px;\r\n  background: 
+linear-gradient(180deg, 
+rgba(25, 27, 36, 0.86), 
+rgba(12, 13, 18, 
+0.82));\r\n  box-shadow: 
+0 22px 52px -24px 
+rgba(0, 0, 0, 0.92), 
+inset 0 1px rgba(255, 
+255, 255, 0.045);\r\n  
+backdrop-filter: 
+blur(22px) 
+saturate(150%);\r\n  
+-webkit-backdrop-filter: 
+blur(22px) saturate(150%)
+;\r\n}\r\n\r\n.atd-modern
+__brand {\r\n  color: #f2
+f3f7;\r\n}\r\n\r\n.atd-mo
+dern__mark {\r\n  /* a 
+full circle: the shared 
+brand mark is a rounded 
+square, so the disc is 
+cut\r\n     from it by 
+the mark box's own clip 
+rather than by a second 
+svg */\r\n  
+border-radius: 50%;\r\n  
+box-shadow: 0 2px 8px 
+rgba(0, 0, 0, 0.42);\r\n}
+\r\n\r\n.atd-modern__item
+ {\r\n  border: 1px 
+solid transparent;\r\n  
+border-radius: 
+999px;\r\n  color: 
+#9b9fae;\r\n  
+background: 
+transparent;\r\n  font: 
+500 var(--atd-label) / 1 
+inherit;\r\n  
+letter-spacing: 
+-0.005em;\r\n  
+transition: color 0.16s, 
+border-color 0.18s, 
+background 0.18s, 
+box-shadow 0.18s, 
+backdrop-filter 
+0.18s;\r\n}\r\n\r\n/* 
+:hover is carried 
+alongside the proximity 
+flag so the glass still 
+lands when\r\n   the 
+spring is off ÔÇö 
+reduced motion, a coarse 
+pointer, a narrow 
+viewport */\r\n.atd-moder
+n__item[data-dock-near=\"
+true\"],\r\n.atd-modern__
+item:hover,\r\n.atd-moder
+n__item:focus-visible 
+{\r\n  color: 
+#f4f5f9;\r\n  
+border-color: rgba(255, 
+255, 255, 0.055);\r\n  
+background: rgba(255, 
+255, 255, 0.055);\r\n  
+box-shadow: 0 8px 20px 
+-14px rgba(0, 0, 0, 
+0.9), inset 0 1px 
+rgba(255, 255, 255, 
+0.05);\r\n  
+backdrop-filter: 
+blur(18px) 
+saturate(170%);\r\n  
+-webkit-backdrop-filter: 
+blur(18px) saturate(170%)
+;\r\n}\r\n\r\n.atd-modern
+__item[aria-pressed=\"tru
+e\"] {\r\n  color: 
+#0a0b10;\r\n  
+border-color: 
+transparent;\r\n  
+background: 
+linear-gradient(180deg, 
+#ffffff, #dfe3ef);\r\n  
+box-shadow: 0 10px 24px 
+-12px rgba(120, 150, 
+255, 0.75), inset 0 -1px 
+rgba(0, 0, 0, 0.14);\r\n}
+\r\n\r\n.atd-modern__icon
+,\r\n.atd-glass__icon 
+{\r\n  display: 
+inline-flex;\r\n  flex: 
+none;\r\n  align-items: 
+center;\r\n  
+justify-content: 
+center;\r\n  width: 
+var(--atd-icon);\r\n  
+height: 
+var(--atd-icon);\r\n  
+opacity: 0.72;\r\n  
+transition: opacity 0.16s
+;\r\n}\r\n\r\n.atd-modern
+__icon 
+svg,\r\n.atd-glass__icon 
+svg {\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  fill: 
+none;\r\n  stroke: 
+currentColor;\r\n  
+stroke-width: 1.25;\r\n  
+stroke-linecap: 
+round;\r\n  
+stroke-linejoin: round;\r
+\n}\r\n\r\n.atd-modern__i
+tem[data-dock-near=\"true
+\"] .atd-modern__icon,\r\
+n.atd-modern__item[aria-p
+ressed=\"true\"] .atd-mod
+ern__icon,\r\n.atd-glass_
+_item[data-dock-near=\"tr
+ue\"] .atd-glass__icon,\r
+\n.atd-glass__item[aria-p
+ressed=\"true\"] 
+.atd-glass__icon {\r\n  
+opacity: 1;\r\n}\r\n\r\n.
+atd-modern__ghost {\r\n  
+color: #a7abba;\r\n}\r\n\
+r\n.atd-modern__ghost:hov
+er {\r\n  color: 
+#f0f1f6;\r\n  
+background: rgba(255, 
+255, 255, 0.06);\r\n}\r\n
+\r\n.atd-modern__cta 
+{\r\n  display: 
+inline-flex;\r\n  gap: 
+var(--atd-gap);\r\n  
+align-items: center;\r\n 
+ padding: 0 
+var(--atd-bar-pad) 0 
+clamp(14px, 1.1cqw, 
+24px);\r\n  border: 
+0;\r\n  color: 
+#0a0b10;\r\n  
+background: 
+linear-gradient(180deg, 
+#ffffff, #d8ddec);\r\n  
+box-shadow: 0 10px 26px 
+-14px rgba(150, 175, 
+255, 0.95), inset 0 -1px 
+rgba(0, 0, 0, 0.16);\r\n}
+\r\n\r\n.atd-modern__cta 
+svg {\r\n  box-sizing: 
+border-box;\r\n  width: c
+alc(var(--atd-action-heig
+ht) - clamp(12px, 
+0.9cqw, 20px));\r\n  
+height: calc(var(--atd-ac
+tion-height) - 
+clamp(12px, 0.9cqw, 
+20px));\r\n  padding: 
+clamp(4px, 0.3cqw, 
+7px);\r\n  
+border-radius: 
+999px;\r\n  background: 
+rgba(10, 11, 16, 
+0.1);\r\n  fill: 
+none;\r\n  stroke: 
+currentColor;\r\n  
+stroke-width: 1.4;\r\n  
+stroke-linecap: 
+round;\r\n  
+stroke-linejoin: round;\r
+\n}\r\n\r\n.atd-modern__c
+ta:hover {\r\n  
+box-shadow: 0 16px 32px 
+-14px rgba(150, 175, 
+255, 1), inset 0 -1px 
+rgba(0, 0, 0, 0.16);\r\n 
+ transform: translateY(-1
+px);\r\n}\r\n\r\n.atd-mod
+ern__stage {\r\n  
+position: absolute;\r\n  
+top: 58%;\r\n  left: 
+50%;\r\n  z-index: 
+4;\r\n  width: 
+min(88cqw, 1120px);\r\n  
+text-align: center;\r\n  
+pointer-events: 
+none;\r\n  transform: 
+translate(-50%, -50%);\r\
+n}\r\n\r\n.atd-modern__ey
+ebrow {\r\n  margin: 0 0 
+clamp(8px, 0.9cqw, 
+18px);\r\n  color: 
+#7d84a0;\r\n  font: 400 
+clamp(8px, 0.62cqw, 
+13px) / 1 \"ThreeUI 
+Fragment Mono\", 
+ui-monospace, 
+monospace;\r\n  
+letter-spacing: 
+0.22em;\r\n  
+text-transform: uppercase
+;\r\n}\r\n\r\n.atd-modern
+__headline {\r\n  /* 
+background-clip: text 
+paints only inside the 
+element box, so at this 
+size a\r\n     1.0-ish 
+line-height would cut 
+the ascenders and 
+descenders out of the 
+fill.\r\n     The 
+padding buys the ink its 
+own room back. */\r\n  
+margin: 0;\r\n  padding: 
+0.08em 0 0.14em;\r\n  
+color: transparent;\r\n  
+background: 
+linear-gradient(180deg, 
+#ffffff 16%, rgba(255, 
+255, 255, 0.3));\r\n  
+background-clip: 
+text;\r\n  
+-webkit-background-clip: 
+text;\r\n  font-size: 
+clamp(30px, 7.6cqw, 
+150px);\r\n  
+font-weight: 400;\r\n  
+line-height: 1.04;\r\n  
+letter-spacing: 
+-0.03em;\r\n  text-wrap: 
+balance;\r\n}\r\n\r\n/* 
+ÔöÇÔöÇ Retro pixel 
+terminal ÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇ\r\n   The 
+field canvas is a small 
+drawing buffer stretched 
+by CSS with\r\n   
+nearest-neighbour 
+sampling, so its dither 
+pattern arrives as real 
+square\r\n   pixels. 
+Every chrome edge here 
+is square to sit on that 
+same grid. */\r\n\r\n.ani
+mated-top-dock-component.
+atd-retro {\r\n  
+--atd-label: clamp(9px, 
+0.68cqw, 15px);\r\n  
+--atd-icon: clamp(10px, 
+0.78cqw, 17px);\r\n  
+--atd-brand: clamp(11px, 
+0.8cqw, 18px);\r\n  
+background: #0b0819;\r\n}
+\r\n\r\n.atd-retro__field
+ {\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  z-index: 0;\r\n  
+display: block;\r\n  
+width: 100%;\r\n  
+height: 100%;\r\n  
+image-rendering: pixelate
+d;\r\n}\r\n\r\n.atd-retro
+__vignette {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  z-index: 
+1;\r\n  pointer-events: 
+none;\r\n  
+background:\r\n    
+radial-gradient(124% 90% 
+at 50% 34%, transparent 
+28%, rgba(6, 4, 16, 
+0.62) 100%),\r\n    
+linear-gradient(180deg, 
+rgba(6, 4, 16, 0.6) 0%, 
+transparent 24%, 
+transparent 62%, rgba(6, 
+4, 16, 0.58) 
+100%);\r\n}\r\n\r\n/* 
+the raster runs at 
+screen resolution, not 
+at the field's pixel 
+scale, so the\r\n   line 
+structure stays a raster 
+instead of banding the 
+chunky artwork 
+*/\r\n.atd-retro::before 
+{\r\n  position: 
+absolute;\r\n  inset: 
+0;\r\n  z-index: 11;\r\n 
+ pointer-events: 
+none;\r\n  content: 
+\"\";\r\n  opacity: calc(
+var(--atd-retro-scan, 
+0.32) * 1.5);\r\n  
+background: repeating-lin
+ear-gradient(180deg, 
+rgba(0, 0, 0, 0.42) 0 
+1px, transparent 1px 
+3px);\r\n}\r\n\r\n/* 
+Horizontal fit: the bar 
+is one continuous strip 
+and the menu cells own 
+all of\r\n   it. There 
+are no gaps and no 
+rounded ends ÔÇö every 
+cell is separated by a 
+rule\r\n   and runs the 
+full height, and the 
+controller renormalises 
+the widths so\r\n   
+opening one cell takes 
+its room from the 
+neighbours. 
+*/\r\n.atd-retro__bar 
+{\r\n  gap: 0;\r\n  
+padding: 0;\r\n  
+overflow: hidden;\r\n  
+border: 2px solid 
+#f4e6c8;\r\n  
+background: #1a1030;\r\n 
+ box-shadow: 6px 6px 0 
+rgba(6, 4, 16, 0.62);\r\n
+}\r\n\r\n.atd-retro__bran
+d {\r\n  height: 
+100%;\r\n  padding: 0 
+clamp(12px, 1.1cqw, 
+26px);\r\n  
+border-right: 2px solid 
+#4b2f7e;\r\n  color: 
+#f9c74f;\r\n  
+background: #150c28;\r\n 
+ font: 400 
+var(--atd-brand) / 1 
+\"ThreeUI Fragment 
+Mono\", ui-monospace, 
+monospace;\r\n  
+letter-spacing: 0.12em;\r
+\n}\r\n\r\n.atd-retro__do
+ck {\r\n  display: 
+flex;\r\n  flex: 1 1 
+0;\r\n  gap: 0;\r\n  
+align-items: 
+stretch;\r\n  min-width: 
+0;\r\n  height: 100%;\r\n
+}\r\n\r\n.atd-retro__badg
+e {\r\n  display: 
+inline-flex;\r\n  width: 
+var(--atd-icon);\r\n  
+height: var(--atd-icon);\
+r\n}\r\n\r\n.atd-retro__b
+adge 
+svg,\r\n.atd-retro__icon 
+svg {\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n  fill: 
+currentColor;\r\n  
+shape-rendering: crispEdg
+es;\r\n}\r\n\r\n.atd-retr
+o__item {\r\n  height: 
+100%;\r\n  min-width: 
+0;\r\n  padding: 0 
+clamp(6px, 0.5cqw, 
+12px);\r\n  overflow: 
+hidden;\r\n  border: 
+0;\r\n  border-right: 
+2px solid #4b2f7e;\r\n  
+color: #b9a7e8;\r\n  
+background: #241548;\r\n 
+ font: 400 
+var(--atd-label) / 1 
+\"ThreeUI Fragment 
+Mono\", ui-monospace, 
+monospace;\r\n  
+letter-spacing: 
+0.14em;\r\n  transition: 
+color 0.1s steps(2), 
+background 0.1s steps(2);
+\r\n}\r\n\r\n.atd-retro__
+item[data-dock-near=\"tru
+e\"],\r\n.atd-retro__item
+:focus-visible {\r\n  
+color: #fff4d6;\r\n  
+background: #3a2170;\r\n}
+\r\n\r\n.atd-retro__item[
+aria-pressed=\"true\"] 
+{\r\n  color: 
+#1a1030;\r\n  
+background: #f9c74f;\r\n}
+\r\n\r\n.atd-retro__icon 
+{\r\n  display: 
+inline-flex;\r\n  flex: 
+none;\r\n  width: 
+var(--atd-icon);\r\n  
+height: var(--atd-icon);\
+r\n}\r\n\r\n.atd-retro__c
+ta {\r\n  display: 
+inline-flex;\r\n  flex: 
+none;\r\n  gap: 
+var(--atd-gap);\r\n  
+align-items: center;\r\n 
+ height: 100%;\r\n  
+padding: 0 clamp(14px, 
+1.2cqw, 28px);\r\n  
+border: 0;\r\n  
+border-left: 2px solid 
+#f4e6c8;\r\n  color: 
+#1a1030;\r\n  
+background: #f47b5c;\r\n 
+ font: 400 
+var(--atd-label) / 1 
+\"ThreeUI Fragment 
+Mono\", ui-monospace, 
+monospace;\r\n  
+letter-spacing: 
+0.16em;\r\n  transition: 
+background 0.1s 
+steps(2), color 0.1s 
+steps(2);\r\n  cursor: po
+inter;\r\n}\r\n\r\n.atd-r
+etro__cta:hover {\r\n  
+color: #1a1030;\r\n  
+background: #f9c74f;\r\n}
+\r\n\r\n.atd-retro__reado
+ut {\r\n  position: 
+absolute;\r\n  bottom: 
+clamp(30px, 4.2cqw, 
+74px);\r\n  left: 
+50%;\r\n  z-index: 
+8;\r\n  display: 
+flex;\r\n  gap: 
+clamp(12px, 2.4cqw, 
+42px);\r\n  margin: 
+0;\r\n  color: 
+#a08fd4;\r\n  font: 400 
+clamp(9px, 0.62cqw, 
+13px) / 1 \"ThreeUI 
+Fragment Mono\", 
+ui-monospace, 
+monospace;\r\n  
+letter-spacing: 
+0.2em;\r\n  transform: tr
+anslateX(-50%);\r\n}\r\n\
+r\n/* ÔöÇÔöÇ Liquid 
+glass ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔö
+ÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇ
+ÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔöÇÔ
+öÇÔöÇÔöÇ\r\n   Vertical 
+fit: the dock leaves the 
+top edge for a rail down 
+the left side. The\r\n   
+proximity field runs on 
+the y axis, so an item 
+grows taller and leans 
+out to\r\n   the right 
+instead of widening and 
+dropping. The rail is a 
+real\r\n   
+backdrop-filter panel 
+over the refracting 
+Three.js bead field, so 
+its blur\r\n   samples 
+the same pixels the 
+glass shader refracts. */
+\r\n\r\n.animated-top-doc
+k-component.atd-glass 
+{\r\n  --atd-rail-width: 
+clamp(158px, 12.5cqw, 
+250px);\r\n  background: 
+#08090d;\r\n}\r\n\r\n.atd
+-glass__field {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  z-index: 
+0;\r\n  display: 
+block;\r\n  width: 
+100%;\r\n  height: 
+100%;\r\n}\r\n\r\n/* a 
+scrim behind the rail: 
+the bead field is bright 
+enough in places to 
+swallow\r\n   the 
+wordmark, and the 
+panel's own blur cannot 
+darken what it samples 
+*/\r\n.atd-glass::before 
+{\r\n  position: 
+absolute;\r\n  inset: 0 
+auto 0 0;\r\n  z-index: 
+5;\r\n  width: 42%;\r\n  
+pointer-events: 
+none;\r\n  content: 
+\"\";\r\n  background: 
+linear-gradient(90deg, 
+rgba(6, 7, 11, 0.66), 
+rgba(6, 7, 11, 0));\r\n}\
+r\n\r\n.atd-glass__rail 
+{\r\n  position: 
+absolute;\r\n  top: 
+50%;\r\n  left: 
+clamp(20px, 3.4cqw, 
+68px);\r\n  z-index: 
+10;\r\n  display: 
+flex;\r\n  
+flex-direction: 
+column;\r\n  gap: 
+clamp(6px, 0.5cqw, 
+11px);\r\n  align-items: 
+stretch;\r\n  width: var(
+--atd-rail-width);\r\n  
+padding: 
+var(--atd-bar-pad);\r\n  
+border-radius: 
+clamp(20px, 1.7cqw, 
+34px);\r\n  background: 
+linear-gradient(160deg, 
+rgba(255, 255, 255, 
+0.15), rgba(255, 255, 
+255, 0.05));\r\n  
+box-shadow:\r\n    0 
+30px 64px -26px rgba(0, 
+0, 0, 0.92),\r\n    
+inset 0 1px 0 rgba(255, 
+255, 255, 0.44),\r\n    
+inset 0 -1px 0 rgba(255, 
+255, 255, 0.12),\r\n    
+inset 0 0 0 1px 
+rgba(255, 255, 255, 
+0.14);\r\n  
+backdrop-filter: 
+blur(26px) 
+saturate(190%);\r\n  
+-webkit-backdrop-filter: 
+blur(26px) 
+saturate(190%);\r\n  
+transform: translateY(-50
+%);\r\n}\r\n\r\n.atd-glas
+s__rail::before {\r\n  
+position: absolute;\r\n  
+inset: 0;\r\n  
+pointer-events: 
+none;\r\n  content: 
+\"\";\r\n  
+border-radius: 
+inherit;\r\n  
+background: 
+linear-gradient(168deg, 
+rgba(255, 255, 255, 
+0.22) 0%, rgba(255, 255, 
+255, 0) 30%, rgba(255, 
+255, 255, 0) 76%, 
+rgba(255, 255, 255, 
+0.14) 100%);\r\n}\r\n\r\n
+.atd-glass__brand {\r\n  
+position: relative;\r\n  
+padding: clamp(6px, 
+0.5cqw, 12px) clamp(8px, 
+0.7cqw, 15px);\r\n  
+color: #fbfbfe;\r\n}\r\n\
+r\n.atd-glass__mark 
+{\r\n  border-radius: 
+clamp(7px, 0.5cqw, 
+11px);\r\n  box-shadow: 
+0 3px 10px rgba(0, 0, 0, 
+0.42), inset 0 0 0 1px 
+rgba(255, 255, 255, 0.3);
+\r\n}\r\n\r\n.atd-glass__
+hairline {\r\n  height: 
+1px;\r\n  margin: 
+clamp(2px, 0.2cqw, 5px) 
+clamp(6px, 0.5cqw, 
+12px);\r\n  background: 
+linear-gradient(90deg, 
+rgba(255, 255, 255, 
+0.04), rgba(255, 255, 
+255, 0.26), rgba(255, 
+255, 255, 0.04));\r\n}\r\
+n\r\n.atd-glass__dock 
+{\r\n  position: 
+relative;\r\n  display: 
+flex;\r\n  
+flex-direction: 
+column;\r\n  gap: 
+clamp(2px, 0.2cqw, 
+5px);\r\n  align-items: s
+tretch;\r\n}\r\n\r\n.atd-
+glass__item {\r\n  
+justify-content: 
+flex-start;\r\n  width: 
+100%;\r\n  border: 1px 
+solid transparent;\r\n  
+border-radius: 
+clamp(12px, 1cqw, 
+22px);\r\n  color: 
+rgba(255, 255, 255, 
+0.66);\r\n  background: 
+transparent;\r\n  font: 
+500 var(--atd-label) / 1 
+inherit;\r\n  
+letter-spacing: 
+-0.005em;\r\n  /* the 
+rail grows downward from 
+each item's own top edge 
+*/\r\n  
+transform-origin: 0 
+50%;\r\n  transition: 
+color 0.18s, 
+border-color 0.2s, 
+background 0.2s, 
+box-shadow 0.2s;\r\n}\r\n
+\r\n.atd-glass__item[data
+-dock-near=\"true\"],\r\n
+.atd-glass__item:focus-vi
+sible {\r\n  color: 
+#ffffff;\r\n  
+border-color: rgba(255, 
+255, 255, 0.24);\r\n  
+background: 
+linear-gradient(180deg, 
+rgba(255, 255, 255, 
+0.22), rgba(255, 255, 
+255, 0.07));\r\n  
+box-shadow: inset 0 1px 
+0 rgba(255, 255, 255, 
+0.46), 0 8px 18px -10px 
+rgba(0, 0, 0, 0.8);\r\n}\
+r\n\r\n.atd-glass__item[a
+ria-pressed=\"true\"] 
+{\r\n  color: 
+#0d0f16;\r\n  
+border-color: rgba(255, 
+255, 255, 0.6);\r\n  
+background: 
+linear-gradient(180deg, 
+#ffffff, #e6e9f4);\r\n  
+box-shadow: 0 10px 24px 
+-12px rgba(255, 255, 
+255, 0.5), inset 0 -1px 
+rgba(0, 0, 0, 0.14);\r\n}
+\r\n\r\n.atd-glass__cta 
+{\r\n  display: 
+inline-flex;\r\n  gap: 
+var(--atd-gap);\r\n  
+align-items: center;\r\n 
+ justify-content: 
+space-between;\r\n  
+width: 100%;\r\n  
+padding: 0 clamp(12px, 
+1cqw, 22px);\r\n  
+border: 1px solid 
+rgba(255, 255, 255, 
+0.55);\r\n  color: 
+#0d0f16;\r\n  
+background: 
+linear-gradient(180deg, 
+#ffffff, #dfe3f0);\r\n  
+box-shadow: 0 12px 30px 
+-14px rgba(255, 255, 
+255, 0.6), inset 0 -1px 
+rgba(0, 0, 0, 0.16);\r\n}
+\r\n\r\n.atd-glass__cta 
+svg {\r\n  width: 
+var(--atd-icon);\r\n  
+height: 
+var(--atd-icon);\r\n  
+fill: none;\r\n  stroke: 
+currentColor;\r\n  
+stroke-width: 1.5;\r\n  
+stroke-linecap: 
+round;\r\n  
+stroke-linejoin: round;\r
+\n}\r\n\r\n.atd-glass__ct
+a:hover {\r\n  
+box-shadow: 0 16px 34px 
+-14px rgba(255, 255, 
+255, 0.75), inset 0 -1px 
+rgba(0, 0, 0, 0.16);\r\n 
+ transform: translateY(-1
+px);\r\n}\r\n\r\n.atd-mod
+ern .animated-top-dock-co
+mponent__caption,\r\n.atd
+-glass .animated-top-dock
+-component__caption 
+{\r\n  color: rgba(255, 
+255, 255, 0.34);\r\n}\r\n
+\r\n.atd-retro .animated-
+top-dock-component__capti
+on {\r\n  z-index: 
+12;\r\n  color: #7b6ab0;\
+r\n}\r\n\r\n@container 
+(max-width: 900px) {\r\n 
+ .atd-modern__ghost 
+{\r\n    display: 
+none;\r\n  }\r\n\r\n  
+.atd-modern__item 
+span:last-child,\r\n  
+.atd-retro__item 
+span:last-child {\r\n    
+display: none;\r\n  
+}\r\n\r\n  /* the bar is 
+sized by its content 
+now, so a shell this 
+narrow has to give 
+the\r\n     content 
+back: the call to action 
+drops to its glyph 
+rather than pushing 
+the\r\n     cluster past 
+the bar's own max width 
+*/\r\n  .atd-modern__cta 
+span {\r\n    display: 
+none;\r\n  }\r\n\r\n  
+.atd-modern__cta {\r\n   
+ padding: 0 
+var(--atd-bar-pad);\r\n  
+}\r\n\r\n  /* the rail 
+collapses to its icons 
+rather than keeping a 
+158 px column in a\r\n   
+  card that is only a 
+few hundred pixels wide 
+*/\r\n  .animated-top-doc
+k-component.atd-glass 
+{\r\n    
+--atd-rail-width: 
+auto;\r\n  }\r\n\r\n  
+.atd-glass__item {\r\n   
+ justify-content: 
+center;\r\n  }\r\n\r\n  
+.atd-glass__item 
+span:last-child,\r\n  
+.atd-glass__word,\r\n  
+.atd-glass__cta span 
+{\r\n    display: 
+none;\r\n  }\r\n\r\n  
+.atd-glass__cta {\r\n    
+justify-content: 
+center;\r\n  
+}\r\n}\r\n\r\n@media 
+(max-width: 600px) {\r\n 
+ .atd-modern__word {\r\n 
+   display: none;\r\n  
+}\r\n\r\n  
+.atd-modern__item {\r\n  
+  height: 28px 
+!important;\r\n    
+transform: none 
+!important;\r\n  
+}\r\n\r\n  
+.atd-glass__item {\r\n   
+ height: auto 
+!important;\r\n    
+transform: none 
+!important;\r\n  
+}\r\n\r\n  /* the strip 
+keeps its full-height 
+cells on a phone; only 
+the spring stops */\r\n  
+.atd-retro__item {\r\n   
+ height: 100% 
+!important;\r\n    
+transform: none 
+!important;\r\n  
+}\r\n\r\n  
+.atd-modern__stage {\r\n 
+   top: 62%;\r\n  
+}\r\n\r\n  
+.atd-retro__readout 
+{\r\n    display: 
+none;\r\n  
+}\r\n}\r\n\r\n@media 
+(prefers-reduced-motion: 
+reduce) {\r\n  
+.atd-modern__item,\r\n  
+.atd-retro__item,\r\n  
+.atd-glass__item {\r\n   
+ transform: none 
+!important;\r\n  
+}\r\n}\r\n", ""]);
+15 | // Exports
+16 | /* harmony default 
+export */ __webpack_expor
+ts__["default"] = (___CSS
+_LOADER_EXPORT___);
+17 | 
+
+Import trace for 
+requested module:
+./src/shaders/threeui.css
+
+
+> Build failed because 
+of webpack errors

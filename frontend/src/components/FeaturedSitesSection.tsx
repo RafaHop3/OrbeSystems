@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { ExternalLink } from 'lucide-react';
+import { CrowdCanvas } from '@/components/ui/skiper-ui/skiper39';
 
 const sites = [
     {
@@ -147,6 +148,11 @@ export default function FeaturedSitesSection() {
                                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                             />
+                            {site.isAnimated && (
+                                <div className="absolute inset-0 z-10 pointer-events-none mix-blend-screen opacity-70 group-hover:opacity-100 transition-opacity">
+                                    <CrowdCanvas src="/images/peeps/all-peeps.png" rows={15} cols={7} />
+                                </div>
+                            )}
                             {/* Gradient overlay keeps text on bottom readable */}
                             <div
                                 className="absolute inset-0"
