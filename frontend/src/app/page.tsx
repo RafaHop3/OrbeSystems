@@ -6,6 +6,7 @@ import FreedomSection from '@/components/FreedomSection';
 import FeaturedSitesSection from '@/components/FeaturedSitesSection';
 import GhostEnginePromo from '@/components/GhostEnginePromo';
 import InhoPromo from '@/components/InhoPromo';
+import VoidFieldPromo from '@/components/VoidFieldPromo';
 import OrbeCleanerHero from './orbe-cleaner/page';
 import OrbeKnightPromo from '@/components/OrbeKnightPromo';
 import OrbeStudioPromo from '@/components/OrbeStudioPromo';
@@ -21,6 +22,7 @@ export default function HomePage() {
       <StarryBackground />
       <Header />
       <OrbeStudioPromo />
+      <VoidFieldPromo />
       <GhostEnginePromo />
       <InhoPromo />
       <OrbeCleanerHero />
