@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VALENCE CORE | Kinetic Induction</title>
-    
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -17,56 +18,81 @@
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
-<body class="bg-neutral-950 text-neutral-50 h-screen w-screen overflow-hidden font-sans selection:bg-cyan-500/30 selection:text-cyan-50 flex flex-col relative antialiased">
+
+<body
+    class="bg-neutral-950 text-neutral-50 h-screen w-screen overflow-hidden font-sans selection:bg-cyan-500/30 selection:text-cyan-50 flex flex-col relative antialiased">
 
     <!-- Ambient WebGL Background -->
-    <canvas id="bg-canvas" class="absolute inset-0 w-full h-full z-0 opacity-60 pointer-events-none" aria-hidden="true"></canvas>
+    <canvas id="bg-canvas" class="absolute inset-0 w-full h-full z-0 opacity-60 pointer-events-none"
+        aria-hidden="true"></canvas>
 
     <!-- Overlay Vignette for depth -->
-    <div class="absolute inset-0 z-0 pointer-events-none" style="background: radial-gradient(circle at center, transparent 0%, rgba(10,10,10,0.8) 100%);"></div>
+    <div class="absolute inset-0 z-0 pointer-events-none"
+        style="background: radial-gradient(circle at center, transparent 0%, rgba(10,10,10,0.8) 100%);"></div>
 
     <!-- Navigation -->
-    <nav class="absolute top-0 w-full flex justify-between items-center px-6 py-6 z-20" style="opacity: 0; transform: translateY(-20px);" id="main-nav">
+    <nav class="absolute top-0 w-full flex justify-between items-center px-6 py-6 z-20"
+        style="opacity: 0; transform: translateY(-20px);" id="main-nav">
         <div class="flex items-center gap-2">
-            <iconify-icon icon="solar:atom-linear" class="text-cyan-500 text-xl" style="stroke-width: 1.5px;"></iconify-icon>
+            <iconify-icon icon="solar:atom-linear" class="text-cyan-500 text-xl"
+                style="stroke-width: 1.5px;"></iconify-icon>
             <span class="font-medium text-sm tracking-tight text-neutral-200">VALENCE SYSTEM</span>
         </div>
-        
+
         <!-- Premium Border Gradient Pill -->
-        <div class="hidden sm:flex relative p-[1px] rounded-full overflow-hidden items-center justify-center cursor-pointer group transition-transform duration-300 hover:scale-105">
-            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500/50 via-neutral-500/10 to-transparent rounded-full group-hover:from-cyan-500/80 transition-colors duration-500"></div>
+        <div
+            class="hidden sm:flex relative p-[1px] rounded-full overflow-hidden items-center justify-center cursor-pointer group transition-transform duration-300 hover:scale-105">
+            <div
+                class="absolute inset-0 bg-gradient-to-r from-cyan-500/50 via-neutral-500/10 to-transparent rounded-full group-hover:from-cyan-500/80 transition-colors duration-500">
+            </div>
             <div class="relative bg-neutral-950 rounded-full px-5 py-2 flex items-center gap-2">
-                <div class="w-1.5 h-1.5 rounded-full bg-cyan-500" style="box-shadow: 0 0 8px rgba(6, 182, 212, 0.8);"></div>
+                <div class="w-1.5 h-1.5 rounded-full bg-cyan-500" style="box-shadow: 0 0 8px rgba(6, 182, 212, 0.8);">
+                </div>
                 <span class="text-xs font-medium tracking-wide text-neutral-300">Induction Active</span>
             </div>
         </div>
     </nav>
 
     <!-- Main Content Stage -->
-    <main class="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 w-full h-full max-w-4xl mx-auto">
-        
+    <main
+        class="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-4 w-full h-full max-w-4xl mx-auto">
+
         <div class="mb-8 flex flex-col items-center" id="intro-tags">
-            <div class="font-mono font-medium text-xs tracking-[0.3em] uppercase text-cyan-500 mb-6" style="opacity: 0; transform: translateY(12px);" id="tag-text">
+            <div class="font-mono font-medium text-xs tracking-[0.3em] uppercase text-cyan-500 mb-6"
+                style="opacity: 0; transform: translateY(12px);" id="tag-text">
                 SYS 12 // Kinetic Pulse
             </div>
-            
-            <h1 class="text-4xl sm:text-6xl md:text-7xl font-medium tracking-tight leading-[1.1] text-neutral-50" data-split>
+
+            <h1 class="text-4xl sm:text-6xl md:text-7xl font-medium tracking-tight leading-[1.1] text-neutral-50"
+                data-split>
                 Command the momentum.
             </h1>
             <p class="mt-6 text-sm sm:text-base text-neutral-400 max-w-md font-normal leading-relaxed" data-split>
-                Initialize the valence induction loop. The kinetic perimeter is optimized and standing by for sequence execution.
+                Initialize the valence induction loop. The kinetic perimeter is optimized and standing by for sequence
+                execution.
             </p>
         </div>
 
         <!-- WebGL Button Component -->
-        <div class="mt-10 relative flex justify-center w-full" id="btn-container" style="opacity: 0; transform: scale(0.92);">
-            <button class="relative flex items-center justify-center w-[280px] h-[96px] bg-transparent cursor-pointer rounded-[18px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 group" id="btn" type="button" style="transition: transform .22s cubic-bezier(.34, 1.4, .5, 1);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" onmousedown="this.style.transform='translateY(1px) scale(.99)'" onmouseup="this.style.transform='translateY(-2px)'">
-                <canvas id="btn-gl" aria-hidden="true" class="absolute inset-0 w-full h-full block rounded-[18px]"></canvas>
-                <span class="relative z-10 pointer-events-none font-medium text-sm tracking-[0.3em] indent-[0.3em] text-[#e0f7f8]" style="text-shadow: 0 0 12px rgba(0, 210, 255, .6), 0 1px 4px rgba(0, 0, 0, .8);">ORBE SYSTEMS</span>
+        <div class="mt-10 relative flex justify-center w-full" id="btn-container"
+            style="opacity: 0; transform: scale(0.92);">
+            <button
+                class="relative flex items-center justify-center w-[280px] h-[96px] bg-transparent cursor-pointer rounded-[18px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950 group"
+                id="btn" type="button" style="transition: transform .22s cubic-bezier(.34, 1.4, .5, 1);"
+                onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'"
+                onmousedown="this.style.transform='translateY(1px) scale(.99)'"
+                onmouseup="this.style.transform='translateY(-2px)'">
+                <canvas id="btn-gl" aria-hidden="true"
+                    class="absolute inset-0 w-full h-full block rounded-[18px]"></canvas>
+                <span
+                    class="relative z-10 pointer-events-none font-medium text-sm tracking-[0.3em] indent-[0.3em] text-[#e0f7f8]"
+                    style="text-shadow: 0 0 12px rgba(0, 210, 255, .6), 0 1px 4px rgba(0, 0, 0, .8);">ORBE
+                    SYSTEMS</span>
             </button>
         </div>
 
-        <p class="mt-8 text-xs text-neutral-500 tracking-wide font-normal" style="opacity: 0; transform: translateY(12px);" id="note-text">
+        <p class="mt-8 text-xs text-neutral-500 tracking-wide font-normal"
+            style="opacity: 0; transform: translateY(12px);" id="note-text">
             Hover to trigger neural arcs, click to unleash a synchronized valence discharge.
         </p>
 
@@ -109,23 +135,25 @@
             tl.to("#tag-text", { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }, "-=0.6");
 
             // Text Reveal
-            tl.to(".mask-target", {
-                y: "0%",
-                opacity: 1,
-                duration: 0.8,
-                stagger: 0.04,
-                ease: "power3.out"
-            }, "-=0.4");
+            if (document.querySelector(".mask-target")) {
+                tl.to(".mask-target", {
+                    y: "0%",
+                    opacity: 1,
+                    duration: 0.8,
+                    stagger: 0.04,
+                    ease: "power3.out"
+                }, "-=0.4");
+            }
 
             // Button Flicker Entrance
             tl.to("#btn-container", {
                 keyframes: {
-                    "0%":   { opacity: 0, scale: 0.92 },
-                    "9%":   { opacity: 0.85 },
-                    "15%":  { opacity: 0.12 },
-                    "24%":  { opacity: 0.92 },
-                    "31%":  { opacity: 0.35 },
-                    "44%":  { opacity: 1, scale: 1.015 },
+                    "0%": { opacity: 0, scale: 0.92 },
+                    "9%": { opacity: 0.85 },
+                    "15%": { opacity: 0.12 },
+                    "24%": { opacity: 0.92 },
+                    "31%": { opacity: 0.35 },
+                    "44%": { opacity: 1, scale: 1.015 },
                     "100%": { opacity: 1, scale: 1 }
                 },
                 duration: 1.15,
@@ -139,7 +167,7 @@
         // --- Core WebGL Logic ---
         (function () {
             const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            
+
             function compileShader(gl, type, src) {
                 const s = gl.createShader(type);
                 gl.shaderSource(s, src);
@@ -212,7 +240,7 @@
 
                 const buf = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
                 const locP = gl.getAttribLocation(prog, 'p');
                 gl.enableVertexAttribArray(locP);
                 gl.vertexAttribPointer(locP, 2, gl.FLOAT, false, 0, 0);
@@ -247,10 +275,10 @@
                 const btn = document.getElementById('btn');
                 const canvas = document.getElementById('btn-gl');
                 const gl = canvas.getContext('webgl', { alpha: false, antialias: true });
-                if (!gl) { 
+                if (!gl) {
                     btn.style.background = '#062630';
                     btn.style.boxShadow = '0 0 0 2px #00f2fe, 0 0 24px rgba(0, 242, 254, .5)';
-                    return; 
+                    return;
                 }
 
                 const FS_BTN = [
@@ -316,7 +344,7 @@
 
                 const buf = gl.createBuffer();
                 gl.bindBuffer(gl.ARRAY_BUFFER, buf);
-                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
                 const locP = gl.getAttribLocation(prog, 'p');
                 gl.enableVertexAttribArray(locP);
                 gl.vertexAttribPointer(locP, 2, gl.FLOAT, false, 0, 0);
@@ -369,4 +397,5 @@
         })();
     </script>
 </body>
+
 </html>

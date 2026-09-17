@@ -22,7 +22,7 @@ export default function OrbeStudioPromo() {
                 />
 
                 <Link
-                    href="/studio"
+                    href="/ferramentas-premium/orbe-visual-studio"
                     className="absolute inset-0 z-50 flex flex-col justify-end items-center pb-12 cursor-pointer opacity-0 hover:opacity-100 transition-opacity duration-500"
                 >
                     <span className="flex items-center gap-2 bg-black/80 text-cyan-400 font-mono text-sm px-6 py-3 rounded-full border border-cyan-500/50 hover:bg-cyan-950/80 hover:-translate-y-1 transition-all backdrop-blur">
