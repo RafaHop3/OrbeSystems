@@ -39,12 +39,10 @@ export default function InhoLoginPage() {
             if (data.access_token) {
                 // Salvar token no localStorage para ser usado pelos layouts e rotas
                 localStorage.setItem("token", data.access_token);
-                localStorage.setItem("user_email", email); // SALVA O EMAIL PARA O SIDEBAR
 
                 // Se houver algum sistema de cookies depois, eles podem ser lidos.
                 // Simulando a persistência para o middleware ler (gambiarra rápida caso o middleware no Root exija algo)
                 document.cookie = `access_token=${data.access_token}; path=/; max-age=86400; SameSite=Lax`;
-                document.cookie = `user_email=${email}; path=/; max-age=86400; SameSite=Lax`;
 
                 router.push("/");
                 router.refresh();
