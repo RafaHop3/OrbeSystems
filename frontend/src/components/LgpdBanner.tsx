@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 
 export default function LgpdBanner() {
     const [isVisible, setIsVisible] = useState(false);
+    const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
+        setHasMounted(true);
         const consent = localStorage.getItem('orbesystems_lgpd_consent');
         if (!consent) setIsVisible(true);
     }, []);
@@ -15,6 +17,7 @@ export default function LgpdBanner() {
         setIsVisible(false);
     };
 
+    if (!hasMounted) return null;
     if (!isVisible) return null;
 
     return (

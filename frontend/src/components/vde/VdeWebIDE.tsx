@@ -177,31 +177,7 @@ export default function Dashboard({ userId }: DashboardProps) {
   },
 ];
 
-// ── Syntax highlight (tokenizer simples) ─────────────────────────────────────
-function highlight(code: string, lang: string): string {
-  if (!code) return '';
-  // Replace < > para não quebrar HTML
-  let s = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-  if (lang === 'python') {
-    s = s
-      .replace(/("""[\s\S]*?""")/g, '<span class="text-yellow-400/80">$1</span>')
-      .replace(/(#[^\n]*)/g, '<span class="text-terminal-muted/70 italic">$1</span>')
-      .replace(/\b(from|import|def|class|return|async|await|if|else|elif|for|while|try|except|with|as|not|and|or|in|True|False|None|print|raise)\b/g, '<span class="text-neon-blue">$1</span>')
-      .replace(/(".*?"|'.*?')/g, '<span class="text-neon-green/90">$1</span>')
-      .replace(/\b(\d+\.?\d*)\b/g, '<span class="text-orange-400">$1</span>')
-      .replace(/(@\w+)/g, '<span class="text-neon-cyan">$1</span>');
-  } else if (lang === 'tsx' || lang === 'ts' || lang === 'js') {
-    s = s
-      .replace(/(\/\/[^\n]*)/g, '<span class="text-terminal-muted/70 italic">$1</span>')
-      .replace(/\b(import|export|from|default|const|let|var|function|return|async|await|if|else|for|while|class|extends|typeof|type|interface|new|true|false|null|undefined)\b/g, '<span class="text-neon-blue">$1</span>')
-      .replace(/(`[^`]*`)/g, '<span class="text-neon-green/90">$1</span>')
-      .replace(/(".*?"|'.*?')/g, '<span class="text-neon-green/90">$1</span>')
-      .replace(/\b(\d+)\b/g, '<span class="text-orange-400">$1</span>')
-      .replace(/(&lt;\/?[A-Z]\w*)/g, '<span class="text-neon-cyan">$1</span>');
-  }
-  return s;
-}
+import { Highlight, themes } from 'prism-react-renderer';
 
 // ── Flatten tree for fast lookup ──────────────────────────────────────────────
 function flattenTree(nodes: FileNode[], path = ''): FileNode[] {
@@ -449,7 +425,6 @@ export default function VdeWebIDE() {
 
   const handleSave = () => { setSaved(true); };
 
-  const highlighted = highlight(editorContent, selectedFile.lang ?? 'txt');
   const lines = editorContent.split('\n');
 
   return (
@@ -507,10 +482,19 @@ export default function VdeWebIDE() {
               </div>
               {/* Code */}
               <div className="flex-1 relative">
-                <pre
-                  className="absolute inset-0 p-3 font-mono text-[12px] leading-5 pointer-events-none overflow-auto"
-                  dangerouslySetInnerHTML={{ __html: highlighted }}
-                />
+                <Highlight theme={themes.vsDark} code={editorContent} language={(selectedFile.lang as any) ?? 'typescript'}>
+                  {({ className, style, tokens, getLineProps, getTokenProps }) => (
+                    <pre className={`absolute inset-0 p-3 font-mono text-[12px] leading-5 pointer-events-none overflow-auto ${className}`} style={{ ...style, backgroundColor: 'transparent' }}>
+                      {tokens.map((line, i) => (
+                        <div key={i} {...getLineProps({ line })}>
+                          {line.map((token, key) => (
+                            <span key={key} {...getTokenProps({ token })} />
+                          ))}
+                        </div>
+                      ))}
+                    </pre>
+                  )}
+                </Highlight>
                 <textarea
                   value={editorContent}
                   onChange={e => { setEditorContent(e.target.value); setSaved(false); }}
