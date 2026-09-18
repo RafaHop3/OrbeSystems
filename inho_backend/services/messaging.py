@@ -51,20 +51,16 @@ async def async_dispatch_whatsapp_receipt(phone: str, customer_name: str, amount
     
     variations = list(set([clean_phone, fallback_phone]))
     
-    # URL do Microserviço Baileys da Orbe (Placeholder/Local)
-    baileys_url = "http://localhost:3333/message/sendText"
+    # URL do Microserviço Baileys da Orbe Node.js (Porta 3001)
+    baileys_url = "http://localhost:3001/send"
     
     msg_text = f"Olá {customer_name}! Confirmamos o recebimento automático de R${amount:.2f} registrado por {business_name}."
 
     async with httpx.AsyncClient() as client:
         for number_variant in variations:
             payload = {
-                "number": number_variant,
-                "options": {
-                    "delay": 1200,
-                    "presence": "composing"
-                },
-                "textMessage": {"text": msg_text}
+                "phone": number_variant,
+                "message": msg_text
             }
             try:
                 # Gatilho assíncrono redundante
