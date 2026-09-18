@@ -185,7 +185,7 @@ export default function FeaturedSitesSection() {
                                 src={site.image}
                                 alt={site.name}
                                 fill
-                                className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                                className={`object-cover transition-transform duration-700 ease-out group-hover:scale-110 ${site.name === 'PDF Ever' ? 'scale-110 object-center' : ''}`}
                                 sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                             />
                             {/* Removed CrowdCanvas per new layout requirements */}
