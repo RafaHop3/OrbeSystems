@@ -18,8 +18,8 @@ export function CustomPlasmaButton({ text, href, mode = "dark", hue = 0, saturat
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-full cursor-pointer group shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_0_15px_rgba(59,130,246,0.2)]"
-            style={{ borderRadius: "9999px", overflow: "hidden", clipPath: "inset(0 round 9999px)", transform: "translateZ(0)" }}
+            className="relative w-full h-full cursor-pointer group shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_0_15px_rgba(59,130,246,0.2)] rounded-full overflow-hidden"
+            style={{ borderRadius: "9999px", overflow: "hidden", clipPath: "inset(0 round 9999px)", WebkitClipPath: "inset(0 round 9999px)", transform: "translateZ(0)" }}
             onClick={() => {
                 // Emit custom click to bubble up to Next router in Header.tsx
                 window.postMessage({ type: 'CUSTOM_INDUCTION_CLICK', text, href }, '*');
@@ -34,8 +34,8 @@ export function CustomPlasmaButton({ text, href, mode = "dark", hue = 0, saturat
         that we cannot modify.
         We will rely on the Header wrapping link for clicking, but we pass transparent text overlay.
       */}
-            <div className="absolute inset-0 z-0 pointer-events-none w-full h-full transform scale-[0.6] rounded-full overflow-hidden" style={{ clipPath: "inset(0 round 9999px)", transform: "scale(0.6) translateZ(0)" }}>
-                <PlasmaButton mode={mode} hue={hue} saturation={saturation} brightness={brightness} style={{ background: 'transparent' }} />
+            <div className="absolute inset-0 z-0 pointer-events-none w-full h-full transform scale-[0.6] rounded-full overflow-hidden" style={{ transform: "scale(0.6) translateZ(0)" }}>
+                <PlasmaButton mode={mode} hue={hue} saturation={saturation} brightness={brightness} style={{ background: 'transparent', borderRadius: '9999px', clipPath: 'inset(0 round 9999px)', WebkitClipPath: 'inset(0 round 9999px)' }} />
             </div>
             <div className="absolute inset-0 z-10 flex items-center justify-center font-semibold text-sm tracking-[.26em] text-[#e2f1ff] pointer-events-auto"
                 style={{ textShadow: "0 1px 12px rgba(0, 16, 40, .85)" }}>
