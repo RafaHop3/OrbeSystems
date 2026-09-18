@@ -1,14 +1,24 @@
 import boto3, time
+
 ssm = boto3.client('ssm', region_name='us-east-1')
-cmds = [
-    "sudo docker ps -a"
+instance_id = "i-058e26140671b3254"
+
+commands = [
+    "sudo docker ps"
 ]
-res = ssm.send_command(
-    InstanceIds=['i-058e26140671b3254'],
-    DocumentName='AWS-RunShellScript',
-    Parameters={'commands': cmds}
+
+response = ssm.send_command(
+    InstanceIds=[instance_id], DocumentName="AWS-RunShellScript", Parameters={'commands': commands}
 )
-time.sleep(10)
-out = ssm.get_command_invocation(CommandId=res['Command']['CommandId'], InstanceId='i-058e26140671b3254')
-with open('debug_docker.txt', 'w', encoding='utf-8') as f:
-    f.write(out.get('StandardOutputContent', 'NO OUT'))
+command_id = response['Command']['CommandId']
+while True:
+    time.sleep(3)
+    out = ssm.list_command_invocations(CommandId=command_id, Details=True)
+    if not out['CommandInvocations']: continue
+    status = out['CommandInvocations'][0]['Status']
+    if status in ['Pending', 'InProgress']: continue
+    plugin = out['CommandInvocations'][0]['CommandPlugins'][0]
+    out_text = plugin.get('Output', 'No output.')
+    print("SSM OUTPUT:")
+    print(out_text)
+    break
