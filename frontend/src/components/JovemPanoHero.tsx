@@ -35,7 +35,7 @@ export default function JovemPanoHero() {
                             className="text-2xl md:text-4xl font-mono text-white tracking-[0.5em]"
                             style={{ textShadow: "0 0 15px rgba(255, 255, 255, 0.8), 0 0 25px rgba(0, 242, 254, 0.5)" }}
                         >
-                            NEW
+                            NEWS
                         </h2>
                         <span className="w-12 h-[2px] bg-neon-cyan/50 shadow-[0_0_10px_#00f2fe]" />
                     </div>
@@ -46,7 +46,13 @@ export default function JovemPanoHero() {
             <div className="absolute bottom-0 left-0 w-full h-[250px] bg-gradient-to-t from-[#020617] to-transparent z-10 pointer-events-none opacity-80" />
 
             {/* Crowd Canvas matching the user requirement */}
-            <div className="absolute bottom-[-10px] left-0 w-full h-[200px] pointer-events-none mix-blend-screen opacity-100 z-30">
+            <div
+                className="absolute bottom-[20px] left-0 w-full h-[80px] pointer-events-none mix-blend-screen opacity-100 z-30"
+                style={{
+                    filter: "drop-shadow(0 -5px 15px rgba(0, 242, 254, 0.6)) drop-shadow(0 0 5px rgba(167, 139, 250, 0.4)) brightness(1.3) contrast(1.1)",
+                    transform: "scale(0.8) translateY(10px)"
+                }}
+            >
                 <CrowdCanvas src="/images/peeps/all-peeps.png" rows={15} cols={7} />
             </div>
 
