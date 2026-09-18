@@ -115,7 +115,7 @@ export default function Header() {
             {!user && (
               <Link href="/assinar" className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
-                  <CustomInductionButton text="PREMIUM" />
+                  <CustomPlasmaButton mode="dark" text="PREMIUM" hue={210} saturation={1.4} />
                 </div>
               </Link>
             )}
@@ -132,13 +132,13 @@ export default function Header() {
                 className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105"
               >
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
-                  <CustomInductionButton text="LOGOUT" />
+                  <CustomPlasmaButton mode="dark" text="LOGOUT" hue={210} saturation={1.4} />
                 </div>
               </button>
             ) : (
               <Link href="/login" className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
-                  <CustomInductionButton text="LOGIN" />
+                  <CustomPlasmaButton mode="dark" text="LOGIN" hue={210} saturation={1.4} />
                 </div>
               </Link>
             )}
