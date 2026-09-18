@@ -5,7 +5,7 @@ import { CrowdCanvas } from '@/components/ui/skiper-ui/skiper39';
 
 export default function JovemPanoHero() {
     return (
-        <section className="relative w-full h-[600px] overflow-hidden my-20 border-y border-neon-cyan/20">
+        <a href="https://jovempanonews.vercel.app/" target="_blank" rel="noopener noreferrer" className="relative w-full h-[600px] overflow-hidden my-20 border-y border-neon-cyan/20 block cursor-pointer group transition-all duration-500 hover:shadow-[0_0_50px_rgba(0,242,254,0.3)]">
             {/* Dark Cyberpunk Night Sky Background */}
             <Image
                 src="/jovem_pano_ny_night.png"
@@ -57,7 +57,7 @@ export default function JovemPanoHero() {
             </div>
 
             {/* Terminal Scanline overlay */}
-            <div className="absolute inset-0 pointer-events-none z-40 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-40 mix-blend-overlay" />
-        </section>
+            <div className="absolute inset-0 pointer-events-none z-40 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-40 mix-blend-overlay group-hover:opacity-70 transition-opacity" />
+        </a>
     );
 }
