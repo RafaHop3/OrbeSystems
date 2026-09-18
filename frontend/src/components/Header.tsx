@@ -61,8 +61,8 @@ export default function Header() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map(({ label, href }) => (
-            <Link key={href} href={href} title={label} className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] hover:scale-[0.52] w-[280px] h-[96px] transition-transform">
+            <Link key={href} href={href} title={label} className="w-[180px] h-[56px] relative block cursor-pointer transition-transform hover:scale-105">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.65] hover:scale-[0.67] w-[280px] h-[96px] transition-transform">
                 <CustomPlasmaButton mode="dark" text={label} hue={0} saturation={1.2} />
               </div>
             </Link>

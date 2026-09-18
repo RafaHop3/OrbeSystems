@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import ScrollNarrativeEngine from '@/components/ScrollNarrativeEngine';
 import FreedomSection from '@/components/FreedomSection';
 import FeaturedSitesSection from '@/components/FeaturedSitesSection';
+import JovemPanoHero from '@/components/JovemPanoHero';
 import VoidFieldPromo from '@/components/VoidFieldPromo';
 import OrbeMusicHero from '@/components/OrbeMusicHero';
 import InhoPromo from '@/components/InhoPromo';
@@ -27,6 +28,7 @@ export default function HomePage() {
         <HeroSection />
       </ScrollNarrativeEngine>
       <FeaturedSitesSection />
+      <JovemPanoHero />
       <FreedomSection />
       <Skiper30 />
       <Footer />

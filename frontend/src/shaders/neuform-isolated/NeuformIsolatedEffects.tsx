@@ -1924,7 +1924,10 @@ export function CustomInductionButton({ text, ...props }: NeuformIsolatedEffectP
       if (text) {
         src = src.replace(/ORBE\s+SYSTEMS/g, text);
       }
-      // Inject click bubbler
+
+      // Inject click bubbler and CSS forced filter to prevent hue from dropping
+      src = src.replace('</head>', `<style>html { filter: hue-rotate(210deg) saturate(1.4) brightness(1.1) !important; }</style></head>`);
+
       src = src.replace('</body>', `<script>
         document.getElementById('btn').addEventListener('click', function() {
            window.parent.postMessage({ type: 'CUSTOM_INDUCTION_CLICK', text: '${text}' }, '*');
