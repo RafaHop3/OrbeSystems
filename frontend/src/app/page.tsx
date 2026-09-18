@@ -21,6 +21,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-transparent pt-16 relative">
       <StarryBackground />
       <Header />
+      <Skiper30 />
       <OrbeMusicHero />
       <VoidFieldPromo />
       <InhoPromo />
@@ -30,7 +31,6 @@ export default function HomePage() {
       <FeaturedSitesSection />
       <JovemPanoHero />
       <FreedomSection />
-      <Skiper30 />
       <Footer />
     </main>
   );
