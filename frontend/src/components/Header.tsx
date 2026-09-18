@@ -45,7 +45,7 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/70">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#030303] border-b border-white/5 shadow-2xl">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-3 group z-50">
           <div className="relative w-[36px] h-[36px] shrink-0 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)] overflow-hidden">
@@ -61,8 +61,8 @@ export default function Header() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-8">
           {NAV_LINKS.map(({ label, href }) => (
-            <Link key={href} href={href} title={label} className="w-[180px] h-[56px] relative block cursor-pointer transition-transform hover:scale-[1.03]">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.65] w-[280px] h-[96px] transition-transform rounded-[48px] overflow-hidden border border-transparent" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)', outline: 'none' }}>
+            <Link key={href} href={href} title={label} className="w-[200px] h-[64px] relative block cursor-pointer transition-transform hover:scale-[1.03]">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.75] w-[280px] h-[96px] transition-transform rounded-full overflow-hidden border-2 border-transparent [clip-path:inset(0_round_9999px)] transform-gpu" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
                 <CustomPlasmaButton mode="dark" text={label} hue={0} saturation={1.2} />
               </div>
             </Link>
@@ -125,7 +125,7 @@ export default function Header() {
           <div className="hidden md:flex items-center gap-3">
             {!user && (
               <Link href="/assinar" className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-[1.03]">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] w-[280px] h-[96px] transition-transform rounded-[48px] overflow-hidden border border-transparent" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)', outline: 'none' }}>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] w-[280px] h-[96px] transition-transform rounded-full overflow-hidden border-2 border-transparent [clip-path:inset(0_round_9999px)] transform-gpu" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
                   <CustomInductionButton mode="dark" text="PREMIUM" hue={210} saturation={1.4} brightness={1.1} />
                 </div>
               </Link>
@@ -142,13 +142,13 @@ export default function Header() {
                 }}
                 className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-105"
               >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] w-[280px] h-[96px] transition-transform rounded-[48px] overflow-hidden border border-transparent" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)', outline: 'none' }}>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] w-[280px] h-[96px] transition-transform rounded-full overflow-hidden border-2 border-transparent [clip-path:inset(0_round_9999px)] transform-gpu" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
                   <CustomInductionButton mode="dark" text="LOGOUT" hue={210} saturation={1.4} brightness={1.1} />
                 </div>
               </button>
             ) : (
               <Link href="/login" className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-[1.03]">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] w-[280px] h-[96px] transition-transform rounded-[48px] overflow-hidden border border-transparent" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)', outline: 'none' }}>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] w-[280px] h-[96px] transition-transform rounded-full overflow-hidden border-2 border-transparent [clip-path:inset(0_round_9999px)] transform-gpu" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
                   <CustomInductionButton mode="dark" text="LOGIN" hue={210} saturation={1.4} brightness={1.1} />
                 </div>
               </Link>
