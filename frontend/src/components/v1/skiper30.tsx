@@ -5,19 +5,18 @@ import Lenis from "lenis";
 import { useEffect, useRef, useState } from "react";
 
 const images = [
-    "https://picsum.photos/seed/orbe15/800/1200",
-    "https://picsum.photos/seed/orbe21/800/1200",
-    "https://picsum.photos/seed/orbe3/800/1200",
-    "https://picsum.photos/seed/orbe4/800/1200",
-    "https://picsum.photos/seed/orbe5/800/1200",
-    "https://picsum.photos/seed/orbe6/800/1200",
-    "https://picsum.photos/seed/orbe7/800/1200",
-    "https://picsum.photos/seed/orbe8/800/1200",
-    "https://picsum.photos/seed/orbe24/800/1200",
-    "https://picsum.photos/seed/orbe10/800/1200",
-    "https://picsum.photos/seed/orbe11/800/1200",
-    "https://picsum.photos/seed/orbe12/800/1200",
-    "https://picsum.photos/seed/orbe13/800/1200",
+    "/featured-ghostengine.png",
+    "/featured-inho.png",
+    "/featured-astrowatch.png",
+    "/featured-nexuscore.png",
+    "/featured-pdfever.png",
+    "/featured-jovempanonews.png",
+    "/featured-orbecleaner.png",
+    "/featured-orbeknight.png",
+    "/featured-ghostengine.png",
+    "/featured-inho.png",
+    "/featured-astrowatch.png",
+    "/featured-nexuscore.png",
 ];
 
 const Skiper30 = () => {
@@ -73,7 +72,7 @@ const Skiper30 = () => {
                 <Column images={[images[0], images[1], images[2]]} y={y} />
                 <Column images={[images[3], images[4], images[5]]} y={y2} />
                 <Column images={[images[6], images[7], images[8]]} y={y3} />
-                <Column images={[images[6], images[7], images[8]]} y={y4} />
+                <Column images={[images[9], images[10], images[11]]} y={y4} />
             </div>
             <div className="font-geist relative flex h-screen items-center justify-center gap-2">
                 <div className="absolute left-1/2 top-[10%] grid -translate-x-1/2 content-start justify-items-center gap-6 text-center">
