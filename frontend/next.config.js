@@ -55,11 +55,80 @@ const nextConfig = {
     unoptimized: true,
   },
   async rewrites() {
+    const INHO_API_URL = "https://inho-api.orbesystems.com.br";
+    const BACKEND_URL = "https://api.orbesystems.com.br";
+
     return [
       {
         source: '/remover-dados-:broker',
         destination: '/remover-dados/:broker',
       },
+      // ---- INHO API EDGE REWRITES ----
+      {
+        source: '/api/proxy/api/v1/optout/:path*',
+        destination: `${INHO_API_URL}/api/v1/optout/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/imortal/:path*',
+        destination: `${INHO_API_URL}/api/v1/imortal/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/imobverse/:path*',
+        destination: `${INHO_API_URL}/api/v1/imobverse/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/powershell-bot/:path*',
+        destination: `${INHO_API_URL}/api/v1/powershell-bot/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/billing/:path*',
+        destination: `${INHO_API_URL}/api/v1/billing/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/suite-inteligente/:path*',
+        destination: `${INHO_API_URL}/api/v1/suite-inteligente/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/auth/:path*',
+        destination: `${INHO_API_URL}/api/v1/auth/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/crm/:path*',
+        destination: `${INHO_API_URL}/api/v1/crm/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/users/:path*',
+        destination: `${INHO_API_URL}/api/v1/users/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/categories/:path*',
+        destination: `${INHO_API_URL}/api/v1/categories/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/projects/:path*',
+        destination: `${INHO_API_URL}/api/v1/projects/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/analytics/:path*',
+        destination: `${INHO_API_URL}/api/v1/analytics/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/upload/:path*',
+        destination: `${INHO_API_URL}/api/v1/upload/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/admin/:path*',
+        destination: `${INHO_API_URL}/api/v1/admin/:path*`,
+      },
+      {
+        source: '/api/proxy/api/v1/offline-agent/:path*',
+        destination: `${INHO_API_URL}/api/v1/offline-agent/:path*`,
+      },
+      // ---- MAIN ORBE SYSTEMS DEFAULT BACKEND EDGE REWRITE ----
+      {
+        source: '/api/proxy/:path*',
+        destination: `${BACKEND_URL}/:path*`,
+      }
     ];
   },
   async headers() {

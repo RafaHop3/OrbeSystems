@@ -1,16 +1,2 @@
-HEAD is now at 6d004a1 chore(security): auto-update SBOM [skip ci]
-HEAD is now at 6d004a1 chore(security): auto-update SBOM [skip ci]
-CONTAINER ID   IMAGE                      COMMAND                  CREATED       STATUS                          PORTS                                         NAMES
-08cd1ac550f9   orbesystems-backend        "uvicorn main:app --�"   2 hours ago   Up 2 hours                      0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   orbe_backend
-2a7a40a59183   postgres:15-alpine         "docker-entrypoint.s�"   2 hours ago   Up 2 hours                      0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp   orbe_postgres
-faa22f440411   redis:7-alpine             "docker-entrypoint.s�"   2 hours ago   Up 2 hours                      0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp   orbe_redis
-ba167bcb581a   orbesystems-whatsapp       "docker-entrypoint.s�"   2 hours ago   Restarting (1) 12 seconds ago                                                 orbe_whatsapp
-072e9e5ea3bf   orbesystems-inho_backend   "sh -c 'uvicorn main�"   2 hours ago   Up 2 hours (unhealthy)          0.0.0.0:8001->8000/tcp, [::]:8001->8000/tcp   inho_backend
 
 ---ERROR---
-From https://github.com/RafaHop3/OrbeSystems
-   79773f6..6d004a1  main       -> origin/main
-no such service: whatsapp_bot
-From https://github.com/RafaHop3/OrbeSystems
-   93f38b8..6d004a1  main       -> origin/main
-no such service: whatsapp_bot
