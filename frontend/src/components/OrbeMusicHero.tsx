@@ -121,7 +121,7 @@ export default function OrbeMusicHero() {
 
             {/* R3F WebGL Background Canvas */}
             <div className="absolute inset-0 z-0 pointer-events-none">
-                <Canvas>
+                <Canvas gl={{ antialias: false, powerPreference: "default", preserveDrawingBuffer: false }} dpr={[1, 1.5]}>
                     <color attach="background" args={['#030712']} />
                     <ambientLight intensity={0.5} />
                     <spotLight position={[10, 10, 10]} penumbra={1} intensity={2} color="#0ea5e9" />
@@ -190,47 +190,34 @@ export default function OrbeMusicHero() {
                     transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
                     className="lg:w-1/2 perspective-[1000px]"
                 >
-                    <div className="relative w-full max-w-md mx-auto aspect-square rounded-3xl glass-magnetic border-2 border-white/10 shadow-2xl p-8 transform-gpu hover:rotate-x-12 hover:-rotate-y-12 transition-transform duration-700 ease-out flex flex-col justify-between overflow-hidden group">
+                    <div className="relative w-full max-w-md mx-auto aspect-square rounded-3xl glass-magnetic border-2 border-white/10 shadow-2xl p-8 transform-gpu hover:rotate-x-12 hover:-rotate-y-12 transition-transform duration-700 ease-out flex flex-col justify-end overflow-hidden group">
 
-                        {/* Animated Card BG FX */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-transparent to-cyan-400/20 opacity-50 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="absolute -top-32 -right-32 w-64 h-64 bg-neon-cyan rounded-full mix-blend-screen filter blur-[100px] animate-pulse-neon"></div>
-
-                        <div className="relative z-10 flex justify-between items-start">
-                            <div className="p-4 bg-black/50 backdrop-blur-xl rounded-2xl border border-white/10 shadow-inner">
-                                <Disc3 size={32} className="text-neon-cyan animate-spin-slow" />
-                            </div>
-                            <div className="flex gap-2">
-                                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                                <span className="w-2 h-2 rounded-full bg-yellow-500"></span>
-                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                            </div>
+                        {/* Matrix Geometry Void Pattern (Apenas o Void) */}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-80 transition-opacity duration-1000 z-0 pointer-events-none">
+                            <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(6, 182, 212, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.2) 1px, transparent 1px)', backgroundSize: '30px 30px', transform: 'perspective(500px) rotateX(70deg) scale(2) translateY(-20px)' }}></div>
+                            <div className="absolute w-[95%] h-[95%] rounded-full border border-cyan-500/10 animate-[spin_40s_linear_infinite]"></div>
+                            <div className="absolute w-[80%] h-[80%] border border-blue-500/30 rounded-full animate-[spin_20s_linear_infinite]"></div>
+                            <div className="absolute w-[85%] h-[85%] border-t border-dashed border-cyan-400/50 rounded-full animate-[spin_30s_linear_reverse_infinite]"></div>
+                            <div className="absolute w-[60%] h-[60%] border-[2px] border-dotted border-blue-400/50 rounded-full animate-[spin_15s_linear_infinite]"></div>
+                            <svg className="absolute w-[90%] h-[90%] animate-[pulse_4s_ease-in-out_infinite]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="50,5 89,27.5 89,72.5 50,95 11,72.5 11,27.5" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="0.5" strokeDasharray="1 2" className="animate-[spin_40s_linear_infinite] origin-center" />
+                                <polygon points="50,15 80,32 80,68 50,85 20,68 20,32" stroke="rgba(6, 182, 212, 0.3)" strokeWidth="0.5" className="animate-[spin_25s_linear_reverse_infinite] origin-center" />
+                                <circle cx="50" cy="50" r="25" stroke="rgba(6, 182, 212, 0.2)" strokeWidth="0.2" strokeDasharray="2 4" />
+                                {/* Scope lines */}
+                                <line x1="50" y1="10" x2="50" y2="90" stroke="rgba(6, 182, 212, 0.15)" strokeWidth="0.3" />
+                                <line x1="10" y1="50" x2="90" y2="50" stroke="rgba(6, 182, 212, 0.15)" strokeWidth="0.3" />
+                            </svg>
                         </div>
 
-                        <div className="relative z-10 space-y-4">
-                            <h3 className="font-mono text-xl text-white font-bold tracking-tight">Audio_Context_Engine</h3>
-
-                            {/* Fake EQ Bars */}
-                            <div className="flex items-end gap-2 h-24 pt-4">
-                                {Array.from({ length: 12 }).map((_, i) => (
-                                    <div key={i} className="w-full bg-blue-900/50 rounded-t-sm overflow-hidden relative">
-                                        <motion.div
-                                            animate={{ height: ['20%', '90%', '30%', '100%'] }}
-                                            transition={{
-                                                duration: 0.5 + Math.random() * 0.5,
-                                                repeat: Infinity,
-                                                repeatType: "mirror",
-                                                ease: "easeOut"
-                                            }}
-                                            className="absolute bottom-0 w-full bg-gradient-to-t from-blue-600 to-cyan-300"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
-
-                            <div className="flex items-center gap-3 font-mono text-xs text-slate-400 pt-4 border-t border-white/10">
-                                <Cpu size={14} className="text-neon-cyan" />
-                                <span>Renderizando em Tempo Real / 48kHz</span>
+                        {/* Informações da Ferramenta */}
+                        <div className="relative z-10 space-y-2 bg-black/60 p-4 rounded-xl border border-neon-cyan/20 backdrop-blur-md transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                            <h3 className="font-grotesk text-xl text-white font-bold tracking-wide">Motor de Áudio Integrado</h3>
+                            <p className="text-slate-300 text-sm leading-relaxed">
+                                Crie batidas, aplique efeitos e renderize sons complexos direto no seu navegador sem instalar nada.
+                            </p>
+                            <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-widest text-neon-cyan pt-3 mt-2 border-t border-white/10">
+                                <Cpu size={14} />
+                                <span>Processamento em Tempo Real / 48kHz</span>
                             </div>
                         </div>
                     </div>

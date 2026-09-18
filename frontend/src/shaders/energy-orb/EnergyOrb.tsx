@@ -239,6 +239,10 @@ export function EnergyOrb({ className = "", ...props }: EnergyOrbProps) {
             gl.deleteShader(vertex);
             gl.deleteShader(fragment);
             gl.deleteProgram(program);
+
+            // Explicitly lose context to prevent WebGL limits maxing out during HMR
+            const ext = gl.getExtension('WEBGL_lose_context');
+            if (ext) ext.loseContext();
         };
     }, []);
 

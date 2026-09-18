@@ -37,8 +37,10 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-black/70">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-3 group z-50">
-          <div className="w-[36px] h-[36px] rounded-full overflow-hidden shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.6)]">
-            <GlobeCollection variant="energy-orb" speed={1.00} scale={1.4} smokeScale={1.5} hue={0} saturation={1.2} brightness={1.1} />
+          <div className="relative w-[36px] h-[36px] shrink-0 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)] overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[144px] h-[144px] scale-[0.25]">
+              <GlobeCollection variant="energy-orb" speed={1.00} scale={1.4} smokeScale={1.5} hue={0} saturation={1.2} brightness={1.1} />
+            </div>
           </div>
           <span className="font-grotesk text-sm font-bold tracking-wide text-white group-hover:text-neon-cyan transition-colors">
             ORBE<span className="text-neon-cyan font-outfit">SYSTEMS</span>
