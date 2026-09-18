@@ -19,6 +19,7 @@ export function CustomPlasmaButton({ text, href, mode = "dark", hue = 0, saturat
         <div
             ref={containerRef}
             className="relative w-full h-full cursor-pointer group rounded-full overflow-hidden shadow-[inset_0_0_20px_rgba(0,0,0,0.8),0_0_15px_rgba(59,130,246,0.2)]"
+            style={{ WebkitMaskImage: "-webkit-radial-gradient(white, black)", transform: "translateZ(0)" }}
             onClick={() => {
                 // Emit custom click to bubble up to Next router in Header.tsx
                 window.postMessage({ type: 'CUSTOM_INDUCTION_CLICK', text, href }, '*');
