@@ -161,7 +161,7 @@ export default function FeaturedSitesSection() {
             <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
                 {sites.map((site) => (
                     <a
-                        key={site.url}
+                        key={site.name}
                         href={site.url}
                         target="_blank"
                         rel="noopener noreferrer"
