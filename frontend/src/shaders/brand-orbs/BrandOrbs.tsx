@@ -121,7 +121,7 @@ function useAutomaticMode(enabled: boolean) {
 }
 
 function extractOrbEngine(source: string) {
-  const scripts = Array.from(source.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi));
+  const scripts = [...source.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)];
   return scripts.at(-1)?.[1] ?? "";
 }
 

@@ -2018,12 +2018,7 @@
     const N = list.length;
     /* cycle: sphere -> letter -> sphere (phase-shifted against the Figma orb) */
     const T = 7, u = (((t * .9 + 3.5) % T) + T) % T;
-    let m;
-    if (u < 2.8) m = 0;
-    else if (u < 3.7) m = smooth((u - 2.8) / .9);
-    else if (u < 5.6) m = 1;
-    else if (u < 6.5) m = 1 - smooth((u - 5.6) / .9);
-    else m = 0;
+    let m = 0; // User requested to lock state to sphere
     const p = proj(t * .5, .32 + .1 * Math.sin(t * .35), cx, cy, R);
     const dots = [];
     for (let i = 0; i < N; i++) {
