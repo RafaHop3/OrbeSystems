@@ -29,10 +29,12 @@ const Skiper30 = () => {
     });
 
     const { height } = dimension;
-    const y = useTransform(scrollYProgress, [0, 1], [0, height * 2]);
-    const y2 = useTransform(scrollYProgress, [0, 1], [0, height * 3.3]);
-    const y3 = useTransform(scrollYProgress, [0, 1], [0, height * 1.25]);
-    const y4 = useTransform(scrollYProgress, [0, 1], [0, height * 3]);
+
+    // Columns start visible and scroll UPWARD at different speeds (standard parallax)
+    const y = useTransform(scrollYProgress, [0, 1], [0, -height * 1.0]);
+    const y2 = useTransform(scrollYProgress, [0, 1], [0, -height * 1.8]);
+    const y3 = useTransform(scrollYProgress, [0, 1], [0, -height * 0.6]);
+    const y4 = useTransform(scrollYProgress, [0, 1], [0, -height * 1.5]);
 
     useEffect(() => {
         const lenis = new Lenis();
@@ -56,51 +58,46 @@ const Skiper30 = () => {
     }, []);
 
     return (
-        <main className="w-full bg-[#050505] text-[#c8d6e3]">
-            <div className="font-geist flex h-screen items-center justify-center gap-2">
-                <div className="absolute left-1/2 top-[10%] grid -translate-x-1/2 content-start justify-items-center gap-6 text-center">
-                    <span className="relative max-w-[12ch] text-xs uppercase leading-tight opacity-40 after:absolute after:left-1/2 after:top-full after:h-16 after:w-px after:bg-gradient-to-b after:from-[#c8d6e3] after:to-transparent after:content-['']">
-                        scroll down to see
-                    </span>
-                </div>
+        <section className="w-full bg-[#050505] text-[#c8d6e3] py-24">
+            {/* Section title */}
+            <div className="text-center mb-12 px-6">
+                <p className="text-xs font-mono uppercase tracking-widest text-[#00fff5]/50 mb-2">Portfólio</p>
+                <h2 className="text-3xl md:text-4xl font-bold text-white">
+                    Projetos em <span className="text-teal-400">Destaque</span>
+                </h2>
             </div>
 
+            {/* Parallax gallery — visible from start, scrolls upward */}
             <div
                 ref={gallery}
-                className="relative box-border flex h-[175vh] gap-[2vw] bg-transparent p-[2vw]"
+                className="relative box-border flex h-[250vh] gap-[2vw] bg-transparent p-[2vw] overflow-hidden"
             >
-                <Column images={[images[0], images[1], images[2]]} y={y} />
-                <Column images={[images[3], images[4], images[5]]} y={y2} />
-                <Column images={[images[6], images[7], images[8]]} y={y3} />
-                <Column images={[images[9], images[10], images[11]]} y={y4} />
+                <Column images={[images[0], images[1], images[2]]} y={y} offset="0px" />
+                <Column images={[images[3], images[4], images[5]]} y={y2} offset="-100px" />
+                <Column images={[images[6], images[7], images[8]]} y={y3} offset="-40px" />
+                <Column images={[images[9], images[10], images[11]]} y={y4} offset="-80px" />
             </div>
-            <div className="font-geist relative flex h-screen items-center justify-center gap-2">
-                <div className="absolute left-1/2 top-[10%] grid -translate-x-1/2 content-start justify-items-center gap-6 text-center">
-                    <span className="relative max-w-[12ch] text-xs uppercase leading-tight opacity-40 after:absolute after:left-1/2 after:top-full after:h-16 after:w-px after:bg-gradient-to-b after:from-transparent after:to-[#c8d6e3] after:content-['']">
-                        scroll Up to see
-                    </span>
-                </div>
-            </div>
-        </main>
+        </section>
     );
 };
 
 type ColumnProps = {
     images: string[];
     y: MotionValue<number>;
+    offset?: string;
 };
 
-const Column = ({ images, y }: ColumnProps) => {
+const Column = ({ images, y, offset = "0px" }: ColumnProps) => {
     return (
         <motion.div
-            className="relative -top-[45%] flex h-full w-1/4 min-w-[250px] flex-col gap-[2vw] first:top-[-45%] [&:nth-child(2)]:top-[-95%] [&:nth-child(3)]:top-[-45%] [&:nth-child(4)]:top-[-75%]"
-            style={{ y }}
+            className="relative flex h-full w-1/4 min-w-[220px] flex-col gap-[2vw]"
+            style={{ y, top: offset }}
         >
             {images.map((src, i) => (
-                <div key={i} className="relative h-full w-full overflow-hidden rounded-xl border border-white/5 opacity-50 hover:opacity-100 transition-opacity">
+                <div key={i} className="relative flex-1 overflow-hidden rounded-xl border border-white/5 opacity-70 hover:opacity-100 transition-opacity duration-500 min-h-[220px]">
                     <img
-                        src={`${src}`}
-                        alt="image"
+                        src={src}
+                        alt={`Featured project ${i + 1}`}
                         className="pointer-events-none object-cover w-full h-full grayscale hover:grayscale-0 transition-all duration-700"
                     />
                 </div>
