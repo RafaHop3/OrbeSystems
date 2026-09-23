@@ -165,7 +165,16 @@ export default function Sidebar() {
                     <div className="flex flex-col">
                         <span className="text-[12px] font-semibold text-[#8b949e] overflow-hidden text-ellipsis max-w-[130px]">{userEmail}</span>
                     </div>
-                    <button className="flex items-center justify-center gap-1 py-1 px-2 text-[10px] font-bold text-[#ef4444] border border-[#ef4444]/30 bg-[#ef4444]/10 hover:bg-[#ef4444]/20 rounded transition-colors">
+                    <button
+                        onClick={() => {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('orbe_token');
+                            localStorage.removeItem('user_email');
+                            document.cookie = "access_token=; path=/; max-age=0";
+                            window.location.href = '/login';
+                        }}
+                        className="flex items-center justify-center gap-1 py-1 px-2 text-[10px] font-bold text-[#ef4444] border border-[#ef4444]/30 bg-[#ef4444]/10 hover:bg-[#ef4444]/20 rounded transition-colors"
+                    >
                         <LogOut size={10} />
                         [Encerrar]
                     </button>

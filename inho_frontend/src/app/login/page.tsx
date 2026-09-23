@@ -39,6 +39,7 @@ export default function InhoLoginPage() {
             if (data.access_token) {
                 // Salvar token no localStorage para ser usado pelos layouts e rotas
                 localStorage.setItem("token", data.access_token);
+                localStorage.setItem("user_email", email);
 
                 // Se houver algum sistema de cookies depois, eles podem ser lidos.
                 // Simulando a persistência para o middleware ler (gambiarra rápida caso o middleware no Root exija algo)
