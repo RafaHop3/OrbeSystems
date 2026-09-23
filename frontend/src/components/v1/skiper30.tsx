@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, MotionValue, useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValue, useTransform } from "framer-motion";
+import { useEffect, useRef } from "react";
 
 const images = [
     "/featured-ghostengine.png",
@@ -20,34 +20,25 @@ const images = [
 
 const Skiper30 = () => {
     const sectionRef = useRef<HTMLElement>(null);
-    const [sectionTop, setSectionTop] = useState(0);
 
-    // Use absolute page scrollY — always works regardless of element position
-    const { scrollY } = useScroll();
+    // Imperative scroll MotionValue — bypasses all framer-motion scroll detection issues
+    const scrollY = useMotionValue(0);
 
-    // Drive each column from (sectionTop) to (sectionTop + 2500px) scroll range
-    // Column 1: slow, Column 2: fast, Column 3: medium-slow, Column 4: medium-fast
-    const scrollEnd = sectionTop + 2500;
-    const y1 = useTransform(scrollY, [sectionTop, scrollEnd], [0, -450]);
-    const y2 = useTransform(scrollY, [sectionTop, scrollEnd], [0, -900]);
-    const y3 = useTransform(scrollY, [sectionTop, scrollEnd], [0, -280]);
-    const y4 = useTransform(scrollY, [sectionTop, scrollEnd], [0, -700]);
+    // Explicit pixel ranges: starts moving from 0 scroll, 2200px travel window
+    const y1 = useTransform(scrollY, [0, 2200], [0, -400]);
+    const y2 = useTransform(scrollY, [0, 2200], [0, -800]);
+    const y3 = useTransform(scrollY, [0, 2200], [0, -260]);
+    const y4 = useTransform(scrollY, [0, 2200], [0, -620]);
 
     useEffect(() => {
-        const measure = () => {
-            if (sectionRef.current) {
-                const rect = sectionRef.current.getBoundingClientRect();
-                setSectionTop(window.scrollY + rect.top);
-            }
-        };
-        measure();
-        window.addEventListener("resize", measure);
-        return () => window.removeEventListener("resize", measure);
-    }, []);
+        const onScroll = () => scrollY.set(window.scrollY);
+        window.addEventListener("scroll", onScroll, { passive: true });
+        onScroll(); // seed with current value immediately
+        return () => window.removeEventListener("scroll", onScroll);
+    }, [scrollY]);
 
     return (
         <section ref={sectionRef} className="relative z-10 w-full bg-[#050505] text-[#c8d6e3] py-24">
-            {/* Section title */}
             <div className="text-center mb-12 px-6">
                 <p className="text-xs font-mono uppercase tracking-widest text-[#00fff5]/50 mb-2">Portfólio</p>
                 <h2 className="text-3xl md:text-4xl font-bold text-white">
@@ -55,7 +46,6 @@ const Skiper30 = () => {
                 </h2>
             </div>
 
-            {/* Parallax gallery */}
             <div className="relative box-border flex h-[220vh] gap-[2vw] bg-transparent p-[2vw] overflow-hidden">
                 <Column images={[images[0], images[1], images[2]]} y={y1} offsetTop="0px" />
                 <Column images={[images[3], images[4], images[5]]} y={y2} offsetTop="-80px" />
@@ -68,7 +58,7 @@ const Skiper30 = () => {
 
 type ColumnProps = {
     images: string[];
-    y: MotionValue<number>;
+    y: import("framer-motion").MotionValue<number>;
     offsetTop?: string;
 };
 

@@ -48,10 +48,8 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#030303] border-b border-white/5 shadow-2xl">
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between relative z-10">
         <Link href="/" className="flex items-center gap-3 group z-50">
-          <div className="relative w-[36px] h-[36px] shrink-0 rounded-full shadow-[0_0_15px_rgba(59,130,246,0.6)] overflow-hidden">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[144px] h-[144px] scale-[0.25]">
-              <GlobeCollection variant="energy-orb" speed={1.00} scale={1.4} smokeScale={1.5} hue={0} saturation={1.2} brightness={1.1} />
-            </div>
+          <div className="relative w-[36px] h-[36px] shrink-0 rounded-full bg-[#050810] shadow-[0_0_15px_rgba(0,255,245,0.5),inset_0_0_10px_rgba(0,200,255,0.2)] border border-cyan-500/30 flex items-center justify-center overflow-hidden">
+            <div className="w-[16px] h-[16px] rounded-full bg-[radial-gradient(circle_at_35%_35%,#00fff5,#0066ff)] shadow-[0_0_8px_rgba(0,255,245,0.8)] animate-pulse" />
           </div>
           <span className="font-grotesk text-sm font-bold tracking-wide text-white group-hover:text-neon-cyan transition-colors">
             ORBE<span className="text-neon-cyan font-outfit">SYSTEMS</span>
