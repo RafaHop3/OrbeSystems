@@ -59,11 +59,11 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-4">
           {NAV_LINKS.map(({ label, href }) => (
-            <Link key={href} href={href} title={label} className="w-[200px] h-[64px] relative block cursor-pointer transition-transform hover:scale-[1.03]">
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.75] w-[280px] h-[96px] transition-transform rounded-full overflow-hidden border-2 border-transparent [clip-path:inset(0_round_9999px)] transform-gpu" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
-                <CustomPlasmaButton mode="dark" text={label} hue={0} saturation={1.2} />
+            <Link key={href} href={href} title={label} className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-[1.03]">
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] w-[280px] h-[96px] transition-transform rounded-full overflow-hidden border-2 border-transparent [clip-path:inset(0_round_9999px)] transform-gpu" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
+                <CustomInductionButton mode="dark" text={label} hue={210} saturation={1.4} brightness={1.1} />
               </div>
             </Link>
           ))}
@@ -72,11 +72,11 @@ export default function Header() {
           {user?.role === 'premium' && (
             <div className="relative" onMouseEnter={() => setIsToolsOpen(true)} onMouseLeave={() => setIsToolsOpen(false)}>
               <button
-                className="flex items-center gap-2 font-outfit text-xs font-bold uppercase tracking-widest text-neon-blue hover:text-neon-cyan transition-all duration-200 group"
+                className="w-[140px] h-[48px] relative block cursor-pointer transition-transform hover:scale-[1.03]"
               >
-                <Zap size={14} className="group-hover:scale-110 transition-transform animate-pulse-neon" />
-                <span>Ferramentas</span>
-                <ChevronDown size={12} className={`transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-[0.5] w-[280px] h-[96px] transition-transform rounded-full overflow-hidden border-2 border-transparent [clip-path:inset(0_round_9999px)] transform-gpu" style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}>
+                  <CustomInductionButton mode="dark" text="FERRAMENTAS" hue={210} saturation={1.4} brightness={1.1} />
+                </div>
               </button>
               {isToolsOpen && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 glass-magnetic rounded-lg p-2 min-w-[200px] z-[110] border-glow-cyan animate-fade-in-up">
