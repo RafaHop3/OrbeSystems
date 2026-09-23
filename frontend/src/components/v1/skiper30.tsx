@@ -58,7 +58,7 @@ const Skiper30 = () => {
     }, []);
 
     return (
-        <section className="w-full bg-[#050505] text-[#c8d6e3] py-24">
+        <section className="relative z-10 w-full bg-[#050505] text-[#c8d6e3] py-24">
             {/* Section title */}
             <div className="text-center mb-12 px-6">
                 <p className="text-xs font-mono uppercase tracking-widest text-[#00fff5]/50 mb-2">Portfólio</p>
