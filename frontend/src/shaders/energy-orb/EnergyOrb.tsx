@@ -85,8 +85,15 @@ export function EnergyOrb({ className = "", ...props }: EnergyOrbProps) {
         const gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: false, antialias: true });
         if (!starContext || !gl) return undefined;
 
-        const vertex = compile(gl, gl.VERTEX_SHADER, NXA_ENERGY_ORB_VERTEX_SHADER);
-        const fragment = compile(gl, gl.FRAGMENT_SHADER, NXA_ENERGY_ORB_CONFIGURABLE_FRAGMENT_SHADER);
+        let vertex: WebGLShader | null = null;
+        let fragment: WebGLShader | null = null;
+        try {
+            vertex = compile(gl, gl.VERTEX_SHADER, NXA_ENERGY_ORB_VERTEX_SHADER);
+            fragment = compile(gl, gl.FRAGMENT_SHADER, NXA_ENERGY_ORB_CONFIGURABLE_FRAGMENT_SHADER);
+        } catch (e) {
+            console.warn("[EnergyOrb] Shader compilation not supported in this environment:", e);
+            return undefined;
+        }
         const program = gl.createProgram();
         if (!program) {
             gl.deleteShader(vertex);
@@ -98,8 +105,8 @@ export function EnergyOrb({ className = "", ...props }: EnergyOrbProps) {
         gl.linkProgram(program);
         if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
             const message = gl.getProgramInfoLog(program) ?? "Energy orb program link failed";
-            console.error(message);
-            throw new Error(message);
+            console.warn("[EnergyOrb] Program link failed, skipping render:", message);
+            return undefined;
         }
         gl.useProgram(program);
 

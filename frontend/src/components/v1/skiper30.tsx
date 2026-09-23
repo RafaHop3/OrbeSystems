@@ -67,7 +67,7 @@ const Skiper30 = () => {
 
             <div
                 ref={gallery}
-                className="relative box-border flex h-[175vh] gap-[2vw] overflow-hidden bg-transparent p-[2vw]"
+                className="relative box-border flex h-[175vh] gap-[2vw] bg-transparent p-[2vw]"
             >
                 <Column images={[images[0], images[1], images[2]]} y={y} />
                 <Column images={[images[3], images[4], images[5]]} y={y2} />
