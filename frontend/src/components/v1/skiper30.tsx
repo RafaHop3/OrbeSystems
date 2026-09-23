@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const images = [
     "/featured-ghostengine.png",
@@ -17,35 +19,39 @@ const images = [
     "/featured-nexuscore.png",
 ];
 
-// Parallax speeds (how many px each column moves per scroll px)
-const SPEEDS = [0.18, 0.36, 0.12, 0.28];
-// Vertical stagger offsets so columns start at different positions
+// Vertical stagger offsets
 const OFFSETS = [0, -80, -30, -60];
+// End translation targets (parallax distance for each column)
+const Y_DISTANCES = [-450, -900, -280, -700];
 
 const Skiper30 = () => {
+    const sectionRef = useRef<HTMLElement>(null);
     const colRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-    useEffect(() => {
-        let rafId: number;
+    useLayoutEffect(() => {
+        gsap.registerPlugin(ScrollTrigger);
 
-        const onScroll = () => {
-            rafId = requestAnimationFrame(() => {
-                const sy = window.scrollY;
-                colRefs.current.forEach((el, i) => {
-                    if (!el) return;
-                    const translateY = -sy * SPEEDS[i];
-                    el.style.transform = `translateY(${translateY}px)`;
+        if (!sectionRef.current) return;
+
+        const ctx = gsap.context(() => {
+            colRefs.current.forEach((el, i) => {
+                if (!el) return;
+
+                // Native GSAP ScrollTrigger for parallax
+                gsap.to(el, {
+                    y: Y_DISTANCES[i],
+                    ease: "none", // important for synchronized scroll feel
+                    scrollTrigger: {
+                        trigger: sectionRef.current,
+                        start: "top bottom", // when section enters from bottom
+                        end: "bottom top", // when section leaves top
+                        scrub: 1.2, // smoothing factor
+                    }
                 });
             });
-        };
+        }, sectionRef);
 
-        window.addEventListener("scroll", onScroll, { passive: true });
-        onScroll(); // apply initial position
-
-        return () => {
-            window.removeEventListener("scroll", onScroll);
-            cancelAnimationFrame(rafId);
-        };
+        return () => ctx.revert();
     }, []);
 
     // Split images into 4 columns
@@ -57,8 +63,7 @@ const Skiper30 = () => {
     ];
 
     return (
-        <section className="relative z-10 w-full bg-[#050505] text-[#c8d6e3] py-24">
-            {/* Title */}
+        <section ref={sectionRef} className="relative z-10 w-full bg-[#050505] text-[#c8d6e3] py-24">
             <div className="text-center mb-12 px-6">
                 <p className="text-xs font-mono uppercase tracking-widest text-[#00fff5]/50 mb-2">Portfólio</p>
                 <h2 className="text-3xl md:text-4xl font-bold text-white">
@@ -66,14 +71,13 @@ const Skiper30 = () => {
                 </h2>
             </div>
 
-            {/* Gallery */}
             <div className="relative box-border flex h-[220vh] gap-[2vw] bg-transparent p-[2vw] overflow-hidden">
                 {columns.map((imgs, colIdx) => (
                     <div
                         key={colIdx}
                         ref={(el) => { colRefs.current[colIdx] = el; }}
-                        className="relative flex h-full w-1/4 min-w-[220px] flex-col gap-[2vw] will-change-transform"
-                        style={{ top: `${OFFSETS[colIdx]}px` }}
+                        className="relative flex h-full w-1/4 min-w-[220px] flex-col gap-[2vw]"
+                        style={{ marginTop: `${OFFSETS[colIdx]}px` }}
                     >
                         {imgs.map((src, imgIdx) => (
                             <div
