@@ -12,7 +12,7 @@ import {
 export default function WhatsAppCentralPage() {
     const [messageInput, setMessageInput] = useState("");
     const [messages, setMessages] = useState([
-        { id: 1, sender: "Sistema", text: "Você entrou no canal Omnichannel. Faça uma busca para iniciar uma comunicação (Orbe Baileys WhatsApp Proxy).", time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), isOut: false }
+        { id: 1, sender: "Sistema", text: "Você entrou no canal Omnichannel. Faça uma busca para iniciar uma comunicação (Orbe Baileys WhatsApp Proxy).", time: "--:--", isOut: false }
     ]);
     const [isSending, setIsSending] = useState(false);
 

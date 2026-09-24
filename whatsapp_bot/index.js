@@ -5,7 +5,17 @@ const QRCode = require('qrcode');
 const fs = require('fs');
 
 const app = express();
+
 app.use(express.json());
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    if (req.method === 'OPTIONS') {
+        res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+        return res.status(200).json({});
+    }
+    next();
+});
 
 // CUSTOM IN-MEMORY STORE TO HANDLE MESSAGE RETRIES (Fixes "Aguardando mensagem")
 const sentMessagesStore = {};
