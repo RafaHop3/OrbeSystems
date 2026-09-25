@@ -1,38 +1,16 @@
-import boto3, time
-ssm = boto3.client('ssm', region_name='us-east-1')
-instance_id = "i-058e26140671b3254"
+import os
+from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
 
-shell_code = """
-import asyncio
-import asyncpg
+load_dotenv("D:/OrbeSystems/orbe-systems/backend/.env")
 
-async def run():
-    try:
-        conn = await asyncpg.connect('postgresql://postgres:OrbeSystems123!@orbesystems_postgres:5432/orbesystemsprod')
-        r = await conn.fetch("SELECT column_name FROM information_schema.columns WHERE table_name = 'businesses';")
-        print("COLUMNS:", [x['column_name'] for x in r])
-        await conn.close()
-    except Exception as e:
-        print("ERROR:", e)
+DATABASE_URL = os.environ.get("DATABASE_URL")
+engine = create_engine(DATABASE_URL)
 
-asyncio.run(run())
-"""
-commands = [
-    f"cat << 'EOF' > /home/ubuntu/check_db.py\n{shell_code}\nEOF",
-    "sudo docker exec -i inho_backend python /home/ubuntu/check_db.py"
-]
-
-response = ssm.send_command(
-    InstanceIds=[instance_id], DocumentName="AWS-RunShellScript", Parameters={'commands': commands}
-)
-command_id = response['Command']['CommandId']
-while True:
-    time.sleep(3)
-    out = ssm.list_command_invocations(CommandId=command_id, Details=True)
-    if not out['CommandInvocations']: continue
-    status = out['CommandInvocations'][0]['Status']
-    if status in ['Pending', 'InProgress']: continue
-    plugin = out['CommandInvocations'][0]['CommandPlugins'][0]
-    out_text = plugin.get('Output', 'No output.')
-    print("SSM OUTPUT:", out_text)
-    break
+try:
+    with engine.connect() as conn:
+        res = conn.execute(text("SELECT column_name, data_type FROM information_schema.columns WHERE table_name = 'users';"))
+        for row in res:
+            print(f"{row[0]}: {row[1]}")
+except Exception as e:
+    print(e)
