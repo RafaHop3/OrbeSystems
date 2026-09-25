@@ -1,0 +1,5 @@
+ALTER TABLE
+ALTER TABLE
+ERROR:  foreign key constraint "imob_properties_owner_id_fkey" cannot be implemented
+DETAIL:  Key columns "owner_id" and "id" are of incompatible types: uuid and character varying.
+failed to run commands: exit status 1

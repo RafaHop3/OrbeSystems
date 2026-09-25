@@ -29,11 +29,28 @@ class LoginSchema(BaseModel):
 @limiter.limit("10/minute")
 async def login_for_access_token(request: Request, data: LoginSchema, db: Session = Depends(get_db)):
     """ Secure login endpoint. Admins from .env or users table with superadmin role allowed. """
+    from sqlalchemy import text as sa_text
     identity = data.username or data.email
     print(f"[AUTH] Login attempt received for: {identity}")
     
-    # 1. DB-backed superadmin check
-    user = db.query(User).filter(User.email == identity).first()
+    # 1. DB-backed superadmin check — use raw SQL to avoid UUID coercion issues
+    # on the local postgres container where the `users.email` column lookup may
+    # be coerced to UUID by the ORM dialect. Explicit ::text cast prevents this.
+    user = None
+    try:
+        row = db.execute(
+            sa_text("SELECT email, password_hash, role FROM users WHERE email = CAST(:email AS TEXT) LIMIT 1"),
+            {"email": identity}
+        ).fetchone()
+        if row:
+            class _UserProxy:
+                email = row[0]
+                password_hash = row[1]
+                role = row[2]
+            user = _UserProxy()
+    except Exception as e:
+        print(f"[AUTH] DB lookup error: {e}")
+
     if user and user.role == "superadmin":
         if verify_password(data.password, user.password_hash):
             print(f"[AUTH] DB SuperAdmin authenticated: {identity}")
@@ -42,6 +59,7 @@ async def login_for_access_token(request: Request, data: LoginSchema, db: Sessio
                 expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
             )
             return {"access_token": access_token, "token_type": "bearer"}
+
 
     # 2. Legacy .env fallback check
     if identity != ADMIN_USERNAME:

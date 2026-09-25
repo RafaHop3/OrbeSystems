@@ -4,8 +4,9 @@ ssm = boto3.client('ssm', region_name='us-east-1')
 instance_id = "i-058e26140671b3254"
 
 commands = [
-    "docker ps -a",
-    "cd /home/ubuntu/OrbeSystems && docker compose ps"
+    "ID=$(docker ps -qf 'name=backend' | head -n 1)",
+    "docker logs --tail=100 $ID > /home/ubuntu/OrbeSystems/raw_logs.txt",
+    "cat /home/ubuntu/OrbeSystems/raw_logs.txt"
 ]
 
 response = ssm.send_command(
@@ -14,7 +15,5 @@ response = ssm.send_command(
 time.sleep(5)
 output = ssm.get_command_invocation(CommandId=response['Command']['CommandId'], InstanceId=instance_id)
 
-with open('docker_state.txt', 'w') as f:
+with open('raw_docker_log.txt', 'w') as f:
     f.write(output.get('StandardOutputContent', ''))
-    f.write("\n---\n")
-    f.write(output.get('StandardErrorContent', ''))

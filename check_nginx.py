@@ -4,8 +4,8 @@ ssm = boto3.client('ssm', region_name='us-east-1')
 instance_id = "i-058e26140671b3254"
 
 commands = [
-    "docker ps -a",
-    "cd /home/ubuntu/OrbeSystems && docker compose ps"
+    "cat /var/log/nginx/access.log | grep '/api/auth/login' | tail -n 20",
+    "cat /var/log/nginx/error.log | tail -n 20"
 ]
 
 response = ssm.send_command(
@@ -14,7 +14,6 @@ response = ssm.send_command(
 time.sleep(5)
 output = ssm.get_command_invocation(CommandId=response['Command']['CommandId'], InstanceId=instance_id)
 
-with open('docker_state.txt', 'w') as f:
+with open('nginx_logs.txt', 'w') as f:
     f.write(output.get('StandardOutputContent', ''))
-    f.write("\n---\n")
     f.write(output.get('StandardErrorContent', ''))

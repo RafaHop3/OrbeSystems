@@ -4,17 +4,17 @@ ssm = boto3.client('ssm', region_name='us-east-1')
 instance_id = "i-058e26140671b3254"
 
 commands = [
-    "docker ps -a",
-    "cd /home/ubuntu/OrbeSystems && docker compose ps"
+    "cd /home/ubuntu/OrbeSystems",
+    "git pull origin main",
+    "docker compose restart backend",
+    "echo 'Sync Complete'"
 ]
 
 response = ssm.send_command(
     InstanceIds=[instance_id], DocumentName="AWS-RunShellScript", Parameters={'commands': commands}
 )
-time.sleep(5)
+
+time.sleep(15)
 output = ssm.get_command_invocation(CommandId=response['Command']['CommandId'], InstanceId=instance_id)
 
-with open('docker_state.txt', 'w') as f:
-    f.write(output.get('StandardOutputContent', ''))
-    f.write("\n---\n")
-    f.write(output.get('StandardErrorContent', ''))
+print(output.get('StandardOutputContent', ''))

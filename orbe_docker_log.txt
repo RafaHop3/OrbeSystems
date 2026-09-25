@@ -1,0 +1,23 @@
+INFO:     172.18.0.1:37672 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+2026-09-25 20:04:25,651 - apscheduler.executors.default - INFO - Running job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-25 20:04:25 UTC)" (scheduled at 2026-09-25 20:04:25.646932+00:00)
+2026-09-25 20:04:25,651 - apscheduler.executors.default - INFO - Running job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-25 20:04:25 UTC)" (scheduled at 2026-09-25 20:04:25.647333+00:00)
+2026-09-25 20:04:25,663 - orbe.soar - ERROR - [SOAR] escalation_check_job failed: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "CRITICAL"
+LINE 3: WHERE security_alerts.severity = 'CRITICAL' AND security_ale...
+                                         ^
+
+[SQL: SELECT security_alerts.id AS security_alerts_id, security_alerts.rule_name AS security_alerts_rule_name, security_alerts.severity AS security_alerts_severity, security_alerts.status AS security_alerts_status, security_alerts.source_ip AS security_alerts_source_ip, security_alerts.session_id AS security_alerts_session_id, security_alerts.visit_log_id AS security_alerts_visit_log_id, security_alerts.context AS security_alerts_context, security_alerts.triggered_at AS security_alerts_triggered_at, security_alerts.acknowledged_at AS security_alerts_acknowledged_at, security_alerts.resolved_at AS security_alerts_resolved_at, security_alerts.resolved_by AS security_alerts_resolved_by, security_alerts.incident_id AS security_alerts_incident_id 
+FROM security_alerts 
+WHERE security_alerts.severity = %(severity_1)s AND security_alerts.status = %(status_1)s AND security_alerts.triggered_at <= %(triggered_at_1)s]
+[parameters: {'severity_1': 'CRITICAL', 'status_1': 'open', 'triggered_at_1': datetime.datetime(2026, 9, 25, 19, 34, 25, 653327, tzinfo=datetime.timezone.utc)}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2026-09-25 20:04:25,663 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-25 20:09:25 UTC)" executed successfully
+2026-09-25 20:04:25,666 - orbe.soar - ERROR - [SOAR] escalation_check_job failed: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "CRITICAL"
+LINE 3: WHERE security_alerts.severity = 'CRITICAL' AND security_ale...
+                                         ^
+
+[SQL: SELECT security_alerts.id AS security_alerts_id, security_alerts.rule_name AS security_alerts_rule_name, security_alerts.severity AS security_alerts_severity, security_alerts.status AS security_alerts_status, security_alerts.source_ip AS security_alerts_source_ip, security_alerts.session_id AS security_alerts_session_id, security_alerts.visit_log_id AS security_alerts_visit_log_id, security_alerts.context AS security_alerts_context, security_alerts.triggered_at AS security_alerts_triggered_at, security_alerts.acknowledged_at AS security_alerts_acknowledged_at, security_alerts.resolved_at AS security_alerts_resolved_at, security_alerts.resolved_by AS security_alerts_resolved_by, security_alerts.incident_id AS security_alerts_incident_id 
+FROM security_alerts 
+WHERE security_alerts.severity = %(severity_1)s AND security_alerts.status = %(status_1)s AND security_alerts.triggered_at <= %(triggered_at_1)s]
+[parameters: {'severity_1': 'CRITICAL', 'status_1': 'open', 'triggered_at_1': datetime.datetime(2026, 9, 25, 19, 34, 25, 653309, tzinfo=datetime.timezone.utc)}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2026-09-25 20:04:25,666 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-25 20:09:25 UTC)" executed successfully

@@ -1,0 +1,68 @@
+NAMES           STATUS                      PORTS
+orbe_whatsapp   Up About an hour            0.0.0.0:3001->3001/tcp, [::]:3001->3001/tcp
+inho_backend    Up 39 minutes (unhealthy)   0.0.0.0:8001->8000/tcp, [::]:8001->8000/tcp
+orbe_backend    Up 7 minutes                0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+orbe_postgres   Up About an hour            0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+orbe_redis      Up About an hour            0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+
+---STDERR---
+2026-09-25 18:25:40,567 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-25 18:25:40,581 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-25 18:25:40,589 | INFO | apscheduler.scheduler | Added job "_ping" to job store "default"
+2026-09-25 18:25:40,590 | INFO | apscheduler.scheduler | Added job "process_billing_reminders" to job store "default"
+2026-09-25 18:25:40,590 | INFO | apscheduler.scheduler | Scheduler started
+2026-09-25 18:25:40,590 | INFO | keep_alive | [KeepAlive] 🤖 Robot active — pinging every 14 min → https://inho.orbesystems.com.br/api/health
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started server process [7]
+INFO:     Waiting for application startup.
+2026-09-25 18:54:21,763 | INFO | inho | INHO API iniciando...
+2026-09-25 18:54:22,252 | INFO | inho | Banco de dados conectado e esquema Inho (SaaS) perfeitamente sincronizado com sucesso!
+2026-09-25 18:54:22,380 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-25 18:54:22,391 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-25 18:54:22,393 | INFO | apscheduler.scheduler | Added job "_ping" to job store "default"
+2026-09-25 18:54:22,393 | INFO | apscheduler.scheduler | Added job "process_billing_reminders" to job store "default"
+2026-09-25 18:54:22,393 | INFO | apscheduler.scheduler | Scheduler started
+2026-09-25 18:54:22,394 | INFO | keep_alive | [KeepAlive] 🤖 Robot active — pinging every 14 min → https://inho.orbesystems.com.br/api/health
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-09-25 19:08:22,381 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-25 19:22:22 UTC)" (scheduled at 2026-09-25 19:08:22.379806+00:00)
+2026-09-25 19:08:22,791 | INFO | httpx | HTTP Request: GET https://inho.orbesystems.com.br/api/health "HTTP/1.1 404 Not Found"
+2026-09-25 19:08:22,796 | WARNING | keep_alive | [KeepAlive] ⚠️  Unexpected status → 404
+2026-09-25 19:08:22,797 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-25 19:22:22 UTC)" executed successfully
+2026-09-25 19:22:22,380 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-25 19:36:22 UTC)" (scheduled at 2026-09-25 19:22:22.379806+00:00)
+2026-09-25 19:22:22,550 | INFO | httpx | HTTP Request: GET https://inho.orbesystems.com.br/api/health "HTTP/1.1 404 Not Found"
+2026-09-25 19:22:22,552 | WARNING | keep_alive | [KeepAlive] ⚠️  Unexpected status → 404
+2026-09-25 19:22:22,552 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-25 19:36:22 UTC)" executed successfully
+INFO:     Started server process [8]
+INFO:     Waiting for application startup.
+2026-09-25 19:25:38,774 | INFO | inho | INHO API iniciando...
+2026-09-25 19:25:38,981 | INFO | inho | Banco de dados conectado e esquema Inho (SaaS) perfeitamente sincronizado com sucesso!
+2026-09-25 19:25:39,066 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-25 19:25:39,076 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-25 19:25:39,079 | INFO | apscheduler.scheduler | Added job "_ping" to job store "default"
+2026-09-25 19:25:39,079 | INFO | apscheduler.scheduler | Added job "process_billing_reminders" to job store "default"
+2026-09-25 19:25:39,079 | INFO | apscheduler.scheduler | Scheduler started
+2026-09-25 19:25:39,079 | INFO | keep_alive | [KeepAlive] 🤖 Robot active — pinging every 14 min → https://inho.orbesystems.com.br/api/health
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started server process [8]
+INFO:     Waiting for application startup.
+2026-09-25 19:26:31,585 | INFO | inho | INHO API iniciando...
+2026-09-25 19:26:31,832 | INFO | inho | Banco de dados conectado e esquema Inho (SaaS) perfeitamente sincronizado com sucesso!
+2026-09-25 19:26:31,948 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-25 19:26:31,959 | INFO | apscheduler.scheduler | Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-09-25 19:26:31,961 | INFO | apscheduler.scheduler | Added job "_ping" to job store "default"
+2026-09-25 19:26:31,962 | INFO | apscheduler.scheduler | Added job "process_billing_reminders" to job store "default"
+2026-09-25 19:26:31,962 | INFO | apscheduler.scheduler | Scheduler started
+2026-09-25 19:26:31,962 | INFO | keep_alive | [KeepAlive] 🤖 Robot active — pinging every 14 min → https://inho.orbesystems.com.br/api/health
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+2026-09-25 19:40:31,951 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-25 19:54:31 UTC)" (scheduled at 2026-09-25 19:40:31.948568+00:00)
+2026-09-25 19:40:32,231 | INFO | httpx | HTTP Request: GET https://inho.orbesystems.com.br/api/health "HTTP/1.1 404 Not Found"
+2026-09-25 19:40:32,236 | WARNING | keep_alive | [KeepAlive] ⚠️  Unexpected status → 404
+2026-09-25 19:40:32,237 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-25 19:54:31 UTC)" executed successfully
+2026-09-25 19:54:31,953 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-25 20:08:31 UTC)" (scheduled at 2026-09-25 19:54:31.948568+00:00)
+2026-09-25 19:54:32,148 | INFO | httpx | HTTP Request: GET https://inho.orbesystems.com.br/api/health "HTTP/1.1 404 Not Found"
+2026-09-25 19:54:32,153 | WARNING | keep_alive | [KeepAlive] ⚠️  Unexpected status → 404
+2026-09-25 19:54:32,154 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-25 20:08:31 UTC)" executed successfully

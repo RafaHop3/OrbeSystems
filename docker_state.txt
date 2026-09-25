@@ -1,0 +1,14 @@
+CONTAINER ID   IMAGE                      COMMAND                  CREATED      STATUS                      PORTS                                         NAMES
+b09d03b73603   orbesystems-whatsapp       "docker-entrypoint.s…"   7 days ago   Up About an hour            0.0.0.0:3001->3001/tcp, [::]:3001->3001/tcp   orbe_whatsapp
+d3bb33a1664b   orbesystems-inho_backend   "sh -c 'uvicorn main…"   7 days ago   Up 34 minutes (unhealthy)   0.0.0.0:8001->8000/tcp, [::]:8001->8000/tcp   inho_backend
+08cd1ac550f9   orbesystems-backend        "uvicorn main:app --…"   8 days ago   Up About a minute           0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   orbe_backend
+2a7a40a59183   postgres:15-alpine         "docker-entrypoint.s…"   8 days ago   Up About an hour            0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp   orbe_postgres
+faa22f440411   redis:7-alpine             "docker-entrypoint.s…"   8 days ago   Up About an hour            0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp   orbe_redis
+NAME            IMAGE                      COMMAND                  SERVICE        CREATED      STATUS                      PORTS
+inho_backend    orbesystems-inho_backend   "sh -c 'uvicorn main…"   inho_backend   7 days ago   Up 34 minutes (unhealthy)   0.0.0.0:8001->8000/tcp, [::]:8001->8000/tcp
+orbe_backend    orbesystems-backend        "uvicorn main:app --…"   backend        8 days ago   Up About a minute           0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+orbe_postgres   postgres:15-alpine         "docker-entrypoint.s…"   db             8 days ago   Up About an hour            0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp
+orbe_redis      redis:7-alpine             "docker-entrypoint.s…"   redis          8 days ago   Up About an hour            0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp
+orbe_whatsapp   orbesystems-whatsapp       "docker-entrypoint.s…"   whatsapp       7 days ago   Up About an hour            0.0.0.0:3001->3001/tcp, [::]:3001->3001/tcp
+
+---

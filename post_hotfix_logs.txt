@@ -1,0 +1,30 @@
+orbe_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+orbe_backend  |     ret = self._execute_context(
+orbe_backend  |           ^^^^^^^^^^^^^^^^^^^^^^
+orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+orbe_backend  |     return self._exec_single_context(
+orbe_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+orbe_backend  |     self._handle_dbapi_exception(
+orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+orbe_backend  |     raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+orbe_backend  |     self.dialect.do_execute(
+orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+orbe_backend  |     cursor.execute(statement, parameters)
+orbe_backend  | sqlalchemy.exc.DataError: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "rafael@orbesystems.com.br"
+orbe_backend  | LINE 3: WHERE users.email = 'rafael@orbesystems.com.br' 
+orbe_backend  |                             ^
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT users.id AS users_id, users.email AS users_email, users.password_hash AS users_password_hash, users.role AS users_role, users.subscription_status AS users_subscription_status, users.is_email_verified AS users_is_email_verified, users.created_at AS users_created_at 
+orbe_backend  | FROM users 
+orbe_backend  | WHERE users.email = %(email_1)s 
+orbe_backend  |  LIMIT %(param_1)s]
+orbe_backend  | [parameters: {'email_1': 'rafael@orbesystems.com.br', 'param_1': 1}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/9h9h)
+orbe_backend  | INFO:     172.18.0.1:50548 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:36882 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:36890 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:36902 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:43780 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK

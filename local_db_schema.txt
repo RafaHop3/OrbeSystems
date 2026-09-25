@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<string>", line 5, in <module>
+  File "/opt/venv/lib/python3.11/site-packages/psycopg2/__init__.py", line 121, in connect
+    dsn = _ext.make_dsn(dsn, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.11/site-packages/psycopg2/extensions.py", line 145, in make_dsn
+    parse_dsn(dsn)
+psycopg2.ProgrammingError: invalid dsn: missing "=" after "postgresql+asyncpg://orbe_admin:orbe_password@orbe_postgres:5432/orbesystems" in connection info string
+
+failed to run commands: exit status 1

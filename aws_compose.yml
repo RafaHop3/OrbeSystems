@@ -1,0 +1,60 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: orbe_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: orbe_admin
+      POSTGRES_PASSWORD: orbe_password
+      POSTGRES_DB: orbesystems
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: orbe_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+  backend:
+    build: ./backend
+    container_name: orbe_backend
+    restart: always
+    environment:
+      - DATABASE_URL=postgresql://orbe_admin:orbe_password@db:5432/orbesystems
+      - INHO_DATABASE_URL=${INHO_DATABASE_URL:-postgresql://orbe_admin:orbe_password@db:5432/orbesystems}
+      - REDIS_URL=redis://redis:6379/0
+    # Opcional: Se preencher o .env em bash no EC2, remova o comentário abaixo
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./backend:/app
+
+  inho_backend:
+    build: ./inho_backend
+    container_name: inho_backend
+    restart: always
+    env_file:
+      - ./inho_backend/.env
+    ports:
+      - "8001:8000"
+
+  whatsapp:
+    build: ./whatsapp_bot
+    container_name: orbe_whatsapp
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./whatsapp_bot/auth_info_baileys:/app/auth_info_baileys
+
+volumes:
+  postgres_data:
