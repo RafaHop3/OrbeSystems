@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:a2d82475-5998-485f-994c-1d1bbe51fe44",
+  "serialNumber": "urn:uuid:a20f4f61-cb8d-46a9-b36e-69f4670ae260",
   "metadata": {
-    "timestamp": "2026-09-24T18:43:36.561576+00:00",
+    "timestamp": "2026-09-25T10:17:08.716919+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -654,31 +654,6 @@
         {
           "alg": "SHA-256",
           "content": "c421676b974c5d8fa0aaace86c1235a3c1f521ccbadaa8276f270d8a1c8fcf1a"
-        }
-      ]
-    },
-    {
-      "type": "library",
-      "name": "greenlet",
-      "version": "3.5.6",
-      "purl": "pkg:pypi/greenlet@3.5.6",
-      "licenses": [
-        {
-          "license": {
-            "id": "Unknown"
-          }
-        }
-      ],
-      "externalReferences": [
-        {
-          "type": "website",
-          "url": "https://greenlet.readthedocs.io"
-        }
-      ],
-      "hashes": [
-        {
-          "alg": "SHA-256",
-          "content": "4c56f112f0deecc6c21366665258f997b613249bbb7ccac9f450e58465f4a9bd"
         }
       ]
     },
@@ -1715,12 +1690,12 @@
     {
       "type": "library",
       "name": "SQLAlchemy",
-      "version": "2.0.54",
-      "purl": "pkg:pypi/sqlalchemy@2.0.54",
+      "version": "2.1.0",
+      "purl": "pkg:pypi/sqlalchemy@2.1.0",
       "licenses": [
         {
           "license": {
-            "id": "MIT"
+            "id": "Unknown"
           }
         }
       ],
@@ -1733,7 +1708,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "a3b62ffbf57198b018b7891d4daad3df3da6a83e4e0d70b4f8202ccdc0900290"
+          "content": "7ee052706be2ce49259f80a1e242005fe01d5b2ae7317641920022ddf1754cbe"
         }
       ]
     },
@@ -2064,11 +2039,11 @@
     }
   ],
   "_orbe_meta": {
-    "total_dependencies": 86,
+    "total_dependencies": 85,
     "license_summary": {
       "Apache 2": 5,
       "Unknown": 29,
-      "MIT": 16,
+      "MIT": 15,
       "MIT License": 3,
       "Apache-2.0": 5,
       "Apache License 2.0": 3,
