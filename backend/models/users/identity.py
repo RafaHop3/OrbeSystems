@@ -1,14 +1,17 @@
-from sqlalchemy.dialects.postgresql import UUID
+import os
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from uuid import uuid4
 from datetime import datetime
 from sqlalchemy import Column, String, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from database import Base
 
+IS_SUPABASE = "supabase" in os.environ.get("DATABASE_URL", "")
+
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    id = Column(String if IS_SUPABASE else PG_UUID(as_uuid=True), primary_key=True, default=lambda: str(uuid4()))
     email = Column(String, unique=True, index=True, nullable=False)
     password_hash = Column(String, nullable=False)
     # Legacy columns: kept for backward-compatibility with the existing Supabase table
