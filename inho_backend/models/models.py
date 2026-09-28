@@ -88,6 +88,8 @@ class User(Base):
 
     @property
     def full_name(self) -> str:
+        if getattr(self, "email", None):
+            return self.email.split("@")[0].replace(".", " ").title()
         return "Administrador INHO"
 
     @property

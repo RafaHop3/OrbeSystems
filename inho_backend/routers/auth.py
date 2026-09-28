@@ -133,7 +133,7 @@ async def login(
         detail={"email": user.email}, request=request,
     )
     await db.commit()
-    return TokenResponse(access_token=access, refresh_token=refresh)
+    return TokenResponse(access_token=access, refresh_token=refresh, full_name=user.full_name, email=user.email)
 
 
 @router.post("/refresh", response_model=TokenResponse)

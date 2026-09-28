@@ -24,12 +24,19 @@ export default function Sidebar() {
     });
 
     const [userEmail, setUserEmail] = useState('admin@orbesystems.com.br');
+    const [userName, setUserName] = useState('Administrador');
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const email = localStorage.getItem('user_email');
             if (email) {
                 setUserEmail(email);
+            }
+            const name = localStorage.getItem('user_name');
+            if (name) {
+                setUserName(name);
+            } else if (email) {
+                setUserName(email.split("@")[0]);
             }
         }
     }, []);
@@ -163,7 +170,8 @@ export default function Sidebar() {
             <div className="p-4 mt-auto border-t border-[#1a1f26] bg-[#06080A]">
                 <div className="flex items-center justify-between">
                     <div className="flex flex-col">
-                        <span className="text-[12px] font-semibold text-[#8b949e] overflow-hidden text-ellipsis max-w-[130px]">{userEmail}</span>
+                        <span className="text-[14px] font-bold text-white overflow-hidden text-ellipsis max-w-[130px]">{userName}</span>
+                        <span className="text-[10px] font-semibold text-[#8b949e] overflow-hidden text-ellipsis max-w-[130px]">{userEmail}</span>
                     </div>
                     <button
                         onClick={() => {

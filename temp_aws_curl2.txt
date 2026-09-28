@@ -1,0 +1,108 @@
+=== ORBE LOGIN LOCAL ===
+OCI runtime exec failed: exec failed: unable to start container process: exec: "curl": executable file not found in $PATH
+
+=== RAW FASTAPI LOGS (LAST 100) ===
+INFO:     172.18.0.1:46574 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:46582 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+2026-09-28 09:55:37,771 - apscheduler.executors.default - INFO - Running job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 10:00:37 UTC)" (scheduled at 2026-09-28 09:55:37.764192+00:00)
+2026-09-28 09:55:37,793 - orbe.soar - ERROR - [SOAR] escalation_check_job failed: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "CRITICAL"
+LINE 3: WHERE security_alerts.severity = 'CRITICAL' AND security_ale...
+                                         ^
+
+[SQL: SELECT security_alerts.id AS security_alerts_id, security_alerts.rule_name AS security_alerts_rule_name, security_alerts.severity AS security_alerts_severity, security_alerts.status AS security_alerts_status, security_alerts.source_ip AS security_alerts_source_ip, security_alerts.session_id AS security_alerts_session_id, security_alerts.visit_log_id AS security_alerts_visit_log_id, security_alerts.context AS security_alerts_context, security_alerts.triggered_at AS security_alerts_triggered_at, security_alerts.acknowledged_at AS security_alerts_acknowledged_at, security_alerts.resolved_at AS security_alerts_resolved_at, security_alerts.resolved_by AS security_alerts_resolved_by, security_alerts.incident_id AS security_alerts_incident_id 
+FROM security_alerts 
+WHERE security_alerts.severity = %(severity_1)s AND security_alerts.status = %(status_1)s AND security_alerts.triggered_at <= %(triggered_at_1)s]
+[parameters: {'severity_1': 'CRITICAL', 'status_1': 'open', 'triggered_at_1': datetime.datetime(2026, 9, 28, 9, 25, 37, 778242, tzinfo=datetime.timezone.utc)}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)
+2026-09-28 09:55:37,794 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 10:00:37 UTC)" executed successfully
+INFO:     172.18.0.1:39264 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:39276 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+
+
+---ERRORS---
+
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 186, in __call__
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/cors.py", line 85, in __call__
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/middleware/exceptions.py", line 65, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 756, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 776, in app
+    await route.handle(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 297, in handle
+    await self.app(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 77, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 64, in wrapped_app
+    raise exc
+  File "/usr/local/lib/python3.11/site-packages/starlette/_exception_handler.py", line 53, in wrapped_app
+    await app(scope, receive, sender)
+  File "/usr/local/lib/python3.11/site-packages/starlette/routing.py", line 72, in app
+    response = await func(request)
+               ^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 278, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/fastapi/routing.py", line 191, in run_endpoint_function
+    return await dependant.call(**values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/slowapi/extension.py", line 734, in async_wrapper
+    response = await func(*args, **kwargs)  # type: ignore
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/routes/auth.py", line 36, in login_for_access_token
+    user = db.query(User).filter(User.email == identity).first()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2766, in first
+    return self.limit(1)._iter().first()  # type: ignore
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/query.py", line 2864, in _iter
+    result: Union[ScalarResult[_T], Result[_T]] = self.session.execute(
+                                                  ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2373, in execute
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/session.py", line 2271, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1421, in execute
+    return meth(
+           ^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/sql/elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+  File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+sqlalchemy.exc.DataError: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "rafael@orbesystems.com.br"
+LINE 3: WHERE users.email = 'rafael@orbesystems.com.br' 
+                            ^
+
+[SQL: SELECT users.id AS users_id, users.email AS users_email, users.password_hash AS users_password_hash, users.role AS users_role, users.subscription_status AS users_subscription_status, users.is_email_verified AS users_is_email_verified, users.created_at AS users_created_at 
+FROM users 
+WHERE users.email = %(email_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'email_1': 'rafael@orbesystems.com.br', 'param_1': 1}]
+(Background on this error at: https://sqlalche.me/e/20/9h9h)

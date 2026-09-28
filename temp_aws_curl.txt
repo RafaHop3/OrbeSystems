@@ -1,0 +1,13 @@
+=== ORBE LOGIN LOCAL ===
+
+=== INHO LOGIN LOCAL ===
+OCI runtime exec failed: exec failed: unable to start container process: exec: "curl": executable file not found in $PATH
+
+=== ENV KEEP_ALIVE_URL ===
+
+
+---ERRORS---
+
+Error response from daemon: No such container: backend
+grep: /home/ubuntu/OrbeSystems/.env: No such file or directory
+failed to run commands: exit status 1

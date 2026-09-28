@@ -1,0 +1,180 @@
+orbe_backend  | FROM security_alerts 
+orbe_backend  | WHERE security_alerts.severity = %(severity_1)s AND security_alerts.status = %(status_1)s AND security_alerts.triggered_at <= %(triggered_at_1)s]
+orbe_backend  | [parameters: {'severity_1': 'CRITICAL', 'status_1': 'open', 'triggered_at_1': datetime.datetime(2026, 9, 28, 8, 55, 37, 764668, tzinfo=datetime.timezone.utc)}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/9h9h)
+orbe_backend  | 2026-09-28 09:25:37,782 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:30:37 UTC)" executed successfully
+orbe_backend  | 2026-09-28 09:30:37,764 - apscheduler.executors.default - INFO - Running job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:35:37 UTC)" (scheduled at 2026-09-28 09:30:37.764192+00:00)
+orbe_backend  | 2026-09-28 09:30:37,766 - orbe.soar - ERROR - [SOAR] escalation_check_job failed: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "CRITICAL"
+orbe_backend  | LINE 3: WHERE security_alerts.severity = 'CRITICAL' AND security_ale...
+orbe_backend  |                                          ^
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT security_alerts.id AS security_alerts_id, security_alerts.rule_name AS security_alerts_rule_name, security_alerts.severity AS security_alerts_severity, security_alerts.status AS security_alerts_status, security_alerts.source_ip AS security_alerts_source_ip, security_alerts.session_id AS security_alerts_session_id, security_alerts.visit_log_id AS security_alerts_visit_log_id, security_alerts.context AS security_alerts_context, security_alerts.triggered_at AS security_alerts_triggered_at, security_alerts.acknowledged_at AS security_alerts_acknowledged_at, security_alerts.resolved_at AS security_alerts_resolved_at, security_alerts.resolved_by AS security_alerts_resolved_by, security_alerts.incident_id AS security_alerts_incident_id 
+orbe_backend  | FROM security_alerts 
+orbe_backend  | WHERE security_alerts.severity = %(severity_1)s AND security_alerts.status = %(status_1)s AND security_alerts.triggered_at <= %(triggered_at_1)s]
+orbe_backend  | [parameters: {'severity_1': 'CRITICAL', 'status_1': 'open', 'triggered_at_1': datetime.datetime(2026, 9, 28, 9, 0, 37, 764652, tzinfo=datetime.timezone.utc)}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/9h9h)
+orbe_backend  | 2026-09-28 09:30:37,766 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:35:37 UTC)" executed successfully
+orbe_backend  | 2026-09-28 09:32:37,757 - apscheduler.executors.default - INFO - Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 09:46:37 UTC)" (scheduled at 2026-09-28 09:32:37.757076+00:00)
+orbe_backend  | 2026-09-28 09:32:37,869 - httpx - INFO - HTTP Request: GET https://orbesystems.com.br/api/health "HTTP/1.1 307 Temporary Redirect"
+orbe_backend  | 2026-09-28 09:32:37,870 - keep_alive - WARNING - [KeepAlive] ⚠️  Unexpected status → 307
+orbe_backend  | 2026-09-28 09:32:37,870 - apscheduler.executors.default - INFO - Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 09:46:37 UTC)" executed successfully
+orbe_backend  | 2026-09-28 09:35:37,764 - apscheduler.executors.default - INFO - Running job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:40:37 UTC)" (scheduled at 2026-09-28 09:35:37.764192+00:00)
+orbe_backend  | 2026-09-28 09:35:37,766 - orbe.soar - ERROR - [SOAR] escalation_check_job failed: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "CRITICAL"
+orbe_backend  | LINE 3: WHERE security_alerts.severity = 'CRITICAL' AND security_ale...
+orbe_backend  |                                          ^
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT security_alerts.id AS security_alerts_id, security_alerts.rule_name AS security_alerts_rule_name, security_alerts.severity AS security_alerts_severity, security_alerts.status AS security_alerts_status, security_alerts.source_ip AS security_alerts_source_ip, security_alerts.session_id AS security_alerts_session_id, security_alerts.visit_log_id AS security_alerts_visit_log_id, security_alerts.context AS security_alerts_context, security_alerts.triggered_at AS security_alerts_triggered_at, security_alerts.acknowledged_at AS security_alerts_acknowledged_at, security_alerts.resolved_at AS security_alerts_resolved_at, security_alerts.resolved_by AS security_alerts_resolved_by, security_alerts.incident_id AS security_alerts_incident_id 
+orbe_backend  | FROM security_alerts 
+orbe_backend  | WHERE security_alerts.severity = %(severity_1)s AND security_alerts.status = %(status_1)s AND security_alerts.triggered_at <= %(triggered_at_1)s]
+orbe_backend  | [parameters: {'severity_1': 'CRITICAL', 'status_1': 'open', 'triggered_at_1': datetime.datetime(2026, 9, 28, 9, 5, 37, 764646, tzinfo=datetime.timezone.utc)}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/9h9h)
+orbe_backend  | 2026-09-28 09:35:37,766 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:40:37 UTC)" executed successfully
+orbe_backend  | INFO:     52.53.232.119:54898 - "GET / HTTP/1.1" 404 Not Found
+orbe_backend  | 2026-09-28 09:40:37,764 - apscheduler.executors.default - INFO - Running job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:45:37 UTC)" (scheduled at 2026-09-28 09:40:37.764192+00:00)
+orbe_backend  | 2026-09-28 09:40:37,766 - orbe.soar - ERROR - [SOAR] escalation_check_job failed: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "CRITICAL"
+orbe_backend  | LINE 3: WHERE security_alerts.severity = 'CRITICAL' AND security_ale...
+orbe_backend  |                                          ^
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT security_alerts.id AS security_alerts_id, security_alerts.rule_name AS security_alerts_rule_name, security_alerts.severity AS security_alerts_severity, security_alerts.status AS security_alerts_status, security_alerts.source_ip AS security_alerts_source_ip, security_alerts.session_id AS security_alerts_session_id, security_alerts.visit_log_id AS security_alerts_visit_log_id, security_alerts.context AS security_alerts_context, security_alerts.triggered_at AS security_alerts_triggered_at, security_alerts.acknowledged_at AS security_alerts_acknowledged_at, security_alerts.resolved_at AS security_alerts_resolved_at, security_alerts.resolved_by AS security_alerts_resolved_by, security_alerts.incident_id AS security_alerts_incident_id 
+orbe_backend  | FROM security_alerts 
+orbe_backend  | WHERE security_alerts.severity = %(severity_1)s AND security_alerts.status = %(status_1)s AND security_alerts.triggered_at <= %(triggered_at_1)s]
+orbe_backend  | [parameters: {'severity_1': 'CRITICAL', 'status_1': 'open', 'triggered_at_1': datetime.datetime(2026, 9, 28, 9, 10, 37, 764730, tzinfo=datetime.timezone.utc)}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/9h9h)
+orbe_backend  | 2026-09-28 09:40:37,766 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:45:37 UTC)" executed successfully
+orbe_backend  | 2026-09-28 09:45:37,765 - apscheduler.executors.default - INFO - Running job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:50:37 UTC)" (scheduled at 2026-09-28 09:45:37.764192+00:00)
+orbe_backend  | 2026-09-28 09:45:37,767 - orbe.soar - ERROR - [SOAR] escalation_check_job failed: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "CRITICAL"
+orbe_backend  | LINE 3: WHERE security_alerts.severity = 'CRITICAL' AND security_ale...
+orbe_backend  |                                          ^
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT security_alerts.id AS security_alerts_id, security_alerts.rule_name AS security_alerts_rule_name, security_alerts.severity AS security_alerts_severity, security_alerts.status AS security_alerts_status, security_alerts.source_ip AS security_alerts_source_ip, security_alerts.session_id AS security_alerts_session_id, security_alerts.visit_log_id AS security_alerts_visit_log_id, security_alerts.context AS security_alerts_context, security_alerts.triggered_at AS security_alerts_triggered_at, security_alerts.acknowledged_at AS security_alerts_acknowledged_at, security_alerts.resolved_at AS security_alerts_resolved_at, security_alerts.resolved_by AS security_alerts_resolved_by, security_alerts.incident_id AS security_alerts_incident_id 
+orbe_backend  | FROM security_alerts 
+orbe_backend  | WHERE security_alerts.severity = %(severity_1)s AND security_alerts.status = %(status_1)s AND security_alerts.triggered_at <= %(triggered_at_1)s]
+orbe_backend  | [parameters: {'severity_1': 'CRITICAL', 'status_1': 'open', 'triggered_at_1': datetime.datetime(2026, 9, 28, 9, 15, 37, 765853, tzinfo=datetime.timezone.utc)}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/9h9h)
+orbe_backend  | 2026-09-28 09:45:37,767 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:50:37 UTC)" executed successfully
+orbe_backend  | 2026-09-28 09:46:23,302 - httpx - INFO - HTTP Request: GET http://ip-api.com/json/18.231.184.221 "HTTP/1.1 200 OK"
+orbe_backend  | INFO:     172.18.0.1:40204 - "POST /api/analytics/log HTTP/1.1" 200 OK
+orbe_backend  | 2026-09-28 09:46:23,324 - orbe.anomaly - WARNING - [Anomaly] check_rate_abuse error: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "18.231.184.221"
+orbe_backend  | LINE 3: WHERE visit_logs.ip = '18.231.184.221' AND visit_logs.timest...
+orbe_backend  |                               ^
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT count(visit_logs.id) AS count_1 
+orbe_backend  | FROM visit_logs 
+orbe_backend  | WHERE visit_logs.ip = %(ip_1)s AND visit_logs.timestamp >= %(timestamp_1)s]
+orbe_backend  | [parameters: {'ip_1': '18.231.184.221', 'timestamp_1': datetime.datetime(2026, 9, 28, 9, 41, 23, 321403, tzinfo=datetime.timezone.utc)}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/9h9h)
+orbe_backend  | 2026-09-28 09:46:23,332 - orbe.anomaly - WARNING - [Anomaly] check_rapid_paths error: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT count(distinct(visit_logs.path)) AS count_1 
+orbe_backend  | FROM visit_logs 
+orbe_backend  | WHERE visit_logs.timestamp >= %(timestamp_1)s AND visit_logs.id IN (SELECT anon_1.id 
+orbe_backend  | FROM (SELECT visit_logs.id AS id 
+orbe_backend  | FROM visit_logs 
+orbe_backend  | WHERE visit_logs.timestamp >= %(timestamp_2)s ORDER BY visit_logs.timestamp DESC 
+orbe_backend  |  LIMIT %(param_1)s) AS anon_1)]
+orbe_backend  | [parameters: {'timestamp_1': datetime.datetime(2026, 9, 28, 9, 46, 13, 324764, tzinfo=datetime.timezone.utc), 'timestamp_2': datetime.datetime(2026, 9, 28, 9, 46, 13, 324764, tzinfo=datetime.timezone.utc), 'param_1': 500}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/2j85)
+orbe_backend  | 2026-09-28 09:46:23,333 - orbe.anomaly - WARNING - [Anomaly] check_impossible_travel error: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT visit_logs.city AS visit_logs_city 
+orbe_backend  | FROM visit_logs 
+orbe_backend  | WHERE visit_logs.ip = %(ip_1)s AND visit_logs.timestamp >= %(timestamp_1)s AND visit_logs.city IS NOT NULL AND visit_logs.city != %(city_1)s AND visit_logs.city != %(city_2)s ORDER BY visit_logs.timestamp DESC 
+orbe_backend  |  LIMIT %(param_1)s]
+orbe_backend  | [parameters: {'ip_1': '18.231.184.221', 'timestamp_1': datetime.datetime(2026, 9, 28, 9, 16, 23, 332421, tzinfo=datetime.timezone.utc), 'city_1': 'Unknown', 'city_2': 'Sao Paulo', 'param_1': 1}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/2j85)
+orbe_backend  | 2026-09-28 09:46:31,220 - httpx - INFO - HTTP Request: GET http://ip-api.com/json/18.228.36.72 "HTTP/1.1 200 OK"
+orbe_backend  | INFO:     172.18.0.1:40208 - "POST /api/analytics/log HTTP/1.1" 200 OK
+orbe_backend  | 2026-09-28 09:46:31,231 - orbe.anomaly - WARNING - [Anomaly] check_rate_abuse error: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "18.228.36.72"
+orbe_backend  | LINE 3: WHERE visit_logs.ip = '18.228.36.72' AND visit_logs.timestam...
+orbe_backend  |                               ^
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT count(visit_logs.id) AS count_1 
+orbe_backend  | FROM visit_logs 
+orbe_backend  | WHERE visit_logs.ip = %(ip_1)s AND visit_logs.timestamp >= %(timestamp_1)s]
+orbe_backend  | [parameters: {'ip_1': '18.228.36.72', 'timestamp_1': datetime.datetime(2026, 9, 28, 9, 41, 31, 229803, tzinfo=datetime.timezone.utc)}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/9h9h)
+orbe_backend  | 2026-09-28 09:46:31,233 - orbe.anomaly - WARNING - [Anomaly] check_rapid_paths error: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT count(distinct(visit_logs.path)) AS count_1 
+orbe_backend  | FROM visit_logs 
+orbe_backend  | WHERE visit_logs.timestamp >= %(timestamp_1)s AND visit_logs.id IN (SELECT anon_1.id 
+orbe_backend  | FROM (SELECT visit_logs.id AS id 
+orbe_backend  | FROM visit_logs 
+orbe_backend  | WHERE visit_logs.timestamp >= %(timestamp_2)s ORDER BY visit_logs.timestamp DESC 
+orbe_backend  |  LIMIT %(param_1)s) AS anon_1)]
+orbe_backend  | [parameters: {'timestamp_1': datetime.datetime(2026, 9, 28, 9, 46, 21, 232473, tzinfo=datetime.timezone.utc), 'timestamp_2': datetime.datetime(2026, 9, 28, 9, 46, 21, 232473, tzinfo=datetime.timezone.utc), 'param_1': 500}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/2j85)
+orbe_backend  | 2026-09-28 09:46:31,235 - orbe.anomaly - WARNING - [Anomaly] check_impossible_travel error: (psycopg2.errors.InFailedSqlTransaction) current transaction is aborted, commands ignored until end of transaction block
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT visit_logs.city AS visit_logs_city 
+orbe_backend  | FROM visit_logs 
+orbe_backend  | WHERE visit_logs.ip = %(ip_1)s AND visit_logs.timestamp >= %(timestamp_1)s AND visit_logs.city IS NOT NULL AND visit_logs.city != %(city_1)s AND visit_logs.city != %(city_2)s ORDER BY visit_logs.timestamp DESC 
+orbe_backend  |  LIMIT %(param_1)s]
+orbe_backend  | [parameters: {'ip_1': '18.228.36.72', 'timestamp_1': datetime.datetime(2026, 9, 28, 9, 16, 31, 234132, tzinfo=datetime.timezone.utc), 'city_1': 'Unknown', 'city_2': 'Sao Paulo', 'param_1': 1}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/2j85)
+orbe_backend  | 2026-09-28 09:46:37,758 - apscheduler.executors.default - INFO - Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 10:00:37 UTC)" (scheduled at 2026-09-28 09:46:37.757076+00:00)
+orbe_backend  | 2026-09-28 09:46:38,099 - httpx - INFO - HTTP Request: GET https://orbesystems.com.br/api/health "HTTP/1.1 307 Temporary Redirect"
+orbe_backend  | 2026-09-28 09:46:38,100 - keep_alive - WARNING - [KeepAlive] ⚠️  Unexpected status → 307
+orbe_backend  | 2026-09-28 09:46:38,100 - apscheduler.executors.default - INFO - Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 10:00:37 UTC)" executed successfully
+orbe_backend  | INFO:     172.18.0.1:33234 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:42330 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:41862 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:58866 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:41754 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:54808 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:49726 - "GET /.env HTTP/1.1" 404 Not Found
+orbe_backend  | INFO:     172.18.0.1:49738 - "POST / HTTP/1.1" 404 Not Found
+orbe_backend  | INFO:     172.18.0.1:49746 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:53536 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:41776 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:39946 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:49292 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:52462 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:60952 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | 2026-09-28 09:50:37,765 - apscheduler.executors.default - INFO - Running job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:55:37 UTC)" (scheduled at 2026-09-28 09:50:37.764192+00:00)
+orbe_backend  | 2026-09-28 09:50:37,767 - orbe.soar - ERROR - [SOAR] escalation_check_job failed: (psycopg2.errors.InvalidTextRepresentation) invalid input syntax for type uuid: "CRITICAL"
+orbe_backend  | LINE 3: WHERE security_alerts.severity = 'CRITICAL' AND security_ale...
+orbe_backend  |                                          ^
+orbe_backend  | 
+orbe_backend  | [SQL: SELECT security_alerts.id AS security_alerts_id, security_alerts.rule_name AS security_alerts_rule_name, security_alerts.severity AS security_alerts_severity, security_alerts.status AS security_alerts_status, security_alerts.source_ip AS security_alerts_source_ip, security_alerts.session_id AS security_alerts_session_id, security_alerts.visit_log_id AS security_alerts_visit_log_id, security_alerts.context AS security_alerts_context, security_alerts.triggered_at AS security_alerts_triggered_at, security_alerts.acknowledged_at AS security_alerts_acknowledged_at, security_alerts.resolved_at AS security_alerts_resolved_at, security_alerts.resolved_by AS security_alerts_resolved_by, security_alerts.incident_id AS security_alerts_incident_id 
+orbe_backend  | FROM security_alerts 
+orbe_backend  | WHERE security_alerts.severity = %(severity_1)s AND security_alerts.status = %(status_1)s AND security_alerts.triggered_at <= %(triggered_at_1)s]
+orbe_backend  | [parameters: {'severity_1': 'CRITICAL', 'status_1': 'open', 'triggered_at_1': datetime.datetime(2026, 9, 28, 9, 20, 37, 765506, tzinfo=datetime.timezone.utc)}]
+orbe_backend  | (Background on this error at: https://sqlalche.me/e/20/9h9h)
+orbe_backend  | 2026-09-28 09:50:37,767 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-09-28 09:55:37 UTC)" executed successfully
+orbe_backend  | INFO:     172.18.0.1:39196 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:39212 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:48874 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:48890 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:38764 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+orbe_backend  | INFO:     172.18.0.1:38766 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+=== SPLIT ===
+inho_backend  | 2026-09-28 01:50:44,391 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 02:04:44 UTC)" executed successfully
+inho_backend  | 2026-09-28 02:04:44,342 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 02:18:44 UTC)" (scheduled at 2026-09-28 02:04:44.341721+00:00)
+inho_backend  | 2026-09-28 02:04:44,456 | INFO | httpx | HTTP Request: GET https://inho.orbesystems.com.br/api/health "HTTP/1.1 404 Not Found"
+inho_backend  | 2026-09-28 02:04:44,457 | WARNING | keep_alive | [KeepAlive] ⚠️  Unexpected status → 404
+inho_backend  | 2026-09-28 02:04:44,458 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 02:18:44 UTC)" executed successfully
+inho_backend  | 2026-09-28 02:18:44,341 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 02:32:44 UTC)" (scheduled at 2026-09-28 02:18:44.341721+00:00)
+inho_backend  | 2026-09-28 02:18:44,466 | INFO | httpx | HTTP Request: GET https://inho.orbesystems.com.br/api/health "HTTP/1.1 404 Not Found"
+inho_backend  | 2026-09-28 02:18:44,467 | WARNING | keep_alive | [KeepAlive] ⚠️  Unexpected status → 404
+inho_backend  | 2026-09-28 02:18:44,468 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 02:32:44 UTC)" executed successfully
+inho_backend  | 2026-09-28 02:32:44,342 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 02:46:44 UTC)" (scheduled at 2026-09-28 02:32:44.341721+00:00)
+inho_backend  | 2026-09-28 02:32:44,490 | INFO | httpx | HTTP Request: GET https://inho.orbesystems.com.br/api/health "HTTP/1.1 404 Not Found"
+inho_backend  | 2026-09-28 02:32:44,491 | WARNING | keep_alive | [KeepAlive] ⚠️  Unexpected status → 404
+inho_backend  | 2026-09-28 02:32:44,491 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 02:46:44 UTC)" executed successfully
+inho_backend  | 2026-09-28 02:46:44,341 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 03:00:44 UTC)" (scheduled at 2026-09-28 02:46:44.341721+00:00)
+inho_backend  | 2026-09-28 02:46:44,450 | INFO | httpx | HTTP Request: GET https://inho.orbesystems.com.br/api/health "HTTP/1.1 404 Not Found"
+inho_backend  | 2026-09-28 02:46:44,451 | WARNING | keep_alive | [KeepAlive] ⚠️  Unexpected status → 404
+inho_backend  | 2026-09-28 02:46:44,452 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 03:00:44 UTC)" executed successfully
+inho_backend  | 2026-09-28 03:00:44,341 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 03:14:44 UTC)" (scheduled at 2026-09-28 03:00:44.341721+00:00)
+inho_backend  | 2026-09-28 03:00:44,498 | INFO | httpx | HTTP Request: GET https://inho.orbesystems.com.br/api/health "HTTP/1.1 404 Not Found"
+inho_backend  | 2026-09-28 03:00:44,499 | WARNING | keep_alive | [KeepAlive] ⚠️  Unexpected status → 404
+inho_backend  | 2026-09-28 03:00:44,499 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 03:14:44 UTC)" executed successfully
+inho_backend  | 2026-09-28 03:14:44,342 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 03:28:44 UTC)" (scheduled at 2026-09-28 03:14:44.341721+00:00)
+inho_backend  | 2026-09-28 03:14:44,492 | INFO | httpx | HTTP Request: GET https://inho.orbesystems.com.br/api/health "HTTP/1.1 404 Not Found"
+inho_backend  | 2026-09-28 03:14:44,493 | WARNING | keep_alive | [KeepAlive] ⚠️  Unexpected status → 404
+inho_backend  | 2026-09-28 03:14:44,494 | INFO | apscheduler.executors.default | Job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28 03:28:44 UTC)" executed successfully
+inho_backend  | 2026-09-28 03:28:44,341 | INFO | apscheduler.executors.default | Running job "_ping (trigger: interval[0:14:00], next run at: 2026-09-28--output truncated--
+
+---ERRORS---
+
