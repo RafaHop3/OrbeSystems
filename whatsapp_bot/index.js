@@ -89,7 +89,13 @@ async function connectToWhatsApp() {
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect.error)?.output?.statusCode !== DisconnectReason.loggedOut;
             console.log('Conexão fechada. Reconectar:', shouldReconnect);
-            if (shouldReconnect) connectToWhatsApp();
+            if (!shouldReconnect) {
+                console.log("Deslogado do WhatsApp. Apagando auth_info_baileys...");
+                try { fs.rmSync('auth_info_baileys', { recursive: true, force: true }); } catch (e) { }
+                setTimeout(connectToWhatsApp, 2000);
+            } else {
+                connectToWhatsApp();
+            }
         } else if (connection === 'open') {
             console.log('Conectado ao WhatsApp com sucesso!');
             isConnected = true;
