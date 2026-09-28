@@ -47,18 +47,24 @@ async def get_current_user(
          raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Acesso invalido")
 
     user_id = payload.get("sub")
+    is_uuid = False
     if isinstance(user_id, str):
         try:
             uuid_val = uuid.UUID(user_id)
+            is_uuid = True
         except ValueError:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="ID de usuario invalido (UUID esperado)")
+            is_uuid = False
 
-    query = select(User).where(cast(User.id, String) == str(user_id))
+    if is_uuid:
+        query = select(User).where(cast(User.id, String) == str(user_id))
+    else:
+        query = select(User).where(User.email == str(user_id))
+        
     result = await db.execute(query)
     user = result.scalar_one_or_none()
 
     if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario nao encontrado")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario nao encontrado ou token legado expirado")
     
     return user
 

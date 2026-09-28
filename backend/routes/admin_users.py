@@ -35,6 +35,7 @@ class CreateUserSchema(BaseModel):
     email: EmailStr
     password: str
     role: str = SystemRole.ORBE_OPERATOR
+    business_id: str | None = None
 
 # Whitelist of trusted proxy IPs (Cloudflare, Vercel, etc.)
 TRUSTED_PROXIES = {
@@ -147,6 +148,7 @@ async def create_user(
 
     # Create user
     from security.auth import get_password_hash
+    from sqlalchemy import text
     try:
         user = User(
             email=data.email,
@@ -157,6 +159,16 @@ async def create_user(
         db.add(user)
         db.commit()
         db.refresh(user)
+
+        # Inject business segmentation if applicable
+        if data.business_id and data.role in (SystemRole.INHO_ADMIN, SystemRole.INHO_OPERATOR):
+            db.execute(
+                text("INSERT INTO business_operators (id, business_id, user_id, created_at) "
+                     "VALUES (gen_random_uuid(), :business_id, :user_id, now())"),
+                {"business_id": data.business_id, "user_id": user.id}
+            )
+            db.commit()
+
     except Exception as e:
         db.rollback()
         admin_logger.error(f"Error creating user: {e}")
