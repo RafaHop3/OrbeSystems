@@ -30,7 +30,7 @@ const sites = [
     {
         name: 'INHO Business',
         tagline: 'ERP Enterprise · Gestão & Cobranças PIX + WhatsApp',
-        url: process.env.NEXT_PUBLIC_INHO_URL ? `${process.env.NEXT_PUBLIC_INHO_URL}/login` : 'https://inho.orbesystems.com.br/login',
+        url: 'https://inho.orbesystems.com.br/login',
         image: '/hero_inho_business.png',
         accent: '#a78bfa',
         accentBg: 'rgba(167, 139, 250, 0.08)',
