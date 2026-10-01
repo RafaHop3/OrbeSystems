@@ -7,6 +7,7 @@ import FeaturedSitesSection from '@/components/FeaturedSitesSection';
 import JovemPanoHero from '@/components/JovemPanoHero';
 import VoidFieldPromo from '@/components/VoidFieldPromo';
 import OrbeMusicHero from '@/components/OrbeMusicHero';
+import MusicDownloaderHero from '@/components/MusicDownloaderHero';
 import InhoPromo from '@/components/InhoPromo';
 import dynamic from 'next/dynamic';
 
@@ -23,6 +24,7 @@ export default function HomePage() {
       <Header />
       <Skiper30 />
       <OrbeMusicHero />
+      <MusicDownloaderHero />
       <VoidFieldPromo />
       <InhoPromo />
       <ScrollNarrativeEngine>

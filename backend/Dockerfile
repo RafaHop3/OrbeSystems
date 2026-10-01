@@ -36,5 +36,5 @@ USER appuser
 
 EXPOSE 8000
 
-# Use uvicorn; Mangum is only active on AWS Lambda
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+# Use uvicorn; Mangum is only active on AWS Lambda (or Serverless framework mapping)
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:=8000} --workers 2"]

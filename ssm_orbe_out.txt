@@ -1,18 +1,45 @@
 Deploying Updated Orbe Backend from ECR...
 No local changes to save
-HEAD is now at e95769b chore(security): auto-update SBOM [skip ci]
-orbe_backend
+HEAD is now at 8b55ffa chore(security): auto-update SBOM [skip ci]
+Login Succeeded
 Orbe Backend build and restart complete.
 
 ----------ERROR-------
 From https://github.com/RafaHop3/OrbeSystems
  * branch            main       -> FETCH_HEAD
-time="2026-09-10T21:49:16Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
-time="2026-09-10T21:49:16Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+Error response from daemon: No such container: orbe_backend
+time="2026-09-28T17:01:04Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+time="2026-09-28T17:01:05Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
 No stopped containers
-time="2026-09-10T21:49:16Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
-time="2026-09-10T21:49:16Z" level=warning msg="Found orphan containers ([orbe_whatsapp]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
- Container orbe_backend  Creating
- Container orbe_backend  Created
- Container orbe_backend  Starting
- Container orbe_backend  Started
+
+WARNING! Your credentials are stored unencrypted in '/root/.docker/config.json'.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/go/credential-store/
+
+time="2026-09-28T17:01:08Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
+ backend Pulling 
+ 1e247c79677f Pulling fs layer 
+ 7ce8f1a1db8f Pulling fs layer 
+ 085992e40cc3 Pulling fs layer 
+ 787fb30629fb Pulling fs layer 
+ daff6f8ae2ef Pulling fs layer 
+ d8f8508ac2bb Pulling fs layer 
+ 6974ea499bae Pulling fs layer 
+ 605d2cb1fe61 Pulling fs layer 
+ 787fb30629fb Download complete 
+ 605d2cb1fe61 Download complete 
+ 1e247c79677f Download complete 
+ 7ce8f1a1db8f Download complete 
+ 085992e40cc3 Downloading [=====>                                             ]  3.146MB/30.78MB
+ daff6f8ae2ef Downloading [=======>                                           ]  2.097MB/14.45MB
+ d8f8508ac2bb Downloading [=>                                                 ]  1.049MB/51.81MB
+ 6974ea499bae Download complete 
+ 085992e40cc3 Downloading [======>                                            ]  4.194MB/30.78MB
+ daff6f8ae2ef Downloading [==============>                                    ]  4.194MB/14.45MB
+ d8f8508ac2bb Downloading [===>                                               ]  3.146MB/51.81MB
+ 085992e40cc3 Downloading [===============>                                   ]  9.437MB/30.78MB
+ daff6f8ae2ef Downloading [=============================>                     ]  8.389MB/14.45MB
+ d8f8508ac2bb Downloading [========>                                          ]  8.389MB/51.81MB
+ 085992e40cc3 Downloading [=========================>                         ]  15.73MB/30.78MB
+ daff6f8ae
+---Error truncated----

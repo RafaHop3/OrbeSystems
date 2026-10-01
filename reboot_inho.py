@@ -3,11 +3,19 @@ import time
 
 ssm = boto3.client('ssm', region_name='us-east-1')
 instance_id = "i-058e26140671b3254"
+
+commands = [
+    "cd /home/ubuntu/OrbeSystems",
+    "docker-compose -f ec2_compose.yml restart inho_backend",
+    "echo 'INHO Backend restarted successfully!'"
+]
+
 response = ssm.send_command(
     InstanceIds=[instance_id],
     DocumentName="AWS-RunShellScript",
-    Parameters={'commands': ["docker exec inho_backend env"]}
+    Parameters={'commands': commands}
 )
+
 command_id = response['Command']['CommandId']
 
 while True:

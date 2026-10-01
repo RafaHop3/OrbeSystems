@@ -11,6 +11,7 @@ commands = [
     "docker rm -f orbe_backend || true",
     "docker-compose -f ec2_compose.yml stop backend",
     "docker-compose -f ec2_compose.yml rm -f backend",
+    "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 982534388133.dkr.ecr.us-east-1.amazonaws.com",
     "docker-compose -f ec2_compose.yml up -d --no-deps --force-recreate backend",
     "echo 'Orbe Backend build and restart complete.'"
 ]

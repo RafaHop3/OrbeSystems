@@ -3,11 +3,17 @@ import time
 
 ssm = boto3.client('ssm', region_name='us-east-1')
 instance_id = "i-058e26140671b3254"
+
+commands = [
+    "docker logs --tail 30 orbe_whatsapp"
+]
+
 response = ssm.send_command(
     InstanceIds=[instance_id],
     DocumentName="AWS-RunShellScript",
-    Parameters={'commands': ["docker exec inho_backend env"]}
+    Parameters={'commands': commands}
 )
+
 command_id = response['Command']['CommandId']
 
 while True:
@@ -17,5 +23,7 @@ while True:
     status = out['CommandInvocations'][0]['Status']
     if status in ['Pending', 'InProgress']: continue
     
-    print(out['CommandInvocations'][0]['CommandPlugins'][0].get('Output', ''))
+    with open('wa_proxy_logs.txt', 'w') as f:
+        f.write(out['CommandInvocations'][0]['CommandPlugins'][0].get('Output', ''))
+    print("Saved to wa_proxy_logs.txt")
     break

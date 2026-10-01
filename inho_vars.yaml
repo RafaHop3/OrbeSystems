@@ -1,0 +1,11 @@
+APP_ENV: "production"
+DEBUG: "False"
+SECRET_KEY: "inho_dev_secret_change_in_production_use_openssl_rand_hex_32"
+ALGORITHM: "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+REFRESH_TOKEN_EXPIRE_DAYS: "7"
+DATABASE_URL: "postgresql://postgres.bjidrhoniciczqkhazqv:Muhammadalivsroyjonesjr%23Ju.130798@aws-1-us-west-2.pooler.supabase.com:6543/postgres"
+ALLOWED_ORIGINS: '["https://orbesystems.com.br", "https://inho.orbesystems.com.br", "http://localhost:3000"]'
+RATE_LIMIT_PER_MINUTE: "60"
+RATE_LIMIT_AUTH_PER_MINUTE: "10"
+KEEP_ALIVE_ENABLED: "False"

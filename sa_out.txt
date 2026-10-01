@@ -1,0 +1,42 @@
+STDOUT:
+2026-09-28 15:18:46,316 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2026-09-28 15:18:46,316 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-28 15:18:46,981 INFO sqlalchemy.engine.Engine select current_schema()
+2026-09-28 15:18:46,981 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-28 15:18:48,167 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2026-09-28 15:18:48,167 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-09-28 15:18:48,832 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-09-28 15:18:48,870 INFO sqlalchemy.engine.Engine SELECT public.users.id, public.users.email, public.users.password_hash, public.users.role, public.users.is_email_verified, public.users.subscription_status, public.users.created_at 
+FROM public.users 
+WHERE public.users.email = $1::VARCHAR
+2026-09-28 15:18:48,870 INFO sqlalchemy.engine.Engine [generated in 0.00024s] ('qa1@orbesystems.com.br',)
+SUCCESS! User Found: qa1@orbesystems.com.br Role: operator
+2026-09-28 15:18:49,536 INFO sqlalchemy.engine.Engine SELECT email, role FROM public.users WHERE email = 'qa1@orbesystems.com.br'
+2026-09-28 15:18:49,536 INFO sqlalchemy.engine.Engine [generated in 0.00021s] ()
+RAW SQL RESULT: ('qa1@orbesystems.com.br', 'operator')
+2026-09-28 15:18:49,978 INFO sqlalchemy.engine.Engine ROLLBACK
+
+STDERR:
+Fatal error on SSL transport
+protocol: <asyncio.sslproto.SSLProtocol object at 0x000001CE8581D390>
+transport: <_ProactorSocketTransport fd=672 read=<_OverlappedFuture cancelled>>
+Traceback (most recent call last):
+  File "D:\PY3\lib\asyncio\sslproto.py", line 684, in _process_write_backlog
+    self._transport.write(chunk)
+  File "D:\PY3\lib\asyncio\proactor_events.py", line 361, in write
+    self._loop_writing(data=bytes(data))
+  File "D:\PY3\lib\asyncio\proactor_events.py", line 397, in _loop_writing
+    self._write_fut = self._loop._proactor.send(self._sock, data)
+AttributeError: 'NoneType' object has no attribute 'send'
+Exception ignored in: <function _SSLProtocolTransport.__del__ at 0x000001CE81F15AB0>
+Traceback (most recent call last):
+  File "D:\PY3\lib\asyncio\sslproto.py", line 321, in __del__
+  File "D:\PY3\lib\asyncio\sslproto.py", line 316, in close
+  File "D:\PY3\lib\asyncio\sslproto.py", line 593, in _start_shutdown
+  File "D:\PY3\lib\asyncio\sslproto.py", line 598, in _write_appdata
+  File "D:\PY3\lib\asyncio\sslproto.py", line 706, in _process_write_backlog
+  File "D:\PY3\lib\asyncio\sslproto.py", line 720, in _fatal_error
+  File "D:\PY3\lib\asyncio\proactor_events.py", line 151, in _force_close
+  File "D:\PY3\lib\asyncio\base_events.py", line 745, in call_soon
+  File "D:\PY3\lib\asyncio\base_events.py", line 510, in _check_closed
+RuntimeError: Event loop is closed
