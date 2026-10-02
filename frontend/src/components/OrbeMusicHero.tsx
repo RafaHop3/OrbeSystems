@@ -161,9 +161,9 @@ export default function OrbeMusicHero() {
                         <Activity size={16} className="animate-pulse" /> Advanced Audio Engine (Beta)
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-bold font-grotesk text-white leading-tight drop-shadow-2xl">
+                    <h1 className="text-5xl md:text-7xl font-bold font-tilt-neon text-white leading-tight drop-shadow-2xl">
                         Bem-vindo ao <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-indigo-400 animate-gradient-x">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 animate-gradient-x text-shimmer" style={{ textShadow: "0 0 15px rgba(0, 255, 245, 0.4)" }}>
                             Orbe Music
                         </span>
                     </h1>
@@ -211,7 +211,7 @@ export default function OrbeMusicHero() {
 
                         {/* Informações da Ferramenta */}
                         <div className="relative z-10 space-y-2 bg-black/60 p-4 rounded-xl border border-neon-cyan/20 backdrop-blur-md transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                            <h3 className="font-grotesk text-xl text-white font-bold tracking-wide">Motor de Áudio Integrado</h3>
+                            <h3 className="font-tilt-neon tracking-widest text-xl text-neon-cyan font-bold" style={{ textShadow: '0 0 10px rgba(0, 255, 245, 0.6)' }}>Motor de Áudio Integrado</h3>
                             <p className="text-slate-300 text-sm leading-relaxed">
                                 Crie batidas, aplique efeitos e renderize sons complexos direto no seu navegador sem instalar nada.
                             </p>

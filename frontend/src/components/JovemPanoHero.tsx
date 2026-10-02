@@ -24,7 +24,7 @@ export default function JovemPanoHero() {
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-20">
                 <div className="text-center translate-y-[-80px] scale-[1.2]">
                     <h1
-                        className="text-6xl md:text-8xl font-cinzel font-bold text-transparent bg-clip-text bg-gradient-to-br from-neon-cyan via-blue-400 to-purple-600 animate-pulse"
+                        className="text-6xl md:text-8xl font-tilt-neon font-bold text-transparent bg-clip-text bg-gradient-to-br from-neon-cyan via-blue-400 to-purple-600 animate-pulse"
                         style={{ filter: "drop-shadow(0 0 30px rgba(0, 242, 254, 0.9))" }} // Using robust dropshadow for neon effect
                     >
                         JOVEM PANO
@@ -57,7 +57,7 @@ export default function JovemPanoHero() {
             </div>
 
             {/* Terminal Scanline overlay */}
-            <div className="absolute inset-0 pointer-events-none z-40 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-40 mix-blend-overlay group-hover:opacity-70 transition-opacity" />
+            <div className="absolute inset-0 pointer-events-none z-40 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(0,255,255,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_4px,3px_100%] opacity-40 mix-blend-overlay group-hover:opacity-70 transition-opacity" />
         </a>
     );
 }

@@ -21,9 +21,9 @@ export default function InhoPromo() {
                         <Key size={14} /> Somente Premium · Orbe SSO Hub
                     </div>
 
-                    <h2 className="text-4xl md:text-5xl font-bold font-grotesk text-white leading-tight">
+                    <h2 className="text-4xl md:text-5xl font-bold font-tilt-neon text-white leading-tight mb-4">
                         Gestão Empresarial & Cobranças com <br />
-                        <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#a78bfa] via-purple-400 to-indigo-500">
+                        <span className="text-shimmer bg-clip-text text-transparent bg-gradient-to-r from-[#a78bfa] via-purple-400 to-[#00fff5]" style={{ textShadow: '0 0 20px rgba(167,139,250,0.5)' }}>
                             Orbe INHO Business
                         </span>
                     </h2>
@@ -57,7 +57,7 @@ export default function InhoPromo() {
                                 <Building2 className="text-purple-400" size={24} />
                             </div>
                             <div>
-                                <h3 className="font-grotesk font-bold text-white text-sm">1. Multi-Tenant Isolado</h3>
+                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>1. Multi-Tenant Isolado</h3>
                                 <p className="text-xs text-slate-400 mt-1">Até 3 matrizes/empresa com banco de dados segregado e seguro.</p>
                             </div>
                         </div>
@@ -70,7 +70,7 @@ export default function InhoPromo() {
                                 <QrCode className="text-amber-400 animate-pulse" size={24} />
                             </div>
                             <div>
-                                <h3 className="font-grotesk font-bold text-white text-sm">2. Cobranças PIX + WhatsApp</h3>
+                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>2. Cobranças PIX + WhatsApp</h3>
                                 <p className="text-xs text-slate-400 mt-1">QR Code PIX instantâneo e lembretes automáticos em 1 clique.</p>
                             </div>
                         </div>
@@ -83,7 +83,7 @@ export default function InhoPromo() {
                                 <ShieldCheck className="text-emerald-400" size={24} />
                             </div>
                             <div>
-                                <h3 className="font-grotesk font-bold text-white text-sm">3. DRE Executivo & Auditoria</h3>
+                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>3. DRE Executivo & Auditoria</h3>
                                 <p className="text-xs text-slate-400 mt-1">Fluxo de caixa inteligente, relatórios PCO e logs de auditoria.</p>
                             </div>
                         </div>

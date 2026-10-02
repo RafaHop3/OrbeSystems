@@ -67,9 +67,9 @@ export default function MusicDownloaderHero() {
                         <Activity size={16} className="animate-pulse" /> YT Extract Protocol
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-bold font-grotesk text-white leading-tight drop-shadow-2xl">
+                    <h1 className="text-5xl md:text-7xl font-bold font-tilt-neon text-white leading-tight mb-4 drop-shadow-2xl">
                         Desbloqueie <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 animate-gradient-x">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400 animate-gradient-x text-shimmer">
                             Suas Tracks
                         </span>
                     </h1>
@@ -92,7 +92,7 @@ export default function MusicDownloaderHero() {
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-cyan-500/20 rounded-full blur-[60px] pointer-events-none"></div>
 
                         <div className="relative z-10 space-y-4">
-                            <h3 className="text-2xl font-bold text-white mb-2">YT MP3 Extractor</h3>
+                            <h3 className="text-2xl font-tilt-neon tracking-widest text-[#00fff5] mb-2 text-shimmer" style={{ textShadow: '0 0 10px #00fff5' }}>YT MP3 Extractor</h3>
                             <p className="text-sm text-slate-300">Acesse a aplicação dedicada para buscar artistas, pré-visualizar tracks e fazer o download de coleções completas em alta qualidade.</p>
 
                             <Link

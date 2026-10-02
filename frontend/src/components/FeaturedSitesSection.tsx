@@ -30,7 +30,7 @@ const sites = [
     {
         name: 'INHO Business',
         tagline: 'ERP Enterprise · Gestão & Cobranças PIX + WhatsApp',
-        url: 'https://inho.orbesystems.com.br/login',
+        url: 'https://inho.orbesystems.com.br',
         image: '/hero_inho_business.png',
         accent: '#a78bfa',
         accentBg: 'rgba(167, 139, 250, 0.08)',
@@ -74,9 +74,9 @@ const sites = [
         tagline: 'Portal de Notícias · Jornalismo Digital',
         url: 'https://jovempanonews.vercel.app/',
         image: '/featured-jovempanonews.png',
-        accent: '#ff453a',
-        accentBg: 'rgba(255, 69, 58, 0.08)',
-        accentBorder: 'rgba(255, 69, 58, 0.25)',
+        accent: '#f97316',
+        accentBg: 'rgba(249, 115, 22, 0.08)',
+        accentBorder: 'rgba(249, 115, 22, 0.25)',
         badge: '📰 News',
     },
     {
@@ -95,9 +95,9 @@ const sites = [
         tagline: 'Segurança Cibernética · Monitoramento 24/7',
         url: '/ferramentas-premium/orbe-knight',
         image: '/featured-orbeknight.png',
-        accent: '#ef4444',
-        accentBg: 'rgba(239, 68, 68, 0.08)',
-        accentBorder: 'rgba(239, 68, 68, 0.35)',
+        accent: '#3b82f6',
+        accentBg: 'rgba(59, 130, 246, 0.08)',
+        accentBorder: 'rgba(59, 130, 246, 0.35)',
         badge: '🛡️ Security',
         isAnimated: true,
     },
@@ -151,7 +151,7 @@ export default function FeaturedSitesSection() {
                 <p className="text-[10px] uppercase tracking-[0.5em] text-neon-green/40 font-mono mb-3">
                     ◈ Ecossistema Orbe
                 </p>
-                <h2 className="font-cinzel text-2xl md:text-3xl font-semibold text-white/90 uppercase tracking-wider mb-3">
+                <h2 className="font-tilt-neon text-2xl md:text-3xl font-semibold text-white/90 uppercase mb-3 text-shimmer">
                     Sites em Destaque
                 </h2>
                 <div className="w-24 h-px bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent mx-auto" />
@@ -232,8 +232,8 @@ export default function FeaturedSitesSection() {
                         <div className="flex flex-col flex-1 p-4 gap-3">
                             <div>
                                 <h3
-                                    className="font-cinzel text-base font-semibold tracking-wide mb-1"
-                                    style={{ color: site.accent }}
+                                    className="font-tilt-neon text-base font-semibold tracking-wide mb-1"
+                                    style={{ color: site.accent, textShadow: `0 0 10px ${site.accent}` }}
                                 >
                                     {site.name}
                                 </h3>
