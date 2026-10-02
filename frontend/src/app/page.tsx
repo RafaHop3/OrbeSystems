@@ -8,6 +8,7 @@ import JovemPanoHero from '@/components/JovemPanoHero';
 import VoidFieldPromo from '@/components/VoidFieldPromo';
 import OrbeMusicHero from '@/components/OrbeMusicHero';
 import MusicDownloaderHero from '@/components/MusicDownloaderHero';
+import OrbeCleanerPromo from '@/components/OrbeCleanerPromo';
 import InhoPromo from '@/components/InhoPromo';
 import dynamic from 'next/dynamic';
 
@@ -25,6 +26,7 @@ export default function HomePage() {
       <Skiper30 />
       <OrbeMusicHero />
       <MusicDownloaderHero />
+      <OrbeCleanerPromo />
       <VoidFieldPromo />
       <InhoPromo />
       <ScrollNarrativeEngine>
