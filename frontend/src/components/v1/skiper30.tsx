@@ -65,9 +65,9 @@ const Skiper30 = () => {
     return (
         <section ref={sectionRef} className="relative z-10 w-full bg-[#050505] text-[#c8d6e3] py-24">
             <div className="text-center mb-12 px-6">
-                <p className="text-xs font-mono uppercase tracking-widest text-[#00fff5]/50 mb-2">Portfólio</p>
-                <h2 className="text-3xl md:text-4xl font-bold text-white">
-                    Projetos em <span className="text-teal-400">Destaque</span>
+                <p className="text-xs font-mono uppercase tracking-widest text-neon-cyan mb-3 animate-pulse">Orbe Hub v2.0</p>
+                <h2 className="text-4xl md:text-6xl font-tilt-neon font-bold text-white leading-tight">
+                    Bem vindo a <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 text-shimmer" style={{ textShadow: "0 0 20px rgba(0, 255, 245, 0.4)" }}>OrbeSystems</span>
                 </h2>
             </div>
 
