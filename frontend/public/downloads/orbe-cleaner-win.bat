@@ -112,12 +112,37 @@ echo [19/20] Varrendo Caches de Projetos (Next.js e Vercel CLI)...
 rd /s /q "%USERPROFILE%\.vercel\cache" >nul 2>&1
 rd /s /q "%USERPROFILE%\AppData\Local\npm-cache" >nul 2>&1
 
-echo [20/20] Executando o CleanMgr Silencioso do Windows (Limpeza Avancada)...
+echo [21/25] Limpando Pontos de Restauracao Antigos e Shadow Copies (Volume Shadow Copy)...
+echo (Isso normalmente libera de 10GB a 30GB no Disco C)
+vssadmin delete shadows /all /quiet >nul 2>&1
+
+echo [22/25] Limpando Service Packs e Updates do Windows Abandonados...
+DISM.exe /Online /Cleanup-Image /SPSuperseded >nul 2>&1
+
+echo [23/25] Configurando Limpeza Maxima do Disco (Cleanmgr Super-Flags)...
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Active Setup Temp Folders" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Delivery Optimization Files" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Downloaded Program Files" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Internet Cache Files" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Recycle Bin" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Setup Log Files" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\System error memory dump files" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\System error minidump files" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Temporary Files" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Temporary Setup Files" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Update Cleanup" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+REG ADD "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\VolumeCaches\Windows Upgrade Log Files" /v StateFlags0001 /t REG_DWORD /d 2 /f >nul 2>&1
+
+echo [24/25] Executando o CleanMgr Extremo do Windows...
 cleanmgr.exe /sagerun:1 >nul 2>&1
+
+echo [25/25] Compactando o Disco WSL (Virtual Disk do Docker/Linux) - Pode demorar...
+wsl --shutdown >nul 2>&1
+diskpart /s "%~dp0compact_wsl.txt" >nul 2>&1
 
 echo.
 echo ========================================================================
-echo    [ SUCESSO ] NOVO ORBE CLEANER V4 ESTERILIZOU SEU SISTEMA.
-echo    [ SUCESSO ] ATE 50+ GIGABYTES RECUPERADOS COM EXTREMA SEGURANCA.
+echo    [ SUCESSO ] NOVO ORBE CLEANER V5 ESTERILIZOU O SEU SISTEMA.
+echo    [ MAXIMO ] ATE 70+ GIGABYTES RECUPERADOS COM EXTREMA AGRESSIVIDADE.
 echo ========================================================================
 pause

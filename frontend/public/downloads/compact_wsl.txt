@@ -1,0 +1,4 @@
+select vdisk file="%LOCALAPPDATA%\Docker\wsl\data\ext4.vhdx"
+attach vdisk readonly
+compact vdisk
+detach vdisk
