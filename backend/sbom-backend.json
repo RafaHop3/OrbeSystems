@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:c45037f0-f7d4-4c74-b7f3-4ca55c363938",
+  "serialNumber": "urn:uuid:2d9aa6d5-42b0-41ba-9147-c0833747b2be",
   "metadata": {
-    "timestamp": "2026-10-02T18:17:45.270104+00:00",
+    "timestamp": "2026-10-08T18:03:39.959334+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -435,8 +435,8 @@
     {
       "type": "library",
       "name": "cloudinary",
-      "version": "1.46.2",
-      "purl": "pkg:pypi/cloudinary@1.46.2",
+      "version": "1.46.3",
+      "purl": "pkg:pypi/cloudinary@1.46.3",
       "licenses": [
         {
           "license": {
@@ -453,7 +453,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "3562bc72ed98fda2172d9dc73e720abbd9d2798d7ee0e5f47d66a0bd00e644d7"
+          "content": "8cf68793d7567f9e1d1dee04c57cf92cc2120001a6132c1423fdfb602aacca33"
         }
       ]
     },
@@ -925,8 +925,8 @@
     {
       "type": "library",
       "name": "MarkupSafe",
-      "version": "3.0.3",
-      "purl": "pkg:pypi/markupsafe@3.0.3",
+      "version": "3.0.4",
+      "purl": "pkg:pypi/markupsafe@3.0.4",
       "licenses": [
         {
           "license": {
@@ -938,7 +938,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "50e178a8c66290a5f1f04d6e83767292bb73a8d0a215f381d4a334eaf82c4ae4"
+          "content": "2075a4bc6a8794a5ca6d902c9041877e19217f2a56f1307c2379db7ff54506f7"
         }
       ]
     },
@@ -1015,8 +1015,8 @@
     {
       "type": "library",
       "name": "orjson",
-      "version": "3.12.0",
-      "purl": "pkg:pypi/orjson@3.12.0",
+      "version": "3.13.0",
+      "purl": "pkg:pypi/orjson@3.13.0",
       "licenses": [
         {
           "license": {
@@ -1028,7 +1028,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "df4b998ffa4c30b492b88be6556668a07ff2dc7043ad3f48ffdb0f14b2fcf883"
+          "content": "2de3c8d763bf38e6dc38e7680d42e3cc3689355e678a2567325fd1685df628d8"
         }
       ]
     },
@@ -1180,8 +1180,8 @@
     {
       "type": "library",
       "name": "pycparser",
-      "version": "3.0",
-      "purl": "pkg:pypi/pycparser@3.0",
+      "version": "3.1",
+      "purl": "pkg:pypi/pycparser@3.1",
       "licenses": [
         {
           "license": {
@@ -1198,7 +1198,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "01ca2a9c19624e265ddb2fa363bf73675ec3a4ccce6d93b14beda4481b99621a"
+          "content": "fb39f24b0798fdb74b18825104c39dcd0d8e36aaa5313834e9c6d14b230d034e"
         }
       ]
     },
@@ -1500,8 +1500,8 @@
     {
       "type": "library",
       "name": "rich-toolkit",
-      "version": "0.20.5",
-      "purl": "pkg:pypi/rich-toolkit@0.20.5",
+      "version": "0.20.6",
+      "purl": "pkg:pypi/rich-toolkit@0.20.6",
       "licenses": [
         {
           "license": {
@@ -1513,7 +1513,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "1506a4047db2f13887697cbb739898cb91c3ffb65c2a618a45aa097cd8debfc5"
+          "content": "3f5629c663349a52afc60c2c77f4fab0b421e1cde37f24b72533517b9b7166e6"
         }
       ]
     },
@@ -1690,8 +1690,8 @@
     {
       "type": "library",
       "name": "SQLAlchemy",
-      "version": "2.1.2",
-      "purl": "pkg:pypi/sqlalchemy@2.1.2",
+      "version": "2.1.4",
+      "purl": "pkg:pypi/sqlalchemy@2.1.4",
       "licenses": [
         {
           "license": {
@@ -1708,7 +1708,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "faab9d04aaee4c34d26149b4c6d4a9901bdce186d5e8bcbbf5c9535b2f600e9a"
+          "content": "086d045cb88e43ec64b62abc7e94c82143a625cdccdafd9a6b852294824d369f"
         }
       ]
     },
@@ -1785,8 +1785,8 @@
     {
       "type": "library",
       "name": "typer",
-      "version": "0.27.2",
-      "purl": "pkg:pypi/typer@0.27.2",
+      "version": "0.27.3",
+      "purl": "pkg:pypi/typer@0.27.3",
       "licenses": [
         {
           "license": {
@@ -1803,7 +1803,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "a40c1d23d4586b62b4cfb08b0d127f0bb15f5b4dc2eb797e37bbe19d6c1c7257"
+          "content": "7276d2ce305251d9f1c0769c35f5c9f4fdce814fccfec6dbf3b30647f02533b5"
         }
       ]
     },
@@ -1965,8 +1965,8 @@
     {
       "type": "library",
       "name": "websockets",
-      "version": "17.1",
-      "purl": "pkg:pypi/websockets@17.1",
+      "version": "17.2",
+      "purl": "pkg:pypi/websockets@17.2",
       "licenses": [
         {
           "license": {
@@ -1983,7 +1983,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "119886434f4a2a76d4c3c521302390d087435f84fab419dbf8d965ad5fb146a9"
+          "content": "88f0777d2b78dfedb7b9c590877fb79c797bafdf0ebe75517481ba8c015a395d"
         }
       ]
     },
