@@ -28,7 +28,7 @@ export default function AdminLogin() {
     while (!success) {
       attempts++;
       try {
-        const res = await fetch(`${PROXY_BASE_URL}/api/v1/auth/login`, {
+        const res = await fetch(`${PROXY_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -99,13 +99,13 @@ export default function AdminLogin() {
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
             <label className="text-xs uppercase text-neon-green/80 flex justify-between">
-              <span>Email</span>
+              <span>Username / Email</span>
             </label>
             <input
-              type="email"
+              type="text"
               autoFocus
               className="w-full bg-transparent border-b border-neon-green/40 px-0 py-2 text-neon-green focus:outline-none focus:border-neon-green focus:shadow-[0_1px_10px_rgba(57,255,20,0.3)] transition-all placeholder:text-neon-green/20"
-              placeholder="admin@inho.io"
+              placeholder="rafael_admin or admin@inho.io"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={loading}
