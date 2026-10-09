@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:1b4d0d07-4e87-41e2-9f45-3d404f210803",
+  "serialNumber": "urn:uuid:033f2889-1a14-41ab-9909-d80665151338",
   "metadata": {
-    "timestamp": "2026-10-09T11:06:01.236879+00:00",
+    "timestamp": "2026-10-09T13:36:27.768472+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -1129,13 +1129,13 @@
     },
     {
       "type": "library",
-      "name": "psycopg2-binary",
-      "version": "2.9.13",
-      "purl": "pkg:pypi/psycopg2-binary@2.9.13",
+      "name": "psycopg",
+      "version": "3.3.6",
+      "purl": "pkg:pypi/psycopg@3.3.6",
       "licenses": [
         {
           "license": {
-            "id": "LGPL with exceptions"
+            "id": "Unknown"
           }
         }
       ],
@@ -1148,7 +1148,32 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "274f081efb83afbbcf000b89f7ec1af1bac70981606096c4e6e14101904680de"
+          "content": "7c0b8da12596d61d0ff0aee69248d97009b404a904c2925c01d7f4f24c668f37"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "psycopg-binary",
+      "version": "3.3.6",
+      "purl": "pkg:pypi/psycopg-binary@3.3.6",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unknown"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://psycopg.org/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "b16e366f5bc02f5ba6b6f6e03390e2e8fc00de6e062d9ff65742dec8d7e6dace"
         }
       ]
     },
@@ -1180,8 +1205,8 @@
     {
       "type": "library",
       "name": "pycparser",
-      "version": "3.1",
-      "purl": "pkg:pypi/pycparser@3.1",
+      "version": "3.11",
+      "purl": "pkg:pypi/pycparser@3.11",
       "licenses": [
         {
           "license": {
@@ -1198,7 +1223,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "fb39f24b0798fdb74b18825104c39dcd0d8e36aaa5313834e9c6d14b230d034e"
+          "content": "dc2de4b5d404b9ae40c0d1842286e1eedab13e9952687cfcaac82ec0be384946"
         }
       ]
     },
@@ -2039,10 +2064,10 @@
     }
   ],
   "_orbe_meta": {
-    "total_dependencies": 85,
+    "total_dependencies": 86,
     "license_summary": {
       "Apache 2": 5,
-      "Unknown": 30,
+      "Unknown": 32,
       "MIT": 15,
       "MIT License": 3,
       "Apache-2.0": 5,
@@ -2052,7 +2077,6 @@
       "": 14,
       "Unlicense": 1,
       "BSD": 1,
-      "LGPL with exceptions": 1,
       "BSD-2-Clause": 1,
       "Dual License": 1,
       "BSD-3-Clause": 1,
@@ -2060,8 +2084,7 @@
       "MIT OR Apache-2.0": 1
     },
     "gpl_flagged": [
-      "chardet@3.0.4 (LGPL)",
-      "psycopg2-binary@2.9.13 (LGPL with exceptions)"
+      "chardet@3.0.4 (LGPL)"
     ],
     "requires_review": true
   }
