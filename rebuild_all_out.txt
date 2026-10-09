@@ -1,68 +1,53 @@
-No local changes to save
-HEAD is now at 23fc61f fix(prod): enforce psycopg2 DB dialect to resolve 502 startup crash
+Saved working directory and index state WIP on main: cc7f69b chore(security): auto-update SBOM [skip ci]
+HEAD is now at a0767b0 feat: inho user password change via Orbe Admin
 #0 building with "default" instance using docker driver
 
-#1 [backend internal] load build definition from Dockerfile
-#1 transferring dockerfile: 1.79kB 0.0s done
-#1 DONE 0.0s
+#1 [inho_backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.49kB 0.0s done
+#1 DONE 0.1s
 
 #2 [whatsapp internal] load build definition from Dockerfile
 #2 transferring dockerfile: 182B done
-#2 DONE 0.0s
+#2 DONE 0.1s
 
-#3 [inho_backend internal] load build definition from Dockerfile
-#3 transferring dockerfile: 1.48kB 0.0s done
-#3 DONE 0.0s
+#3 [backend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 1.83kB done
+#3 DONE 0.1s
 
-#4 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
-#4 ...
+#4 [backend internal] load metadata for public.ecr.aws/docker/library/python:3.11-slim
+#4 DONE 0.3s
 
 #5 [whatsapp internal] load metadata for docker.io/library/node:20-alpine
-#5 DONE 0.3s
+#5 ...
 
-#6 [whatsapp internal] load .dockerignore
-#6 transferring context: 2B done
-#6 DONE 0.0s
+#6 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
+#6 DONE 0.4s
 
-#7 [backend internal] load metadata for public.ecr.aws/docker/library/python:3.11-slim
-#7 DONE 0.3s
+#7 [backend internal] load .dockerignore
+#7 transferring context: 327B done
+#7 DONE 0.1s
 
-#8 [whatsapp 1/6] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
-#8 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 0.0s done
+#8 [inho_backend internal] load .dockerignore
+#8 transferring context: 396B done
 #8 DONE 0.0s
 
-#9 [whatsapp internal] load build context
-#9 transfe
+#9 [backend internal] load build context
+#9 DONE 0.0s
+
+#10 [backend builder 1/4] FROM public.ecr.aws/docker/library/python:3.11-slim@sha256:0dd364ba7e10242f07755449e3a3d0
 ---Output truncated---
 ----------ERROR-------
-From https://github.com/RafaHop3/OrbeSystems
-   4354d56..23fc61f  main       -> origin/main
- Container inho_backend  Stopping
- Container orbe_whatsapp  Stopping
- Container orbe_backend  Stopping
- Container orbe_backend  Stopped
- Container orbe_backend  Removing
- Container orbe_backend  Removed
- Container orbe_postgres  Stopping
- Container orbe_redis  Stopping
- Container orbe_postgres  Stopped
- Container orbe_postgres  Removing
- Container orbe_postgres  Removed
- Container orbe_redis  Stopped
- Container orbe_redis  Removing
- Container orbe_redis  Removed
- Container orbe_whatsapp  Stopped
- Container orbe_whatsapp  Removing
- Container inho_backend  Stopped
- Container inho_backend  Removing
- Container orbe_whatsapp  Removed
- Container inho_backend  Removed
- Network orbesystems_default  Removing
- Network orbesystems_default  Removed
-time="2026-09-28T11:27:11Z" level=warning msg="The \"dt2akEmXomjncqjFltAMMe3C44fxRrXfbL0NFCkvRH6JPR9UYWmXy\" variable is not set. Defaulting to a blank string."
-time="2026-09-28T11:27:11Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
- backend  Built
- inho_backend  Built
- whatsapp  Built
- Network orbesystems_default  Creati
+warning: unable to unlink 'inho_backend/temp_layer/certifi/__init__.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/certifi/__main__.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/certifi/core.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/certifi/tests/__init__.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/certifi/tests/test_certify.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/charset_normalizer/__init__.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/charset_normalizer/__main__.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/charset_normalizer/api.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/charset_normalizer/cd.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/charset_normalizer/cli/__init__.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/charset_normalizer/cli/__main__.py': Permission denied
+warning: unable to unlink 'inho_backend/temp_layer/charset_normalizer/constant.py': Permission denied
+warning: unable to unlink 'inho_backe
 ---Error truncated----
