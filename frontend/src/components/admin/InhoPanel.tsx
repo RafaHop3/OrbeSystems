@@ -15,6 +15,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
     const [passwordTarget, setPasswordTarget] = useState<string | null>(null);
     const [newPassword, setNewPassword] = useState('');
     const [updatingPassword, setUpdatingPassword] = useState(false);
+    const [actionError, setActionError] = useState<string | null>(null);
 
     // Orbe API is the master connector directly manipulating INHO DB
     const API_URL = '/api/proxy/api/admin/inho';
@@ -77,13 +78,12 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
             if (!res.ok) throw new Error('Falha ao atualizar permições do operador no DB');
 
             fetchUsers(); // Refresh silently
-        } catch (err) {
-            alert('Erro ao propagar elevação de painel');
+        } catch (err: any) {
+            setActionError(err.message || 'Erro ao propagar elevação de painel');
         }
     };
 
     const handleDelete = async (userId: string) => {
-        if (!confirm('DESEJA REALMENTE ANILIQUILAR ESTA CONTA DIRETAMENTE NO MASTER DB?')) return;
         const token = getOrbeToken();
         if (!token) return;
 
@@ -94,17 +94,18 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
             });
             if (!res.ok) {
                 const errorData = await res.json().catch(() => ({}));
-                throw new Error(errorData.detail || 'Falha ao deletar entidade');
+                throw new Error(errorData.detail || 'Falha ao deletar entidade (Constraint Database Hook)');
             }
             setUsers((prev: any[]) => prev.filter((u: any) => u.id !== userId));
+            setActionError('ENTIDADE ANILIQUILADA COM SUCESSO.');
         } catch (err: any) {
-            alert(err.message || 'Erro ao apagar entidade');
+            setActionError(err.message || 'Erro ao apagar entidade');
         }
     };
 
     const handlePasswordChange = async (userId: string) => {
         if (!newPassword || newPassword.length < 5) {
-            alert('A SENHA DEVE TER NO MÍNIMO 5 CARACTERES.'); return;
+            setActionError('A SENHA DEVE TER NO MÍNIMO 5 CARACTERES.'); return;
         }
         const token = getOrbeToken();
         if (!token) return;
@@ -120,11 +121,11 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
             });
             if (!res.ok) throw new Error('Falha ao atualizar a senha no DB');
 
-            alert('SENHA ATUALIZADA COM SUCESSO (NATIVO)');
+            setActionError('SENHA ATUALIZADA COM SUCESSO (NATIVO)');
             setPasswordTarget(null);
             setNewPassword('');
-        } catch (err) {
-            alert('Erro ao modificar senha mestre');
+        } catch (err: any) {
+            setActionError(err.message || 'Erro ao modificar senha mestre');
         } finally {
             setUpdatingPassword(false);
         }
@@ -132,7 +133,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
 
     const handleCreate = async () => {
         if (!form.email || !form.password || !form.full_name) {
-            alert('PREENCHA TODOS OS DADOS DA IDENTIDADE'); return;
+            setActionError('PREENCHA TODOS OS DADOS DA IDENTIDADE'); return;
         }
         const token = getOrbeToken();
         if (!token) return;
@@ -162,8 +163,9 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
             await fetchUsers();
             setShowCreateForm(false);
             setForm({ email: '', full_name: '', password: '', role: 'operator' });
+            setActionError('IDENTIDADE INJETADA AO MASTER DB.');
         } catch (err: any) {
-            alert(err.message);
+            setActionError(err.message);
         } finally {
             setCreating(false);
         }
@@ -206,6 +208,15 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                     )}
                 </div>
             </h2>
+
+            {actionError && (
+                <div className="flex items-center justify-between p-3 border border-yellow-500/30 bg-yellow-500/10 mb-4 animate-in slide-in-from-top-2">
+                    <span className="text-yellow-500 text-[10px] uppercase font-mono tracking-wider">{actionError}</span>
+                    <button onClick={() => setActionError(null)} className="text-yellow-500/60 hover:text-yellow-400">
+                        <X size={14} />
+                    </button>
+                </div>
+            )}
 
             {loading ? (
                 <div className="flex items-center gap-3 text-green-500/60 text-xs p-4 border border-green-500/20 bg-black/40">

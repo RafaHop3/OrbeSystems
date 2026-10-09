@@ -1,1 +1,71 @@
-document process failed unexpectedly: ipc messaging received timeout signal , check [ssm-document-worker]/[ssm-session-worker] log for crash reason
+No local changes to save
+HEAD is now at b6a9ff5 fix(backend): safely reject referential integrity constraints during INHO purge
+#0 building with "default" instance using docker driver
+
+#1 [whatsapp internal] load build definition from Dockerfile
+#1 transferring dockerfile: 182B 0.0s done
+#1 DONE 0.0s
+
+#2 [backend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.83kB 0.0s done
+#2 DONE 0.0s
+
+#3 [inho_backend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 1.49kB 0.0s done
+#3 DONE 0.0s
+
+#4 [whatsapp internal] load metadata for docker.io/library/node:20-alpine
+#4 DONE 0.1s
+
+#5 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
+#5 DONE 0.2s
+
+#6 [whatsapp 1/6] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
+#6 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 0.0s done
+#6 DONE 0.1s
+
+#7 [backend internal] load metadata for public.ecr.aws/docker/library/python:3.11-slim
+#7 DONE 0.2s
+
+#8 [whatsapp internal] load .dockerignore
+#8 transferring context: 2B done
+#8 DONE 0.0s
+
+#9 [backend internal] load .d
+---Output truncated---
+----------ERROR-------
+ Container inho_backend  Stopping
+ Container orbe_backend  Stopping
+ Container orbe_whatsapp  Stopping
+ Container orbe_whatsapp  Stopped
+ Container orbe_whatsapp  Removing
+ Container orbe_backend  Stopped
+ Container orbe_backend  Removing
+ Container inho_backend  Stopped
+ Container inho_backend  Removing
+ Container orbe_backend  Removed
+ Container orbe_redis  Stopping
+ Container orbe_postgres  Stopping
+ Container inho_backend  Removed
+ Container orbe_whatsapp  Removed
+ Container orbe_postgres  Stopped
+ Container orbe_postgres  Removing
+ Container orbe_redis  Stopped
+ Container orbe_redis  Removing
+ Container orbe_postgres  Removed
+ Container orbe_redis  Removed
+ Network orbesystems_default  Removing
+ Network orbesystems_default  Removed
+From https://github.com/RafaHop3/OrbeSystems
+   a476fb5..b6a9ff5  main       -> origin/main
+time="2026-10-09T18:10:36Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+ backend  Built
+ inho_backend  Built
+ whatsapp  Built
+ Network orbesystems_default  Creating
+ Network orbesystems_default  Error
+ Container inho_backend  Creating
+ Container orbe_postgres  Creating
+ Container orbe_whatsapp  Creating
+ Container orbe_re
+---Error truncated----
