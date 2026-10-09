@@ -22,8 +22,11 @@ class CreateInhoUserSchema(BaseModel):
     role: str = "operator"
     is_active: bool = True
 
+from typing import Optional
+
 class PatchInhoUserSchema(BaseModel):
-    role: str
+    role: Optional[str] = None
+    password: Optional[str] = None
 
 @router.get("/users")
 async def list_inho_users(
@@ -99,12 +102,29 @@ async def patch_inho_user(
     admin_email: str = Depends(get_current_admin_user),
     db: Session = Depends(get_inho_db)
 ):
-    update_query = text("UPDATE users SET role = :new_role WHERE id = :uid")
-    result = db.execute(update_query, {"new_role": data.role, "uid": user_id})
+    updates = []
+    params = {"uid": user_id}
+    
+    if data.role:
+        updates.append("role = :new_role")
+        params["new_role"] = data.role
+        
+    if data.password:
+        updates.append("password_hash = :pw")
+        params["pw"] = get_password_hash(data.password)
+        
+    if not updates:
+        raise HTTPException(status_code=400, detail="No updates provided")
+        
+    update_str = ", ".join(updates)
+    update_query = text(f"UPDATE users SET {update_str} WHERE id = :uid")
+    
+    result = db.execute(update_query, params)
     if result.rowcount == 0:
         raise HTTPException(status_code=404, detail="Usuario INHO nao encontrado na baselinie encapsulada")
     db.commit()
-    return {"status": "success", "message": f"Role updated to {data.role}"}
+    admin_logger.info(f"Admin {admin_email} encap-updated user {user_id}")
+    return {"status": "success", "message": "Updated successfully"}
 
 @router.delete("/users/{user_id}")
 async def delete_inho_user(

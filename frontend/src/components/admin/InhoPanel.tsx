@@ -12,6 +12,10 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
     const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'operator' });
     const [creating, setCreating] = useState(false);
 
+    const [passwordTarget, setPasswordTarget] = useState<string | null>(null);
+    const [newPassword, setNewPassword] = useState('');
+    const [updatingPassword, setUpdatingPassword] = useState(false);
+
     // Orbe API is the master connector directly manipulating INHO DB
     const API_URL = '/api/proxy/api/admin/inho';
 
@@ -95,6 +99,34 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
             setUsers((prev: any[]) => prev.filter((u: any) => u.id !== userId));
         } catch (err: any) {
             alert(err.message || 'Erro ao apagar entidade');
+        }
+    };
+
+    const handlePasswordChange = async (userId: string) => {
+        if (!newPassword || newPassword.length < 5) {
+            alert('A SENHA DEVE TER NO MÍNIMO 5 CARACTERES.'); return;
+        }
+        const token = getOrbeToken();
+        if (!token) return;
+        setUpdatingPassword(true);
+        try {
+            const res = await fetch(`${API_URL}/users/${userId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ password: newPassword })
+            });
+            if (!res.ok) throw new Error('Falha ao atualizar a senha no DB');
+
+            alert('SENHA ATUALIZADA COM SUCESSO (NATIVO)');
+            setPasswordTarget(null);
+            setNewPassword('');
+        } catch (err) {
+            alert('Erro ao modificar senha mestre');
+        } finally {
+            setUpdatingPassword(false);
         }
     };
 
@@ -250,6 +282,17 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                                     )}
                                     {currentUserRole === 'superadmin' && (
                                         <button
+                                            onClick={() => {
+                                                setPasswordTarget(passwordTarget === u.id ? null : u.id);
+                                                setNewPassword('');
+                                            }}
+                                            className="text-[9px] text-yellow-500 border border-yellow-500/20 px-3 py-1 hover:bg-yellow-500 hover:text-black transition-all uppercase"
+                                        >
+                                            SENHA
+                                        </button>
+                                    )}
+                                    {currentUserRole === 'superadmin' && (
+                                        <button
                                             onClick={() => handleDelete(u.id)}
                                             className="text-[9px] text-red-500 border border-red-500/20 px-3 py-1 hover:bg-red-500 hover:text-white transition-all uppercase"
                                         >
@@ -257,6 +300,24 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                                         </button>
                                     )}
                                 </div>
+
+                                {passwordTarget === u.id && (
+                                    <div className="flex items-center gap-2 mt-2 pt-2 border-t border-yellow-500/10">
+                                        <input
+                                            type="password" placeholder="NOVA SENHA"
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            className="flex-1 bg-black text-[9px] text-yellow-500/80 border border-yellow-500/20 px-2 py-1 focus:outline-none"
+                                        />
+                                        <button
+                                            onClick={() => handlePasswordChange(u.id)}
+                                            disabled={updatingPassword}
+                                            className="text-[9px] text-yellow-400 border border-yellow-400/40 bg-yellow-400/10 px-2 py-1 hover:bg-yellow-400 hover:text-black transition-all uppercase"
+                                        >
+                                            {updatingPassword ? '...' : 'ATUALIZAR'}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>

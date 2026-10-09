@@ -54,6 +54,30 @@ def _generate_mock_pix_code(invoice_id: uuid.UUID, amount: Decimal, customer_nam
     amt_str = f"{amount:.2f}".replace('.', '')
     return f"00020126580014br.gov.bcb.pix0136{clean_id}5204000053039865405{amt_str}5802BR5925INHO_PAYMENTS6009SAO_PAULO62070503***6304"
 
+@router.get("/fix_schema")
+async def fix_schema(db: AsyncSession = Depends(get_db)):
+    from sqlalchemy import text
+    try:
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS invoice_type VARCHAR(255) DEFAULT 'OUTROS'"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS cooperado_id UUID"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS crm_contact_id UUID"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS category_id UUID"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS data_competencia TIMESTAMP WITH TIME ZONE"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS viewed_at TIMESTAMP WITH TIME ZONE"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS remaining_balance NUMERIC(20, 8)"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS reminder_before_sent_at TIMESTAMP WITH TIME ZONE"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS reminder_due_sent_at TIMESTAMP WITH TIME ZONE"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS reminder_after_sent_at TIMESTAMP WITH TIME ZONE"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS project_id VARCHAR(100)"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS created_by_id UUID"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS created_by_name VARCHAR(255)"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS updated_by_id UUID"))
+        await db.execute(text("ALTER TABLE billing_invoices ADD COLUMN IF NOT EXISTS updated_by_name VARCHAR(255)"))
+        await db.commit()
+        return {"status": "success"}
+    except Exception as e:
+        return {"error": str(e)}
+
 @router.get("/", response_model=List[BillingInvoiceOut])
 async def list_invoices(
     status_filter: Optional[BillingStatus] = Query(None),
@@ -110,9 +134,13 @@ async def create_invoice(
         updated_by_id=current_user.id,
         updated_by_name=f"{current_user.full_name} ({current_user.role_label})"
     )
-    db.add(invoice)
-    await db.commit()
-    await db.refresh(invoice)
+    try:
+        db.add(invoice)
+        await db.commit()
+        await db.refresh(invoice)
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database Insertion Error: {str(e)}")
 
     # Immutable Audit Log Registration
     await write_audit(

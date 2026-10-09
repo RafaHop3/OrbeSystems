@@ -1,0 +1,100 @@
+INFO:     172.18.0.1:52308 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:52324 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:37118 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:37134 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59376 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:36880 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:36886 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:40610 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:40626 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:40640 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:56580 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:56588 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:51942 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:42272 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:42284 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:45388 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:45404 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:45414 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:53210 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:53212 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:33196 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59642 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59648 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:44278 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:44290 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:44298 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:47856 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:47858 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:50336 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+2026-10-08 20:42:49,201 - apscheduler.executors.default - INFO - Running job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-10-08 20:47:49 UTC)" (scheduled at 2026-10-08 20:42:49.199633+00:00)
+2026-10-08 20:42:49,723 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-10-08 20:47:49 UTC)" executed successfully
+INFO:     172.18.0.1:53790 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:53806 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:41598 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:41606 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:41610 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:39190 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:39198 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:49834 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:60544 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:60548 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:49968 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:49984 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:49994 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:35866 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:35876 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:33476 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:41014 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:41024 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:60422 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:60428 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:60434 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:38980 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:38996 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58880 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:42160 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:42174 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:57046 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:57062 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:57066 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:57686 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:57696 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:47812 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:43242 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:43256 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:40002 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:40010 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:40024 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:51816 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:51832 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:58912 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+2026-10-08 20:47:49,200 - apscheduler.executors.default - INFO - Running job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-10-08 20:52:49 UTC)" (scheduled at 2026-10-08 20:47:49.199633+00:00)
+2026-10-08 20:47:49,789 - apscheduler.executors.default - INFO - Job "escalation_check_job (trigger: interval[0:05:00], next run at: 2026-10-08 20:52:49 UTC)" executed successfully
+INFO:     172.18.0.1:32986 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:32992 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:49774 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:49782 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:49788 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:35834 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:35836 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:54216 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:45008 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:45022 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+2026-10-08 20:49:49,883 - orbe.soar - WARNING - [SOAR] Cache refresh failed: (psycopg2.OperationalError) could not translate host name "aws-1-us-west-2.pooler.supabase.com" to address: Temporary failure in name resolution
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+ERROR updating session: (psycopg2.OperationalError) could not translate host name "aws-1-us-west-2.pooler.supabase.com" to address: Temporary failure in name resolution
+
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+INFO:     172.18.0.1:44524 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:44540 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:44552 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:60014 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:60018 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:59888 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:36272 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:36286 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:36290 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:36304 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
+INFO:     172.18.0.1:36318 - "POST /api/analytics/heartbeat HTTP/1.1" 200 OK
