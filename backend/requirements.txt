@@ -12,6 +12,7 @@ async_lru
 cloudinary
 sqlalchemy
 psycopg[binary]
+psycopg2-binary
 apscheduler
 stripe
 email-validator

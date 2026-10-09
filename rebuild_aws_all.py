@@ -4,9 +4,11 @@ ssm = boto3.client('ssm', region_name='us-east-1')
 instance_id = "i-058e26140671b3254"
 
 commands = [
-    "sudo -u ubuntu sh -c 'cd /home/ubuntu/OrbeSystems && git add . && git stash && git fetch --all && git reset --hard origin/main'",
     "cd /home/ubuntu/OrbeSystems",
     "sudo docker compose down",
+    "sudo chown -R ubuntu:ubuntu /home/ubuntu/OrbeSystems",
+    "sudo rm -rf inho_backend/temp_layer",
+    "sudo -u ubuntu sh -c 'cd /home/ubuntu/OrbeSystems && git stash && git fetch --all && git reset --hard origin/main'",
     "sudo docker compose up -d --build"
 ]
 

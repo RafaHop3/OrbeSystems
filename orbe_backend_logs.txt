@@ -1,19 +1,9 @@
 CONTAINER ID   IMAGE                      COMMAND                  CREATED          STATUS                      PORTS                                         NAMES
-668a2763a4a0   orbesystems-backend        "sh -c 'uvicorn main…"   19 minutes ago   Up 19 minutes               0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   orbe_backend
-1bd4c18c5c7d   postgres:15-alpine         "docker-entrypoint.s…"   19 minutes ago   Up 19 minutes               0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp   orbe_postgres
-5c395ec86faf   redis:7-alpine             "docker-entrypoint.s…"   19 minutes ago   Up 19 minutes               0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp   orbe_redis
-263d598b6020   orbesystems-whatsapp       "docker-entrypoint.s…"   19 minutes ago   Up 19 minutes               0.0.0.0:3001->3001/tcp, [::]:3001->3001/tcp   orbe_whatsapp
-cdd456b3221d   orbesystems-inho_backend   "sh -c 'uvicorn main…"   19 minutes ago   Up 18 minutes (unhealthy)   0.0.0.0:8001->8000/tcp, [::]:8001->8000/tcp   inho_backend
-orbe_backend  |   File "/usr/local/lib/python3.11/asyncio/runners.py", line 118, in run
-orbe_backend  |     return self._loop.run_until_complete(task)
-orbe_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-orbe_backend  |   File "uvloop/loop.pyx", line 1515, in uvloop.loop.Loop.run_until_complete
-orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 69, in serve
-orbe_backend  |     await self._serve(sockets)
-orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/server.py", line 76, in _serve
-orbe_backend  |     config.load()
-orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/config.py", line 433, in load
-orbe_backend  |     self.loaded_app = import_from_string(self.app)
+321408c5a13b   orbesystems-backend        "sh -c 'uvicorn main…"   47 minutes ago   Up 47 minutes               0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp   orbe_backend
+ebccb5af4a9d   postgres:15-alpine         "docker-entrypoint.s…"   47 minutes ago   Up 47 minutes               0.0.0.0:5432->5432/tcp, [::]:5432->5432/tcp   orbe_postgres
+a2c34cb7ccfa   redis:7-alpine             "docker-entrypoint.s…"   47 minutes ago   Up 47 minutes               0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp   orbe_redis
+7a59fb1054ca   orbesystems-whatsapp       "docker-entrypoint.s…"   47 minutes ago   Up 47 minutes               0.0.0.0:3001->3001/tcp, [::]:3001->3001/tcp   orbe_whatsapp
+acb0dffadaac   orbesystems-inho_backend   "sh -c 'uvicorn main…"   47 minutes ago   Up 47 minutes (unhealthy)   0.0.0.0:8001->8000/tcp, [::]:8001->8000/tcp   inho_backend
 orbe_backend  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/uvicorn/importer.py", line 22, in import_from_string
 orbe_backend  |     raise exc from None
@@ -29,13 +19,17 @@ orbe_backend  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_
 orbe_backend  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
 orbe_backend  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
 orbe_backend  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-orbe_backend  |   File "/app/main.py", line 387, in <module>
-orbe_backend  |     from routes.admin_inho import router as admin_inho_router
-orbe_backend  |   File "/app/routes/admin_inho.py", line 10, in <module>
-orbe_backend  |     from inho_database import get_inho_db
-orbe_backend  |   File "/app/inho_database.py", line 32, in <module>
-orbe_backend  |     inho_engine = create_engine(
-orbe_backend  |                   ^^^^^^^^^^^^^^
+orbe_backend  |   File "/app/main.py", line 12, in <module>
+orbe_backend  |     from routes.projects import router as projects_router
+orbe_backend  |   File "/app/routes/projects.py", line 3, in <module>
+orbe_backend  |     from services.metadata_service import get_all_metadata
+orbe_backend  |   File "/app/services/metadata_service.py", line 3, in <module>
+orbe_backend  |     from models.metadata import ProjectMetadata
+orbe_backend  |   File "/app/models/metadata.py", line 3, in <module>
+orbe_backend  |     from database import Base
+orbe_backend  |   File "/app/database.py", line 52, in <module>
+orbe_backend  |     engine = create_engine(
+orbe_backend  |              ^^^^^^^^^^^^^^
 orbe_backend  |   File "<sqlalchemy generated warned() wrapper for sqlalchemy.engine.create.create_engine>", line 2, in create_engine
 orbe_backend  |     return target(fn, url, **kwargs)
 orbe_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -45,9 +39,11 @@ orbe_backend  |            ^^^^^^^^^^^^^^^^^^^
 orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/create.py", line 602, in create_engine
 orbe_backend  |     dbapi = dbapi_meth(**dbapi_args)
 orbe_backend  |             ^^^^^^^^^^^^^^^^^^^^^^^^
-orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/psycopg.py", line 497, in import_dbapi
-orbe_backend  |     import psycopg
-orbe_backend  | ModuleNotFoundError: No module named 'psycopg'
+orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py", line 691, in import_dbapi
+orbe_backend  |     import psycopg2
+orbe_backend  | ModuleNotFoundError: No module named 'psycopg2'
+orbe_backend  | Process SpawnProcess-1:
+orbe_backend  | Traceback (most recent call last):
 orbe_backend  |   File "/usr/local/lib/python3.11/multiprocessing/process.py", line 314, in _bootstrap
 orbe_backend  |     self.run()
 orbe_backend  |   File "/usr/local/lib/python3.11/multiprocessing/process.py", line 108, in run
@@ -85,13 +81,17 @@ orbe_backend  |   File "<frozen importlib._bootstrap>", line 1147, in _find_and_
 orbe_backend  |   File "<frozen importlib._bootstrap>", line 690, in _load_unlocked
 orbe_backend  |   File "<frozen importlib._bootstrap_external>", line 940, in exec_module
 orbe_backend  |   File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
-orbe_backend  |   File "/app/main.py", line 387, in <module>
-orbe_backend  |     from routes.admin_inho import router as admin_inho_router
-orbe_backend  |   File "/app/routes/admin_inho.py", line 10, in <module>
-orbe_backend  |     from inho_database import get_inho_db
-orbe_backend  |   File "/app/inho_database.py", line 32, in <module>
-orbe_backend  |     inho_engine = create_engine(
-orbe_backend  |                   ^^^^^^^^^^^^^^
+orbe_backend  |   File "/app/main.py", line 12, in <module>
+orbe_backend  |     from routes.projects import router as projects_router
+orbe_backend  |   File "/app/routes/projects.py", line 3, in <module>
+orbe_backend  |     from services.metadata_service import get_all_metadata
+orbe_backend  |   File "/app/services/metadata_service.py", line 3, in <module>
+orbe_backend  |     from models.metadata import ProjectMetadata
+orbe_backend  |   File "/app/models/metadata.py", line 3, in <module>
+orbe_backend  |     from database import Base
+orbe_backend  |   File "/app/database.py", line 52, in <module>
+orbe_backend  |     engine = create_engine(
+orbe_backend  |              ^^^^^^^^^^^^^^
 orbe_backend  |   File "<sqlalchemy generated warned() wrapper for sqlalchemy.engine.create.create_engine>", line 2, in create_engine
 orbe_backend  |     return target(fn, url, **kwargs)
 orbe_backend  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -101,9 +101,9 @@ orbe_backend  |            ^^^^^^^^^^^^^^^^^^^
 orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/engine/create.py", line 602, in create_engine
 orbe_backend  |     dbapi = dbapi_meth(**dbapi_args)
 orbe_backend  |             ^^^^^^^^^^^^^^^^^^^^^^^^
-orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/psycopg.py", line 497, in import_dbapi
-orbe_backend  |     import psycopg
-orbe_backend  | ModuleNotFoundError: No module named 'psycopg'
+orbe_backend  |   File "/usr/local/lib/python3.11/site-packages/sqlalchemy/dialects/postgresql/psycopg2.py", line 691, in import_dbapi
+orbe_backend  |     import psycopg2
+orbe_backend  | ModuleNotFoundError: No module named 'psycopg2'
 
 
 ---ERRORS---
