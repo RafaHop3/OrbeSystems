@@ -1,23 +1,23 @@
 No local changes to save
-HEAD is now at e40430a chore(security): auto-update SBOM [skip ci]
+HEAD is now at 8676010 chore(security): auto-update SBOM [skip ci]
 #0 building with "default" instance using docker driver
 
 #1 [inho_backend internal] load build definition from Dockerfile
-#1 transferring dockerfile: 1.49kB 0.0s done
+#1 transferring dockerfile: 1.49kB done
 #1 DONE 0.0s
 
-#2 [backend internal] load build definition from Dockerfile
-#2 transferring dockerfile: 1.83kB 0.0s done
-#2 DONE 0.1s
+#2 [whatsapp internal] load build definition from Dockerfile
+#2 transferring dockerfile: 182B 0.0s done
+#2 DONE 0.0s
 
-#3 [whatsapp internal] load build definition from Dockerfile
-#3 transferring dockerfile: 182B 0.0s done
+#3 [backend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 1.83kB 0.0s done
 #3 DONE 0.1s
 
-#4 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
-#4 ...
+#4 [backend internal] load metadata for public.ecr.aws/docker/library/python:3.11-slim
+#4 DONE 0.2s
 
-#5 [backend internal] load metadata for public.ecr.aws/docker/library/python:3.11-slim
+#5 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
 #5 DONE 0.2s
 
 #6 [backend internal] load .dockerignore
@@ -27,55 +27,48 @@ HEAD is now at e40430a chore(security): auto-update SBOM [skip ci]
 #7 [backend internal] load build context
 #7 DONE 0.0s
 
-#4 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
-#4 DONE 0.3s
-
 #8 [whatsapp internal] load metadata for docker.io/library/node:20-alpine
 #8 DONE 0.2s
 
-#9 [inho_backend internal] load .dockerignore
-#9 transferring context: 396B done
+#9 [whatsapp internal] load .dockerignore
+#9 transferring context: 2B done
 #9 DONE 0.0s
 
-#10 [whatsapp internal] load .dockerignore
-#10 transferring context: 2B done
+#10 [inho_backend internal] load .dockerignore
+#10 transferring context: 396B done
 #10 DONE 0.0s
 
-#1
+#11 [inho_backend internal] load build context
+#11 transferring context: 8.75kB 0.2s done
+#11 DONE 0.3s
+
+#12 [backend builder 1/4] FROM public.ecr.aws/docker/library/python:3.11-slim@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534
 ---Output truncated---
 ----------ERROR-------
+ Container orbe_backend  Stopping
  Container orbe_whatsapp  Stopping
  Container inho_backend  Stopping
- Container orbe_backend  Stopping
  Container orbe_whatsapp  Stopped
  Container orbe_whatsapp  Removing
- Container orbe_backend  Stopped
- Container orbe_backend  Removing
  Container inho_backend  Stopped
  Container inho_backend  Removing
- Container orbe_backend  Removed
- Container orbe_postgres  Stopping
- Container orbe_redis  Stopping
+ Container orbe_backend  Stopped
+ Container orbe_backend  Removing
  Container inho_backend  Removed
  Container orbe_whatsapp  Removed
- Container orbe_redis  Stopped
- Container orbe_redis  Removing
+ Container orbe_backend  Removed
+ Container orbe_redis  Stopping
+ Container orbe_postgres  Stopping
  Container orbe_postgres  Stopped
  Container orbe_postgres  Removing
+ Container orbe_redis  Stopped
+ Container orbe_redis  Removing
  Container orbe_postgres  Removed
  Container orbe_redis  Removed
  Network orbesystems_default  Removing
  Network orbesystems_default  Removed
 From https://github.com/RafaHop3/OrbeSystems
-   058efa0..e40430a  main       -> origin/main
-time="2026-10-09T18:36:29Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
- backend  Built
- inho_backend  Built
- whatsapp  Built
- Network orbesystems_default  Creating
- Network orbesystems_default  Created
- Container orbe_redis  Creating
- Container orbe_postgres  Creating
- Container inho_backend  Creating
- Container orbe_wha
----Error truncated----
+   48f36a6..8676010  main       -> origin/main
+time="2026-10-09T18:44:33Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+failed to receive status: rpc error: code = Unavailable desc = error reading from server: EOF
+failed to run commands: exit status 1
