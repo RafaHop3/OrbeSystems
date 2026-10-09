@@ -13,6 +13,10 @@ if not INHO_DB_URL:
 if INHO_DB_URL.startswith("postgres://"):
     INHO_DB_URL = INHO_DB_URL.replace("postgres://", "postgresql://", 1)
 
+if "+asyncpg" in INHO_DB_URL:
+    INHO_DB_URL = INHO_DB_URL.replace("+asyncpg", "")
+
+
 if "supabase" in INHO_DB_URL and "sslmode=require" not in INHO_DB_URL:
     separator = "&" if "?" in INHO_DB_URL else "?"
     INHO_DB_URL += f"{separator}sslmode=require"
