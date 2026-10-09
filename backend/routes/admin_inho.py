@@ -70,7 +70,7 @@ async def create_inho_user(
 ):
     from datetime import datetime, timezone
     
-    check_query = text("SELECT id FROM users WHERE email = :email")
+    check_query = text("SELECT id FROM users WHERE email = CAST(:email AS VARCHAR)")
     if db.execute(check_query, {"email": data.email}).fetchone():
         raise HTTPException(status_code=400, detail="Identidade INHO ja existe")
 
@@ -79,7 +79,7 @@ async def create_inho_user(
     
     insert_query = text("""
         INSERT INTO users (id, email, password_hash, role, is_email_verified, subscription_status, created_at) 
-        VALUES (:id, :email, :hashed, :role, false, 'active', :now)
+        VALUES (CAST(:id AS UUID), CAST(:email AS VARCHAR), CAST(:hashed AS VARCHAR), CAST(:role AS VARCHAR), false, 'active', CAST(:now AS TIMESTAMP WITH TIME ZONE))
     """)
     now = datetime.now(timezone.utc)
     
