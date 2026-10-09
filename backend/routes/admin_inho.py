@@ -282,3 +282,13 @@ async def get_system_metrics(
                 "timestamp": datetime.now(timezone.utc).isoformat()
             }
         }
+
+@router.get("/inho/enums_debug")
+def get_enums_debug(db: Session = Depends(get_inho_db)):
+    from sqlalchemy import text
+    try:
+        res = db.execute(text("SELECT enumlabel FROM pg_enum JOIN pg_type ON pg_enum.enumtypid = pg_type.oid WHERE typname = 'userrole';")).fetchall()
+        return {"userrole": [r[0] for r in res]}
+    except Exception as e:
+        return {"error": str(e)}
+
