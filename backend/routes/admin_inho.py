@@ -78,19 +78,24 @@ async def create_inho_user(
     user_id = str(uuid.uuid4())
     
     insert_query = text("""
-        INSERT INTO users (id, email, password_hash, role, is_email_verified, created_at) 
-        VALUES (:id, :email, :hashed, :role, false, :now)
+        INSERT INTO users (id, email, password_hash, role, is_email_verified, subscription_status, created_at) 
+        VALUES (:id, :email, :hashed, :role, false, 'active', :now)
     """)
     now = datetime.now(timezone.utc)
     
-    db.execute(insert_query, {
-        "id": user_id,
-        "email": data.email,
-        "hashed": hashed_pw,
-        "role": data.role,
-        "now": now
-    })
-    db.commit()
+    try:
+        db.execute(insert_query, {
+            "id": user_id,
+            "email": data.email,
+            "hashed": hashed_pw,
+            "role": data.role,
+            "now": now
+        })
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+        
     admin_logger.info(f"Encapsulated Dashboard created INHO user {data.email}")
     return {"status": "success", "user_id": user_id}
 
