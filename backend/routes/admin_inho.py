@@ -133,12 +133,17 @@ async def delete_inho_user(
     admin_email: str = Depends(get_current_admin_user),
     db: Session = Depends(get_inho_db)
 ):
-    delete_query = text("DELETE FROM users WHERE id = :uid")
-    res = db.execute(delete_query, {"uid": user_id})
-    if res.rowcount == 0:
-        raise HTTPException(status_code=404, detail="Usuario INHO nao encontrado")
-    db.commit()
-    return {"status": "success"}
+    from sqlalchemy.exc import IntegrityError
+    try:
+        delete_query = text("DELETE FROM users WHERE id = :uid")
+        res = db.execute(delete_query, {"uid": user_id})
+        if res.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Usuario INHO nao encontrado")
+        db.commit()
+        return {"status": "success"}
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Entidade anexada a registros criticos no Banco de Dados (ex: Auditoria/Pagamentos). Remocao bloqueada por Constraint DB.")
 
 
 @router.get("/audit-logs")
