@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:033f2889-1a14-41ab-9909-d80665151338",
+  "serialNumber": "urn:uuid:92f7d6f1-7185-4b0b-9f00-06609f7e49c1",
   "metadata": {
-    "timestamp": "2026-10-09T13:36:27.768472+00:00",
+    "timestamp": "2026-10-09T14:30:07.825473+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -1179,6 +1179,31 @@
     },
     {
       "type": "library",
+      "name": "psycopg2-binary",
+      "version": "2.9.13",
+      "purl": "pkg:pypi/psycopg2-binary@2.9.13",
+      "licenses": [
+        {
+          "license": {
+            "id": "LGPL with exceptions"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://psycopg.org/"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "274f081efb83afbbcf000b89f7ec1af1bac70981606096c4e6e14101904680de"
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "pyasn1",
       "version": "0.6.4",
       "purl": "pkg:pypi/pyasn1@0.6.4",
@@ -2064,7 +2089,7 @@
     }
   ],
   "_orbe_meta": {
-    "total_dependencies": 86,
+    "total_dependencies": 87,
     "license_summary": {
       "Apache 2": 5,
       "Unknown": 32,
@@ -2077,6 +2102,7 @@
       "": 14,
       "Unlicense": 1,
       "BSD": 1,
+      "LGPL with exceptions": 1,
       "BSD-2-Clause": 1,
       "Dual License": 1,
       "BSD-3-Clause": 1,
@@ -2084,7 +2110,8 @@
       "MIT OR Apache-2.0": 1
     },
     "gpl_flagged": [
-      "chardet@3.0.4 (LGPL)"
+      "chardet@3.0.4 (LGPL)",
+      "psycopg2-binary@2.9.13 (LGPL with exceptions)"
     ],
     "requires_review": true
   }
