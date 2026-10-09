@@ -76,21 +76,27 @@ async def create_inho_user(
 
     hashed_pw = get_password_hash(data.password)
     user_id = str(uuid.uuid4())
-    
-    insert_query = text("""
-        INSERT INTO users (id, email, password_hash, role, is_email_verified, subscription_status, created_at) 
-        VALUES (CAST(:id AS UUID), CAST(:email AS VARCHAR), CAST(:hashed AS VARCHAR), CAST(:role AS userrole), false, 'active', CAST(:now AS TIMESTAMP WITH TIME ZONE))
-    """)
+    # -- Dynamically fetch the EXACT postgres enum casing --
+    try:
+        res = db.execute(text("SELECT enumlabel FROM pg_enum JOIN pg_type ON pg_enum.enumtypid = pg_type.oid WHERE typname = 'userrole';")).fetchall()
+        valid_roles = [r[0] for r in res]
+        db_role = data.role
+        for r in valid_roles:
+            if r.lower() == data.role.lower():
+                db_role = r
+                break
+    except Exception:
+        db_role = data.role
+        
     now = datetime.now(timezone.utc)
     
+    insert_query = text(f"""
+        INSERT INTO users (id, email, password_hash, role, is_email_verified, subscription_status, created_at) 
+        VALUES ('{user_id}', '{data.email}', '{hashed_pw}', '{db_role}', false, 'active', '{now}')
+    """)
+    
     try:
-        db.execute(insert_query, {
-            "id": user_id,
-            "email": data.email,
-            "hashed": hashed_pw,
-            "role": data.role,
-            "now": now
-        })
+        db.execute(insert_query)
         db.commit()
     except Exception as e:
         db.rollback()
