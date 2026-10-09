@@ -269,36 +269,39 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                                     )}
                                 </div>
 
-                                <div className="flex items-center gap-2 mt-4 pt-4 border-t border-green-500/10">
+                                <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-green-500/10">
                                     {currentUserRole === 'superadmin' && (
                                         <select
                                             value={u.role}
                                             onChange={(e: any) => handleRoleChange(u.id, e.target.value)}
-                                            className="flex-1 bg-black text-[9px] text-green-500/80 border border-green-500/20 px-2 py-1 focus:outline-none uppercase"
+                                            className="w-full bg-black text-[9px] text-green-500/80 border border-green-500/20 px-2 py-1 focus:outline-none uppercase cursor-pointer hover:border-green-500/40 relative z-10"
                                         >
                                             <option value="admin">ROLE: ASSINANTE INHO (ADMIN)</option>
+                                            <option value="super_admin">ROLE: SUPER ADMIN</option>
                                             <option value="operator">ROLE: OPERADOR INHO</option>
                                         </select>
                                     )}
-                                    {currentUserRole === 'superadmin' && (
-                                        <button
-                                            onClick={() => {
-                                                setPasswordTarget(passwordTarget === u.id ? null : u.id);
-                                                setNewPassword('');
-                                            }}
-                                            className="text-[9px] text-yellow-500 border border-yellow-500/20 px-3 py-1 hover:bg-yellow-500 hover:text-black transition-all uppercase"
-                                        >
-                                            SENHA
-                                        </button>
-                                    )}
-                                    {currentUserRole === 'superadmin' && (
-                                        <button
-                                            onClick={() => handleDelete(u.id)}
-                                            className="text-[9px] text-red-500 border border-red-500/20 px-3 py-1 hover:bg-red-500 hover:text-white transition-all uppercase"
-                                        >
-                                            PURGE
-                                        </button>
-                                    )}
+                                    <div className="flex w-full gap-2">
+                                        {currentUserRole === 'superadmin' && (
+                                            <button
+                                                onClick={() => {
+                                                    setPasswordTarget(passwordTarget === u.id ? null : u.id);
+                                                    setNewPassword('');
+                                                }}
+                                                className="flex-1 text-[9px] text-yellow-500 border border-yellow-500/20 px-3 py-1 hover:bg-yellow-500 hover:text-black transition-all uppercase cursor-pointer relative z-10"
+                                            >
+                                                SENHA
+                                            </button>
+                                        )}
+                                        {currentUserRole === 'superadmin' && (
+                                            <button
+                                                onClick={() => handleDelete(u.id)}
+                                                className="flex-1 text-[9px] text-red-500 border border-red-500/20 px-3 py-1 hover:bg-red-500 hover:text-white transition-all uppercase cursor-pointer relative z-10"
+                                            >
+                                                PURGE
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {passwordTarget === u.id && (
