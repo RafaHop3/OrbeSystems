@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:ac4d79c6-f7a5-477c-85ca-2c6700cd23d2",
+  "serialNumber": "urn:uuid:742669e4-557d-4607-89c9-aa7c2accf1dd",
   "metadata": {
-    "timestamp": "2026-10-08T18:55:40.549473+00:00",
+    "timestamp": "2026-10-09T00:46:03.521700+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -510,12 +510,12 @@
     {
       "type": "library",
       "name": "dnspython",
-      "version": "2.8.0",
-      "purl": "pkg:pypi/dnspython@2.8.0",
+      "version": "2.9.0",
+      "purl": "pkg:pypi/dnspython@2.9.0",
       "licenses": [
         {
           "license": {
-            "id": "ISC"
+            "id": "Unknown"
           }
         }
       ],
@@ -528,7 +528,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "99b84eb8761cc82b50b579fe149372f7ab21955c22d7cca6b1b9e7a13edbe207"
+          "content": "d7de2c197c1a58284487b3b55c2f085dc1a01c25551ceb674110332b11da4a78"
         }
       ]
     },
@@ -2042,14 +2042,13 @@
     "total_dependencies": 85,
     "license_summary": {
       "Apache 2": 5,
-      "Unknown": 29,
+      "Unknown": 30,
       "MIT": 15,
       "MIT License": 3,
       "Apache-2.0": 5,
       "Apache License 2.0": 3,
       "MPL-2.0": 1,
       "LGPL": 1,
-      "ISC": 1,
       "": 14,
       "Unlicense": 1,
       "BSD": 1,
