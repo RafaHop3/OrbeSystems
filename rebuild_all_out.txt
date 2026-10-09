@@ -1,72 +1,81 @@
 No local changes to save
-HEAD is now at 058efa0 fix(backend): satisfy subscription_status db constraint on manual creation
+HEAD is now at e40430a chore(security): auto-update SBOM [skip ci]
 #0 building with "default" instance using docker driver
 
-#1 [backend internal] load build definition from Dockerfile
-#1 transferring dockerfile: 1.83kB 0.0s done
-#1 DONE 0.1s
+#1 [inho_backend internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.49kB 0.0s done
+#1 DONE 0.0s
 
-#2 [inho_backend internal] load build definition from Dockerfile
-#2 transferring dockerfile: 1.49kB 0.0s done
+#2 [backend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.83kB 0.0s done
 #2 DONE 0.1s
 
 #3 [whatsapp internal] load build definition from Dockerfile
 #3 transferring dockerfile: 182B 0.0s done
 #3 DONE 0.1s
 
-#4 [whatsapp internal] load metadata for docker.io/library/node:20-alpine
-#4 DONE 0.3s
+#4 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
+#4 ...
 
-#5 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
-#5 ...
+#5 [backend internal] load metadata for public.ecr.aws/docker/library/python:3.11-slim
+#5 DONE 0.2s
 
-#6 [whatsapp internal] load .dockerignore
-#6 transferring context: 2B done
+#6 [backend internal] load .dockerignore
+#6 transferring context: 327B done
 #6 DONE 0.0s
 
-#7 [whatsapp internal] load build context
-#7 ...
+#7 [backend internal] load build context
+#7 DONE 0.0s
 
-#8 [whatsapp 1/6] FROM docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293
-#8 resolve docker.io/library/node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 0.0s done
-#8 DONE 0.1s
+#4 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
+#4 DONE 0.3s
 
-#5 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
-#5 DONE 0.7
+#8 [whatsapp internal] load metadata for docker.io/library/node:20-alpine
+#8 DONE 0.2s
+
+#9 [inho_backend internal] load .dockerignore
+#9 transferring context: 396B done
+#9 DONE 0.0s
+
+#10 [whatsapp internal] load .dockerignore
+#10 transferring context: 2B done
+#10 DONE 0.0s
+
+#1
 ---Output truncated---
 ----------ERROR-------
- Container orbe_backend  Stopping
- Container inho_backend  Stopping
  Container orbe_whatsapp  Stopping
+ Container inho_backend  Stopping
+ Container orbe_backend  Stopping
  Container orbe_whatsapp  Stopped
  Container orbe_whatsapp  Removing
- Container inho_backend  Stopped
- Container inho_backend  Removing
  Container orbe_backend  Stopped
  Container orbe_backend  Removing
- Container orbe_whatsapp  Removed
- Container inho_backend  Removed
+ Container inho_backend  Stopped
+ Container inho_backend  Removing
  Container orbe_backend  Removed
- Container orbe_redis  Stopping
  Container orbe_postgres  Stopping
+ Container orbe_redis  Stopping
+ Container inho_backend  Removed
+ Container orbe_whatsapp  Removed
  Container orbe_redis  Stopped
  Container orbe_redis  Removing
  Container orbe_postgres  Stopped
  Container orbe_postgres  Removing
- Container orbe_redis  Removed
  Container orbe_postgres  Removed
+ Container orbe_redis  Removed
  Network orbesystems_default  Removing
  Network orbesystems_default  Removed
 From https://github.com/RafaHop3/OrbeSystems
-   b6a9ff5..058efa0  main       -> origin/main
-time="2026-10-09T18:29:10Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
+   058efa0..e40430a  main       -> origin/main
+time="2026-10-09T18:36:29Z" level=warning msg="Docker Compose is configured to build using Bake, but buildx isn't installed"
  backend  Built
  inho_backend  Built
  whatsapp  Built
  Network orbesystems_default  Creating
  Network orbesystems_default  Created
- Container orbe_whatsapp  Creating
- Container inho_backend  Creating
  Container orbe_redis  Creating
- Container orbe_pos
+ Container orbe_postgres  Creating
+ Container inho_backend  Creating
+ Container orbe_wha
 ---Error truncated----

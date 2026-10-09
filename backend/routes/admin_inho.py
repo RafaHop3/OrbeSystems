@@ -79,7 +79,7 @@ async def create_inho_user(
     
     insert_query = text("""
         INSERT INTO users (id, email, password_hash, role, is_email_verified, subscription_status, created_at) 
-        VALUES (CAST(:id AS UUID), CAST(:email AS VARCHAR), CAST(:hashed AS VARCHAR), CAST(:role AS VARCHAR), false, 'active', CAST(:now AS TIMESTAMP WITH TIME ZONE))
+        VALUES (CAST(:id AS UUID), CAST(:email AS VARCHAR), CAST(:hashed AS VARCHAR), CAST(:role AS userrole), false, 'active', CAST(:now AS TIMESTAMP WITH TIME ZONE))
     """)
     now = datetime.now(timezone.utc)
     
