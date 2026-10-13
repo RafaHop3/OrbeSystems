@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:72783564-3057-4234-896b-b298cff58642",
+  "serialNumber": "urn:uuid:f74e83c9-39b2-440b-9e79-a048b268ac3c",
   "metadata": {
-    "timestamp": "2026-10-09T19:29:48.965954+00:00",
+    "timestamp": "2026-10-13T11:10:15.657268+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -180,8 +180,8 @@
     {
       "type": "library",
       "name": "async-lru",
-      "version": "2.3.0",
-      "purl": "pkg:pypi/async-lru@2.3.0",
+      "version": "2.4.0",
+      "purl": "pkg:pypi/async-lru@2.4.0",
       "licenses": [
         {
           "license": {
@@ -198,7 +198,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "fc4096a7eebd71c3200259bab52cb0420792a15233d78c2d0680ea4764bd80ca"
+          "content": "5285609474f9bf1813cc8e17be994751e16aff053c84b4f07dd71b7e3855420f"
         }
       ]
     },
@@ -710,8 +710,8 @@
     {
       "type": "library",
       "name": "httptools",
-      "version": "0.8.0",
-      "purl": "pkg:pypi/httptools@0.8.0",
+      "version": "0.9.0",
+      "purl": "pkg:pypi/httptools@0.9.0",
       "licenses": [
         {
           "license": {
@@ -728,7 +728,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "906c80c8dcfe18955b8ed187e597ea21cd9fa27cbb49fc0f674704668b9e8007"
+          "content": "bcfedb79ffdde682a76ac8e09be8ed61883e42feab1e08fa5294d6070ee36dd4"
         }
       ]
     },
