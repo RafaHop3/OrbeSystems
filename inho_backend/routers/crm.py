@@ -499,7 +499,8 @@ class OmnichannelDirectMessage(BaseModel):
 @router.post("/whatsapp/send")
 async def proxy_omnichannel_message(
     payload: OmnichannelDirectMessage,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
 ):
     """
     Despacha a mensagem digitada pelo Usuário para:
@@ -507,6 +508,10 @@ async def proxy_omnichannel_message(
     2. A API Resend para E-mail B2B
     """
     try:
+        business = await _biz(db, current_user)
+        b_id = get_uuid(business.id)
+        sender_id = get_uuid(current_user.id)
+
         import re
         digits = re.sub(r'\D', '', payload.phone)
         if len(digits) in [10, 11]:
@@ -519,6 +524,7 @@ async def proxy_omnichannel_message(
             
         wa_status = []
         email_status = None
+        global_db_status = "SENT"
         
         async with httpx.AsyncClient() as client:
             for num in phones_to_try:
@@ -530,6 +536,7 @@ async def proxy_omnichannel_message(
                     wa_status.append(f"{num}:{wa_res.status_code}")
                 except Exception as e:
                     wa_status.append(f"{num}:Erro")
+                    global_db_status = "FAILED"
                 
             resend_key = os.environ.get("RESEND_API_KEY", "")
             if payload.email and resend_key:
@@ -551,14 +558,61 @@ async def proxy_omnichannel_message(
                     email_status = f"Resend Error: {str(e)}"
             else:
                 email_status = "Ignorado"
+
+        # Multi-Tenant DB Persistence (Secured Session Binding)
+        from models.models import OmnichannelLog, OmnichannelStatus
+        
+        db_log = OmnichannelLog(
+            business_id=b_id,
+            sender_id=sender_id,
+            channel="WHATSAPP",
+            recipient=phones_to_try[0] if phones_to_try else payload.phone,
+            message_content=payload.message,
+            status=OmnichannelStatus.SENT if global_db_status == "SENT" else OmnichannelStatus.FAILED
+        )
+        db.add(db_log)
+        await db.commit()
                 
         return {
             "status": "success",
             "whatsapp_delivery_code": wa_status,
-            "email_delivery_code": email_status
+            "email_delivery_code": email_status,
+            "message_id": str(db_log.id)
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/whatsapp/history")
+async def get_whatsapp_history(
+    recipient: Optional[str] = Query(None),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, le=100),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Retorna o histórico seguro associado apenas à empresa atual."""
+    from models.models import OmnichannelLog
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    
+    query = select(OmnichannelLog).where(OmnichannelLog.business_id == b_id)
+    if recipient:
+        query = query.where(OmnichannelLog.recipient.ilike(f"%{recipient}%"))
+        
+    query = query.order_by(OmnichannelLog.created_at.desc()).offset(skip).limit(limit)
+    result = await db.execute(query)
+    logs = result.scalars().all()
+    
+    return [
+        {
+            "id": str(log.id),
+            "channel": log.channel,
+            "recipient": log.recipient,
+            "message": log.message_content,
+            "status": log.status,
+            "created_at": log.created_at
+        } for log in logs
+    ]
 
 from fastapi.responses import HTMLResponse
 import httpx
