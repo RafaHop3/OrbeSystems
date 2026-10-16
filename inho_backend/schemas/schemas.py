@@ -22,8 +22,9 @@ class WebhookProvisionRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
-    password: str
+    email: Optional[str] = None
+    username: Optional[str] = None
+    password: str = ""
     mfa_code: Optional[str] = None
 
 

@@ -45,8 +45,8 @@ class CooperadoUpdate(BaseModel):
 
 
 class CooperadoOut(BaseModel):
-    id: str
-    business_id: str
+    id: UUID
+    business_id: UUID
     name:        str
     document:    str
     email:       Optional[str]
@@ -70,14 +70,15 @@ async def create_cooperado(
     current_user: User = Depends(get_current_user)
 ):
     business = await _get_user_business(db, current_user)
-    coop = Cooperado(**payload.model_dump(), business_id=business.id)
+    b_id = UUID(str(business.id)) if not isinstance(business.id, UUID) else business.id
+    coop = Cooperado(**payload.model_dump(), business_id=b_id)
     db.add(coop)
 
     # Sincroniza com o CRM: o cooperado vira contato PARTNER (visível na Central WhatsApp)
     from models.models import CRMContact, ContactCategory
     existing = (await db.execute(
         select(CRMContact).where(
-            CRMContact.business_id == business.id,
+            CRMContact.business_id == b_id,
             CRMContact.document == payload.document,
         )
     )).scalars().first()
@@ -89,7 +90,7 @@ async def create_cooperado(
         existing.is_active = True
     else:
         db.add(CRMContact(
-            business_id=business.id,
+            business_id=b_id,
             category=ContactCategory.PARTNER,
             name=payload.name,
             document=payload.document,
@@ -113,7 +114,8 @@ async def list_cooperados(
     current_user: User = Depends(get_current_user)
 ):
     business = await _get_user_business(db, current_user)
-    query = select(Cooperado).where(Cooperado.business_id == business.id)
+    b_id = UUID(str(business.id)) if not isinstance(business.id, UUID) else business.id
+    query = select(Cooperado).where(Cooperado.business_id == b_id)
 
     if coop_status:
         query = query.where(Cooperado.status == coop_status)

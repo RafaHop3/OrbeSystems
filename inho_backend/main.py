@@ -61,6 +61,16 @@ async def lifespan(app: FastAPI):
                 
                 await conn.run_sync(verify_schema_integrity)
 
+            for stmt in [
+                "ALTER TABLE cooperados ADD COLUMN IF NOT EXISTS bank_details TEXT",
+                "ALTER TABLE cooperados ADD COLUMN IF NOT EXISTS notes TEXT",
+            ]:
+                try:
+                    async with conn.begin_nested():
+                        await conn.execute(text(stmt))
+                except Exception:
+                    pass
+
         app.state.db_ready = True
         logger.info("Banco de dados conectado e esquema Inho (SaaS) perfeitamente sincronizado com sucesso!")
 

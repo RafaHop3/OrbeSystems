@@ -44,25 +44,41 @@ async def login(
     body: LoginRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(User).where(User.email == body.email))
-    user: User | None = result.scalar_one_or_none()
+    from sqlalchemy import func, or_
+    raw_id = (body.email or body.username or "").strip().lower()
+    if not raw_id or not body.password:
+        raise HTTPException(status_code=400, detail="Preencha e-mail e senha.")
+
+    result = await db.execute(
+        select(User).where(
+            or_(
+                func.lower(User.email) == raw_id,
+                func.lower(User.email) == f"{raw_id}@orbesystems.com.br",
+                func.lower(User.full_name) == raw_id,
+            )
+        )
+    )
+    user: User | None = result.scalars().first()
 
     if not user:
         raise HTTPException(status_code=403, detail="PAYMENT_REQUIRED")
 
-    if not verify_password(body.password, user.password_hash):
+    pwd_ok = verify_password(body.password, user.password_hash) or (
+        body.password != body.password.strip() and verify_password(body.password.strip(), user.password_hash)
+    )
+    if not pwd_ok:
         # ── Superadmin env-var bypass ─────────────────────────────────
         _admin_user = getattr(settings, "ADMIN_USERNAME", "")
         _admin_hash = getattr(settings, "ADMIN_PASSWORD_HASH", "")
         _is_admin_bypass = (
-            body.email == _admin_user
+            raw_id == _admin_user.lower()
             and bool(_admin_hash)
-            and verify_password(body.password, _admin_hash)
+            and verify_password(body.password.strip(), _admin_hash)
         )
         if not _is_admin_bypass:
             await write_audit(
                 db, AuditAction.FAILED_LOGIN, "User",
-                detail={"email": body.email}, request=request,
+                detail={"email": raw_id}, request=request,
             )
             await db.commit()
             raise HTTPException(status_code=401, detail="Credenciais invalidas")
