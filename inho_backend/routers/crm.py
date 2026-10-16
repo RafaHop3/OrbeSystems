@@ -533,9 +533,12 @@ async def proxy_omnichannel_message(
                         "phone": num,
                         "message": payload.message
                     }, timeout=10.0)
-                    wa_status.append(f"{num}:{wa_res.status_code}")
+                    if wa_res.status_code == 200:
+                        wa_status.append("DELIVERED:200")
+                    else:
+                        wa_status.append(f"HTTP:{wa_res.status_code}")
                 except Exception as e:
-                    wa_status.append(f"{num}:Erro")
+                    wa_status.append("FAILED:Erro")
                     global_db_status = "FAILED"
                 
             resend_key = os.environ.get("RESEND_API_KEY", "")
