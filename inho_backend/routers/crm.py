@@ -512,6 +512,17 @@ async def proxy_omnichannel_message(
         b_id = get_uuid(business.id)
         sender_id = get_uuid(current_user.id)
 
+        sender_name = (
+            getattr(current_user, "full_name_db", None)
+            or getattr(current_user, "full_name", None)
+            or (current_user.email.split("@")[0] if getattr(current_user, "email", None) else "Operador")
+        ).strip()
+        raw_msg = payload.message.strip()
+        if ">orbrick>" not in raw_msg.lower():
+            final_message = f"*{sender_name}>Orbrick>* {raw_msg}"
+        else:
+            final_message = raw_msg
+
         import re
         digits = re.sub(r'\D', '', payload.phone)
         if len(digits) in [10, 11]:
@@ -531,7 +542,7 @@ async def proxy_omnichannel_message(
                 try:
                     wa_res = await client.post("http://orbe_whatsapp:3001/send", json={
                         "phone": num,
-                        "message": payload.message
+                        "message": final_message
                     }, timeout=10.0)
                     if wa_res.status_code == 200:
                         wa_status.append("DELIVERED:200")
@@ -544,7 +555,7 @@ async def proxy_omnichannel_message(
             resend_key = os.environ.get("RESEND_API_KEY", "")
             if payload.email and resend_key:
                 try:
-                    html_msg = f"<div style='font-family: Arial, sans-serif; padding: 20px; color: #333;'><h2 style='color: #00fff5; background: #020406; padding: 15px; border-radius: 8px;'>Orbe Systems - Central B2B</h2><p>Ola,</p><p>{payload.message}</p><hr style='border: top: 1px solid #eee; margin: 20px 0;'><p style='font-size: 11px; color: #888;'>Orbe Systems Central Omnichannel.</p></div>"
+                    html_msg = f"<div style='font-family: Arial, sans-serif; padding: 20px; color: #333;'><h2 style='color: #00fff5; background: #020406; padding: 15px; border-radius: 8px;'>Orbe Systems - Central B2B</h2><p>Ola,</p><p><strong>{sender_name}&gt;Orbrick&gt;</strong> {raw_msg}</p><hr style='border: top: 1px solid #eee; margin: 20px 0;'><p style='font-size: 11px; color: #888;'>Orbe Systems Central Omnichannel.</p></div>"
                     em_res = await client.post(
                         "https://api.resend.com/emails",
                         headers={"Authorization": f"Bearer {resend_key}"},
@@ -570,7 +581,7 @@ async def proxy_omnichannel_message(
             sender_id=sender_id,
             channel="WHATSAPP",
             recipient=phones_to_try[0] if phones_to_try else payload.phone,
-            message_content=payload.message,
+            message_content=final_message,
             status=OmnichannelStatus.SENT if global_db_status == "SENT" else OmnichannelStatus.FAILED
         )
         db.add(db_log)
@@ -578,6 +589,8 @@ async def proxy_omnichannel_message(
                 
         return {
             "status": "success",
+            "sender": sender_name,
+            "formatted_message": final_message,
             "whatsapp_delivery_code": wa_status,
             "email_delivery_code": email_status,
             "message_id": str(db_log.id)

@@ -151,6 +151,8 @@ async def login(
         detail={"email": user.email}, request=request,
     )
     await db.commit()
+    from core.deps import record_active_user
+    record_active_user(request, str(user.id))
     return TokenResponse(access_token=access, refresh_token=refresh, full_name=user.full_name, email=user.email)
 
 
@@ -196,6 +198,8 @@ async def refresh(
         max_age=7 * 86400
     )
 
+    from core.deps import record_active_user
+    record_active_user(request, str(user.id))
     return TokenResponse(access_token=access, refresh_token=refresh_new)
 
 
