@@ -45,8 +45,8 @@ class CooperadoUpdate(BaseModel):
 
 
 class CooperadoOut(BaseModel):
-    id: UUID
-    business_id: UUID
+    id: UUID | str
+    business_id: UUID | str
     name:        str
     document:    str
     email:       Optional[str]
@@ -69,8 +69,9 @@ async def create_cooperado(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    from routers.crm import get_uuid
     business = await _get_user_business(db, current_user)
-    b_id = UUID(str(business.id)) if not isinstance(business.id, UUID) else business.id
+    b_id = get_uuid(business.id)
     coop = Cooperado(**payload.model_dump(), business_id=b_id)
     db.add(coop)
 
@@ -113,8 +114,9 @@ async def list_cooperados(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    from routers.crm import get_uuid
     business = await _get_user_business(db, current_user)
-    b_id = UUID(str(business.id)) if not isinstance(business.id, UUID) else business.id
+    b_id = get_uuid(business.id)
     query = select(Cooperado).where(Cooperado.business_id == b_id)
 
     if coop_status:

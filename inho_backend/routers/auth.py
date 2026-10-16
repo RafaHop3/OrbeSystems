@@ -54,7 +54,6 @@ async def login(
             or_(
                 func.lower(User.email) == raw_id,
                 func.lower(User.email) == f"{raw_id}@orbesystems.com.br",
-                func.lower(User.full_name) == raw_id,
             )
         )
     )
