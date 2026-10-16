@@ -817,7 +817,7 @@ class OmnichannelLog(Base):
     channel         = Column(String(50), nullable=False)  # WHATSAPP | EMAIL
     recipient       = Column(String(255), nullable=False) # Phone number or Email
     message_content = Column(Text, nullable=False)
-    status          = Column(Enum(OmnichannelStatus), nullable=False, default=OmnichannelStatus.PENDING)
+    status          = Column(String(50), nullable=False, default="PENDING")
     error_message   = Column(Text, nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
