@@ -14,15 +14,33 @@ from db.session import get_db
 from models.models import User, UserRole, AuditLog, AuditAction
 
 _bearer = HTTPBearer(auto_error=False)
-_last_user_by_ip: dict[str, str] = {}
-_last_global_user_id: str | None = None
 
 
 def record_active_user(request: Request | None, user_id: str) -> None:
-    global _last_global_user_id
-    _last_global_user_id = str(user_id)
-    if request and request.client and request.client.host:
-        _last_user_by_ip[request.client.host] = str(user_id)
+    """Mantido por compatibilidade (auth.py importa). A identidade NAO e mais
+    inferida por IP/ultimo login: vem exclusivamente do JWT ou do cookie de refresh."""
+    return None
+
+
+async def _load_user(db: AsyncSession, sub) -> User | None:
+    sub = str(sub)
+    try:
+        uuid.UUID(sub)
+        query = select(User).where(cast(User.id, String) == sub)
+    except ValueError:
+        query = select(User).where(User.email == sub)
+    return (await db.execute(query)).scalar_one_or_none()
+
+
+async def _user_from_refresh_cookie(request: Request | None, db: AsyncSession) -> User | None:
+    """Autentica via cookie HttpOnly assinado de refresh (type=refresh, nao revogado)."""
+    cookie_refresh = request.cookies.get("inho_refresh_token") if request else None
+    if not cookie_refresh:
+        return None
+    payload = decode_token(cookie_refresh)
+    if not payload or payload.get("type") != "refresh" or not payload.get("sub"):
+        return None
+    return await _load_user(db, payload["sub"])
 
 
 async def get_current_user(
@@ -30,91 +48,26 @@ async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(_bearer),
     db: AsyncSession = Depends(get_db),
 ) -> User:
-    token = credentials.credentials if credentials else ""
+    token = (credentials.credentials if credentials else "").strip()
+    if token in ("null", "undefined", "dev-bypass"):
+        token = ""
 
-    # Se o token do header for dev-bypass ou vazio, tenta recuperar do cookie HttpOnly de refresh
-    if not token or token in ["", "null", "undefined", "Bearer ", "dev-bypass"]:
-        cookie_refresh = request.cookies.get("inho_refresh_token") if request else None
-        if cookie_refresh:
-            cookie_payload = decode_token(cookie_refresh)
-            if cookie_payload and cookie_payload.get("sub"):
-                sub_id = str(cookie_payload.get("sub"))
-                res = await db.execute(select(User).where(cast(User.id, String) == sub_id))
-                u = res.scalar_one_or_none()
-                if u:
-                    record_active_user(request, str(u.id))
-                    return u
+    payload = decode_token(token) if token else None
+    if payload:
+        jwt_type = payload.get("type")
+        if jwt_type and jwt_type != "access":
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Acesso invalido")
+        user = await _load_user(db, payload.get("sub")) if payload.get("sub") else None
+        if user:
+            return user
 
-        # Tenta pelo cache de IP da sessao autenticada ativa ou ultimo login
-        client_ip = request.client.host if (request and request.client) else None
-        candidate_id = (_last_user_by_ip.get(client_ip) if client_ip else None) or _last_global_user_id
-        if candidate_id:
-            res = await db.execute(select(User).where(cast(User.id, String) == str(candidate_id)))
-            u = res.scalar_one_or_none()
-            if u:
-                return u
+    # Sem JWT valido (ausente/expirado): aceita somente o cookie de refresh valido do proprio usuario.
+    user = await _user_from_refresh_cookie(request, db)
+    if user:
+        return user
 
-        # Tenta pelo ultimo LOGIN registrado no AuditLog
-        try:
-            last_login = await db.execute(
-                select(AuditLog.user_id)
-                .where(AuditLog.action == AuditAction.LOGIN, AuditLog.user_id.isnot(None))
-                .order_by(AuditLog.timestamp.desc())
-                .limit(1)
-            )
-            last_uid = last_login.scalar_one_or_none()
-            if last_uid:
-                res = await db.execute(select(User).where(cast(User.id, String) == str(last_uid)))
-                u = res.scalar_one_or_none()
-                if u:
-                    record_active_user(request, str(u.id))
-                    return u
-        except Exception:
-            pass
+    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido ou expirado")
 
-        res = await db.execute(select(User).where(User.role.in_([UserRole.SUPER_ADMIN, UserRole.ADMIN])).limit(1))
-        db_user = res.scalar_one_or_none()
-        if db_user:
-            return db_user
-
-        res = await db.execute(select(User).limit(1))
-        db_user = res.scalar_one_or_none()
-        if db_user:
-            return db_user
-
-        raise HTTPException(status_code=401, detail="Dev Override falhou: Nenhum usuario no banco para usar de Mock.")
-
-    payload = decode_token(token)
-
-    if not payload:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido ou expirado")
-
-    jwt_type = payload.get("type")
-    if jwt_type and jwt_type != "access":
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Acesso invalido")
-
-    user_id = payload.get("sub")
-    is_uuid = False
-    if isinstance(user_id, str):
-        try:
-            uuid_val = uuid.UUID(user_id)
-            is_uuid = True
-        except ValueError:
-            is_uuid = False
-
-    if is_uuid:
-        query = select(User).where(cast(User.id, String) == str(user_id))
-    else:
-        query = select(User).where(User.email == str(user_id))
-
-    result = await db.execute(query)
-    user = result.scalar_one_or_none()
-
-    if not user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario nao encontrado ou token legado expirado")
-
-    record_active_user(request, str(user.id))
-    return user
 
 
 async def require_admin(user: User = Depends(get_current_user)) -> User:

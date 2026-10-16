@@ -55,8 +55,8 @@ export default function SociosRegistrationPage() {
                 setCep(data.cep.replace(/\D/g, ""));
             }
 
-        } catch (err: any) {
-            setErrorMsg(err.message || "Erro de conexão com BrasilAPI.");
+        } catch (err: unknown) {
+            setErrorMsg(err instanceof Error ? err.message : "Erro de conexão com BrasilAPI.");
         } finally {
             setIsLoadingCnpj(false);
         }
@@ -86,17 +86,43 @@ export default function SociosRegistrationPage() {
                 estado: data.state || ""
             }));
 
-        } catch (err: any) {
-            setErrorMsg(err.message || "Erro de conexão com BrasilAPI (CEP).");
+        } catch (err: unknown) {
+            setErrorMsg(err instanceof Error ? err.message : "Erro de conexão com BrasilAPI (CEP).");
         } finally {
             setIsLoadingCep(false);
         }
     };
 
-    const handleSave = (e: React.FormEvent) => {
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        setSuccessMsg("Sócio / Cooperado registrado no Banco de Dados (PostgreSQL) com sucesso!");
-        setTimeout(() => setSuccessMsg(""), 3000);
+        setErrorMsg("");
+        const document = cnpj.replace(/\D/g, "");
+        const name = formData.razaoSocial || formData.nomeFantasia;
+        if (!name || !document) {
+            setErrorMsg("Informe o CNPJ e a Razão Social (ou Nome Fantasia) para registrar.");
+            return;
+        }
+        try {
+            const token = typeof window !== "undefined" ? (localStorage.getItem("token") || "") : "";
+            const res = await fetch("https://inho-api.orbesystems.com.br/api/v1/crm/cooperados/", {
+                method: "POST",
+                credentials: "include",
+                headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+                body: JSON.stringify({
+                    name,
+                    document,
+                    notes: `NIS: ${formData.nis || "-"} | Matrícula: ${formData.matricula || "-"} | ${formData.endereco}, ${formData.bairro}, ${formData.cidade}/${formData.estado} CEP ${cep}`,
+                }),
+            });
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(typeof data.detail === "string" ? data.detail : `Falha ao registrar (HTTP ${res.status}).`);
+            }
+            setSuccessMsg("Sócio / Cooperado registrado com sucesso!");
+            setTimeout(() => setSuccessMsg(""), 3000);
+        } catch (err: unknown) {
+            setErrorMsg(err instanceof Error ? err.message : "Erro ao registrar o sócio.");
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

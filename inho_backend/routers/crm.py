@@ -66,10 +66,12 @@ async def create_contact(
         await db.commit()
         await db.refresh(db_contact)
         return db_contact
-    except Exception as e:
-        import traceback
-        traceback_str = traceback.format_exc()
-        raise HTTPException(status_code=400, detail=f"Dev Override Caught 500: {str(e)}\n\n {traceback_str}")
+    except HTTPException:
+        raise
+    except Exception:
+        import logging
+        logging.getLogger("inho.crm").exception("Erro ao criar contato")
+        raise HTTPException(status_code=400, detail="Nao foi possivel criar o contato. Verifique os dados e tente novamente.")
 
 
 @router.get("/contacts/", response_model=List[CRMContactOut])
@@ -537,6 +539,7 @@ async def proxy_omnichannel_message(
         email_status = None
         global_db_status = "SENT"
         
+        delivered = False
         async with httpx.AsyncClient() as client:
             for num in phones_to_try:
                 try:
@@ -546,11 +549,13 @@ async def proxy_omnichannel_message(
                     }, timeout=10.0)
                     if wa_res.status_code == 200:
                         wa_status.append("DELIVERED:200")
-                    else:
-                        wa_status.append(f"HTTP:{wa_res.status_code}")
-                except Exception as e:
+                        delivered = True
+                        break
+                    wa_status.append(f"HTTP:{wa_res.status_code}")
+                except Exception:
                     wa_status.append("FAILED:Erro")
-                    global_db_status = "FAILED"
+            if not delivered:
+                global_db_status = "FAILED"
                 
             resend_key = os.environ.get("RESEND_API_KEY", "")
             if payload.email and resend_key:
@@ -595,8 +600,12 @@ async def proxy_omnichannel_message(
             "email_delivery_code": email_status,
             "message_id": str(db_log.id)
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except HTTPException:
+        raise
+    except Exception:
+        import logging
+        logging.getLogger("inho.crm").exception("Erro no envio omnichannel")
+        raise HTTPException(status_code=500, detail="Erro interno ao enviar a mensagem. Tente novamente.")
 
 @router.get("/whatsapp/history")
 async def get_whatsapp_history(
@@ -672,7 +681,7 @@ from fastapi.responses import HTMLResponse
 import httpx
 
 @router.get("/whatsapp-qr", response_class=HTMLResponse)
-async def proxy_whatsapp_qr():
+async def proxy_whatsapp_qr(current_user: User = Depends(get_current_user)):
     """Proxy the internal Baileys QR interface to the public INHO API."""
     try:
         urls = ["http://whatsapp:3001/qr", "http://orbe_whatsapp:3001/qr", "http://localhost:3001/qr"]

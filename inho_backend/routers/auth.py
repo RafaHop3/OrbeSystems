@@ -37,7 +37,7 @@ _limiter = Limiter(key_func=get_remote_address)
 
 # Removed /register endpoint completely to block unauthorized insertions.
 @router.post("/login", response_model=TokenResponse)
-@_limiter.limit("100/minute")   # Dev friendly rate limit
+@_limiter.limit("20/minute")
 async def login(
     request: Request,
     response: Response,
@@ -289,7 +289,10 @@ async def webhook_provision(
     INTERNAL USE ONLY: Chamado pelo Webhook do Orbe Hub após pagamento no Stripe.
     Cria um mestre (Proprietário/Admin) com os mesmos dados e hash de senha.
     """
-    if not x_inho_system_secret or x_inho_system_secret != settings.INHO_SYSTEM_SECRET:
+    import hmac
+    if not x_inho_system_secret or not hmac.compare_digest(
+        x_inho_system_secret.encode(), str(settings.INHO_SYSTEM_SECRET).encode()
+    ):
         raise HTTPException(status_code=403, detail="Acesso negado: Secret interno invalido")
 
     existing = await db.execute(select(User).where(func.lower(User.email) == body.email.strip().lower()))

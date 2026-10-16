@@ -138,7 +138,7 @@ app.add_middleware(
         "https://inho.orbesystems.com.br",
         "https://inho-api.orbesystems.com.br",
     ],
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|.*orbesystems.*|.*vercel\.app)(:[0-9]+)?",
+    allow_origin_regex=r"^(https?://(localhost|127\.0\.0\.1)(:[0-9]+)?|https://([a-z0-9-]+\.)*orbesystems\.com\.br|https://inho-frontend[a-z0-9-]*\.vercel\.app)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

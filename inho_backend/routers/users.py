@@ -30,9 +30,17 @@ async def get_me(
     return current_user
 
 
-@router.get("/", response_model=list[UserOut], dependencies=[Depends(require_admin)])
-async def list_users(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(User).order_by(User.created_at.desc()))
+@router.get("/", response_model=list[UserOut])
+async def list_users(
+    current_user: User = Depends(require_admin),
+    db: AsyncSession = Depends(get_db),
+):
+    from routers.admin import _is_platform_owner, _tenant
+    query = select(User)
+    if not _is_platform_owner(current_user):
+        _, ids = await _tenant(db, current_user)
+        query = query.where(cast(User.id, String).in_(list(ids)))
+    result = await db.execute(query.order_by(User.created_at.desc()))
     return result.scalars().all()
 
 
