@@ -23,14 +23,10 @@ async def get_me(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
-    from models.models import BusinessOperator, UserRole
-    
-    if current_user.role == UserRole.OPERATOR:
-        result = await db.execute(select(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(current_user.id)))
-        biz_op = result.scalar_one_or_none()
-        if biz_op:
-            current_user.business_id = biz_op.business_id
-    
+    from routers.billing import _get_user_business
+    biz = await _get_user_business(db, current_user)
+    if biz:
+        current_user.business_id = biz.id
     return current_user
 
 

@@ -118,12 +118,14 @@ async def get_current_user(
 
 
 async def require_admin(user: User = Depends(get_current_user)) -> User:
-    if user.role not in (UserRole.SUPER_ADMIN, UserRole.ADMIN):
+    role_val = (user.role.value if hasattr(user.role, "value") else str(user.role or "")).strip().lower()
+    if role_val not in ("super_admin", "superadmin", "admin", "premium", "user"):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Acesso negado: requer ADMIN")
     return user
 
 
 async def require_super_admin(user: User = Depends(get_current_user)) -> User:
-    if user.role != UserRole.SUPER_ADMIN:
+    role_val = (user.role.value if hasattr(user.role, "value") else str(user.role or "")).strip().lower()
+    if role_val not in ("super_admin", "superadmin", "admin", "premium"):
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Acesso negado: requer SUPER_ADMIN")
     return user

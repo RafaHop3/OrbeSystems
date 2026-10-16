@@ -20,7 +20,7 @@ class BusinessCreate(BaseModel):
     category: BusinessCategory = BusinessCategory.OUTROS
 
 class BusinessResponse(BaseModel):
-    id: str
+    id: UUID | str
     name: str
     cnpj: str | None = None
     category: BusinessCategory
@@ -64,9 +64,6 @@ async def create_business(
             detail="Limite de negócios alcançado. Seu plano permite no máximo 3 repositórios/empresas."
         )
 
-    # 2. Prevent duplication by CNPJ or name if desired
-    # (Optional business logic here)
-
     new_business = Business(
         user_id=current_user.id,
         name=item.name,
@@ -90,7 +87,12 @@ async def list_businesses(
     result = await db.execute(
         select(Business).where(cast(Business.user_id, String) == str(current_user.id))
     )
-    businesses = result.scalars().all()
+    businesses = list(result.scalars().all())
+    if not businesses:
+        from routers.billing import _get_user_business
+        biz = await _get_user_business(db, current_user)
+        if biz:
+            businesses = [biz]
     return businesses
 
 @router.patch("/{id}", response_model=BusinessResponse)

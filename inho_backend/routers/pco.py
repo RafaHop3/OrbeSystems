@@ -20,6 +20,7 @@ from services.audit import write_audit
 router = APIRouter(prefix="/pco", tags=["PCO"])
 
 
+@router.get("/", response_model=List[PCOSurveyOut])
 @router.get("/surveys", response_model=List[PCOSurveyOut])
 async def list_active_surveys(
     db: AsyncSession = Depends(get_db),

@@ -90,6 +90,7 @@ async def create_month_close(
     return month_close
 
 @router.get("/month-close", response_model=List[MonthCloseOut])
+@router.get("/month-closes", response_model=List[MonthCloseOut])
 async def list_month_closes(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)

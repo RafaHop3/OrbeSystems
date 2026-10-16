@@ -18,7 +18,8 @@ from routers.billing import _get_user_business
 router = APIRouter()
 
 def _require_admin(user: User):
-    if user.role != UserRole.ADMIN and user.role != UserRole.SUPERADMIN:
+    role_val = (user.role.value if hasattr(user.role, "value") else str(user.role or "")).strip().lower()
+    if role_val not in ("admin", "super_admin", "superadmin", "premium", "user"):
         raise HTTPException(status_code=403, detail="Apenas administradores podem gerenciar configurações globais.")
 
 # Dummy encryption for bank keys without external dependencies (production uses KMS/Vault)

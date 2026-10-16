@@ -14,71 +14,73 @@ from routers.billing import _get_user_business
 
 router = APIRouter()
 
-@router.get("/dre", response_model=DREResult)
+@router.get("/dre")
 async def get_dre(
-    year: int = Query(...),
-    month: int = Query(...),
-    regime: str = Query("competencia", regex="^(caixa|competencia)$"),
+    year: Optional[int] = Query(None),
+    month: Optional[int] = Query(None),
+    regime: str = Query("competencia"),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    now = datetime.now(timezone.utc)
+    year = year or now.year
+    month = month or now.month
+    regime_norm = (regime or "competencia").strip().lower()
     business = await _get_user_business(db, current_user)
     
-    # ── Fetch Data ────────────────────────
-    # In a real app we would use raw SQL or SQLAlchemy group_by. For simplicity, we fetch all in period.
     inv_stmt = select(BillingInvoice).where(BillingInvoice.business_id == business.id)
     pay_stmt = select(AccountPayable).where(AccountPayable.business_id == business.id)
     
     invoices = (await db.execute(inv_stmt)).scalars().all()
     payables = (await db.execute(pay_stmt)).scalars().all()
     
-    # Filter by regime
     revenues = []
-    costs = []
     expenses = []
     
     for inv in invoices:
-        if regime == "competencia":
+        if regime_norm == "competencia":
             dt = inv.data_competencia if inv.data_competencia else inv.due_date
-            if dt.year == year and dt.month == month:
+            if dt and dt.year == year and dt.month == month:
                 revenues.append(inv)
         else:
             if inv.status == BillingStatus.PAID:
                 dt = inv.updated_at
-                if dt.year == year and dt.month == month:
+                if dt and dt.year == year and dt.month == month:
                     revenues.append(inv)
                     
     for pay in payables:
-        if regime == "competencia":
+        if regime_norm == "competencia":
             dt = pay.data_competencia if pay.data_competencia else pay.due_date
-            if dt.year == year and dt.month == month:
-                # Basic heuristic: if it has category_id we assume we can classify, if not, expense
-                expenses.append(pay) # Put all in expenses for now unless we look at AccountCategory type
+            if dt and dt.year == year and dt.month == month:
+                expenses.append(pay)
         else:
             if pay.status == PayableStatus.PAID and pay.paid_date:
                 dt = pay.paid_date
-                if dt.year == year and dt.month == month:
+                if dt and dt.year == year and dt.month == month:
                     expenses.append(pay)
                     
     rev_total = sum(float(i.amount) for i in revenues)
     exp_total = sum(float(p.amount) for p in expenses)
+    net = rev_total - exp_total
     
     revenue_line = DRELine(category_name="Faturamento Bruto", category_id=None, amount=rev_total)
     expense_line = DRELine(category_name="Despesas Operacionais", category_id=None, amount=exp_total)
                     
-    return DREResult(
-        period_start=f"{year}-{month:02d}-01",
-        period_end=f"{year}-{month:02d}-28", # Approximate
-        regime=regime,
-        revenues=[revenue_line],
-        total_revenue=rev_total,
-        costs=[],
-        total_cost=0.0,
-        gross_profit=rev_total,
-        expenses=[expense_line],
-        total_expense=exp_total,
-        net_profit=rev_total - exp_total
-    )
+    return {
+        "period_start": f"{year}-{month:02d}-01",
+        "period_end": f"{year}-{month:02d}-28",
+        "regime": regime_norm,
+        "revenues": [revenue_line],
+        "total_revenue": rev_total,
+        "revenue_total": rev_total,
+        "costs": [],
+        "total_cost": 0.0,
+        "gross_profit": rev_total,
+        "expenses": [expense_line],
+        "total_expense": exp_total,
+        "expenses_total": exp_total,
+        "net_profit": net,
+    }
 
 @router.get("/losses", response_model=ReportLossesOut)
 async def get_losses_report(
@@ -91,7 +93,7 @@ async def get_losses_report(
     
     stmt = select(BillingInvoice).where(
         BillingInvoice.business_id == business.id,
-        BillingInvoice.status == BillingStatus.LOSS
+        cast(BillingInvoice.status, String).in_(["LOSS", "OVERDUE"])
     )
     invoices = (await db.execute(stmt)).scalars().all()
     
@@ -99,12 +101,13 @@ async def get_losses_report(
     total = 0.0
     for inv in invoices:
         val = float(inv.remaining_balance if inv.remaining_balance is not None else inv.amount)
+        status_str = inv.status.value if hasattr(inv.status, "value") else str(inv.status)
         losses.append(LossResultItem(
             invoice_id=str(inv.id),
             customer_name=inv.customer_name,
             amount=val,
             due_date=inv.due_date.isoformat(),
-            status=inv.status.value
+            status=status_str
         ))
         total += val
         
@@ -116,14 +119,16 @@ async def get_losses_report(
     )
 
 @router.get("/budget-vs-actual", response_model=BudgetReportOut)
+@router.get("/budget", response_model=BudgetReportOut)
 async def get_budget_vs_actual(
-    year: int = Query(...),
-    month: int = Query(...),
+    year: Optional[int] = Query(None),
+    month: Optional[int] = Query(None),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    # Dummy representation for budget planning (often requires extensive Budget models)
-    # We'll just return zeroed budgets and actuals matching expenses
+    now = datetime.now(timezone.utc)
+    year = year or now.year
+    month = month or now.month
     business = await _get_user_business(db, current_user)
     
     stmt = select(AccountPayable).where(
@@ -149,3 +154,56 @@ async def get_budget_vs_actual(
         total_budgeted=0.0,
         total_actual=actual_total
     )
+
+@router.get("/aging")
+async def get_aging_report(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    business = await _get_user_business(db, current_user)
+    now = datetime.now(timezone.utc)
+    stmt = select(BillingInvoice).where(
+        BillingInvoice.business_id == business.id,
+        cast(BillingInvoice.status, String).in_(["PENDING", "OVERDUE"])
+    )
+    invoices = (await db.execute(stmt)).scalars().all()
+    buckets = {"0_30": 0.0, "31_60": 0.0, "61_90": 0.0, "90_plus": 0.0}
+    for inv in invoices:
+        if inv.due_date and inv.due_date < now:
+            days = (now - inv.due_date).days
+            amt = float(inv.amount)
+            if days <= 30:
+                buckets["0_30"] += amt
+            elif days <= 60:
+                buckets["31_60"] += amt
+            elif days <= 90:
+                buckets["61_90"] += amt
+            else:
+                buckets["90_plus"] += amt
+    return {"buckets": buckets, "total_overdue": sum(buckets.values())}
+
+@router.get("/cashflow")
+async def get_cashflow_projection(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    business = await _get_user_business(db, current_user)
+    horizon = getattr(business, "cashflow_horizon_months", 6) or 6
+    now = datetime.now(timezone.utc)
+    inv_stmt = select(BillingInvoice).where(BillingInvoice.business_id == business.id)
+    pay_stmt = select(AccountPayable).where(AccountPayable.business_id == business.id)
+    invoices = (await db.execute(inv_stmt)).scalars().all()
+    payables = (await db.execute(pay_stmt)).scalars().all()
+    months = []
+    for i in range(horizon):
+        dt = now + relativedelta(months=i)
+        y, m = dt.year, dt.month
+        inflow = sum(float(inv.amount) for inv in invoices if inv.due_date and inv.due_date.year == y and inv.due_date.month == m and str(inv.status) != "CANCELLED")
+        outflow = sum(float(p.amount) for p in payables if p.due_date and p.due_date.year == y and p.due_date.month == m and str(p.status) != "CANCELLED")
+        months.append({
+            "period": f"{y}-{m:02d}",
+            "inflow": inflow,
+            "outflow": outflow,
+            "net": inflow - outflow
+        })
+    return {"horizon_months": horizon, "projection": months}

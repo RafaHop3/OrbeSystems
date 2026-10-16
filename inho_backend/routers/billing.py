@@ -20,33 +20,50 @@ from schemas.billing_schemas import (
 router = APIRouter()
 
 async def _get_user_business(db: AsyncSession, user: User) -> Business:
-    # Safely query since we converted user_id to String(36) in models
+    from models.models import BusinessOperator
+    # 1. Verifica se o usuario e dono direto de uma empresa
     result = await db.execute(select(Business).where(cast(Business.user_id, String) == str(user.id)))
     business = result.scalars().first()
-    
-    if not business:
-        # Create a default business for the user if none exists
-        business = Business(
-            id=str(uuid.uuid4()),
-            user_id=str(user.id),
-            name=f"Empresa de {user.full_name}"
-        )
-        db.add(business)
-        await db.flush() # Flush to lock in the UUID
-        
-        # Also auto-provision the user as a BusinessOperator 
-        # so they never get 403 Forbidden in Contracts/PDV/CRM
-        from models.models import BusinessOperator
-        biz_op = BusinessOperator(
-            id=str(uuid.uuid4()),
-            business_id=business.id,
-            user_id=str(user.id)
-        )
-        db.add(biz_op)
-        
-        await db.commit()
-        await db.refresh(business)
-        
+    if business:
+        return business
+
+    # 2. Verifica se o usuario esta vinculado como Operador (BusinessOperator)
+    op_res = await db.execute(
+        select(Business)
+        .join(BusinessOperator, BusinessOperator.business_id == Business.id)
+        .where(cast(BusinessOperator.user_id, String) == str(user.id))
+    )
+    op_business = op_res.scalars().first()
+    if op_business:
+        return op_business
+
+    # 3. Se for operador sem vinculo ainda, vincula ao primeiro negocio ativo da cooperativa
+    role_val = (user.role.value if hasattr(user.role, "value") else str(user.role or "")).strip().lower()
+    if role_val == "operator":
+        first_biz = (await db.execute(select(Business).order_by(Business.created_at.asc()).limit(1))).scalars().first()
+        if first_biz:
+            db.add(BusinessOperator(id=str(uuid.uuid4()), business_id=first_biz.id, user_id=str(user.id)))
+            await db.commit()
+            return first_biz
+
+    # 4. Cria empresa padrao para o administrador
+    business = Business(
+        id=str(uuid.uuid4()),
+        user_id=str(user.id),
+        name=f"Empresa de {user.full_name}"
+    )
+    db.add(business)
+    await db.flush()
+
+    biz_op = BusinessOperator(
+        id=str(uuid.uuid4()),
+        business_id=business.id,
+        user_id=str(user.id)
+    )
+    db.add(biz_op)
+
+    await db.commit()
+    await db.refresh(business)
     return business
 
 def _generate_mock_pix_code(invoice_id: uuid.UUID, amount: Decimal, customer_name: str) -> str:

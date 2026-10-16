@@ -52,8 +52,10 @@ class MFAVerifyRequest(BaseModel):
 
 
 # ── User ──────────────────────────────────────────────────────────
+from pydantic import field_validator
+
 class UserOut(BaseModel):
-    id: UUID
+    id: UUID | str
     email: str
     full_name: Optional[str] = "Administrador"
     role: str
@@ -62,7 +64,17 @@ class UserOut(BaseModel):
     is_verified: Optional[bool] = True
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    business_id: Optional[UUID] = None
+    business_id: Optional[UUID | str] = None
+
+    @field_validator("role", mode="before")
+    @classmethod
+    def _normalize_role(cls, v):
+        raw = (v.value if hasattr(v, "value") else str(v or "admin")).strip().lower()
+        if raw in ("superadmin", "super_admin"):
+            return "super_admin"
+        if raw in ("admin", "premium", "user"):
+            return "admin"
+        return raw
 
     class Config:
         from_attributes = True
