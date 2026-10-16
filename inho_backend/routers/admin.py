@@ -98,6 +98,17 @@ async def list_audit_logs(
     db: AsyncSession = Depends(get_db),
     admin: User = Depends(require_super_admin)
 ):
-    result = await db.execute(select(AuditLog).order_by(AuditLog.created_at.desc()).offset(skip).limit(limit))
+    result = await db.execute(select(AuditLog).order_by(AuditLog.timestamp.desc()).offset(skip).limit(limit))
     logs = result.scalars().all()
-    return logs
+    return [
+        AuditLogOut(
+            id=str(l.id),
+            user_id=str(l.user_id) if l.user_id else None,
+            action=l.action.value if hasattr(l.action, "value") else str(l.action),
+            resource=l.entity,
+            details=l.detail,
+            ip_address=l.ip_address,
+            created_at=l.timestamp,
+        )
+        for l in logs
+    ]
