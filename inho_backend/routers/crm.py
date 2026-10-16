@@ -88,7 +88,7 @@ async def list_contacts(
     query = select(CRMContact).where(CRMContact.business_id == b_id)
 
     if category:
-        query = query.where(CRMContact.category == ContactCategory(category))
+        query = query.where(CRMContact.category == ContactCategory("PARTNER" if category.upper() == "COOPERADO" else category))
     if is_active is not None:
         query = query.where(CRMContact.is_active == is_active)
     if search:
@@ -613,6 +613,44 @@ async def get_whatsapp_history(
             "created_at": log.created_at
         } for log in logs
     ]
+
+@router.get("/whatsapp/queue")
+async def get_whatsapp_reminder_queue(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Fila de lembretes/cobranças automáticas pendentes (régua D-3, D0, D+3) da empresa."""
+    from datetime import timedelta
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    result = await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.business_id == b_id,
+            BillingInvoice.status.in_([BillingStatus.PENDING, BillingStatus.OVERDUE]),
+        ).order_by(BillingInvoice.due_date.asc()).limit(200)
+    )
+    queue = []
+    for inv in result.scalars().all():
+        due = inv.due_date
+        steps = [
+            ("D-3", due - timedelta(days=3), inv.reminder_before_sent_at),
+            ("D0", due, inv.reminder_due_sent_at),
+            ("D+3", due + timedelta(days=3), inv.reminder_after_sent_at),
+        ]
+        for label, when, sent_at in steps:
+            queue.append({
+                "invoice_id": str(inv.id),
+                "customer_name": inv.customer_name,
+                "customer_phone": inv.customer_phone,
+                "amount": float(inv.amount),
+                "due_date": inv.due_date,
+                "step": label,
+                "scheduled_for": when,
+                "sent_at": sent_at,
+                "state": "SENT" if sent_at else ("NO_PHONE" if not inv.customer_phone else "QUEUED"),
+            })
+    queue.sort(key=lambda x: x["scheduled_for"])
+    return queue
 
 from fastapi.responses import HTMLResponse
 import httpx

@@ -72,6 +72,32 @@ async def create_cooperado(
     business = await _get_user_business(db, current_user)
     coop = Cooperado(**payload.model_dump(), business_id=business.id)
     db.add(coop)
+
+    # Sincroniza com o CRM: o cooperado vira contato PARTNER (visível na Central WhatsApp)
+    from models.models import CRMContact, ContactCategory
+    existing = (await db.execute(
+        select(CRMContact).where(
+            CRMContact.business_id == business.id,
+            CRMContact.document == payload.document,
+        )
+    )).scalars().first()
+    if existing:
+        existing.category = ContactCategory.PARTNER
+        existing.name = payload.name
+        existing.phone = payload.phone or existing.phone
+        existing.email = payload.email or existing.email
+        existing.is_active = True
+    else:
+        db.add(CRMContact(
+            business_id=business.id,
+            category=ContactCategory.PARTNER,
+            name=payload.name,
+            document=payload.document,
+            email=payload.email,
+            phone=payload.phone,
+            bank_details=payload.bank_details,
+            notes=payload.notes,
+        ))
     await db.commit()
     await db.refresh(coop)
     return coop

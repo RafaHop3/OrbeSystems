@@ -22,6 +22,17 @@ class CRMContactBase(BaseModel):
     notes:        Optional[str] = None
     is_active:    bool = True
 
+    @field_validator("category", mode="before")
+    @classmethod
+    def _category_alias(cls, v):
+        # Alias do frontend: COOPERADO == PARTNER (sócio/cooperado)
+        return "PARTNER" if isinstance(v, str) and v.upper() == "COOPERADO" else v
+
+    @field_validator("email", "document", "phone", "bank_details", "notes", mode="before")
+    @classmethod
+    def _empty_to_none(cls, v):
+        return None if isinstance(v, str) and not v.strip() else v
+
     # ---- B2B2C Corporate/Entity Extensions ----
     person_type:            Optional[str] = None
     municipal_registration: Optional[str] = None

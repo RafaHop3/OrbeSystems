@@ -11,6 +11,10 @@ from services.messaging import format_whatsapp_phone
 logger = logging.getLogger("notification_job")
 WHATSAPP_SERVICE_URL = "http://orbe_whatsapp:3001/send"
 
+def _day_start(d):
+    """Início do dia (UTC) para comparar due_date (DateTime) com uma data, sem depender de igualdade exata."""
+    return datetime(d.year, d.month, d.day, tzinfo=timezone.utc)
+
 async def process_billing_reminders():
     """Motor automático de varredura de Faturas e disparos de WhatsApp"""
     today = datetime.now(timezone.utc).date()
@@ -20,7 +24,7 @@ async def process_billing_reminders():
             target_date_d_minus_3 = today + timedelta(days=3)
             query_preventive = select(BillingInvoice).where(
                 BillingInvoice.status == BillingStatus.PENDING,
-                BillingInvoice.due_date == target_date_d_minus_3,
+                BillingInvoice.due_date >= _day_start(target_date_d_minus_3), BillingInvoice.due_date < _day_start(target_date_d_minus_3) + timedelta(days=1),
                 BillingInvoice.reminder_before_sent_at.is_(None)
             )
             res_prev = await db.execute(query_preventive)
@@ -29,7 +33,7 @@ async def process_billing_reminders():
             target_date_d0 = today
             query_today = select(BillingInvoice).where(
                 BillingInvoice.status == BillingStatus.PENDING,
-                BillingInvoice.due_date == target_date_d0,
+                BillingInvoice.due_date >= _day_start(target_date_d0), BillingInvoice.due_date < _day_start(target_date_d0) + timedelta(days=1),
                 BillingInvoice.reminder_due_sent_at.is_(None)
             )
             res_today = await db.execute(query_today)
@@ -38,7 +42,7 @@ async def process_billing_reminders():
             target_date_d_plus_3 = today - timedelta(days=3)
             query_overdue = select(BillingInvoice).where(
                 BillingInvoice.status == BillingStatus.OVERDUE,
-                BillingInvoice.due_date == target_date_d_plus_3,
+                BillingInvoice.due_date >= _day_start(target_date_d_plus_3), BillingInvoice.due_date < _day_start(target_date_d_plus_3) + timedelta(days=1),
                 BillingInvoice.reminder_after_sent_at.is_(None)
             )
             res_ov = await db.execute(query_overdue)
@@ -60,7 +64,10 @@ async def _dispatch_whatsapp_batch(db: AsyncSession, invoices: list, category: s
         
     async with httpx.AsyncClient(timeout=10.0) as client:
         for inv in invoices:
-            raw_phone = inv.customer_phone or "5511999999999"
+            raw_phone = inv.customer_phone
+            if not raw_phone:
+                logger.warning(f"[Scheduler] Fatura {inv.id} sem telefone; lembrete ignorado.")
+                continue
             phone = format_whatsapp_phone(raw_phone)
             
             clean_pix = str(inv.pix_code) if inv.pix_code else ""

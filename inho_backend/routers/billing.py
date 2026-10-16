@@ -111,6 +111,22 @@ async def create_invoice(
     current_user: User = Depends(get_current_user)
 ):
     business = await _get_user_business(db, current_user)
+
+    # Herda telefone do cooperado/contato CRM para a régua automática de cobrança
+    if not payload.customer_phone:
+        from models.models import Cooperado, CRMContact
+        inherited_phone = None
+        if payload.cooperado_id:
+            coop = (await db.execute(select(Cooperado).where(
+                Cooperado.id == payload.cooperado_id, Cooperado.business_id == business.id
+            ))).scalars().first()
+            inherited_phone = coop.phone if coop else None
+        if not inherited_phone and payload.customer_doc:
+            contact = (await db.execute(select(CRMContact).where(
+                CRMContact.business_id == business.id, CRMContact.document == payload.customer_doc
+            ))).scalars().first()
+            inherited_phone = contact.phone if contact else None
+        payload.customer_phone = inherited_phone
     invoice_id = uuid.uuid4()
     pix_code = _generate_mock_pix_code(invoice_id, payload.amount, payload.customer_name)
     pix_qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={urllib.parse.quote(pix_code)}"
