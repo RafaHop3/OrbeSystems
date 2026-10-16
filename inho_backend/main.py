@@ -33,6 +33,17 @@ async def lifespan(app: FastAPI):
     app.state.db_ready = False
     logger.info("INHO API iniciando...")
 
+    for stmt in [
+        "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS bank_details TEXT",
+        "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS notes TEXT",
+        "CREATE TABLE IF NOT EXISTS inho.omnichannel_logs (id UUID PRIMARY KEY, business_id UUID NOT NULL, sender_id UUID NOT NULL, contact_id UUID, channel VARCHAR(50) NOT NULL, recipient VARCHAR(255) NOT NULL, message_content TEXT NOT NULL, status VARCHAR(50) NOT NULL DEFAULT 'SENT', error_message TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
+    ]:
+        try:
+            async with engine.begin() as ddl_conn:
+                await ddl_conn.execute(text(stmt))
+        except Exception as ddl_err:
+            logger.warning(f"DDL startup warning: {ddl_err}")
+
     try:
         async with engine.begin() as conn:
             if settings.APP_ENV != "production":
@@ -60,17 +71,6 @@ async def lifespan(app: FastAPI):
                             )
                 
                 await conn.run_sync(verify_schema_integrity)
-
-        for stmt in [
-            "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS bank_details TEXT",
-            "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS notes TEXT",
-            "CREATE TABLE IF NOT EXISTS inho.omnichannel_logs (id UUID PRIMARY KEY, business_id UUID NOT NULL, sender_id UUID NOT NULL, contact_id UUID, channel VARCHAR(50) NOT NULL, recipient VARCHAR(255) NOT NULL, message_content TEXT NOT NULL, status VARCHAR(50) NOT NULL DEFAULT 'SENT', error_message TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
-        ]:
-            try:
-                async with engine.begin() as ddl_conn:
-                    await ddl_conn.execute(text(stmt))
-            except Exception as ddl_err:
-                logger.warning(f"DDL startup warning: {ddl_err}")
 
         app.state.db_ready = True
         logger.info("Banco de dados conectado e esquema Inho (SaaS) perfeitamente sincronizado com sucesso!")
