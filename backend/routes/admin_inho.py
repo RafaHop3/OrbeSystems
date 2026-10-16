@@ -36,10 +36,15 @@ async def list_inho_users(
     db: Session = Depends(get_inho_db)
 ):
     admin_logger.info(f"Admin {admin_email} fetching INHO database users directly (Encapsulated)")
+    try:
+        db.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255)"))
+        db.commit()
+    except Exception:
+        db.rollback()
     
     # We query the natively isolated INHO Database Schema directly
     query = text("""
-        SELECT id, email, role, is_email_verified, created_at 
+        SELECT id, email, role, is_email_verified, created_at, full_name 
         FROM users 
         ORDER BY created_at DESC 
         OFFSET :skip LIMIT :limit
@@ -48,11 +53,12 @@ async def list_inho_users(
     
     users = []
     for row in result:
+        raw_role = str(row[2] or "admin").lower()
         users.append({
             "id": str(row[0]),
             "email": row[1],
-            "full_name": "Administrador INHO",
-            "role": row[2],
+            "full_name": row[5] or (row[1].split("@")[0] if row[1] else "Administrador INHO"),
+            "role": raw_role,
             "is_active": True,
             "created_at": row[4].isoformat() if row[4] else None,
             "is_verified": row[3],
@@ -69,9 +75,16 @@ async def create_inho_user(
     db: Session = Depends(get_inho_db)
 ):
     from datetime import datetime, timezone
+    try:
+        db.execute(text("ALTER TABLE users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255)"))
+        db.commit()
+    except Exception:
+        db.rollback()
     
-    check_query = text("SELECT id FROM users WHERE email = CAST(:email AS VARCHAR)")
-    if db.execute(check_query, {"email": data.email}).fetchone():
+    clean_email = data.email.strip().lower()
+    clean_name = (data.full_name or "").strip() or clean_email.split("@")[0]
+    check_query = text("SELECT id FROM users WHERE LOWER(email) = CAST(:email AS VARCHAR)")
+    if db.execute(check_query, {"email": clean_email}).fetchone():
         raise HTTPException(status_code=400, detail="Identidade INHO ja existe")
 
     hashed_pw = get_password_hash(data.password)
@@ -90,19 +103,26 @@ async def create_inho_user(
         
     now = datetime.now(timezone.utc)
     
-    insert_query = text(f"""
-        INSERT INTO users (id, email, password_hash, role, is_email_verified, subscription_status, created_at) 
-        VALUES ('{user_id}', '{data.email}', '{hashed_pw}', '{db_role}', false, 'active', '{now}')
+    insert_query = text("""
+        INSERT INTO users (id, email, full_name, password_hash, role, is_email_verified, subscription_status, created_at) 
+        VALUES (:uid, :email, :full_name, :pw, :role, true, 'active', :now)
     """)
     
     try:
-        db.execute(insert_query)
+        db.execute(insert_query, {
+            "uid": user_id,
+            "email": clean_email,
+            "full_name": clean_name,
+            "pw": hashed_pw,
+            "role": db_role,
+            "now": now,
+        })
         db.commit()
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=str(e))
         
-    admin_logger.info(f"Encapsulated Dashboard created INHO user {data.email}")
+    admin_logger.info(f"Encapsulated Dashboard created INHO user {clean_email} ({clean_name})")
     return {"status": "success", "user_id": user_id}
 
 @router.patch("/users/{user_id}")

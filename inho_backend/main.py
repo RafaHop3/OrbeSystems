@@ -34,6 +34,8 @@ async def lifespan(app: FastAPI):
     logger.info("INHO API iniciando...")
 
     for stmt in [
+        "ALTER TABLE public.users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255)",
+        "UPDATE public.users SET full_name = 'rafael_admin', role = 'ADMIN', subscription_status = 'active' WHERE LOWER(email) = 'rafael@orbesystems.com.br'",
         "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS bank_details TEXT",
         "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS notes TEXT",
         "CREATE TABLE IF NOT EXISTS inho.omnichannel_logs (id UUID PRIMARY KEY, business_id UUID NOT NULL, sender_id UUID NOT NULL, contact_id UUID, channel VARCHAR(50) NOT NULL, recipient VARCHAR(255) NOT NULL, message_content TEXT NOT NULL, status VARCHAR(50) NOT NULL DEFAULT 'SENT', error_message TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",

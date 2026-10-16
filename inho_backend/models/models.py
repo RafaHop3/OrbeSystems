@@ -59,6 +59,7 @@ class User(Base):
 
     id              = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
     email           = Column(String(255), unique=True, nullable=False, index=True)
+    full_name_db    = Column("full_name", String(255), nullable=True)
     password_hash   = Column(String(255), nullable=False)
     role            = Column(String(50), nullable=True, default="user")
     is_email_verified = Column(Boolean, default=False, nullable=False)
@@ -88,6 +89,8 @@ class User(Base):
 
     @property
     def full_name(self) -> str:
+        if getattr(self, "full_name_db", None):
+            return self.full_name_db
         if getattr(self, "email", None):
             return self.email.split("@")[0].replace(".", " ").title()
         return "Administrador INHO"

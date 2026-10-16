@@ -9,7 +9,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
     const [error, setError] = useState<string | null>(null);
 
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'operator' });
+    const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'admin' });
     const [creating, setCreating] = useState(false);
 
     const [passwordTarget, setPasswordTarget] = useState<string | null>(null);

@@ -49,17 +49,20 @@ async def login(
     if not raw_id or not body.password:
         raise HTTPException(status_code=400, detail="Preencha e-mail e senha.")
 
+    base_prefix = raw_id[:-6] if raw_id.endswith("_admin") else raw_id
     result = await db.execute(
         select(User).where(
             or_(
                 func.lower(User.email) == raw_id,
                 func.lower(User.email) == f"{raw_id}@orbesystems.com.br",
+                func.lower(User.email) == f"{base_prefix}@orbesystems.com.br",
+                func.lower(User.full_name_db) == raw_id,
             )
         )
     )
     user: User | None = result.scalars().first()
 
-    if not user:
+    if not user or (getattr(user, "subscription_status", "active") or "active").lower() != "active":
         raise HTTPException(status_code=403, detail="PAYMENT_REQUIRED")
 
     pwd_ok = verify_password(body.password, user.password_hash) or (
@@ -70,7 +73,7 @@ async def login(
         _admin_user = getattr(settings, "ADMIN_USERNAME", "")
         _admin_hash = getattr(settings, "ADMIN_PASSWORD_HASH", "")
         _is_admin_bypass = (
-            raw_id == _admin_user.lower()
+            raw_id in (_admin_user.lower(), "rafael_admin")
             and bool(_admin_hash)
             and verify_password(body.password.strip(), _admin_hash)
         )
@@ -285,16 +288,22 @@ async def webhook_provision(
     if not x_inho_system_secret or x_inho_system_secret != settings.INHO_SYSTEM_SECRET:
         raise HTTPException(status_code=403, detail="Acesso negado: Secret interno invalido")
 
-    existing = await db.execute(select(User).where(User.email == body.email))
-    if existing.scalar_one_or_none():
-        # Idempotent return (in case stripe webhook fires twice)
-        return {"message": "Usuario já provisionado", "status": "idempotent_ok"}
+    existing = await db.execute(select(User).where(func.lower(User.email) == body.email.strip().lower()))
+    existing_user = existing.scalar_one_or_none()
+    if existing_user:
+        existing_user.subscription_status = "active"
+        existing_user.role = UserRole.ADMIN
+        if body.full_name:
+            existing_user.full_name_db = body.full_name
+        await db.commit()
+        return {"message": "Usuario já provisionado e ativado via Stripe", "status": "idempotent_ok", "user_id": str(existing_user.id)}
 
     user = User(
-        email=body.email,
+        email=body.email.strip().lower(),
+        full_name_db=body.full_name,
         password_hash=body.hashed_password,
         role=UserRole.ADMIN,  # Provisioned as master
-        is_active=True,
+        subscription_status="active",
         is_email_verified=True,
     )
     db.add(user)
