@@ -489,30 +489,41 @@ async def batch_settle_payables(
     skipped_ids = []
     now_dt = datetime.now(timezone.utc)
     is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
-    if not is_sqlite:
-        from sqlalchemy import text
-        await db.execute(text("SET LOCAL lock_timeout = '5s'"))
 
-    for raw_id in sorted(set(payload.payable_ids)):
-        stmt = select(AccountPayable).where(
-            AccountPayable.id == get_uuid(raw_id),
-            AccountPayable.business_id == b_id,
-        )
+    try:
         if not is_sqlite:
-            stmt = stmt.with_for_update()
-        res = await db.execute(stmt)
-        p = res.scalar_one_or_none()
-        if not p:
-            continue
-        if p.status == PayableStatus.PAID:
-            skipped_ids.append(str(p.id))
-            continue
-        p.status = PayableStatus.PAID
-        if not p.paid_date:
-            p.paid_date = now_dt
-        settled_ids.append(str(p.id))
+            from sqlalchemy import text
+            await db.execute(text("SET LOCAL lock_timeout = '5s'"))
 
-    await db.commit()
+        for raw_id in sorted(set(payload.payable_ids)):
+            stmt = select(AccountPayable).where(
+                AccountPayable.id == get_uuid(raw_id),
+                AccountPayable.business_id == b_id,
+            )
+            if not is_sqlite:
+                stmt = stmt.with_for_update()
+            res = await db.execute(stmt)
+            p = res.scalar_one_or_none()
+            if not p:
+                continue
+            if p.status == PayableStatus.PAID:
+                skipped_ids.append(str(p.id))
+                continue
+            p.status = PayableStatus.PAID
+            if not p.paid_date:
+                p.paid_date = now_dt
+            settled_ids.append(str(p.id))
+
+        await db.commit()
+    except Exception as exc:
+        await db.rollback()
+        err_msg = str(exc).lower()
+        if "55p03" in err_msg or "lock timeout" in err_msg or "locknotavailable" in err_msg:
+            raise HTTPException(
+                status_code=409,
+                detail="Um ou mais títulos estão sendo processados por outro operador no momento. Tente novamente em instantes.",
+            )
+        raise
 
     response_data = {
         "settled_count": len(settled_ids),

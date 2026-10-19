@@ -35,13 +35,60 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 _limiter = Limiter(key_func=get_remote_address)
 
 
+async def _post_login_background_task(
+    user_id_str: str,
+    user_email: str,
+    user_full_name: str,
+    user_role_label: str,
+    needs_rehash: bool,
+    plain_password: str,
+    ip_addr: str | None,
+    user_agent: str | None,
+):
+    from starlette.concurrency import run_in_threadpool
+    from sqlalchemy import update
+    from db.session import AsyncSessionLocal
+    from models.models import AuditLog
+
+    try:
+        new_hash = None
+        if needs_rehash and plain_password:
+            new_hash = await run_in_threadpool(hash_password, plain_password)
+
+        async with AsyncSessionLocal() as bg_db:
+            if new_hash:
+                await bg_db.execute(
+                    update(User)
+                    .where(cast(User.id, String) == user_id_str)
+                    .values(password_hash=new_hash)
+                )
+            log = AuditLog(
+                user_id=user_id_str,
+                user_name=user_full_name,
+                user_role=user_role_label,
+                action=AuditAction.LOGIN,
+                entity="User",
+                entity_id=user_id_str,
+                detail=json.dumps({"email": user_email}),
+                ip_address=ip_addr,
+                user_agent=user_agent,
+            )
+            bg_db.add(log)
+            await bg_db.commit()
+    except Exception:
+        pass
+
+
 # Removed /register endpoint completely to block unauthorized insertions.
+from fastapi import BackgroundTasks
+
 @router.post("/login", response_model=TokenResponse)
 @_limiter.limit("20/minute")
 async def login(
     request: Request,
     response: Response,
     body: LoginRequest,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
 ):
     from sqlalchemy import func, or_
@@ -123,6 +170,7 @@ async def login(
             # Single-use: remove consumed backup code
             user_backup_list.remove(clean_input_code)
             user.backup_codes = json.dumps(user_backup_list)
+            await db.commit()
 
         if not is_totp_valid and not is_backup_valid:
             remaining = mfa_limiter.record_failure(user.email)
@@ -148,15 +196,23 @@ async def login(
         max_age=7 * 86400  # 7 days
     )
 
-    await write_audit(
-        db, AuditAction.LOGIN, "User",
-        user_id=user.id,
-        user_name=str(user.full_name),
-        user_role=str(getattr(user, "role_label", role_val)),
-        entity_id=str(user.id),
-        detail={"email": user.email}, request=request,
+    needs_rehash = bool(
+        user.password_hash
+        and (user.password_hash.startswith("$2b$12$") or user.password_hash.startswith("$2a$12$"))
     )
-    await db.commit()
+    from services.audit import _extract_ip, _extract_ua
+    background_tasks.add_task(
+        _post_login_background_task,
+        user_id_str=str(user.id),
+        user_email=user.email,
+        user_full_name=str(user.full_name),
+        user_role_label=str(getattr(user, "role_label", role_val)),
+        needs_rehash=needs_rehash,
+        plain_password=body.password.strip(),
+        ip_addr=_extract_ip(request),
+        user_agent=_extract_ua(request),
+    )
+
     from core.deps import record_active_user
     record_active_user(request, str(user.id))
     return TokenResponse(access_token=access, refresh_token=refresh, full_name=user.full_name, email=user.email)

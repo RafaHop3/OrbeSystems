@@ -174,44 +174,55 @@ async def rotate_business_secrets(
     b_id = get_uuid(business.id)
 
     is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
-    if not is_sqlite:
-        await db.execute(text("SET LOCAL lock_timeout = '5s'"))
+    try:
+        if not is_sqlite:
+            await db.execute(text("SET LOCAL lock_timeout = '5s'"))
 
-    stmt = select(BankIntegration).where(BankIntegration.business_id == b_id)
-    if not is_sqlite:
-        stmt = stmt.with_for_update()
+        stmt = select(BankIntegration).where(BankIntegration.business_id == b_id)
+        if not is_sqlite:
+            stmt = stmt.with_for_update()
 
-    result = await db.execute(stmt)
-    integrations = result.scalars().all()
-    rotated_banks = 0
-    for integ in integrations:
-        if integ.api_key_encrypted:
-            integ.api_key_encrypted = rotate_secret(integ.api_key_encrypted)
-            rotated_banks += 1
+        result = await db.execute(stmt)
+        integrations = result.scalars().all()
+        rotated_banks = 0
+        for integ in integrations:
+            if integ.api_key_encrypted:
+                integ.api_key_encrypted = rotate_secret(integ.api_key_encrypted)
+                rotated_banks += 1
 
-    rotated_totp = 0
-    if getattr(current_user, "totp_secret", None):
-        current_user.totp_secret = rotate_secret(current_user.totp_secret)
-        rotated_totp = 1
+        rotated_totp = 0
+        if getattr(current_user, "totp_secret", None):
+            current_user.totp_secret = rotate_secret(current_user.totp_secret)
+            rotated_totp = 1
 
-    role_val = current_user.role.value if hasattr(current_user.role, "value") else str(current_user.role)
-    await write_audit(
-        db,
-        AuditAction.UPDATE,
-        "KMS_MultiFernet",
-        user_id=current_user.id,
-        user_name=current_user.full_name,
-        user_role=getattr(current_user, "role_label", role_val),
-        business_id=b_id,
-        entity_id=str(b_id),
-        detail={
-            "event": "KMS_SECRET_ROTATION",
-            "rotated_bank_integrations": rotated_banks,
-            "rotated_totp_secrets": rotated_totp,
-        },
-    )
+        role_val = current_user.role.value if hasattr(current_user.role, "value") else str(current_user.role)
+        await write_audit(
+            db,
+            AuditAction.UPDATE,
+            "KMS_MultiFernet",
+            user_id=current_user.id,
+            user_name=current_user.full_name,
+            user_role=getattr(current_user, "role_label", role_val),
+            business_id=b_id,
+            entity_id=str(b_id),
+            detail={
+                "event": "KMS_SECRET_ROTATION",
+                "rotated_bank_integrations": rotated_banks,
+                "rotated_totp_secrets": rotated_totp,
+            },
+        )
 
-    await db.commit()
+        await db.commit()
+    except Exception as exc:
+        await db.rollback()
+        err_msg = str(exc).lower()
+        if "55p03" in err_msg or "lock timeout" in err_msg or "locknotavailable" in err_msg:
+            raise HTTPException(
+                status_code=409,
+                detail="Rotação de chaves já em andamento por outro administrador. Aguarde alguns segundos e tente novamente.",
+            )
+        raise
+
     return {
         "status": "rotated",
         "rotated_bank_integrations": rotated_banks,
