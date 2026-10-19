@@ -88,9 +88,6 @@ async def login(
             await db.commit()
             raise HTTPException(status_code=401, detail="Credenciais invalidas")
         # bypass granted — fall through to token generation
-    elif user.password_hash and (user.password_hash.startswith("$2b$12$") or user.password_hash.startswith("$2a$12$")):
-        # Transparently rehash legacy 12-round bcrypt to 10-round to cut future login CPU time by 4x
-        user.password_hash = await run_in_threadpool(hash_password, body.password.strip())
 
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Conta desativada")
@@ -154,8 +151,8 @@ async def login(
     await write_audit(
         db, AuditAction.LOGIN, "User",
         user_id=user.id,
-        user_name=user.full_name,
-        user_role=getattr(user, "role_label", role_val),
+        user_name=str(user.full_name),
+        user_role=str(getattr(user, "role_label", role_val)),
         entity_id=str(user.id),
         detail={"email": user.email}, request=request,
     )
