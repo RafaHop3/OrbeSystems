@@ -40,7 +40,7 @@ async def _load_user(db: AsyncSession, sub) -> User | None:
 
     try:
         uid = uuid.UUID(sub)
-        query = select(User).where(User.id == uid)
+        query = select(User).where(User.id == str(uid))
     except ValueError:
         query = select(User).where(User.email == sub)
     user = (await db.execute(query)).scalar_one_or_none()
