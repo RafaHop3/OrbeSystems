@@ -26,6 +26,17 @@ _BIZ_CACHE: "_BizOrderedDict[str, tuple[float, Business]]" = _BizOrderedDict()
 _BIZ_CACHE_TTL = 60.0
 _BIZ_CACHE_MAX = 500
 
+def _clone_biz(b: Business) -> Business:
+    return Business(
+        id=b.id,
+        user_id=b.user_id,
+        name=b.name,
+        cnpj=getattr(b, "cnpj", None),
+        category=getattr(b, "category", None),
+        cashflow_horizon_months=getattr(b, "cashflow_horizon_months", 6),
+        created_at=getattr(b, "created_at", None),
+    )
+
 async def _get_user_business(db: AsyncSession, user: User) -> Business:
     from models.models import BusinessOperator
     uid_str = str(user.id)
@@ -39,12 +50,9 @@ async def _get_user_business(db: AsyncSession, user: User) -> Business:
     result = await db.execute(select(Business).where(cast(Business.user_id, String) == uid_str))
     business = result.scalars().first()
     if business:
-        try:
-            db.expunge(business)
-        except Exception:
-            pass
-        _BIZ_CACHE[uid_str] = (now_ts, business)
-        return business
+        cloned = _clone_biz(business)
+        _BIZ_CACHE[uid_str] = (now_ts, cloned)
+        return cloned
 
     # 2. Verifica se o usuario esta vinculado como Operador (BusinessOperator)
     op_res = await db.execute(
@@ -54,12 +62,9 @@ async def _get_user_business(db: AsyncSession, user: User) -> Business:
     )
     op_business = op_res.scalars().first()
     if op_business:
-        try:
-            db.expunge(op_business)
-        except Exception:
-            pass
-        _BIZ_CACHE[uid_str] = (now_ts, op_business)
-        return op_business
+        cloned = _clone_biz(op_business)
+        _BIZ_CACHE[uid_str] = (now_ts, cloned)
+        return cloned
 
     # 3. Se for operador sem vinculo ainda, vincula ao primeiro negocio ativo da cooperativa
     role_val = (user.role.value if hasattr(user.role, "value") else str(user.role or "")).strip().lower()

@@ -39,21 +39,28 @@ async def _load_user(db: AsyncSession, sub) -> User | None:
         return cached[1]
 
     try:
-        uid = uuid.UUID(sub)
-        query = select(User).where(User.id == str(uid))
+        uuid.UUID(sub)
+        query = select(User).where(cast(User.id, String) == sub)
     except ValueError:
         query = select(User).where(User.email == sub)
     user = (await db.execute(query)).scalar_one_or_none()
     if user:
-        try:
-            db.expunge(user)
-        except Exception:
-            pass
-        _USER_CACHE[sub] = (now_ts, user)
+        detached_user = User(
+            id=user.id,
+            email=user.email,
+            full_name_db=getattr(user, "full_name_db", None),
+            password_hash=user.password_hash,
+            role=user.role,
+            is_email_verified=user.is_email_verified,
+            subscription_status=user.subscription_status,
+            created_at=user.created_at,
+        )
+        _USER_CACHE[sub] = (now_ts, detached_user)
         _USER_CACHE.move_to_end(sub)
         while len(_USER_CACHE) > _USER_CACHE_MAX:
             _USER_CACHE.popitem(last=False)
-    return user
+        return detached_user
+    return None
 
 
 async def _user_from_refresh_cookie(request: Request | None, db: AsyncSession) -> User | None:
