@@ -162,13 +162,21 @@ async def rotate_business_secrets(
 ):
     """
     Job de rotação em lote: re-criptografa todas as chaves bancárias do tenant
-    (e o TOTP secret do operador, se presente) usando a chave primária ativa do MultiFernet.
+    (e o TOTP secret do operador, se presente) usando a chave primária ativa do MultiFernet,
+    com lock_timeout de 5s e registro imutável na Trilha de Auditoria.
     """
+    from sqlalchemy import text
+    from models.models import AuditAction
+    from services.audit import write_audit
+
     _require_admin(current_user)
     business = await _get_user_business(db, current_user)
     b_id = get_uuid(business.id)
 
     is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+    if not is_sqlite:
+        await db.execute(text("SET LOCAL lock_timeout = '5s'"))
+
     stmt = select(BankIntegration).where(BankIntegration.business_id == b_id)
     if not is_sqlite:
         stmt = stmt.with_for_update()
@@ -186,10 +194,28 @@ async def rotate_business_secrets(
         current_user.totp_secret = rotate_secret(current_user.totp_secret)
         rotated_totp = 1
 
+    role_val = current_user.role.value if hasattr(current_user.role, "value") else str(current_user.role)
+    await write_audit(
+        db,
+        AuditAction.UPDATE,
+        "KMS_MultiFernet",
+        user_id=current_user.id,
+        user_name=current_user.full_name,
+        user_role=getattr(current_user, "role_label", role_val),
+        business_id=b_id,
+        entity_id=str(b_id),
+        detail={
+            "event": "KMS_SECRET_ROTATION",
+            "rotated_bank_integrations": rotated_banks,
+            "rotated_totp_secrets": rotated_totp,
+        },
+    )
+
     await db.commit()
     return {
         "status": "rotated",
         "rotated_bank_integrations": rotated_banks,
         "rotated_totp_secrets": rotated_totp,
+        "audit_logged": True,
         "rotated_at": datetime.now(timezone.utc).isoformat(),
     }

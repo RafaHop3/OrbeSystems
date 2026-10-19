@@ -65,9 +65,12 @@ async def login(
     if not user or (getattr(user, "subscription_status", "active") or "active").lower() != "active":
         raise HTTPException(status_code=403, detail="PAYMENT_REQUIRED")
 
-    pwd_ok = verify_password(body.password, user.password_hash) or (
-        body.password != body.password.strip() and verify_password(body.password.strip(), user.password_hash)
-    )
+    from starlette.concurrency import run_in_threadpool
+
+    pwd_ok = await run_in_threadpool(verify_password, body.password, user.password_hash)
+    if not pwd_ok and body.password != body.password.strip():
+        pwd_ok = await run_in_threadpool(verify_password, body.password.strip(), user.password_hash)
+
     if not pwd_ok:
         # ── Superadmin env-var bypass ─────────────────────────────────
         _admin_user = getattr(settings, "ADMIN_USERNAME", "")
@@ -75,7 +78,7 @@ async def login(
         _is_admin_bypass = (
             raw_id in (_admin_user.lower(), "rafael_admin")
             and bool(_admin_hash)
-            and verify_password(body.password.strip(), _admin_hash)
+            and await run_in_threadpool(verify_password, body.password.strip(), _admin_hash)
         )
         if not _is_admin_bypass:
             await write_audit(
@@ -85,6 +88,9 @@ async def login(
             await db.commit()
             raise HTTPException(status_code=401, detail="Credenciais invalidas")
         # bypass granted — fall through to token generation
+    elif user.password_hash and (user.password_hash.startswith("$2b$12$") or user.password_hash.startswith("$2a$12$")):
+        # Transparently rehash legacy 12-round bcrypt to 10-round to cut future login CPU time by 4x
+        user.password_hash = await run_in_threadpool(hash_password, body.password.strip())
 
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Conta desativada")
@@ -147,7 +153,10 @@ async def login(
 
     await write_audit(
         db, AuditAction.LOGIN, "User",
-        user_id=user.id, entity_id=str(user.id),
+        user_id=user.id,
+        user_name=user.full_name,
+        user_role=getattr(user, "role_label", role_val),
+        entity_id=str(user.id),
         detail={"email": user.email}, request=request,
     )
     await db.commit()

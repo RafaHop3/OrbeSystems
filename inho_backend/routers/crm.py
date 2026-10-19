@@ -489,6 +489,9 @@ async def batch_settle_payables(
     skipped_ids = []
     now_dt = datetime.now(timezone.utc)
     is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+    if not is_sqlite:
+        from sqlalchemy import text
+        await db.execute(text("SET LOCAL lock_timeout = '5s'"))
 
     for raw_id in sorted(set(payload.payable_ids)):
         stmt = select(AccountPayable).where(

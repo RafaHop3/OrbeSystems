@@ -13,8 +13,8 @@ from core.config import settings
 
 # ── Password ─────────────────────────────────────────────────────
 def hash_password(plain: str) -> str:
-    """Gera hash bcrypt da senha. bcrypt trunca em 72 bytes nativamente."""
-    return bcrypt.hashpw(plain.encode("utf-8"), bcrypt.gensalt(rounds=12)).decode("utf-8")
+    """Gera hash bcrypt da senha (rounds=10 para equilíbrio ótimo de segurança e latência ~70ms)."""
+    return bcrypt.hashpw(plain.encode("utf-8"), bcrypt.gensalt(rounds=10)).decode("utf-8")
 
 
 def verify_password(plain: str, hashed: str) -> bool:

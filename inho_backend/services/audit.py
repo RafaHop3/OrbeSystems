@@ -76,7 +76,6 @@ async def write_audit(
         user_agent=ua,
     )
     db.add(log)
-    await db.flush()   # persiste imediatamente (antes do commit externo)
     return log
 
 
