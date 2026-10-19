@@ -367,8 +367,12 @@ async def update_payable(
     if not payable:
         raise HTTPException(404, "Conta a pagar não encontrada")
 
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    dump = payload.model_dump(exclude_unset=True)
+    for field, value in dump.items():
         setattr(payable, field, value)
+
+    if payable.status == PayableStatus.PAID and not payable.paid_date:
+        payable.paid_date = datetime.now(timezone.utc)
 
     await db.commit()
     await db.refresh(payable)
@@ -402,15 +406,20 @@ async def payable_totals(
 ):
     """Total a pagar por status (spec §3.6 — painel de totalização)."""
     business = await _biz(db, current_user)
-    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    now_naive = datetime.now(timezone.utc).replace(tzinfo=None)
 
     rows = await db.execute(
         select(AccountPayable).where(AccountPayable.business_id == get_uuid(business.id))
     )
     payables = rows.scalars().all()
 
-    pending = sum(float(p.amount) for p in payables if p.status == PayableStatus.PENDING and p.due_date >= now)
-    overdue = sum(float(p.amount) for p in payables if p.status == PayableStatus.PENDING and p.due_date < now)
+    def _is_overdue(dt):
+        if not dt:
+            return False
+        return dt.replace(tzinfo=None) < now_naive
+
+    pending = sum(float(p.amount) for p in payables if p.status == PayableStatus.PENDING and not _is_overdue(p.due_date))
+    overdue = sum(float(p.amount) for p in payables if p.status == PayableStatus.PENDING and _is_overdue(p.due_date))
     paid = sum(float(p.amount) for p in payables if p.status == PayableStatus.PAID)
 
     return {"pending": pending, "overdue": overdue, "paid": paid, "total": pending + overdue}

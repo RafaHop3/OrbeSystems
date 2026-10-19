@@ -12,8 +12,9 @@ from sqlalchemy import select, cast, String
 from db.session import get_db
 from models.models import User, Business, ApiToken, BankIntegration, UserRole
 from core.deps import get_current_user
+from core.security import encrypt_secret
 from schemas.settings_schemas import ApiTokenCreate, ApiTokenOut, ApiTokenCreateResponse, BankIntegrationCreate, BankIntegrationOut
-from routers.billing import _get_user_business
+from routers.billing import _get_user_business, get_uuid
 
 router = APIRouter()
 
@@ -22,9 +23,8 @@ def _require_admin(user: User):
     if role_val not in ("admin", "super_admin", "superadmin", "premium", "user"):
         raise HTTPException(status_code=403, detail="Apenas administradores podem gerenciar configurações globais.")
 
-# Dummy encryption for bank keys without external dependencies (production uses KMS/Vault)
 def _encrypt_key(key: str) -> str:
-    return base64.b64encode(key.encode()).decode()
+    return encrypt_secret(key)
 
 # ── API Tokens ──────────────────────────────────────────────────
 @router.post("/api-tokens", response_model=ApiTokenCreateResponse)
@@ -35,15 +35,16 @@ async def create_api_token(
 ):
     _require_admin(current_user)
     business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
     
     plain_token = f"inho_{os.urandom(24).hex()}"
     token_hash = hashlib.sha256(plain_token.encode()).hexdigest()
     
     api_token = ApiToken(
-        business_id=business.id,
+        business_id=b_id,
         name=payload.name,
         token_hash=token_hash,
-        created_by_id=current_user.id,
+        created_by_id=get_uuid(current_user.id),
         expires_at=datetime.now(timezone.utc) + timedelta(days=365)
     )
     db.add(api_token)
@@ -68,8 +69,9 @@ async def list_api_tokens(
 ):
     _require_admin(current_user)
     business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
     
-    result = await db.execute(select(ApiToken).where(ApiToken.business_id == business.id))
+    result = await db.execute(select(ApiToken).where(ApiToken.business_id == b_id))
     return result.scalars().all()
 
 @router.delete("/api-tokens/{id}")
@@ -80,8 +82,9 @@ async def revoke_api_token(
 ):
     _require_admin(current_user)
     business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
     
-    result = await db.execute(select(ApiToken).where(ApiToken.id == id, ApiToken.business_id == business.id))
+    result = await db.execute(select(ApiToken).where(ApiToken.id == get_uuid(id), ApiToken.business_id == b_id))
     token = result.scalar_one_or_none()
     if not token:
         raise HTTPException(status_code=404, detail="Token não encontrado.")
@@ -99,19 +102,19 @@ async def create_bank_integration(
 ):
     _require_admin(current_user)
     business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
     
-    # Upsert logic to replace existing integration for the same bank if desired, but we will simplify
-    existing = await db.execute(select(BankIntegration).where(BankIntegration.business_id == business.id, BankIntegration.bank_name == payload.bank_name))
+    existing = await db.execute(select(BankIntegration).where(BankIntegration.business_id == b_id, BankIntegration.bank_name == payload.bank_name))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Esta integração bancária já existe para a empresa.")
     
     encrypted_key = _encrypt_key(payload.api_key)
     
     integration = BankIntegration(
-        business_id=business.id,
+        business_id=b_id,
         bank_name=payload.bank_name,
         api_key_encrypted=encrypted_key,
-        webhook_url=f"https://api.orbein.ho/webhooks/{payload.bank_name.lower()}/{business.id}",
+        webhook_url=f"https://inho-api.orbesystems.com.br/api/v1/webhooks/{payload.bank_name.lower()}/{business.id}",
         is_active=True
     )
     db.add(integration)
@@ -126,8 +129,9 @@ async def list_bank_integrations(
 ):
     _require_admin(current_user)
     business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
     
-    result = await db.execute(select(BankIntegration).where(BankIntegration.business_id == business.id))
+    result = await db.execute(select(BankIntegration).where(BankIntegration.business_id == b_id))
     return result.scalars().all()
 
 @router.delete("/bank-integrations/{id}")
@@ -138,8 +142,9 @@ async def remove_bank_integration(
 ):
     _require_admin(current_user)
     business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
     
-    result = await db.execute(select(BankIntegration).where(BankIntegration.id == id, BankIntegration.business_id == business.id))
+    result = await db.execute(select(BankIntegration).where(BankIntegration.id == get_uuid(id), BankIntegration.business_id == b_id))
     integration = result.scalar_one_or_none()
     
     if not integration:
