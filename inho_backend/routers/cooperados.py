@@ -125,7 +125,11 @@ async def list_cooperados(
         from sqlalchemy import or_
         like = f"%{search}%"
         query = query.where(
-            or_(Cooperado.name.ilike(like), Cooperado.document.ilike(like))
+            or_(
+                Cooperado.name.ilike(like),
+                Cooperado.document.ilike(like),
+                Cooperado.notes.ilike(like),
+            )
         )
 
     result = await db.execute(query.order_by(Cooperado.name.asc()).offset(skip).limit(limit))
@@ -138,11 +142,14 @@ async def get_cooperado(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    from routers.crm import get_uuid
     business = await _get_user_business(db, current_user)
+    c_id = get_uuid(cooperado_id)
+    b_id = get_uuid(business.id)
     result = await db.execute(
         select(Cooperado).where(
-            Cooperado.id == cooperado_id,
-            Cooperado.business_id == business.id
+            Cooperado.id == c_id,
+            Cooperado.business_id == b_id
         )
     )
     coop = result.scalar_one_or_none()
@@ -158,11 +165,14 @@ async def update_cooperado(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    from routers.crm import get_uuid
     business = await _get_user_business(db, current_user)
+    c_id = get_uuid(cooperado_id)
+    b_id = get_uuid(business.id)
     result = await db.execute(
         select(Cooperado).where(
-            Cooperado.id == cooperado_id,
-            Cooperado.business_id == business.id
+            Cooperado.id == c_id,
+            Cooperado.business_id == b_id
         )
     )
     coop = result.scalar_one_or_none()
@@ -183,11 +193,14 @@ async def delete_cooperado(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    from routers.crm import get_uuid
     business = await _get_user_business(db, current_user)
+    c_id = get_uuid(cooperado_id)
+    b_id = get_uuid(business.id)
     result = await db.execute(
         select(Cooperado).where(
-            Cooperado.id == cooperado_id,
-            Cooperado.business_id == business.id
+            Cooperado.id == c_id,
+            Cooperado.business_id == b_id
         )
     )
     coop = result.scalar_one_or_none()
@@ -209,13 +222,16 @@ async def get_cooperado_balance(
     Retorna extrato detalhado de aportes (faturas pagas) e
     o saldo acumulado do cooperado nos últimos 12 meses.
     """
+    from routers.crm import get_uuid
     business = await _get_user_business(db, current_user)
+    c_id = get_uuid(cooperado_id)
+    b_id = get_uuid(business.id)
 
     # Garante que cooperado pertence ao negócio
     coop_res = await db.execute(
         select(Cooperado).where(
-            Cooperado.id == cooperado_id,
-            Cooperado.business_id == business.id
+            Cooperado.id == c_id,
+            Cooperado.business_id == b_id
         )
     )
     coop = coop_res.scalar_one_or_none()
@@ -227,8 +243,8 @@ async def get_cooperado_balance(
     invoices_res = await db.execute(
         select(BillingInvoice)
         .where(
-            BillingInvoice.cooperado_id == cooperado_id,
-            BillingInvoice.business_id == business.id,
+            BillingInvoice.cooperado_id == c_id,
+            BillingInvoice.business_id == b_id,
             BillingInvoice.created_at >= cutoff,
         )
         .order_by(BillingInvoice.due_date.asc())
