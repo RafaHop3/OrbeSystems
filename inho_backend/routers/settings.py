@@ -14,7 +14,8 @@ from models.models import User, Business, ApiToken, BankIntegration, UserRole
 from core.deps import get_current_user
 from core.security import encrypt_secret
 from schemas.settings_schemas import ApiTokenCreate, ApiTokenOut, ApiTokenCreateResponse, BankIntegrationCreate, BankIntegrationOut
-from routers.billing import _get_user_business, get_uuid
+from routers.billing import _get_user_business
+from routers.crm import get_uuid
 
 router = APIRouter()
 
