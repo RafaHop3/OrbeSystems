@@ -425,6 +425,215 @@ async def payable_totals(
     return {"pending": pending, "overdue": overdue, "paid": paid, "total": pending + overdue}
 
 
+# ── IDEMPOTENT BATCH SETTLEMENT & EXTERNAL LOOKUP CACHE ───────────
+import time
+import re
+from fastapi import Header
+from pydantic import BaseModel
+
+_IDEMPOTENCY_CACHE: dict = {}  # key -> (timestamp, response_dict)
+_LOOKUP_CACHE: dict = {}       # key -> (timestamp, data_dict)
+_IDEMPOTENCY_TTL_SEC = 900     # 15 minutes
+_LOOKUP_TTL_SEC = 86400        # 24 hours
+
+class BatchSettlePayload(BaseModel):
+    payable_ids: List[str]
+    idempotency_key: Optional[str] = None
+
+@router.post("/payable/batch-settle")
+async def batch_settle_payables(
+    payload: BatchSettlePayload,
+    idempotency_header: Optional[str] = Header(None, alias="Idempotency-Key"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Liquidação em lote com suporte a Idempotency-Key (header ou payload)
+    para evitar lançamentos/baixas duplicadas em caso de timeout ou duplo clique.
+    """
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    idem_key = (payload.idempotency_key or idempotency_header or "").strip()
+
+    now_ts = time.time()
+    if idem_key:
+        scoped_key = f"{b_id}:{idem_key}"
+        cached = _IDEMPOTENCY_CACHE.get(scoped_key)
+        if cached and (now_ts - cached[0]) < _IDEMPOTENCY_TTL_SEC:
+            replay = dict(cached[1])
+            replay["cached_replay"] = True
+            return replay
+
+    settled_ids = []
+    skipped_ids = []
+    now_dt = datetime.now(timezone.utc)
+
+    for raw_id in payload.payable_ids:
+        res = await db.execute(
+            select(AccountPayable).where(
+                AccountPayable.id == get_uuid(raw_id),
+                AccountPayable.business_id == b_id,
+            )
+        )
+        p = res.scalar_one_or_none()
+        if not p:
+            continue
+        if p.status == PayableStatus.PAID:
+            skipped_ids.append(str(p.id))
+            continue
+        p.status = PayableStatus.PAID
+        if not p.paid_date:
+            p.paid_date = now_dt
+        settled_ids.append(str(p.id))
+
+    await db.commit()
+
+    response_data = {
+        "settled_count": len(settled_ids),
+        "settled_ids": settled_ids,
+        "skipped_already_paid": len(skipped_ids),
+        "idempotency_key": idem_key or None,
+        "cached_replay": False,
+    }
+    if idem_key:
+        _IDEMPOTENCY_CACHE[f"{b_id}:{idem_key}"] = (now_ts, response_data)
+    return response_data
+
+
+@router.get("/lookup/cnpj/{cnpj}")
+async def lookup_cnpj_cached(
+    cnpj: str,
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Consulta CNPJ com Cache em Memória (TTL 24h) + Fallback Automático
+    (Primário: BrasilAPI -> Secundário: ReceitaWS / CNPJ.ws).
+    """
+    digits = re.sub(r"\D", "", cnpj)
+    if len(digits) != 14:
+        raise HTTPException(status_code=400, detail="CNPJ deve conter 14 dígitos.")
+
+    cache_key = f"cnpj:{digits}"
+    now_ts = time.time()
+    cached = _LOOKUP_CACHE.get(cache_key)
+    if cached and (now_ts - cached[0]) < _LOOKUP_TTL_SEC:
+        return {**cached[1], "cached": True}
+
+    import httpx
+    async with httpx.AsyncClient(timeout=8.0) as client:
+        # 1. Primary: BrasilAPI
+        try:
+            r = await client.get(f"https://brasilapi.com.br/api/cnpj/v1/{digits}")
+            if r.status_code == 200:
+                d = r.json()
+                normalized = {
+                    "cnpj": digits,
+                    "razao_social": d.get("razao_social") or d.get("nome_fantasia") or "",
+                    "nome_fantasia": d.get("nome_fantasia") or "",
+                    "email": d.get("email") or "",
+                    "ddd_telefone_1": d.get("ddd_telefone_1") or "",
+                    "cep": d.get("cep") or "",
+                    "logradouro": d.get("logradouro") or "",
+                    "numero": d.get("numero") or "",
+                    "bairro": d.get("bairro") or "",
+                    "municipio": d.get("municipio") or "",
+                    "uf": d.get("uf") or "",
+                    "provider": "BrasilAPI",
+                }
+                _LOOKUP_CACHE[cache_key] = (now_ts, normalized)
+                return {**normalized, "cached": False}
+        except Exception:
+            pass
+
+        # 2. Fallback: publica.cnpj.ws
+        try:
+            r2 = await client.get(f"https://publica.cnpj.ws/cnpj/{digits}")
+            if r2.status_code == 200:
+                d2 = r2.json()
+                est = d2.get("estabelecimento") or {}
+                normalized = {
+                    "cnpj": digits,
+                    "razao_social": d2.get("razao_social") or est.get("nome_fantasia") or "",
+                    "nome_fantasia": est.get("nome_fantasia") or "",
+                    "email": est.get("email") or "",
+                    "ddd_telefone_1": f"{est.get('ddd1', '')}{est.get('telefone1', '')}".strip(),
+                    "cep": est.get("cep") or "",
+                    "logradouro": est.get("logradouro") or "",
+                    "numero": est.get("numero") or "",
+                    "bairro": est.get("bairro") or "",
+                    "municipio": (est.get("cidade") or {}).get("nome") or "",
+                    "uf": (est.get("estado") or {}).get("sigla") or "",
+                    "provider": "CNPJ.ws (Fallback)",
+                }
+                _LOOKUP_CACHE[cache_key] = (now_ts, normalized)
+                return {**normalized, "cached": False}
+        except Exception:
+            pass
+
+    raise HTTPException(status_code=502, detail="Serviços externos de consulta CNPJ temporariamente indisponíveis.")
+
+
+@router.get("/lookup/cep/{cep}")
+async def lookup_cep_cached(
+    cep: str,
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Consulta CEP com Cache em Memória (TTL 24h) + Fallback Automático
+    (Primário: BrasilAPI v2 -> Secundário: ViaCEP).
+    """
+    digits = re.sub(r"\D", "", cep)
+    if len(digits) != 8:
+        raise HTTPException(status_code=400, detail="CEP deve conter 8 dígitos.")
+
+    cache_key = f"cep:{digits}"
+    now_ts = time.time()
+    cached = _LOOKUP_CACHE.get(cache_key)
+    if cached and (now_ts - cached[0]) < _LOOKUP_TTL_SEC:
+        return {**cached[1], "cached": True}
+
+    import httpx
+    async with httpx.AsyncClient(timeout=6.0) as client:
+        # 1. Primary: BrasilAPI
+        try:
+            r = await client.get(f"https://brasilapi.com.br/api/cep/v2/{digits}")
+            if r.status_code == 200:
+                d = r.json()
+                normalized = {
+                    "cep": digits,
+                    "street": d.get("street") or "",
+                    "neighborhood": d.get("neighborhood") or "",
+                    "city": d.get("city") or "",
+                    "state": d.get("state") or "",
+                    "provider": "BrasilAPI",
+                }
+                _LOOKUP_CACHE[cache_key] = (now_ts, normalized)
+                return {**normalized, "cached": False}
+        except Exception:
+            pass
+
+        # 2. Fallback: ViaCEP
+        try:
+            r2 = await client.get(f"https://viacep.com.br/ws/{digits}/json/")
+            if r2.status_code == 200:
+                d2 = r2.json()
+                if not d2.get("erro"):
+                    normalized = {
+                        "cep": digits,
+                        "street": d2.get("logradouro") or "",
+                        "neighborhood": d2.get("bairro") or "",
+                        "city": d2.get("localidade") or "",
+                        "state": d2.get("uf") or "",
+                        "provider": "ViaCEP (Fallback)",
+                    }
+                    _LOOKUP_CACHE[cache_key] = (now_ts, normalized)
+                    return {**normalized, "cached": False}
+        except Exception:
+            pass
+
+    raise HTTPException(status_code=502, detail="Serviços externos de consulta CEP temporariamente indisponíveis.")
+
+
 # ── DEALS (FUNIL KANBAN) ──────────────────────────────────────────
 
 from models.models import CRMDeal, DealStage, DealStatus

@@ -21,29 +21,56 @@ def verify_password(plain: str, hashed: str) -> bool:
     return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
 
 
-# ── AES-256 Encryption at Rest (TOTP Secret) ─────────────────────
+# ── AES-256 Encryption at Rest (MultiFernet Key Rotation) ────────
+import os
 import base64
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, MultiFernet
 
-def _get_fernet() -> Fernet:
-    key_bytes = settings.SECRET_KEY.ljust(32, '0')[:32].encode('utf-8')
-    return Fernet(base64.urlsafe_b64encode(key_bytes))
+def _derive_fernet_key(raw: str) -> bytes:
+    raw = raw.strip()
+    # If already a valid 44-char urlsafe base64 Fernet key, use directly
+    if len(raw) == 44:
+        try:
+            base64.urlsafe_b64decode(raw.encode("utf-8"))
+            return raw.encode("utf-8")
+        except Exception:
+            pass
+    key_bytes = raw.ljust(32, "0")[:32].encode("utf-8")
+    return base64.urlsafe_b64encode(key_bytes)
+
+def _get_fernet() -> MultiFernet:
+    """
+    Suporta rotação de chaves via variável de ambiente FERNET_KEYS (separadas por vírgula,
+    chave mais recente primeiro) mantendo compatibilidade automática com SECRET_KEY.
+    """
+    env_keys = [k.strip() for k in os.environ.get("FERNET_KEYS", "").split(",") if k.strip()]
+    fernet_instances = [Fernet(_derive_fernet_key(k)) for k in env_keys]
+    fernet_instances.append(Fernet(_derive_fernet_key(settings.SECRET_KEY)))
+    return MultiFernet(fernet_instances)
 
 def encrypt_secret(plain: str) -> str:
-    """Criptografa o secret TOTP antes de salvar no Supabase (AES-256 em repouso)."""
+    """Criptografa segredos (TOTP, chaves bancárias) usando a chave primária ativa do MultiFernet."""
     if not plain:
         return ""
-    return _get_fernet().encrypt(plain.encode('utf-8')).decode('utf-8')
+    return _get_fernet().encrypt(plain.encode("utf-8")).decode("utf-8")
 
 def decrypt_secret(cipher: str) -> str:
-    """Descriptografa o secret TOTP para validação."""
+    """Descriptografa segredos testando todas as chaves registradas no MultiFernet."""
     if not cipher:
         return ""
     try:
-        return _get_fernet().decrypt(cipher.encode('utf-8')).decode('utf-8')
+        return _get_fernet().decrypt(cipher.encode("utf-8")).decode("utf-8")
     except Exception:
-        # Se for um secret antigo salvo em texto puro antes da criptografia
         return cipher
+
+def rotate_secret(cipher: str) -> str:
+    """Re-criptografa um token existente com a chave primária mais recente sem expor o texto puro."""
+    if not cipher:
+        return ""
+    try:
+        return _get_fernet().rotate(cipher.encode("utf-8")).decode("utf-8")
+    except Exception:
+        return encrypt_secret(decrypt_secret(cipher))
 
 
 # ── JWT ──────────────────────────────────────────────────────────

@@ -103,8 +103,33 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# ── Middleware ────────────────────────────────────────────────────
+# ── Middleware & Continuous Telemetry (APM) ──────────────────────
+import time
+from collections import defaultdict
 from starlette.middleware.base import BaseHTTPMiddleware
+
+_TELEMETRY_STATS = defaultdict(lambda: {"count": 0, "total_ms": 0.0, "max_ms": 0.0, "slow_count": 0, "errors_5xx": 0})
+
+class TelemetryMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        t0 = time.perf_counter()
+        response = await call_next(request)
+        elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 2)
+        response.headers["X-Process-Time-Ms"] = str(elapsed_ms)
+
+        route_key = f"{request.method} {request.url.path}"
+        stat = _TELEMETRY_STATS[route_key]
+        stat["count"] += 1
+        stat["total_ms"] = round(stat["total_ms"] + elapsed_ms, 2)
+        if elapsed_ms > stat["max_ms"]:
+            stat["max_ms"] = elapsed_ms
+        if elapsed_ms > 500.0:
+            stat["slow_count"] += 1
+            logger.warning(f"[APM-SLOW] {route_key} took {elapsed_ms}ms (status={response.status_code})")
+        if response.status_code >= 500:
+            stat["errors_5xx"] += 1
+            logger.error(f"[APM-5XX] {route_key} returned {response.status_code} in {elapsed_ms}ms")
+        return response
 
 class XForwardedProtoMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -122,6 +147,7 @@ class XForwardedProtoMiddleware(BaseHTTPMiddleware):
             request.scope["scheme"] = forwarded_proto
         return await call_next(request)
 
+app.add_middleware(TelemetryMiddleware)
 app.add_middleware(XForwardedProtoMiddleware)
 
 app.add_middleware(
@@ -142,6 +168,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Process-Time-Ms"],
 )
 
 app.state.limiter = limiter
@@ -176,11 +203,10 @@ app.include_router(categories.router)  # /api/v1/categories
 app.include_router(notes.router)       # /api/v1/notes
 
 
-# ── Health Check ──────────────────────────────────────────────────
+# ── Health Check & Continuous Telemetry ──────────────────────────
 @app.get("/health", tags=["Health"])
 async def health_check(request: Request):
     from datetime import datetime, timezone
-    # FIX: usa request.app.state — funciona corretamente com multiplos workers
     return {
         "status": "operational",
         "service": "inho-api",
@@ -188,6 +214,28 @@ async def health_check(request: Request):
         "env": settings.APP_ENV,
         "database": "connected" if getattr(request.app.state, "db_ready", False) else "unavailable",
         "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
+
+@app.get("/api/v1/telemetry/metrics", tags=["Telemetry"])
+async def get_telemetry_metrics():
+    from datetime import datetime, timezone
+    endpoints = []
+    for route_key, st in _TELEMETRY_STATS.items():
+        cnt = st["count"] or 1
+        endpoints.append({
+            "route": route_key,
+            "requests": st["count"],
+            "avg_ms": round(st["total_ms"] / cnt, 2),
+            "max_ms": st["max_ms"],
+            "slow_requests_gt_500ms": st["slow_count"],
+            "errors_5xx": st["errors_5xx"],
+        })
+    endpoints.sort(key=lambda x: x["avg_ms"], reverse=True)
+    return {
+        "status": "active",
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "monitored_routes": len(endpoints),
+        "endpoints": endpoints,
     }
 
 
