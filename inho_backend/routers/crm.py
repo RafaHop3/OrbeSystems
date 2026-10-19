@@ -426,15 +426,36 @@ async def payable_totals(
 
 
 # ── IDEMPOTENT BATCH SETTLEMENT & EXTERNAL LOOKUP CACHE ───────────
+import os
 import time
 import re
+from collections import OrderedDict
 from fastapi import Header
 from pydantic import BaseModel
 
-_IDEMPOTENCY_CACHE: dict = {}  # key -> (timestamp, response_dict)
-_LOOKUP_CACHE: dict = {}       # key -> (timestamp, data_dict)
+_IDEMPOTENCY_CACHE: "OrderedDict[str, tuple]" = OrderedDict()  # key -> (timestamp, response_dict)
+_LOOKUP_CACHE: "OrderedDict[str, tuple]" = OrderedDict()       # key -> (timestamp, data_dict)
 _IDEMPOTENCY_TTL_SEC = 900     # 15 minutes
 _LOOKUP_TTL_SEC = 86400        # 24 hours
+_MAX_IDEMPOTENCY_KEYS = 2000
+_MAX_LOOKUP_KEYS = 1000
+
+def _cache_get(store: OrderedDict, key: str, ttl: int):
+    item = store.get(key)
+    if not item:
+        return None
+    if (time.time() - item[0]) >= ttl:
+        store.pop(key, None)
+        return None
+    store.move_to_end(key)
+    return item[1]
+
+def _cache_set(store: OrderedDict, key: str, val: dict, max_keys: int):
+    if key in store:
+        store.move_to_end(key)
+    elif len(store) >= max_keys:
+        store.popitem(last=False)
+    store[key] = (time.time(), val)
 
 class BatchSettlePayload(BaseModel):
     payable_ids: List[str]
@@ -448,33 +469,35 @@ async def batch_settle_payables(
     current_user: User = Depends(get_current_user),
 ):
     """
-    Liquidação em lote com suporte a Idempotency-Key (header ou payload)
-    para evitar lançamentos/baixas duplicadas em caso de timeout ou duplo clique.
+    Liquidação em lote com suporte a Idempotency-Key (header ou payload) +
+    SELECT ... FOR UPDATE (bloqueio pessimista em PostgreSQL) para prevenir
+    condições de corrida entre múltiplos workers ou sessões concorrentes.
     """
     business = await _biz(db, current_user)
     b_id = get_uuid(business.id)
     idem_key = (payload.idempotency_key or idempotency_header or "").strip()
 
-    now_ts = time.time()
     if idem_key:
         scoped_key = f"{b_id}:{idem_key}"
-        cached = _IDEMPOTENCY_CACHE.get(scoped_key)
-        if cached and (now_ts - cached[0]) < _IDEMPOTENCY_TTL_SEC:
-            replay = dict(cached[1])
+        cached = _cache_get(_IDEMPOTENCY_CACHE, scoped_key, _IDEMPOTENCY_TTL_SEC)
+        if cached:
+            replay = dict(cached)
             replay["cached_replay"] = True
             return replay
 
     settled_ids = []
     skipped_ids = []
     now_dt = datetime.now(timezone.utc)
+    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
 
-    for raw_id in payload.payable_ids:
-        res = await db.execute(
-            select(AccountPayable).where(
-                AccountPayable.id == get_uuid(raw_id),
-                AccountPayable.business_id == b_id,
-            )
+    for raw_id in sorted(set(payload.payable_ids)):
+        stmt = select(AccountPayable).where(
+            AccountPayable.id == get_uuid(raw_id),
+            AccountPayable.business_id == b_id,
         )
+        if not is_sqlite:
+            stmt = stmt.with_for_update()
+        res = await db.execute(stmt)
         p = res.scalar_one_or_none()
         if not p:
             continue
@@ -496,7 +519,7 @@ async def batch_settle_payables(
         "cached_replay": False,
     }
     if idem_key:
-        _IDEMPOTENCY_CACHE[f"{b_id}:{idem_key}"] = (now_ts, response_data)
+        _cache_set(_IDEMPOTENCY_CACHE, f"{b_id}:{idem_key}", response_data, _MAX_IDEMPOTENCY_KEYS)
     return response_data
 
 
@@ -506,7 +529,7 @@ async def lookup_cnpj_cached(
     current_user: User = Depends(get_current_user),
 ):
     """
-    Consulta CNPJ com Cache em Memória (TTL 24h) + Fallback Automático
+    Consulta CNPJ com Cache LRU+TTL em Memória (24h, max 1000 chaves) + Fallback Automático
     (Primário: BrasilAPI -> Secundário: ReceitaWS / CNPJ.ws).
     """
     digits = re.sub(r"\D", "", cnpj)
@@ -514,10 +537,9 @@ async def lookup_cnpj_cached(
         raise HTTPException(status_code=400, detail="CNPJ deve conter 14 dígitos.")
 
     cache_key = f"cnpj:{digits}"
-    now_ts = time.time()
-    cached = _LOOKUP_CACHE.get(cache_key)
-    if cached and (now_ts - cached[0]) < _LOOKUP_TTL_SEC:
-        return {**cached[1], "cached": True}
+    cached = _cache_get(_LOOKUP_CACHE, cache_key, _LOOKUP_TTL_SEC)
+    if cached:
+        return {**cached, "cached": True}
 
     import httpx
     async with httpx.AsyncClient(timeout=8.0) as client:
@@ -540,7 +562,7 @@ async def lookup_cnpj_cached(
                     "uf": d.get("uf") or "",
                     "provider": "BrasilAPI",
                 }
-                _LOOKUP_CACHE[cache_key] = (now_ts, normalized)
+                _cache_set(_LOOKUP_CACHE, cache_key, normalized, _MAX_LOOKUP_KEYS)
                 return {**normalized, "cached": False}
         except Exception:
             pass
@@ -565,7 +587,7 @@ async def lookup_cnpj_cached(
                     "uf": (est.get("estado") or {}).get("sigla") or "",
                     "provider": "CNPJ.ws (Fallback)",
                 }
-                _LOOKUP_CACHE[cache_key] = (now_ts, normalized)
+                _cache_set(_LOOKUP_CACHE, cache_key, normalized, _MAX_LOOKUP_KEYS)
                 return {**normalized, "cached": False}
         except Exception:
             pass
@@ -579,7 +601,7 @@ async def lookup_cep_cached(
     current_user: User = Depends(get_current_user),
 ):
     """
-    Consulta CEP com Cache em Memória (TTL 24h) + Fallback Automático
+    Consulta CEP com Cache LRU+TTL em Memória (24h, max 1000 chaves) + Fallback Automático
     (Primário: BrasilAPI v2 -> Secundário: ViaCEP).
     """
     digits = re.sub(r"\D", "", cep)
@@ -587,10 +609,9 @@ async def lookup_cep_cached(
         raise HTTPException(status_code=400, detail="CEP deve conter 8 dígitos.")
 
     cache_key = f"cep:{digits}"
-    now_ts = time.time()
-    cached = _LOOKUP_CACHE.get(cache_key)
-    if cached and (now_ts - cached[0]) < _LOOKUP_TTL_SEC:
-        return {**cached[1], "cached": True}
+    cached = _cache_get(_LOOKUP_CACHE, cache_key, _LOOKUP_TTL_SEC)
+    if cached:
+        return {**cached, "cached": True}
 
     import httpx
     async with httpx.AsyncClient(timeout=6.0) as client:
@@ -607,7 +628,7 @@ async def lookup_cep_cached(
                     "state": d.get("state") or "",
                     "provider": "BrasilAPI",
                 }
-                _LOOKUP_CACHE[cache_key] = (now_ts, normalized)
+                _cache_set(_LOOKUP_CACHE, cache_key, normalized, _MAX_LOOKUP_KEYS)
                 return {**normalized, "cached": False}
         except Exception:
             pass
@@ -626,7 +647,7 @@ async def lookup_cep_cached(
                         "state": d2.get("uf") or "",
                         "provider": "ViaCEP (Fallback)",
                     }
-                    _LOOKUP_CACHE[cache_key] = (now_ts, normalized)
+                    _cache_set(_LOOKUP_CACHE, cache_key, normalized, _MAX_LOOKUP_KEYS)
                     return {**normalized, "cached": False}
         except Exception:
             pass

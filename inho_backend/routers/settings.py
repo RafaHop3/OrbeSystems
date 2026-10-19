@@ -12,7 +12,7 @@ from sqlalchemy import select, cast, String
 from db.session import get_db
 from models.models import User, Business, ApiToken, BankIntegration, UserRole
 from core.deps import get_current_user
-from core.security import encrypt_secret
+from core.security import encrypt_secret, rotate_secret
 from schemas.settings_schemas import ApiTokenCreate, ApiTokenOut, ApiTokenCreateResponse, BankIntegrationCreate, BankIntegrationOut
 from routers.billing import _get_user_business
 from routers.crm import get_uuid
@@ -154,3 +154,42 @@ async def remove_bank_integration(
     await db.delete(integration)
     await db.commit()
     return {"message": "Integração removida."}
+
+@router.post("/rotate-secrets")
+async def rotate_business_secrets(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Job de rotação em lote: re-criptografa todas as chaves bancárias do tenant
+    (e o TOTP secret do operador, se presente) usando a chave primária ativa do MultiFernet.
+    """
+    _require_admin(current_user)
+    business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
+
+    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+    stmt = select(BankIntegration).where(BankIntegration.business_id == b_id)
+    if not is_sqlite:
+        stmt = stmt.with_for_update()
+
+    result = await db.execute(stmt)
+    integrations = result.scalars().all()
+    rotated_banks = 0
+    for integ in integrations:
+        if integ.api_key_encrypted:
+            integ.api_key_encrypted = rotate_secret(integ.api_key_encrypted)
+            rotated_banks += 1
+
+    rotated_totp = 0
+    if getattr(current_user, "totp_secret", None):
+        current_user.totp_secret = rotate_secret(current_user.totp_secret)
+        rotated_totp = 1
+
+    await db.commit()
+    return {
+        "status": "rotated",
+        "rotated_bank_integrations": rotated_banks,
+        "rotated_totp_secrets": rotated_totp,
+        "rotated_at": datetime.now(timezone.utc).isoformat(),
+    }

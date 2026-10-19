@@ -104,11 +104,20 @@ app = FastAPI(
 )
 
 # ── Middleware & Continuous Telemetry (APM) ──────────────────────
+import re
 import time
-from collections import defaultdict
+from collections import OrderedDict
+from fastapi import Depends, HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
+from core.deps import get_current_user
+from models.models import User
 
-_TELEMETRY_STATS = defaultdict(lambda: {"count": 0, "total_ms": 0.0, "max_ms": 0.0, "slow_count": 0, "errors_5xx": 0})
+_MAX_TELEMETRY_ROUTES = 300
+_TELEMETRY_STATS: "OrderedDict[str, dict]" = OrderedDict()
+_UUID_RE = re.compile(r"/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")
+
+def _normalize_route_path(path: str) -> str:
+    return _UUID_RE.sub("/{id}", path)
 
 class TelemetryMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -117,7 +126,15 @@ class TelemetryMiddleware(BaseHTTPMiddleware):
         elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 2)
         response.headers["X-Process-Time-Ms"] = str(elapsed_ms)
 
-        route_key = f"{request.method} {request.url.path}"
+        norm_path = _normalize_route_path(request.url.path)
+        route_key = f"{request.method} {norm_path}"
+        if route_key not in _TELEMETRY_STATS:
+            if len(_TELEMETRY_STATS) >= _MAX_TELEMETRY_ROUTES:
+                _TELEMETRY_STATS.popitem(last=False)
+            _TELEMETRY_STATS[route_key] = {"count": 0, "total_ms": 0.0, "max_ms": 0.0, "slow_count": 0, "errors_5xx": 0}
+        else:
+            _TELEMETRY_STATS.move_to_end(route_key)
+
         stat = _TELEMETRY_STATS[route_key]
         stat["count"] += 1
         stat["total_ms"] = round(stat["total_ms"] + elapsed_ms, 2)
@@ -217,8 +234,11 @@ async def health_check(request: Request):
     }
 
 @app.get("/api/v1/telemetry/metrics", tags=["Telemetry"])
-async def get_telemetry_metrics():
+async def get_telemetry_metrics(current_user: User = Depends(get_current_user)):
     from datetime import datetime, timezone
+    role_val = (current_user.role.value if hasattr(current_user.role, "value") else str(current_user.role or "")).strip().lower()
+    if role_val not in ("admin", "super_admin", "superadmin", "premium", "user"):
+        raise HTTPException(status_code=403, detail="Acesso restrito a administradores.")
     endpoints = []
     for route_key, st in _TELEMETRY_STATS.items():
         cnt = st["count"] or 1
@@ -235,6 +255,7 @@ async def get_telemetry_metrics():
         "status": "active",
         "timestamp": datetime.now(timezone.utc).isoformat(),
         "monitored_routes": len(endpoints),
+        "max_capacity": _MAX_TELEMETRY_ROUTES,
         "endpoints": endpoints,
     }
 
