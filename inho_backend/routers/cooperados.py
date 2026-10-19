@@ -136,6 +136,223 @@ async def list_cooperados(
     return result.scalars().all()
 
 
+# ── Fase 2 Cooperativismo: Rateio de Sobras (AGO) & Informes ───────
+
+class RateioSobrasApplyPayload(BaseModel):
+    montante_sobras: float
+    ano_base: Optional[int] = None
+    due_date: Optional[str] = None
+    idempotency_key: Optional[str] = None
+
+
+async def _compute_rateio_sobras_data(
+    db: AsyncSession,
+    b_id,
+    montante_sobras: float,
+    ano_base: int,
+):
+    from sqlalchemy import or_
+    from models.models import AccountPayable, PayableStatus
+
+    coops_res = await db.execute(
+        select(Cooperado)
+        .where(Cooperado.business_id == b_id)
+        .order_by(Cooperado.name.asc())
+    )
+    coops = [c for c in coops_res.scalars().all() if c.status != CooperadoStatus.DESLIGADO]
+
+    cutoff = datetime.now(timezone.utc) - timedelta(days=365)
+    inv_res = await db.execute(
+        select(BillingInvoice).where(
+            BillingInvoice.business_id == b_id,
+            BillingInvoice.status == BillingStatus.PAID,
+            BillingInvoice.created_at >= cutoff,
+        )
+    )
+    invoices = inv_res.scalars().all()
+
+    pay_res = await db.execute(
+        select(AccountPayable).where(
+            AccountPayable.business_id == b_id,
+            AccountPayable.created_at >= cutoff,
+        )
+    )
+    payables = pay_res.scalars().all()
+
+    items = []
+    total_movimentacao = 0.0
+    for c in coops:
+        c_id_str = str(c.id)
+        c_doc_clean = (c.document or "").replace(".", "").replace("-", "").replace("/", "")
+        aportes = sum(
+            float(i.amount)
+            for i in invoices
+            if (i.cooperado_id and str(i.cooperado_id) == c_id_str)
+            or (c_doc_clean and (i.customer_doc or "").replace(".", "").replace("-", "").replace("/", "") == c_doc_clean)
+            or (c.name and i.customer_name and c.name.lower() in i.customer_name.lower())
+        )
+        repasses = sum(
+            float(p.amount)
+            for p in payables
+            if (c.name and p.description and c.name.lower() in p.description.lower())
+        )
+        mov = round(aportes + repasses, 2)
+        total_movimentacao += mov
+        items.append({
+            "cooperado_id": c_id_str,
+            "cooperado_name": c.name,
+            "document": c.document,
+            "status": c.status.value if hasattr(c.status, "value") else str(c.status),
+            "aportes_12m": round(aportes, 2),
+            "repasses_12m": round(repasses, 2),
+            "movimentacao_total_12m": mov,
+            "participacao_pct": 0.0,
+            "valor_rateio": 0.0,
+        })
+
+    n_coops = len(items)
+    for it in items:
+        if total_movimentacao > 0:
+            pct = (it["movimentacao_total_12m"] / total_movimentacao) * 100.0
+        elif n_coops > 0:
+            pct = 100.0 / n_coops
+        else:
+            pct = 0.0
+        it["participacao_pct"] = round(pct, 4)
+        it["valor_rateio"] = round(montante_sobras * (pct / 100.0), 2)
+
+    return {
+        "ano_base": ano_base,
+        "montante_sobras": round(float(montante_sobras), 2),
+        "total_cooperados_elegiveis": n_coops,
+        "total_movimentacao_12m": round(total_movimentacao, 2),
+        "items": items,
+    }
+
+
+@router.get("/rateio-sobras", summary="Simulador de Rateio Proporcional de Sobras (AGO)")
+async def preview_rateio_sobras(
+    montante_sobras: float = Query(10000.0, gt=0),
+    ano_base: Optional[int] = Query(None),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    from routers.crm import get_uuid
+    business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
+    yr = ano_base or datetime.now(timezone.utc).year
+    return await _compute_rateio_sobras_data(db, b_id, montante_sobras, yr)
+
+
+@router.post("/rateio-sobras/aplicar", summary="Efetiva o Rateio de Sobras gerando créditos no Contas a Pagar")
+async def apply_rateio_sobras(
+    payload: RateioSobrasApplyPayload,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    import os
+    from decimal import Decimal
+    from sqlalchemy import text
+    from models.models import AccountPayable, PayableStatus, AuditAction
+    from services.audit import write_audit
+    from routers.crm import (
+        get_uuid, _IDEMPOTENCY_CACHE, _IDEMPOTENCY_TTL_SEC, _MAX_IDEMPOTENCY_KEYS,
+        _cache_get, _cache_set,
+    )
+
+    business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
+    yr = payload.ano_base or datetime.now(timezone.utc).year
+    idem_key = (payload.idempotency_key or "").strip()
+
+    if idem_key:
+        scoped_key = f"rateio_sobras:{b_id}:{idem_key}"
+        cached = _cache_get(_IDEMPOTENCY_CACHE, scoped_key, _IDEMPOTENCY_TTL_SEC)
+        if cached:
+            replay = dict(cached)
+            replay["cached_replay"] = True
+            return replay
+
+    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+    try:
+        if not is_sqlite:
+            await db.execute(text("SET LOCAL lock_timeout = '5s'"))
+
+        # Lock cooperados rows deterministically
+        coop_stmt = select(Cooperado).where(Cooperado.business_id == b_id).order_by(Cooperado.id.asc())
+        if not is_sqlite:
+            coop_stmt = coop_stmt.with_for_update()
+        await db.execute(coop_stmt)
+
+        sim = await _compute_rateio_sobras_data(db, b_id, payload.montante_sobras, yr)
+        due_dt = (
+            datetime.fromisoformat(payload.due_date.replace("Z", "+00:00"))
+            if payload.due_date and "T" in payload.due_date
+            else datetime.now(timezone.utc) + timedelta(days=15)
+        )
+
+        payable_ids = []
+        for it in sim["items"]:
+            val = float(it["valor_rateio"] or 0.0)
+            if val <= 0:
+                continue
+            p_id = uuid_module.uuid4()
+            desc = (
+                f"[AGO RATEIO DE SOBRAS {yr}] {it['cooperado_name']} — "
+                f"Participação {it['participacao_pct']:.2f}% | Mov. 12m: R$ {it['movimentacao_total_12m']:.2f}"
+            )
+            db.add(
+                AccountPayable(
+                    id=p_id,
+                    business_id=b_id,
+                    description=desc,
+                    amount=Decimal(f"{val:.2f}"),
+                    due_date=due_dt,
+                    data_competencia=datetime.now(timezone.utc),
+                    status=PayableStatus.PENDING,
+                )
+            )
+            payable_ids.append(str(p_id))
+
+        await write_audit(
+            db,
+            action=AuditAction.CREATE,
+            entity="RATEIO_SOBRAS_AGO",
+            entity_id=str(b_id),
+            user_id=current_user.id,
+            user_name=current_user.full_name,
+            user_role=current_user.role_label,
+            business_id=b_id,
+            detail={
+                "ano_base": yr,
+                "montante_sobras": payload.montante_sobras,
+                "cooperados_contemplados": len(payable_ids),
+                "payable_ids": payable_ids,
+            },
+        )
+        await db.commit()
+
+        response_data = {
+            **sim,
+            "status": "applied",
+            "generated_payables_count": len(payable_ids),
+            "payable_ids": payable_ids,
+            "cached_replay": False,
+        }
+        if idem_key:
+            _cache_set(_IDEMPOTENCY_CACHE, f"rateio_sobras:{b_id}:{idem_key}", response_data, _MAX_IDEMPOTENCY_KEYS)
+        return response_data
+    except Exception as exc:
+        await db.rollback()
+        err_msg = str(exc).lower()
+        if "55p03" in err_msg or "lock timeout" in err_msg or "locknotavailable" in err_msg:
+            raise HTTPException(
+                status_code=409,
+                detail="Rateio de sobras em processamento concorrente. Tente novamente em instantes.",
+            )
+        raise
+
+
 @router.get("/{cooperado_id}", response_model=CooperadoOut)
 async def get_cooperado(
     cooperado_id: str,
@@ -280,4 +497,130 @@ async def get_cooperado_balance(
         "total_pending": total_pending,
         "net_balance": total_paid,
         "entries": entries,
+    }
+
+
+@router.get("/{cooperado_id}/informe-rendimentos", summary="Informe Anual de Rendimentos e Retenções (INSS/IRRF/FATES)")
+async def get_cooperado_informe_rendimentos(
+    cooperado_id: str,
+    ano_base: Optional[int] = Query(None),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Gera o Informe de Rendimentos Anual (Passo 4C) consolidando repasses de produção,
+    retenções fiscais na fonte (INSS, IRRF, Taxa Cooperativa/FATES), sobras distribuídas
+    e capital social integralizado no exercício.
+    """
+    import re
+    from models.models import AccountPayable
+    from routers.crm import get_uuid
+
+    business = await _get_user_business(db, current_user)
+    c_id = get_uuid(cooperado_id)
+    b_id = get_uuid(business.id)
+    yr = ano_base or datetime.now(timezone.utc).year
+
+    coop = (
+        await db.execute(select(Cooperado).where(Cooperado.id == c_id, Cooperado.business_id == b_id))
+    ).scalar_one_or_none()
+    if not coop:
+        raise HTTPException(status_code=404, detail="Cooperado não encontrado")
+
+    # 1. Aportes de Capital Social (BillingInvoice)
+    inv_res = await db.execute(
+        select(BillingInvoice).where(BillingInvoice.business_id == b_id)
+    )
+    c_doc_clean = (coop.document or "").replace(".", "").replace("-", "").replace("/", "")
+    coop_invoices = [
+        i for i in inv_res.scalars().all()
+        if (
+            (i.cooperado_id and str(i.cooperado_id) == str(coop.id))
+            or (c_doc_clean and (i.customer_doc or "").replace(".", "").replace("-", "").replace("/", "") == c_doc_clean)
+            or (coop.name and i.customer_name and coop.name.lower() in i.customer_name.lower())
+        )
+        and (i.due_date and i.due_date.year == yr)
+    ]
+    capital_integralizado = sum(float(i.amount) for i in coop_invoices if i.status == BillingStatus.PAID)
+
+    # 2. Repasses de Produção & Rateio de Sobras (AccountPayable)
+    pay_res = await db.execute(
+        select(AccountPayable).where(AccountPayable.business_id == b_id)
+    )
+    coop_payables = [
+        p for p in pay_res.scalars().all()
+        if p.due_date and p.due_date.year == yr and coop.name and p.description and coop.name.lower() in p.description.lower()
+    ]
+
+    bruto_total = 0.0
+    inss_total = 0.0
+    irrf_total = 0.0
+    taxa_coop_total = 0.0
+    liquido_total = 0.0
+    sobras_total = 0.0
+    historico = []
+
+    bruto_re = re.compile(r"Bruto\s*R\$\s*([\d.,]+)", re.IGNORECASE)
+    inss_re = re.compile(r"INSS\s*R\$\s*([\d.,]+)", re.IGNORECASE)
+    irrf_re = re.compile(r"IRRF\s*R\$\s*([\d.,]+)", re.IGNORECASE)
+    taxa_re = re.compile(r"Taxa\s*Coop\s*R\$\s*([\d.,]+)", re.IGNORECASE)
+
+    def _parse_num(m):
+        if not m:
+            return 0.0
+        raw = m.group(1)
+        if "," in raw and "." in raw:
+            raw = raw.replace(".", "").replace(",", ".")
+        elif "," in raw:
+            raw = raw.replace(",", ".")
+        try:
+            return float(raw)
+        except ValueError:
+            return 0.0
+
+    for p in coop_payables:
+        desc = p.description or ""
+        net_val = float(p.amount)
+        if "RATEIO DE SOBRAS" in desc.upper():
+            sobras_total += net_val
+            liquido_total += net_val
+        else:
+            b_val = _parse_num(bruto_re.search(desc)) or net_val
+            inss_v = _parse_num(inss_re.search(desc))
+            irrf_v = _parse_num(irrf_re.search(desc))
+            taxa_v = _parse_num(taxa_re.search(desc))
+            bruto_total += b_val
+            inss_total += inss_v
+            irrf_total += irrf_v
+            taxa_coop_total += taxa_v
+            liquido_total += net_val
+
+        historico.append({
+            "id": str(p.id),
+            "date": p.due_date.isoformat(),
+            "description": desc,
+            "net_amount": round(net_val, 2),
+            "status": p.status.value if hasattr(p.status, "value") else str(p.status),
+        })
+
+    return {
+        "cooperado_id": str(coop.id),
+        "cooperado_name": coop.name,
+        "document": coop.document,
+        "status": coop.status.value if hasattr(coop.status, "value") else str(coop.status),
+        "ano_base": yr,
+        "fonte_pagadora": {
+            "nome": business.name,
+            "cnpj": business.cnpj or "00.000.000/0001-00",
+        },
+        "resumo_fiscal": {
+            "capital_social_integralizado": round(capital_integralizado, 2),
+            "rendimentos_brutos_producao": round(bruto_total, 2),
+            "retencao_inss": round(inss_total, 2),
+            "retencao_irrf": round(irrf_total, 2),
+            "taxa_administrativa_fates": round(taxa_coop_total, 2),
+            "sobras_liquidas_ago": round(sobras_total, 2),
+            "rendimentos_liquidos_recebidos": round(liquido_total, 2),
+        },
+        "historico_lancamentos": historico,
     }

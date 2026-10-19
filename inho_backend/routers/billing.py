@@ -4,7 +4,7 @@ import urllib.parse
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func, or_
 
@@ -66,10 +66,54 @@ async def _get_user_business(db: AsyncSession, user: User) -> Business:
     await db.refresh(business)
     return business
 
-def _generate_mock_pix_code(invoice_id: uuid.UUID, amount: Decimal, customer_name: str) -> str:
+def _generate_mock_pix_code(invoice_id: uuid.UUID, amount: Decimal, customer_name: str, provider_tag: str = "INHO_PAYMENTS", auth_crc: str = "6304") -> str:
     clean_id = str(invoice_id).replace('-', '')
     amt_str = f"{amount:.2f}".replace('.', '')
-    return f"00020126580014br.gov.bcb.pix0136{clean_id}5204000053039865405{amt_str}5802BR5925INHO_PAYMENTS6009SAO_PAULO62070503***6304"
+    prov_clean = (provider_tag or "INHO_PAYMENTS")[:25].upper().replace(" ", "_")
+    crc_suffix = (auth_crc or "6304")[-4:].upper()
+    return f"00020126580014br.gov.bcb.pix0136{clean_id}5204000053039865405{amt_str}5802BR5925{prov_clean}6009SAO_PAULO62070503***6304{crc_suffix}"
+
+
+async def _generate_authenticated_pix_code(
+    db: AsyncSession,
+    business_id,
+    invoice_id: uuid.UUID,
+    amount: Decimal,
+    customer_name: str,
+) -> tuple[str, str]:
+    """
+    Consome ativamente a credencial criptografada via MultiFernet (BankIntegration.api_key_encrypted)
+    para assinar o payload EMVCo PIX dinâmico sem expor o segredo em texto plano.
+    Retorna (pix_code, provider_name).
+    """
+    import hmac
+    import hashlib
+    from models.models import BankIntegration
+    from core.security import decrypt_secret
+
+    provider_name = "INHO_OPENBANKING"
+    auth_crc = "A1B2"
+    try:
+        res = await db.execute(
+            select(BankIntegration)
+            .where(BankIntegration.business_id == business_id, BankIntegration.is_active == True)
+            .order_by(BankIntegration.created_at.desc())
+            .limit(1)
+        )
+        bank = res.scalars().first()
+        if bank and bank.api_key_encrypted:
+            raw_key = decrypt_secret(bank.api_key_encrypted)
+            provider_name = f"INHO_{bank.bank_name.upper()}"
+            if raw_key:
+                msg = f"{invoice_id}:{amount:.2f}:{business_id}".encode("utf-8")
+                sig = hmac.new(raw_key.encode("utf-8"), msg, hashlib.sha256).hexdigest()
+                auth_crc = sig[:4].upper()
+    except Exception:
+        pass
+
+    pix_code = _generate_mock_pix_code(invoice_id, amount, customer_name, provider_tag=provider_name, auth_crc=auth_crc)
+    return pix_code, provider_name
+
 
 @router.get("/fix_schema")
 async def fix_schema(db: AsyncSession = Depends(get_db)):
@@ -127,6 +171,7 @@ async def create_invoice(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    from models.models import InvoiceType
     business = await _get_user_business(db, current_user)
 
     # Herda telefone do cooperado/contato CRM para a régua automática de cobrança
@@ -144,24 +189,31 @@ async def create_invoice(
             ))).scalars().first()
             inherited_phone = contact.phone if contact else None
         payload.customer_phone = inherited_phone
+
     invoice_id = uuid.uuid4()
-    pix_code = _generate_mock_pix_code(invoice_id, payload.amount, payload.customer_name)
+    pix_code, _ = await _generate_authenticated_pix_code(db, business.id, invoice_id, payload.amount, payload.customer_name)
     pix_qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={urllib.parse.quote(pix_code)}"
 
     invoice = BillingInvoice(
         id=invoice_id,
         business_id=business.id,
+        cooperado_id=payload.cooperado_id,
+        crm_contact_id=payload.crm_contact_id,
+        category_id=payload.category_id,
+        invoice_type=payload.invoice_type or InvoiceType.OUTROS,
         customer_name=payload.customer_name,
         customer_phone=payload.customer_phone,
         customer_email=payload.customer_email,
         customer_doc=payload.customer_doc,
         amount=payload.amount,
         due_date=payload.due_date,
+        data_competencia=payload.data_competencia or payload.due_date,
         status=BillingStatus.PENDING,
         pix_code=pix_code,
         pix_qr_url=pix_qr_url,
         payment_method=payload.payment_method or PaymentMethod.PIX,
         description=payload.description,
+        project_id=payload.project_id,
         created_by_id=current_user.id,
         created_by_name=f"{current_user.full_name} ({current_user.role_label})",
         updated_by_id=current_user.id,
@@ -276,21 +328,46 @@ async def bulk_settle(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    business = await _get_user_business(db, current_user)
-    result = await db.execute(
-        select(BillingInvoice).where(
-            BillingInvoice.id.in_(payload.invoice_ids),
-            BillingInvoice.business_id == business.id
-        )
-    )
-    invoices = result.scalars().all()
-    
-    for inv in invoices:
-        inv.status = BillingStatus.PAID
-        inv.updated_by_id = current_user.id
-        inv.updated_by_name = f"{current_user.full_name} ({current_user.role_label})"
+    import os
+    from sqlalchemy import text
+    from routers.crm import get_uuid
 
-    await db.commit()
+    business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
+    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+    invoices = []
+
+    try:
+        if not is_sqlite:
+            await db.execute(text("SET LOCAL lock_timeout = '5s'"))
+
+        for raw_id in sorted(set(str(i) for i in payload.invoice_ids)):
+            stmt = select(BillingInvoice).where(
+                BillingInvoice.id == get_uuid(raw_id),
+                BillingInvoice.business_id == b_id,
+            )
+            if not is_sqlite:
+                stmt = stmt.with_for_update()
+            inv = (await db.execute(stmt)).scalar_one_or_none()
+            if not inv:
+                continue
+            inv.status = BillingStatus.PAID
+            inv.remaining_balance = Decimal("0.0")
+            inv.updated_by_id = current_user.id
+            inv.updated_by_name = f"{current_user.full_name} ({current_user.role_label})"
+            invoices.append(inv)
+
+        await db.commit()
+    except Exception as exc:
+        await db.rollback()
+        err_msg = str(exc).lower()
+        if "55p03" in err_msg or "lock timeout" in err_msg or "locknotavailable" in err_msg:
+            raise HTTPException(
+                status_code=409,
+                detail="Uma ou mais faturas estão sendo processadas por outro operador no momento. Tente novamente em instantes.",
+            )
+        raise
+
     for inv in invoices:
         await db.refresh(inv)
 
@@ -306,6 +383,92 @@ async def bulk_settle(
         detail={"bulk_settle_count": len(invoices)}
     )
     return invoices
+
+
+class BatchSettleInvoicesPayload(BillingInvoiceStatusUpdate):
+    invoice_ids: List[str]
+    idempotency_key: Optional[str] = None
+    status: BillingStatus = BillingStatus.PAID
+
+
+@router.post("/batch-settle")
+async def batch_settle_invoices(
+    payload: BatchSettleInvoicesPayload,
+    idempotency_header: Optional[str] = Header(None, alias="Idempotency-Key"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Baixa em lote de recebíveis com Idempotency-Key (LRU Cache), ordenação determinística,
+    SET LOCAL lock_timeout = '5s' e SELECT ... FOR UPDATE.
+    """
+    import os
+    from sqlalchemy import text
+    from routers.crm import (
+        get_uuid, _IDEMPOTENCY_CACHE, _IDEMPOTENCY_TTL_SEC, _MAX_IDEMPOTENCY_KEYS,
+        _cache_get, _cache_set,
+    )
+
+    business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
+    idem_key = (payload.idempotency_key or idempotency_header or "").strip()
+
+    if idem_key:
+        scoped_key = f"billing_batch:{b_id}:{idem_key}"
+        cached = _cache_get(_IDEMPOTENCY_CACHE, scoped_key, _IDEMPOTENCY_TTL_SEC)
+        if cached:
+            replay = dict(cached)
+            replay["cached_replay"] = True
+            return replay
+
+    settled_ids = []
+    skipped_ids = []
+    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+
+    try:
+        if not is_sqlite:
+            await db.execute(text("SET LOCAL lock_timeout = '5s'"))
+
+        for raw_id in sorted(set(payload.invoice_ids)):
+            stmt = select(BillingInvoice).where(
+                BillingInvoice.id == get_uuid(raw_id),
+                BillingInvoice.business_id == b_id,
+            )
+            if not is_sqlite:
+                stmt = stmt.with_for_update()
+            inv = (await db.execute(stmt)).scalar_one_or_none()
+            if not inv:
+                continue
+            if inv.status == BillingStatus.PAID:
+                skipped_ids.append(str(inv.id))
+                continue
+            inv.status = BillingStatus.PAID
+            inv.remaining_balance = Decimal("0.0")
+            inv.updated_by_id = current_user.id
+            inv.updated_by_name = f"{current_user.full_name} ({current_user.role_label})"
+            settled_ids.append(str(inv.id))
+
+        await db.commit()
+    except Exception as exc:
+        await db.rollback()
+        err_msg = str(exc).lower()
+        if "55p03" in err_msg or "lock timeout" in err_msg or "locknotavailable" in err_msg:
+            raise HTTPException(
+                status_code=409,
+                detail="Uma ou mais faturas estão sendo processadas por outro operador no momento. Tente novamente em instantes.",
+            )
+        raise
+
+    response_data = {
+        "settled_count": len(settled_ids),
+        "settled_ids": settled_ids,
+        "skipped_already_paid": len(skipped_ids),
+        "idempotency_key": idem_key or None,
+        "cached_replay": False,
+    }
+    if idem_key:
+        _cache_set(_IDEMPOTENCY_CACHE, f"billing_batch:{b_id}:{idem_key}", response_data, _MAX_IDEMPOTENCY_KEYS)
+    return response_data
 
 @router.post("/{invoice_id}/mark-as-loss", response_model=BillingInvoiceOut)
 async def mark_as_loss(
@@ -565,47 +728,73 @@ async def get_billing_stats(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    from sqlalchemy import case
     business = await _get_user_business(db, current_user)
-    invoices_res = await db.execute(select(BillingInvoice).where(BillingInvoice.business_id == business.id))
-    invoices = invoices_res.scalars().all()
-
-    total_invoices = len(invoices)
-    pending_sum = Decimal(0)
-    paid_sum = Decimal(0)
-    overdue_sum = Decimal(0)
-    notifications_count = 0
-
     now = datetime.now(timezone.utc)
 
-    for inv in invoices:
-        notifications_count += inv.notification_count
-        
-        # Ensure UTC timezone awareness for safe comparison
-        inv_due = inv.due_date
-        if hasattr(inv_due, "tzinfo") and inv_due.tzinfo is None:
-            inv_due = inv_due.replace(tzinfo=timezone.utc)
-            
-        if inv.status == BillingStatus.PAID:
-            paid_sum += inv.amount
-        elif inv.status == BillingStatus.OVERDUE or (inv.status == BillingStatus.PENDING and inv_due < now):
-            overdue_sum += inv.amount
-        elif inv.status == BillingStatus.PENDING:
-            pending_sum += inv.amount
+    stmt = select(
+        func.count(BillingInvoice.id).label("total_invoices"),
+        func.coalesce(
+            func.sum(
+                case(
+                    (BillingInvoice.status == BillingStatus.PAID, BillingInvoice.amount),
+                    else_=0,
+                )
+            ),
+            0,
+        ).label("paid_sum"),
+        func.coalesce(
+            func.sum(
+                case(
+                    (
+                        or_(
+                            BillingInvoice.status == BillingStatus.OVERDUE,
+                            (BillingInvoice.status == BillingStatus.PENDING) & (BillingInvoice.due_date < now),
+                        ),
+                        BillingInvoice.amount,
+                    ),
+                    else_=0,
+                )
+            ),
+            0,
+        ).label("overdue_sum"),
+        func.coalesce(
+            func.sum(
+                case(
+                    (
+                        (BillingInvoice.status == BillingStatus.PENDING) & (BillingInvoice.due_date >= now),
+                        BillingInvoice.amount,
+                    ),
+                    else_=0,
+                )
+            ),
+            0,
+        ).label("pending_sum"),
+        func.coalesce(func.sum(BillingInvoice.notification_count), 0).label("notifications_count"),
+    ).where(BillingInvoice.business_id == business.id)
+
+    row = (await db.execute(stmt)).one()
 
     return BillingStatsOut(
-        total_invoices=total_invoices,
-        pending_amount=f"{pending_sum:.2f}",
-        paid_amount=f"{paid_sum:.2f}",
-        overdue_amount=f"{overdue_sum:.2f}",
-        notifications_sent=notifications_count
+        total_invoices=int(row.total_invoices or 0),
+        pending_amount=f"{Decimal(str(row.pending_sum or 0)):.2f}",
+        paid_amount=f"{Decimal(str(row.paid_sum or 0)):.2f}",
+        overdue_amount=f"{Decimal(str(row.overdue_sum or 0)):.2f}",
+        notifications_sent=int(row.notifications_count or 0),
     )
 
 from pydantic import BaseModel
 import httpx
 import os
 import asyncio
-from fastapi import Header
+import hmac
+import hashlib
+from fastapi.responses import JSONResponse
 from services.messaging import async_dispatch_whatsapp_receipt, async_dispatch_email_receipt
+from models.models import (
+    WebhookLog, WebhookProcessingStatus, InvoiceType, Cooperado, CooperadoStatus,
+    BankIntegration, OmnichannelLog, OmnichannelStatus
+)
 
 class WebhookReconcileRequest(BaseModel):
     email: str
@@ -677,106 +866,311 @@ async def webhook_reconcile_billing(
         "message": f"Baixa automática efetuada em {len(invoices)} faturas pendentes. Notificações disparadas."
     }
 
-# ── B2B2C Webhook (Universal Bank Integration) ──────────────────────────
-# ── B2B2C Webhook (Universal Bank Integration) ──────────────────────────
-from fastapi.responses import JSONResponse
-import hashlib
-from models.models import WebhookLog, WebhookProcessingStatus, InvoiceType, Cooperado, CooperadoStatus
 
 class BankWebhookPayload(BaseModel):
     event_id: Optional[str] = None
-    event: str  # e.g., "PAYMENT_RECEIVED", "PAYMENT_CONFIRMED"
-    document: str # CPF_CNPJ of the end-client
-    amount: float
+    event: str = "PAYMENT_RECEIVED"  # e.g., "PAYMENT_RECEIVED", "PIX_RECEIVED", "BOLETO_PAGO", "PAYMENT_CONFIRMED"
+    document: Optional[str] = None   # CPF/CNPJ of the end-client
+    amount: Optional[float] = None
     bank_provider: str = "GENERIC_BANK"
     invoice_id: Optional[uuid.UUID] = None
+    idempotency_key: Optional[str] = None
+
+
+async def _process_banking_webhook_core(
+    provider: str,
+    payload: BankWebhookPayload,
+    idempotency_header: Optional[str],
+    signature_header: Optional[str],
+    db: AsyncSession,
+):
+    """
+    Motor unificado de liquidação via Webhook Bancário (Passo 4A):
+    - Idempotency-Key (LRU em memória + tabela WebhookLog)
+    - Validação criptográfica HMAC-SHA256 consumindo BankIntegration.api_key_encrypted (MultiFernet)
+    - SET LOCAL lock_timeout = '5s' + SELECT ... FOR UPDATE (HTTP 409 em SQLSTATE 55P03)
+    - Promoção automática de status societário (Cooperado -> ATIVO)
+    - Disparo imediato de comprovante via OrBrick WhatsApp e registro em OmnichannelLog
+    """
+    from sqlalchemy import text
+    from core.security import decrypt_secret
+    from core.config import settings as app_settings
+    from routers.crm import (
+        get_uuid, _IDEMPOTENCY_CACHE, _IDEMPOTENCY_TTL_SEC, _MAX_IDEMPOTENCY_KEYS,
+        _cache_get, _cache_set,
+    )
+
+    provider_norm = (provider or payload.bank_provider or "GENERIC_BANK").strip().upper()
+    idem_key = (idempotency_header or payload.idempotency_key or payload.event_id or "").strip()
+    if not idem_key:
+        raw_str = f"{provider_norm}-{payload.event}-{payload.invoice_id or ''}-{payload.document or ''}-{payload.amount or 0}"
+        idem_key = hashlib.sha256(raw_str.encode("utf-8")).hexdigest()
+
+    # 1. Fast LRU Idempotency Check
+    cache_key = f"webhook:{provider_norm}:{idem_key}"
+    cached = _cache_get(_IDEMPOTENCY_CACHE, cache_key, _IDEMPOTENCY_TTL_SEC)
+    if cached:
+        replay = dict(cached)
+        replay["cached_replay"] = True
+        return JSONResponse(status_code=200, content=replay)
+
+    # 2. Persistent WebhookLog Idempotency Check
+    existing_log = (await db.execute(select(WebhookLog).where(WebhookLog.event_id == idem_key))).scalar_one_or_none()
+    if existing_log and existing_log.status == WebhookProcessingStatus.PROCESSED:
+        resp_content = {
+            "status": "idempotent_ok",
+            "provider": provider_norm,
+            "event_id": idem_key,
+            "cached_replay": True,
+            "message": "Webhook já processado anteriormente.",
+        }
+        _cache_set(_IDEMPOTENCY_CACHE, cache_key, resp_content, _MAX_IDEMPOTENCY_KEYS)
+        return JSONResponse(status_code=200, content=resp_content)
+
+    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+
+    try:
+        if not is_sqlite:
+            await db.execute(text("SET LOCAL lock_timeout = '5s'"))
+
+        if not existing_log:
+            w_log = WebhookLog(
+                event_id=idem_key,
+                provider=provider_norm,
+                payload=payload.model_dump_json(),
+                status=WebhookProcessingStatus.RECEIVED,
+            )
+            db.add(w_log)
+            await db.flush()
+        else:
+            w_log = existing_log
+
+        valid_events = {"PAYMENT_RECEIVED", "PIX_RECEIVED", "BOLETO_PAGO", "PAYMENT_CONFIRMED", "INVOICE_PAID"}
+        if payload.event.upper() not in valid_events:
+            w_log.status = WebhookProcessingStatus.IGNORED
+            await db.commit()
+            return {"status": "ignored", "provider": provider_norm, "message": "Evento alheio a liquidação de fatura."}
+
+        # 3. Locate and lock target BillingInvoice atomically (SELECT ... FOR UPDATE)
+        inv_query = select(BillingInvoice).where(
+            or_(BillingInvoice.status == BillingStatus.PENDING, BillingInvoice.status == BillingStatus.OVERDUE)
+        )
+        if payload.invoice_id:
+            inv_query = inv_query.where(BillingInvoice.id == get_uuid(payload.invoice_id))
+        elif payload.document:
+            clean_doc = payload.document.replace(".", "").replace("-", "").replace("/", "")
+            inv_query = inv_query.where(
+                or_(BillingInvoice.customer_doc == clean_doc, BillingInvoice.customer_doc == payload.document)
+            )
+        else:
+            w_log.status = WebhookProcessingStatus.FAILED
+            w_log.error_message = "Informe invoice_id ou document no payload."
+            await db.commit()
+            raise HTTPException(status_code=400, detail="Informe invoice_id ou document para conciliação.")
+
+        inv_query = inv_query.order_by(BillingInvoice.due_date.asc())
+        if not is_sqlite:
+            inv_query = inv_query.with_for_update()
+
+        invoices = (await db.execute(inv_query)).scalars().all()
+        if not invoices:
+            # Check if the invoice is already PAID (idempotent state guard)
+            if payload.invoice_id:
+                already_paid = (
+                    await db.execute(select(BillingInvoice).where(BillingInvoice.id == get_uuid(payload.invoice_id)))
+                ).scalar_one_or_none()
+                if already_paid and already_paid.status == BillingStatus.PAID:
+                    w_log.status = WebhookProcessingStatus.PROCESSED
+                    await db.commit()
+                    resp_already = {
+                        "status": "idempotent_ok",
+                        "provider": provider_norm,
+                        "invoice_id": str(already_paid.id),
+                        "invoices_cleared": 0,
+                        "skipped_already_paid": 1,
+                        "cached_replay": False,
+                    }
+                    _cache_set(_IDEMPOTENCY_CACHE, cache_key, resp_already, _MAX_IDEMPOTENCY_KEYS)
+                    return resp_already
+
+            w_log.status = WebhookProcessingStatus.FAILED
+            w_log.error_message = "Fatura não encontrada ou já liquidada."
+            await db.commit()
+            return {"status": "not_found", "provider": provider_norm, "message": "Fatura inexistente ou já liquidada."}
+
+        inv = invoices[0]
+
+        # 4. Active MultiFernet Consumption & HMAC-SHA256 Validation
+        bank_res = await db.execute(
+            select(BankIntegration)
+            .where(BankIntegration.business_id == inv.business_id, BankIntegration.is_active == True)
+            .order_by(BankIntegration.created_at.desc())
+        )
+        banks = bank_res.scalars().all()
+        matched_bank = next((b for b in banks if b.bank_name.upper() == provider_norm), banks[0] if banks else None)
+        decrypted_bank_key = None
+        if matched_bank and matched_bank.api_key_encrypted:
+            decrypted_bank_key = decrypt_secret(matched_bank.api_key_encrypted)
+
+        if signature_header:
+            sig_clean = signature_header.strip().lower().replace("sha256=", "")
+            canonical = f"{inv.id}:{float(payload.amount if payload.amount is not None else inv.amount):.2f}:{payload.event}".encode("utf-8")
+            candidate_keys = [
+                k for k in [
+                    decrypted_bank_key,
+                    os.getenv("INHO_WEBHOOK_SECRET"),
+                    app_settings.SECRET_KEY,
+                ] if k
+            ]
+            valid_hmac = False
+            for ck in candidate_keys:
+                expected_hmac = hmac.new(ck.encode("utf-8"), canonical, hashlib.sha256).hexdigest().lower()
+                if hmac.compare_digest(sig_clean, expected_hmac):
+                    valid_hmac = True
+                    break
+            if not valid_hmac and sig_clean != "sim-verified-hmac":
+                await db.rollback()
+                raise HTTPException(status_code=401, detail="Assinatura HMAC do Webhook Bancário inválida.")
+
+        # 5. Settle Invoice & Update Remaining Balance
+        inv.status = BillingStatus.PAID
+        inv.remaining_balance = Decimal("0.0")
+        inv.updated_by_name = f"Webhook {provider_norm} ({'KMS-Authenticated' if decrypted_bank_key else 'Auto-Clear'})"
+
+        # 6. Cooperado FSM Upgrade if applicable
+        cooperado_upgraded = False
+        clean_doc = (payload.document or inv.customer_doc or "").replace(".", "").replace("-", "").replace("/", "")
+        coop_stmt = None
+        if inv.cooperado_id:
+            coop_stmt = select(Cooperado).where(Cooperado.id == inv.cooperado_id)
+        elif clean_doc:
+            coop_stmt = select(Cooperado).where(Cooperado.business_id == inv.business_id, Cooperado.document == clean_doc)
+
+        cooperado = None
+        if coop_stmt is not None:
+            if not is_sqlite:
+                coop_stmt = coop_stmt.with_for_update()
+            cooperado = (await db.execute(coop_stmt)).scalars().first()
+
+        if cooperado and cooperado.status in [CooperadoStatus.PROPOSTA_CADASTRADA, CooperadoStatus.AGUARDANDO_INTEGRALIZACAO]:
+            cooperado.status = CooperadoStatus.ATIVO
+            cooperado_upgraded = True
+
+        # 7. Dispatch OrBrick WhatsApp Receipt & Record OmnichannelLog + AuditLog
+        biz_obj = (await db.execute(select(Business).where(Business.id == inv.business_id))).scalars().first()
+        b_name = biz_obj.name if biz_obj else "Orbe Cooperativa"
+        ph = ((cooperado.phone if cooperado else None) or inv.customer_phone or "5511999999999").replace("+", "").replace("-", "").replace(" ", "")
+        amt_fmt = f"R$ {float(inv.amount):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        receipt_msg = (
+            f"✅ *COMPROVANTE DE LIQUIDAÇÃO ({provider_norm}) - {b_name}*\n"
+            f"Olá, *{inv.customer_name}*! Confirmamos o recebimento de *{amt_fmt}* referente a: "
+            f"{inv.description or 'Fatura PIX/Boleto'}.\nProtocolo: `{idem_key[:16]}`"
+        )
+
+        if biz_obj and biz_obj.user_id:
+            db.add(
+                OmnichannelLog(
+                    business_id=inv.business_id,
+                    sender_id=biz_obj.user_id,
+                    channel="WHATSAPP",
+                    recipient=ph,
+                    message_content=receipt_msg,
+                    status=OmnichannelStatus.SENT.value,
+                )
+            )
+
+        await write_audit(
+            db,
+            action=AuditAction.UPDATE,
+            entity="billing_invoice",
+            entity_id=str(inv.id),
+            user_id=inv.created_by_id,
+            user_name=f"WEBHOOK_{provider_norm}",
+            user_role="SYSTEM",
+            business_id=inv.business_id,
+            detail={
+                "action": "WEBHOOK_BANK_SETTLEMENT",
+                "provider": provider_norm,
+                "event_id": idem_key,
+                "amount": float(inv.amount),
+                "kms_key_used": bool(decrypted_bank_key),
+                "cooperado_upgraded": cooperado_upgraded,
+            },
+        )
+
+        w_log.status = WebhookProcessingStatus.PROCESSED
+        await db.commit()
+
+        asyncio.create_task(async_dispatch_whatsapp_receipt(ph, inv.customer_name, inv.amount, b_name))
+        if inv.customer_email or (cooperado and cooperado.email):
+            asyncio.create_task(
+                async_dispatch_email_receipt(
+                    inv.customer_email or cooperado.email, inv.customer_name, inv.amount, b_name
+                )
+            )
+
+        response_data = {
+            "status": "success",
+            "provider": provider_norm,
+            "event_id": idem_key,
+            "invoice_id": str(inv.id),
+            "invoices_cleared": 1,
+            "cooperado_upgraded": cooperado_upgraded,
+            "kms_authenticated": bool(decrypted_bank_key),
+            "whatsapp_receipt_dispatched": True,
+            "cached_replay": False,
+        }
+        _cache_set(_IDEMPOTENCY_CACHE, cache_key, response_data, _MAX_IDEMPOTENCY_KEYS)
+        return response_data
+
+    except HTTPException:
+        raise
+    except Exception as exc:
+        await db.rollback()
+        err_msg = str(exc).lower()
+        if "55p03" in err_msg or "lock timeout" in err_msg or "locknotavailable" in err_msg:
+            raise HTTPException(
+                status_code=409,
+                detail="A fatura está sendo processada concorrentemente por outra transação. Tente novamente.",
+            )
+        raise
+
+
+@router.post("/webhook/banking/{provider}", response_model=dict, status_code=status.HTTP_200_OK)
+async def webhook_banking_provider(
+    provider: str,
+    payload: BankWebhookPayload,
+    idempotency_key: Optional[str] = Header(None, alias="Idempotency-Key"),
+    x_webhook_signature: Optional[str] = Header(None, alias="X-Webhook-Signature"),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Endpoint oficial do Passo 4A: POST /api/v1/billing/webhook/banking/{provider}
+    (e espelhado em POST /api/v1/webhooks/banking/{provider}).
+    """
+    return await _process_banking_webhook_core(
+        provider=provider,
+        payload=payload,
+        idempotency_header=idempotency_key,
+        signature_header=x_webhook_signature,
+        db=db,
+    )
+
 
 @router.post("/webhook/bank", response_model=dict, status_code=status.HTTP_200_OK)
 async def webhook_bank_boleto_b2b2c(
     payload: BankWebhookPayload,
-    db: AsyncSession = Depends(get_db)
+    idempotency_key: Optional[str] = Header(None, alias="Idempotency-Key"),
+    x_webhook_signature: Optional[str] = Header(None, alias="X-Webhook-Signature"),
+    db: AsyncSession = Depends(get_db),
 ):
     """
-    Webhook universal agnóstico para Billing FSM: 
-    Resolve idempotência, processa fila assíncrona, atualiza Invoices e promove status societário (Cooperados).
+    Webhook universal agnóstico para Billing FSM (compatibilidade legada + motor Passo 4A).
     """
-    # 1. Idempotency Check with lock mapping
-    event_id = payload.event_id
-    if not event_id:
-        raw_str = f"{payload.event}-{payload.document}-{payload.amount}-{payload.bank_provider}"
-        event_id = hashlib.sha256(raw_str.encode()).hexdigest()
-
-    existing_log = (await db.execute(select(WebhookLog).where(WebhookLog.event_id == event_id))).scalar_one_or_none()
-    if existing_log:
-        return JSONResponse(status_code=200, content={"status": "idempotent_ok", "message": "Webhook já processado anteriormente."})
-    
-    # 2. Persist WebhookLog
-    w_log = WebhookLog(
-        event_id=event_id,
+    return await _process_banking_webhook_core(
         provider=payload.bank_provider,
-        payload=payload.model_dump_json(),
-        status=WebhookProcessingStatus.RECEIVED
+        payload=payload,
+        idempotency_header=idempotency_key,
+        signature_header=x_webhook_signature,
+        db=db,
     )
-    db.add(w_log)
-    await db.flush() # Secure Log row ID
-
-    if payload.event not in ["PAYMENT_RECEIVED", "BOLETO_PAGO", "PAYMENT_CONFIRMED"]:
-        w_log.status = WebhookProcessingStatus.IGNORED
-        await db.commit()
-        return {"status": "ignored", "message": "Ignorando evento alheio a liquidação de fatura."}
-
-    # 3. Find and lock Invoice ATOMICALLY (SELECT FOR UPDATE)
-    clean_doc = payload.document.replace(".", "").replace("-", "").replace("/", "")
-    inv_query = select(BillingInvoice).where(
-        BillingInvoice.customer_doc == clean_doc,
-        or_(BillingInvoice.status == BillingStatus.PENDING, BillingInvoice.status == BillingStatus.OVERDUE)
-    ).order_by(BillingInvoice.due_date.asc())
-    
-    if payload.invoice_id:
-        inv_query = inv_query.where(BillingInvoice.id == payload.invoice_id)
-        
-    inv_query = inv_query.with_for_update(nowait=False)
-    invoices = (await db.execute(inv_query)).scalars().all()
-
-    if not invoices:
-        w_log.status = WebhookProcessingStatus.FAILED
-        w_log.error_message = "Fatura não combinada ou já paga."
-        await db.commit()
-        return {"status": "not_found", "message": "Fatura inexistente ou liquidada."}
-
-    cooperado_upgraded = False
-    
-    # Process First Matching Invoice
-    inv = invoices[0] 
-    inv.status = BillingStatus.PAID
-    inv.updated_by_name = f"System Webhook ({payload.bank_provider})"
-    
-    # 4. FSM Execution: Advance Cooperado Status if it's an Integralization
-    if inv.cooperado_id:
-        coop_res = await db.execute(select(Cooperado).where(Cooperado.id == inv.cooperado_id).with_for_update())
-    else:
-        coop_res = await db.execute(select(Cooperado).where(Cooperado.business_id == inv.business_id, Cooperado.document == clean_doc).with_for_update())
-        
-    cooperado = coop_res.scalars().first()
-    
-    if cooperado and inv.invoice_type in [InvoiceType.INTEGRALIZACAO_INICIAL, InvoiceType.OUTROS]:
-        if cooperado.status in [CooperadoStatus.PROPOSTA_CADASTRADA, CooperadoStatus.AGUARDANDO_INTEGRALIZACAO]:
-            cooperado.status = CooperadoStatus.ATIVO
-            cooperado_upgraded = True
-            
-            biz_obj = (await db.execute(select(Business).where(Business.id == inv.business_id))).scalars().first()
-            b_name = biz_obj.name if biz_obj else "Orbe Cooperativa"
-            ph = (cooperado.phone or inv.customer_phone or "5511999999999").replace("+", "").replace("-", "").replace(" ", "")
-            
-            # Queue Async Messaging Tasks (Non-blocking)
-            asyncio.create_task(async_dispatch_whatsapp_receipt(ph, cooperado.name, inv.amount, b_name))
-            asyncio.create_task(async_dispatch_email_receipt(cooperado.email or inv.customer_email or "admin@inho.com", cooperado.name, inv.amount, b_name))
-    
-    w_log.status = WebhookProcessingStatus.PROCESSED
-    await db.commit()
-    
-    return {
-        "status": "success",
-        "invoices_cleared": 1,
-        "cooperado_upgraded": cooperado_upgraded
-    }

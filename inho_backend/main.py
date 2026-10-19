@@ -39,6 +39,10 @@ async def lifespan(app: FastAPI):
         "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS bank_details TEXT",
         "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS notes TEXT",
         "CREATE TABLE IF NOT EXISTS inho.omnichannel_logs (id UUID PRIMARY KEY, business_id UUID NOT NULL, sender_id UUID NOT NULL, contact_id UUID, channel VARCHAR(50) NOT NULL, recipient VARCHAR(255) NOT NULL, message_content TEXT NOT NULL, status VARCHAR(50) NOT NULL DEFAULT 'SENT', error_message TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
+        "CREATE INDEX IF NOT EXISTS ix_billing_invoices_biz_status_due ON inho.billing_invoices (business_id, status, due_date)",
+        "CREATE INDEX IF NOT EXISTS ix_billing_invoices_biz_comp ON inho.billing_invoices (business_id, data_competencia)",
+        "CREATE INDEX IF NOT EXISTS ix_accounts_payable_biz_status_due ON inho.accounts_payable (business_id, status, due_date)",
+        "CREATE INDEX IF NOT EXISTS ix_accounts_payable_biz_paid ON inho.accounts_payable (business_id, status, paid_date)",
     ]:
         try:
             async with engine.begin() as ddl_conn:
@@ -218,6 +222,21 @@ app.include_router(crm.router, prefix="/api/v1")
 app.include_router(cooperados.router)   # /api/v1/crm/cooperados
 app.include_router(categories.router)  # /api/v1/categories
 app.include_router(notes.router)       # /api/v1/notes
+
+@app.post("/api/v1/webhooks/banking/{provider}", tags=["Banking Webhooks"])
+async def banking_webhook_entry(
+    provider: str,
+    payload: billing.BankWebhookPayload,
+    request: Request,
+    db = Depends(auth.get_db),
+):
+    return await billing._process_banking_webhook_core(
+        provider=provider,
+        payload=payload,
+        idempotency_header=request.headers.get("Idempotency-Key"),
+        signature_header=request.headers.get("X-Webhook-Signature") or request.headers.get("X-Inho-Signature"),
+        db=db,
+    )
 
 
 # ── Health Check & Continuous Telemetry ──────────────────────────

@@ -1,7 +1,6 @@
-from sqlalchemy import cast, String
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, cast, String, and_
+from sqlalchemy import select, cast, String, and_, func, case
 from typing import List, Optional
 from datetime import datetime, timezone, timedelta
 from dateutil.relativedelta import relativedelta
@@ -11,6 +10,7 @@ from models.models import User, Business, BillingInvoice, AccountPayable, Billin
 from core.deps import get_current_user
 from schemas.report_schemas import DREResult, DRELine, AgingResult, ReportLossesOut, LossResultItem, BudgetReportOut, BudgetVsActual
 from routers.billing import _get_user_business
+from routers.crm import get_uuid
 
 router = APIRouter()
 
@@ -27,48 +27,51 @@ async def get_dre(
     month = month or now.month
     regime_norm = (regime or "competencia").strip().lower()
     business = await _get_user_business(db, current_user)
-    
-    inv_stmt = select(BillingInvoice).where(BillingInvoice.business_id == business.id)
-    pay_stmt = select(AccountPayable).where(AccountPayable.business_id == business.id)
-    
-    invoices = (await db.execute(inv_stmt)).scalars().all()
-    payables = (await db.execute(pay_stmt)).scalars().all()
-    
-    revenues = []
-    expenses = []
-    
-    for inv in invoices:
-        if regime_norm == "competencia":
-            dt = inv.data_competencia if inv.data_competencia else inv.due_date
-            if dt and dt.year == year and dt.month == month:
-                revenues.append(inv)
-        else:
-            if inv.status == BillingStatus.PAID:
-                dt = inv.updated_at
-                if dt and dt.year == year and dt.month == month:
-                    revenues.append(inv)
-                    
-    for pay in payables:
-        if regime_norm == "competencia":
-            dt = pay.data_competencia if pay.data_competencia else pay.due_date
-            if dt and dt.year == year and dt.month == month:
-                expenses.append(pay)
-        else:
-            if pay.status == PayableStatus.PAID and pay.paid_date:
-                dt = pay.paid_date
-                if dt and dt.year == year and dt.month == month:
-                    expenses.append(pay)
-                    
-    rev_total = sum(float(i.amount) for i in revenues)
-    exp_total = sum(float(p.amount) for p in expenses)
+    b_id = get_uuid(business.id)
+
+    start_dt = datetime(year, month, 1, tzinfo=timezone.utc)
+    end_dt = start_dt + relativedelta(months=1)
+
+    if regime_norm == "competencia":
+        inv_dt_col = func.coalesce(BillingInvoice.data_competencia, BillingInvoice.due_date)
+        rev_stmt = select(func.coalesce(func.sum(BillingInvoice.amount), 0)).where(
+            BillingInvoice.business_id == b_id,
+            BillingInvoice.status != BillingStatus.CANCELLED,
+            inv_dt_col >= start_dt,
+            inv_dt_col < end_dt,
+        )
+        pay_dt_col = func.coalesce(AccountPayable.data_competencia, AccountPayable.due_date)
+        exp_stmt = select(func.coalesce(func.sum(AccountPayable.amount), 0)).where(
+            AccountPayable.business_id == b_id,
+            AccountPayable.status != PayableStatus.CANCELLED,
+            pay_dt_col >= start_dt,
+            pay_dt_col < end_dt,
+        )
+    else:
+        rev_stmt = select(func.coalesce(func.sum(BillingInvoice.amount), 0)).where(
+            BillingInvoice.business_id == b_id,
+            BillingInvoice.status == BillingStatus.PAID,
+            BillingInvoice.updated_at >= start_dt,
+            BillingInvoice.updated_at < end_dt,
+        )
+        pay_paid_col = func.coalesce(AccountPayable.paid_date, AccountPayable.updated_at)
+        exp_stmt = select(func.coalesce(func.sum(AccountPayable.amount), 0)).where(
+            AccountPayable.business_id == b_id,
+            AccountPayable.status == PayableStatus.PAID,
+            pay_paid_col >= start_dt,
+            pay_paid_col < end_dt,
+        )
+
+    rev_total = float((await db.execute(rev_stmt)).scalar() or 0.0)
+    exp_total = float((await db.execute(exp_stmt)).scalar() or 0.0)
     net = rev_total - exp_total
-    
+
     revenue_line = DRELine(category_name="Faturamento Bruto", category_id=None, amount=rev_total)
     expense_line = DRELine(category_name="Despesas Operacionais", category_id=None, amount=exp_total)
-                    
+
     return {
         "period_start": f"{year}-{month:02d}-01",
-        "period_end": f"{year}-{month:02d}-28",
+        "period_end": (end_dt - timedelta(days=1)).strftime("%Y-%m-%d"),
         "regime": regime_norm,
         "revenues": [revenue_line],
         "total_revenue": rev_total,
@@ -90,27 +93,40 @@ async def get_losses_report(
     current_user: User = Depends(get_current_user)
 ):
     business = await _get_user_business(db, current_user)
-    
-    stmt = select(BillingInvoice).where(
-        BillingInvoice.business_id == business.id,
-        cast(BillingInvoice.status, String).in_(["LOSS", "OVERDUE"])
+    b_id = get_uuid(business.id)
+
+    stmt = (
+        select(
+            BillingInvoice.id,
+            BillingInvoice.customer_name,
+            BillingInvoice.amount,
+            BillingInvoice.remaining_balance,
+            BillingInvoice.due_date,
+            BillingInvoice.status,
+        )
+        .where(
+            BillingInvoice.business_id == b_id,
+            cast(BillingInvoice.status, String).in_(["LOSS", "OVERDUE"]),
+        )
+        .order_by(BillingInvoice.due_date.desc())
+        .limit(250)
     )
-    invoices = (await db.execute(stmt)).scalars().all()
-    
+    rows = (await db.execute(stmt)).all()
+
     losses = []
     total = 0.0
-    for inv in invoices:
-        val = float(inv.remaining_balance if inv.remaining_balance is not None else inv.amount)
-        status_str = inv.status.value if hasattr(inv.status, "value") else str(inv.status)
+    for r in rows:
+        val = float(r.remaining_balance if r.remaining_balance is not None else r.amount)
+        status_str = r.status.value if hasattr(r.status, "value") else str(r.status)
         losses.append(LossResultItem(
-            invoice_id=str(inv.id),
-            customer_name=inv.customer_name,
+            invoice_id=str(r.id),
+            customer_name=r.customer_name,
             amount=val,
-            due_date=inv.due_date.isoformat(),
+            due_date=r.due_date.isoformat(),
             status=status_str
         ))
         total += val
-        
+
     return ReportLossesOut(
         start_date=start or "2000-01-01",
         end_date=end or "2100-01-01",
@@ -130,15 +146,20 @@ async def get_budget_vs_actual(
     year = year or now.year
     month = month or now.month
     business = await _get_user_business(db, current_user)
-    
-    stmt = select(AccountPayable).where(
-        AccountPayable.business_id == business.id,
-        AccountPayable.status == PayableStatus.PAID
+    b_id = get_uuid(business.id)
+
+    start_dt = datetime(year, month, 1, tzinfo=timezone.utc)
+    end_dt = start_dt + relativedelta(months=1)
+    paid_col = func.coalesce(AccountPayable.paid_date, AccountPayable.due_date)
+
+    stmt = select(func.coalesce(func.sum(AccountPayable.amount), 0)).where(
+        AccountPayable.business_id == b_id,
+        AccountPayable.status == PayableStatus.PAID,
+        paid_col >= start_dt,
+        paid_col < end_dt,
     )
-    payables = (await db.execute(stmt)).scalars().all()
-    
-    actual_total = sum(float(p.amount) for p in payables if p.paid_date and p.paid_date.year == year and p.paid_date.month == month)
-    
+    actual_total = float((await db.execute(stmt)).scalar() or 0.0)
+
     return BudgetReportOut(
         year=year,
         month=month,
@@ -161,25 +182,41 @@ async def get_aging_report(
     current_user: User = Depends(get_current_user)
 ):
     business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
     now = datetime.now(timezone.utc)
-    stmt = select(BillingInvoice).where(
-        BillingInvoice.business_id == business.id,
-        cast(BillingInvoice.status, String).in_(["PENDING", "OVERDUE"])
+    d30 = now - timedelta(days=30)
+    d60 = now - timedelta(days=60)
+    d90 = now - timedelta(days=90)
+
+    stmt = select(
+        func.coalesce(
+            func.sum(case((and_(BillingInvoice.due_date < now, BillingInvoice.due_date >= d30), BillingInvoice.amount), else_=0)),
+            0,
+        ).label("b_0_30"),
+        func.coalesce(
+            func.sum(case((and_(BillingInvoice.due_date < d30, BillingInvoice.due_date >= d60), BillingInvoice.amount), else_=0)),
+            0,
+        ).label("b_31_60"),
+        func.coalesce(
+            func.sum(case((and_(BillingInvoice.due_date < d60, BillingInvoice.due_date >= d90), BillingInvoice.amount), else_=0)),
+            0,
+        ).label("b_61_90"),
+        func.coalesce(
+            func.sum(case((BillingInvoice.due_date < d90, BillingInvoice.amount), else_=0)),
+            0,
+        ).label("b_90_plus"),
+    ).where(
+        BillingInvoice.business_id == b_id,
+        cast(BillingInvoice.status, String).in_(["PENDING", "OVERDUE"]),
+        BillingInvoice.due_date < now,
     )
-    invoices = (await db.execute(stmt)).scalars().all()
-    buckets = {"0_30": 0.0, "31_60": 0.0, "61_90": 0.0, "90_plus": 0.0}
-    for inv in invoices:
-        if inv.due_date and inv.due_date < now:
-            days = (now - inv.due_date).days
-            amt = float(inv.amount)
-            if days <= 30:
-                buckets["0_30"] += amt
-            elif days <= 60:
-                buckets["31_60"] += amt
-            elif days <= 90:
-                buckets["61_90"] += amt
-            else:
-                buckets["90_plus"] += amt
+    row = (await db.execute(stmt)).one()
+    buckets = {
+        "0_30": float(row.b_0_30 or 0.0),
+        "31_60": float(row.b_31_60 or 0.0),
+        "61_90": float(row.b_61_90 or 0.0),
+        "90_plus": float(row.b_90_plus or 0.0),
+    }
     return {"buckets": buckets, "total_overdue": sum(buckets.values())}
 
 @router.get("/cashflow")
@@ -188,18 +225,33 @@ async def get_cashflow_projection(
     current_user: User = Depends(get_current_user)
 ):
     business = await _get_user_business(db, current_user)
+    b_id = get_uuid(business.id)
     horizon = getattr(business, "cashflow_horizon_months", 6) or 6
     now = datetime.now(timezone.utc)
-    inv_stmt = select(BillingInvoice).where(BillingInvoice.business_id == business.id)
-    pay_stmt = select(AccountPayable).where(AccountPayable.business_id == business.id)
-    invoices = (await db.execute(inv_stmt)).scalars().all()
-    payables = (await db.execute(pay_stmt)).scalars().all()
+    window_start = datetime(now.year, now.month, 1, tzinfo=timezone.utc)
+    window_end = window_start + relativedelta(months=horizon)
+
+    inv_stmt = select(BillingInvoice.due_date, BillingInvoice.amount).where(
+        BillingInvoice.business_id == b_id,
+        BillingInvoice.status != BillingStatus.CANCELLED,
+        BillingInvoice.due_date >= window_start,
+        BillingInvoice.due_date < window_end,
+    )
+    pay_stmt = select(AccountPayable.due_date, AccountPayable.amount).where(
+        AccountPayable.business_id == b_id,
+        AccountPayable.status != PayableStatus.CANCELLED,
+        AccountPayable.due_date >= window_start,
+        AccountPayable.due_date < window_end,
+    )
+    inv_rows = (await db.execute(inv_stmt)).all()
+    pay_rows = (await db.execute(pay_stmt)).all()
+
     months = []
     for i in range(horizon):
-        dt = now + relativedelta(months=i)
+        dt = window_start + relativedelta(months=i)
         y, m = dt.year, dt.month
-        inflow = sum(float(inv.amount) for inv in invoices if inv.due_date and inv.due_date.year == y and inv.due_date.month == m and str(inv.status) != "CANCELLED")
-        outflow = sum(float(p.amount) for p in payables if p.due_date and p.due_date.year == y and p.due_date.month == m and str(p.status) != "CANCELLED")
+        inflow = sum(float(r.amount) for r in inv_rows if r.due_date and r.due_date.year == y and r.due_date.month == m)
+        outflow = sum(float(r.amount) for r in pay_rows if r.due_date and r.due_date.year == y and r.due_date.month == m)
         months.append({
             "period": f"{y}-{m:02d}",
             "inflow": inflow,

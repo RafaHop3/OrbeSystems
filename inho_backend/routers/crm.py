@@ -404,23 +404,52 @@ async def payable_totals(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Total a pagar por status (spec §3.6 — painel de totalização)."""
+    """Total a pagar por status via SQL indexado (spec §3.6 — painel de totalização)."""
+    from sqlalchemy import case
     business = await _biz(db, current_user)
-    now_naive = datetime.now(timezone.utc).replace(tzinfo=None)
+    b_id = get_uuid(business.id)
+    now = datetime.now(timezone.utc)
 
-    rows = await db.execute(
-        select(AccountPayable).where(AccountPayable.business_id == get_uuid(business.id))
-    )
-    payables = rows.scalars().all()
+    stmt = select(
+        func.coalesce(
+            func.sum(
+                case(
+                    (
+                        (AccountPayable.status == PayableStatus.PENDING) & (AccountPayable.due_date >= now),
+                        AccountPayable.amount,
+                    ),
+                    else_=0,
+                )
+            ),
+            0,
+        ).label("pending"),
+        func.coalesce(
+            func.sum(
+                case(
+                    (
+                        (AccountPayable.status == PayableStatus.PENDING) & (AccountPayable.due_date < now),
+                        AccountPayable.amount,
+                    ),
+                    else_=0,
+                )
+            ),
+            0,
+        ).label("overdue"),
+        func.coalesce(
+            func.sum(
+                case(
+                    (AccountPayable.status == PayableStatus.PAID, AccountPayable.amount),
+                    else_=0,
+                )
+            ),
+            0,
+        ).label("paid"),
+    ).where(AccountPayable.business_id == b_id)
 
-    def _is_overdue(dt):
-        if not dt:
-            return False
-        return dt.replace(tzinfo=None) < now_naive
-
-    pending = sum(float(p.amount) for p in payables if p.status == PayableStatus.PENDING and not _is_overdue(p.due_date))
-    overdue = sum(float(p.amount) for p in payables if p.status == PayableStatus.PENDING and _is_overdue(p.due_date))
-    paid = sum(float(p.amount) for p in payables if p.status == PayableStatus.PAID)
+    row = (await db.execute(stmt)).one()
+    pending = float(row.pending or 0.0)
+    overdue = float(row.overdue or 0.0)
+    paid = float(row.paid or 0.0)
 
     return {"pending": pending, "overdue": overdue, "paid": paid, "total": pending + overdue}
 
@@ -709,13 +738,17 @@ async def update_deal(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    """Atualiza o drag-and-drop do Card (Workflow). Se 'WON', pode engatilhar faturamento automático."""
-    from models.models import AccountPayable
-    from models.models import PayableStatus
+    """Atualiza o drag-and-drop do Card (Workflow). Se 'WON', engatilha faturamento automático em Contas a Receber."""
+    import uuid
+    import urllib.parse
+    from datetime import timedelta
+    from models.models import PaymentMethod, InvoiceType
+    from routers.billing import _generate_authenticated_pix_code
 
     business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
     result = await db.execute(
-        select(CRMDeal).where(CRMDeal.id == get_uuid(deal_id), CRMDeal.business_id == get_uuid(business.id))
+        select(CRMDeal).where(CRMDeal.id == get_uuid(deal_id), CRMDeal.business_id == b_id)
     )
     deal = result.scalar_one_or_none()
     if not deal:
@@ -728,11 +761,46 @@ async def update_deal(
     for k, v in update_data.items():
         setattr(deal, k, v)
         
-    # Automação Sprint 3: Se arrastou pra Fechado (WON), gera Conta a Receber/Fatura
+    # Automação Esteira Comercial -> Financeiro: Se arrastou pra Fechado (WON), gera Conta a Receber/Fatura
     if new_stage == DealStage.WON and old_stage != DealStage.WON:
-        # TODO: Para simular fatura, ideal seria AccountReceivable. 
-        # Como o INHO tem o PayableStatus e a plataforma lida com Recebimentos em outras rotas, injetamos log ou lógica base aqui.
         deal.status = DealStatus.CLOSED
+        tag = f"[DEAL #{str(deal.id)[:8].upper()}]"
+        existing_inv = (
+            await db.execute(
+                select(BillingInvoice.id).where(
+                    BillingInvoice.business_id == b_id,
+                    BillingInvoice.description.ilike(f"%{tag}%"),
+                )
+            )
+        ).scalars().first()
+        if not existing_inv and deal.value and float(deal.value) > 0:
+            inv_id = uuid.uuid4()
+            due_dt = datetime.now(timezone.utc) + timedelta(days=7)
+            pix_code, _ = await _generate_authenticated_pix_code(
+                db, b_id, inv_id, deal.value, deal.title
+            )
+            pix_qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={urllib.parse.quote(pix_code)}"
+            db.add(
+                BillingInvoice(
+                    id=inv_id,
+                    business_id=b_id,
+                    crm_contact_id=deal.contact_id,
+                    invoice_type=InvoiceType.OUTROS,
+                    customer_name=deal.title,
+                    amount=deal.value,
+                    due_date=due_dt,
+                    data_competencia=datetime.now(timezone.utc),
+                    status=BillingStatus.PENDING,
+                    pix_code=pix_code,
+                    pix_qr_url=pix_qr_url,
+                    payment_method=PaymentMethod.PIX,
+                    description=f"[FUNIL KANBAN WON] {deal.title} {tag}",
+                    created_by_id=current_user.id,
+                    created_by_name=f"{current_user.full_name} ({current_user.role_label})",
+                    updated_by_id=current_user.id,
+                    updated_by_name=f"{current_user.full_name} ({current_user.role_label})",
+                )
+            )
         
     await db.commit()
     await db.refresh(deal)
