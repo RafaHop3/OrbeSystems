@@ -30,7 +30,7 @@ _ssl_ctx = _build_ssl_context()
 
 engine_kwargs = {
     "echo": settings.DEBUG,
-    "pool_pre_ping": True,
+    "pool_pre_ping": False,
 }
 
 if not settings.DATABASE_URL.startswith("sqlite"):
@@ -38,7 +38,7 @@ if not settings.DATABASE_URL.startswith("sqlite"):
         "pool_size": 25,
         "max_overflow": 15,
         "pool_timeout": 30,
-        "pool_recycle": 1800,  # Preemptively recycles idle connections before Supabase timeout
+        "pool_recycle": 300,  # Recycles idle connections every 5m without per-request SELECT 1 RTT
     })
     
     engine_kwargs.setdefault("connect_args", {})
