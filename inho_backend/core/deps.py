@@ -22,14 +22,38 @@ def record_active_user(request: Request | None, user_id: str) -> None:
     return None
 
 
+from collections import OrderedDict
+import time
+
+_USER_CACHE: "OrderedDict[str, tuple[float, User]]" = OrderedDict()
+_USER_CACHE_TTL = 60.0
+_USER_CACHE_MAX = 500
+
+
 async def _load_user(db: AsyncSession, sub) -> User | None:
     sub = str(sub)
+    now_ts = time.time()
+    cached = _USER_CACHE.get(sub)
+    if cached and (now_ts - cached[0]) < _USER_CACHE_TTL:
+        _USER_CACHE.move_to_end(sub)
+        return cached[1]
+
     try:
-        uuid.UUID(sub)
-        query = select(User).where(cast(User.id, String) == sub)
+        uid = uuid.UUID(sub)
+        query = select(User).where(User.id == uid)
     except ValueError:
         query = select(User).where(User.email == sub)
-    return (await db.execute(query)).scalar_one_or_none()
+    user = (await db.execute(query)).scalar_one_or_none()
+    if user:
+        try:
+            db.expunge(user)
+        except Exception:
+            pass
+        _USER_CACHE[sub] = (now_ts, user)
+        _USER_CACHE.move_to_end(sub)
+        while len(_USER_CACHE) > _USER_CACHE_MAX:
+            _USER_CACHE.popitem(last=False)
+    return user
 
 
 async def _user_from_refresh_cookie(request: Request | None, db: AsyncSession) -> User | None:

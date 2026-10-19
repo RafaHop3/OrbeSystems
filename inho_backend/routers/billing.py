@@ -19,22 +19,46 @@ from schemas.billing_schemas import (
 
 router = APIRouter()
 
+from collections import OrderedDict as _BizOrderedDict
+import time as _biz_time
+
+_BIZ_CACHE: "_BizOrderedDict[str, tuple[float, Business]]" = _BizOrderedDict()
+_BIZ_CACHE_TTL = 60.0
+_BIZ_CACHE_MAX = 500
+
 async def _get_user_business(db: AsyncSession, user: User) -> Business:
     from models.models import BusinessOperator
+    uid_str = str(user.id)
+    now_ts = _biz_time.time()
+    cached_biz = _BIZ_CACHE.get(uid_str)
+    if cached_biz and (now_ts - cached_biz[0]) < _BIZ_CACHE_TTL:
+        _BIZ_CACHE.move_to_end(uid_str)
+        return cached_biz[1]
+
     # 1. Verifica se o usuario e dono direto de uma empresa
-    result = await db.execute(select(Business).where(cast(Business.user_id, String) == str(user.id)))
+    result = await db.execute(select(Business).where(cast(Business.user_id, String) == uid_str))
     business = result.scalars().first()
     if business:
+        try:
+            db.expunge(business)
+        except Exception:
+            pass
+        _BIZ_CACHE[uid_str] = (now_ts, business)
         return business
 
     # 2. Verifica se o usuario esta vinculado como Operador (BusinessOperator)
     op_res = await db.execute(
         select(Business)
         .join(BusinessOperator, BusinessOperator.business_id == Business.id)
-        .where(cast(BusinessOperator.user_id, String) == str(user.id))
+        .where(cast(BusinessOperator.user_id, String) == uid_str)
     )
     op_business = op_res.scalars().first()
     if op_business:
+        try:
+            db.expunge(op_business)
+        except Exception:
+            pass
+        _BIZ_CACHE[uid_str] = (now_ts, op_business)
         return op_business
 
     # 3. Se for operador sem vinculo ainda, vincula ao primeiro negocio ativo da cooperativa

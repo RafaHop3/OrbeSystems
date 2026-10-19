@@ -1,4 +1,4 @@
-HEAD is now at 78a7579 perf(auth,crm,settings): move login audit & 10-round rehash to BackgroundTasks and map 55P03 lock timeout to HTTP 409
+HEAD is now at d1982af chore(security): auto-update SBOM [skip ci]
 #0 building with "default" instance using docker driver
 
 #1 [inho_backend internal] load build definition from Dockerfile
@@ -6,46 +6,45 @@ HEAD is now at 78a7579 perf(auth,crm,settings): move login audit & 10-round reha
 #1 DONE 0.0s
 
 #2 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
-#2 DONE 0.5s
+#2 DONE 0.4s
 
 #3 [inho_backend internal] load .dockerignore
 #3 transferring context: 396B done
 #3 DONE 0.0s
 
-#4 [inho_backend internal] load build context
-#4 ...
+#4 [inho_backend builder 1/4] FROM docker.io/library/python:3.11-slim@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce
+#4 resolve docker.io/library/python:3.11-slim@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce 0.1s done
+#4 DONE 0.1s
 
-#5 [inho_backend builder 1/4] FROM docker.io/library/python:3.11-slim@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce
-#5 resolve docker.io/library/python:3.11-slim@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce 0.0s done
-#5 DONE 0.1s
+#5 [inho_backend internal] load build context
+#5 ...
 
-#4 [inho_backend internal] load build context
-#4 transferring context: 196.52kB 0.2s done
-#4 DONE 0.2s
+#4 [inho_backend builder 1/4] FROM docker.io/library/python:3.11-slim@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce
+#4 DONE 0.1s
 
-#6 [inho_backend builder 2/4] RUN python -m venv /opt/venv
+#5 [inho_backend internal] load build context
+#5 transferring context: 298.44kB 0.2s done
+#5 DONE 0.2s
+
+#6 [inho_backend runtime 3/5] RUN groupadd --gid 1001 appgroup &&     useradd --uid 1001 --gid appgroup --shell /bin/false --create-home appuser
 #6 CACHED
 
-#7 [inho_backend builder 3/4] COPY requirements.txt .
+#7 [inho_backend builder 2/4] RUN python -m venv /opt/venv
 #7 CACHED
 
-#8 [inho_backend builder 4/4] RUN pip install --upgrade pip &&     pip install --no-cache-dir -r requirements.txt
+#8 [inho_backend builder 3/4] COPY requirements.txt .
 #8 CACHED
 
-#9 [inho_backend runtime 2/5] COPY --from=builder /opt/venv /opt/venv
+#9 [inho_backend builder 4/4] RUN pip install --upgrade pip &&     pip install --no-cache-dir -r requirements.txt
 #9 CACHED
 
-#10 [inho_backend runtime 3/5] RUN groupadd --gid 1001 appgroup &&     useradd --uid 1001 --gid appgroup --shell /bin/false --create-home appuser
-#10 CACHED
-
-#11 [inho_backend runtime 4/5] WORKDIR /app
-#11
+#10 [inho_backend runtime 2/5] COPY --from=build
 ---Output truncated---
 ----------ERROR-------
 From https://github.com/RafaHop3/OrbeSystems
  * branch            main       -> FETCH_HEAD
-   761f7cc..78a7579  main       -> origin/main
-time="2026-10-19T16:48:30Z" level=warning msg="Found orphan containers ([orbe_whatsapp]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
+   78a7579..d1982af  main       -> origin/main
+time="2026-10-19T17:15:50Z" level=warning msg="Found orphan containers ([orbe_whatsapp]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
  Container orbe_postgres  Running
  Container inho_backend  Recreate
  Container inho_backend  Recreated

@@ -568,7 +568,7 @@ async def get_cooperado_informe_rendimentos(
     def _parse_num(m):
         if not m:
             return 0.0
-        raw = m.group(1)
+        raw = m.group(1).rstrip(".,")
         if "," in raw and "." in raw:
             raw = raw.replace(".", "").replace(",", ".")
         elif "," in raw:

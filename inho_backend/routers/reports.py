@@ -62,8 +62,13 @@ async def get_dre(
             pay_paid_col < end_dt,
         )
 
-    rev_total = float((await db.execute(rev_stmt)).scalar() or 0.0)
-    exp_total = float((await db.execute(exp_stmt)).scalar() or 0.0)
+    combined_stmt = select(
+        rev_stmt.scalar_subquery().label("rev_total"),
+        exp_stmt.scalar_subquery().label("exp_total"),
+    )
+    row = (await db.execute(combined_stmt)).one()
+    rev_total = float(row.rev_total or 0.0)
+    exp_total = float(row.exp_total or 0.0)
     net = rev_total - exp_total
 
     revenue_line = DRELine(category_name="Faturamento Bruto", category_id=None, amount=rev_total)
@@ -224,6 +229,7 @@ async def get_cashflow_projection(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    from sqlalchemy import union_all, literal
     business = await _get_user_business(db, current_user)
     b_id = get_uuid(business.id)
     horizon = getattr(business, "cashflow_horizon_months", 6) or 6
@@ -231,27 +237,34 @@ async def get_cashflow_projection(
     window_start = datetime(now.year, now.month, 1, tzinfo=timezone.utc)
     window_end = window_start + relativedelta(months=horizon)
 
-    inv_stmt = select(BillingInvoice.due_date, BillingInvoice.amount).where(
+    inv_q = select(
+        literal("IN").label("kind"),
+        BillingInvoice.due_date.label("due_date"),
+        BillingInvoice.amount.label("amount"),
+    ).where(
         BillingInvoice.business_id == b_id,
         BillingInvoice.status != BillingStatus.CANCELLED,
         BillingInvoice.due_date >= window_start,
         BillingInvoice.due_date < window_end,
     )
-    pay_stmt = select(AccountPayable.due_date, AccountPayable.amount).where(
+    pay_q = select(
+        literal("OUT").label("kind"),
+        AccountPayable.due_date.label("due_date"),
+        AccountPayable.amount.label("amount"),
+    ).where(
         AccountPayable.business_id == b_id,
         AccountPayable.status != PayableStatus.CANCELLED,
         AccountPayable.due_date >= window_start,
         AccountPayable.due_date < window_end,
     )
-    inv_rows = (await db.execute(inv_stmt)).all()
-    pay_rows = (await db.execute(pay_stmt)).all()
+    combined_rows = (await db.execute(union_all(inv_q, pay_q))).all()
 
     months = []
     for i in range(horizon):
         dt = window_start + relativedelta(months=i)
         y, m = dt.year, dt.month
-        inflow = sum(float(r.amount) for r in inv_rows if r.due_date and r.due_date.year == y and r.due_date.month == m)
-        outflow = sum(float(r.amount) for r in pay_rows if r.due_date and r.due_date.year == y and r.due_date.month == m)
+        inflow = sum(float(r.amount) for r in combined_rows if r.kind == "IN" and r.due_date and r.due_date.year == y and r.due_date.month == m)
+        outflow = sum(float(r.amount) for r in combined_rows if r.kind == "OUT" and r.due_date and r.due_date.year == y and r.due_date.month == m)
         months.append({
             "period": f"{y}-{m:02d}",
             "inflow": inflow,
