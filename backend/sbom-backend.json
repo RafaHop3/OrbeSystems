@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:2ea4110f-b57e-4976-9378-91e3ce8e5a5a",
+  "serialNumber": "urn:uuid:34bb5162-f321-4390-89ce-c36adf834bc4",
   "metadata": {
-    "timestamp": "2026-10-16T20:42:31.043409+00:00",
+    "timestamp": "2026-10-19T13:48:35.941989+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -325,8 +325,8 @@
     {
       "type": "library",
       "name": "certifi",
-      "version": "2026.7.22",
-      "purl": "pkg:pypi/certifi@2026.7.22",
+      "version": "2026.10.18",
+      "purl": "pkg:pypi/certifi@2026.10.18",
       "licenses": [
         {
           "license": {
@@ -343,7 +343,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "87d958ce29e9a872bef136d459f259e67931622a31b7b1c3798212b44269ff53"
+          "content": "46e0c89b557d5b5b21cc52bba092e7d86aaa59a77346d5302c8fd6e6877f0321"
         }
       ]
     },
@@ -1740,8 +1740,8 @@
     {
       "type": "library",
       "name": "SQLAlchemy",
-      "version": "2.1.4",
-      "purl": "pkg:pypi/sqlalchemy@2.1.4",
+      "version": "2.1.5",
+      "purl": "pkg:pypi/sqlalchemy@2.1.5",
       "licenses": [
         {
           "license": {
@@ -1758,7 +1758,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "086d045cb88e43ec64b62abc7e94c82143a625cdccdafd9a6b852294824d369f"
+          "content": "0c7269c15b5578962bc47ab204683a3ea938611ff977f192f7af8e79ba79e7cf"
         }
       ]
     },
