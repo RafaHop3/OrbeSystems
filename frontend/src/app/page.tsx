@@ -10,6 +10,7 @@ import OrbeMusicHero from '@/components/OrbeMusicHero';
 import MusicDownloaderHero from '@/components/MusicDownloaderHero';
 import OrbeCleanerPromo from '@/components/OrbeCleanerPromo';
 import InhoPromo from '@/components/InhoPromo';
+import EloProtocolHero from '@/components/EloProtocolHero';
 import dynamic from 'next/dynamic';
 
 const StarryBackground = dynamic(() => import('@/components/StarryBackground'), {
@@ -34,6 +35,7 @@ export default function HomePage() {
       </ScrollNarrativeEngine>
       <FeaturedSitesSection />
       <JovemPanoHero />
+      <EloProtocolHero />
       <FreedomSection />
       <Footer />
     </main>
