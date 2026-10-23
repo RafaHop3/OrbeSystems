@@ -5,6 +5,8 @@ import { Code2, Database, Shield, Zap, Sparkles } from 'lucide-react';
 import { colorMap } from '@/lib/utils';
 import { MagicCard } from '@/components/ui/magic-card';
 import { AuroraText } from '@/components/ui/aurora-text';
+import ToolVoidPanel from '@/components/ToolVoidPanel';
+import ProductMetrics from '@/components/ProductMetrics';
 
 const skills = [
   { icon: Code2, label: 'Software Engineering', color: 'cyan', href: '/software-engineering' },
@@ -44,6 +46,28 @@ export default function HeroSection() {
                 Não desenvolvemos software em salas escuras. Construímos <strong>Arquiteturas Vivas</strong>.
                 O seu projeto estratégico encontra aqui uma base imaculada de engenharia e Cyber Segurança.
               </p>
+            </div>
+
+            {/* Void Institucional: Cluster de Servidores Blade + Topologia de Dados */}
+            <div className="w-full max-w-lg mx-auto my-6">
+              <ToolVoidPanel
+                shape="server-cluster"
+                accentColor="#00fff5"
+                secondaryColor="#3b82f6"
+                label="Void // Cluster de Servidores Blade"
+                className="h-52"
+              />
+            </div>
+
+            {/* Métricas Homologadas de Engenharia */}
+            <div className="flex justify-center mb-8">
+              <ProductMetrics
+                metrics={[
+                  { label: 'Identidade Unificada', value: 'Orbe SSO UUID v4' },
+                  { label: 'SLA Homologado BI', value: '< 290 ms' },
+                  { label: 'Criptografia', value: 'KMS MultiFernet' },
+                ]}
+              />
             </div>
 
             <div className="flex flex-wrap justify-center gap-4 mb-4">

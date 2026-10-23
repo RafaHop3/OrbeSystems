@@ -71,7 +71,7 @@ export default function OffensiveSecurityPage() {
           </Link>
           <div className="flex items-center gap-2 opacity-20">
             <Terminal size={12} className="text-neon-blue" />
-            <span className="font-mono text-[10px] uppercase">Unauthorized Access Restricted</span>
+            <span className="font-mono text-[10px] uppercase">Acesso Não Autorizado Restrito</span>
           </div>
         </div>
       </ScrollReveal>

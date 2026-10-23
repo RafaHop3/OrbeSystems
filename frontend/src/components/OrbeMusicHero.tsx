@@ -9,6 +9,8 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Play, Activity, Cpu, Disc3 } from 'lucide-react';
 import * as THREE from 'three';
+import ToolVoidCanvas from '@/components/ToolVoidCanvas';
+import ProductMetrics from '@/components/ProductMetrics';
 
 // --------------------------------------------------------
 // Audio Visualizer / Isometric Grid Scene in Three.js
@@ -158,7 +160,7 @@ export default function OrbeMusicHero() {
                     className="lg:w-1/2 space-y-8"
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-500/10 border border-blue-500/30 rounded-full text-xs text-neon-cyan uppercase font-bold tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.3)] backdrop-blur-md">
-                        <Activity size={16} className="animate-pulse" /> Advanced Audio Engine (Beta)
+                        <Activity size={16} className="animate-pulse" /> Motor de Áudio Avançado (Beta)
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold font-tilt-neon text-white leading-tight drop-shadow-2xl">
@@ -172,13 +174,19 @@ export default function OrbeMusicHero() {
                         O estúdio paramétrico completo. Síntese generativa nativa, sequenciadores isométricos no VDOM e renderização de áudio em tempo real diretamente no seu navegador.
                     </p>
 
+                    <ProductMetrics metrics={[
+                        { label: 'Taxa de Amostragem', value: '48 kHz' },
+                        { label: 'Renderização Visual', value: 'WebGL / GLSL' },
+                        { label: 'Acesso', value: 'Beta Gratuito' },
+                    ]} />
+
                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
                         <Link
                             href="/studio"
                             className="group relative inline-flex items-center justify-center gap-3 bg-neon-blue hover:bg-neon-cyan text-white hover:text-black font-bold uppercase tracking-widest text-sm px-8 py-5 transition-all duration-300 overflow-hidden shadow-[0_0_20px_rgba(59,130,246,0.5)] hover:shadow-[0_0_40px_rgba(6,182,212,0.8)] rounded-lg"
                         >
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></div>
-                            <Play size={18} fill="currentColor" /> Acessar Daw Engine
+                            <Play size={18} fill="currentColor" /> Acessar o Motor DAW
                         </Link>
                     </div>
                 </motion.div>
@@ -192,21 +200,9 @@ export default function OrbeMusicHero() {
                 >
                     <div className="relative w-full max-w-md mx-auto aspect-square rounded-3xl glass-magnetic border-2 border-white/10 shadow-2xl p-8 transform-gpu hover:rotate-x-12 hover:-rotate-y-12 transition-transform duration-700 ease-out flex flex-col justify-end overflow-hidden group">
 
-                        {/* Matrix Geometry Void Pattern (Apenas o Void) */}
-                        <div className="absolute inset-0 flex items-center justify-center opacity-40 group-hover:opacity-80 transition-opacity duration-1000 z-0 pointer-events-none">
-                            <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(rgba(6, 182, 212, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(6, 182, 212, 0.2) 1px, transparent 1px)', backgroundSize: '30px 30px', transform: 'perspective(500px) rotateX(70deg) scale(2) translateY(-20px)' }}></div>
-                            <div className="absolute w-[95%] h-[95%] rounded-full border border-cyan-500/10 animate-[spin_40s_linear_infinite]"></div>
-                            <div className="absolute w-[80%] h-[80%] border border-blue-500/30 rounded-full animate-[spin_20s_linear_infinite]"></div>
-                            <div className="absolute w-[85%] h-[85%] border-t border-dashed border-cyan-400/50 rounded-full animate-[spin_30s_linear_reverse_infinite]"></div>
-                            <div className="absolute w-[60%] h-[60%] border-[2px] border-dotted border-blue-400/50 rounded-full animate-[spin_15s_linear_infinite]"></div>
-                            <svg className="absolute w-[90%] h-[90%] animate-[pulse_4s_ease-in-out_infinite]" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <polygon points="50,5 89,27.5 89,72.5 50,95 11,72.5 11,27.5" stroke="rgba(59, 130, 246, 0.2)" strokeWidth="0.5" strokeDasharray="1 2" className="animate-[spin_40s_linear_infinite] origin-center" />
-                                <polygon points="50,15 80,32 80,68 50,85 20,68 20,32" stroke="rgba(6, 182, 212, 0.3)" strokeWidth="0.5" className="animate-[spin_25s_linear_reverse_infinite] origin-center" />
-                                <circle cx="50" cy="50" r="25" stroke="rgba(6, 182, 212, 0.2)" strokeWidth="0.2" strokeDasharray="2 4" />
-                                {/* Scope lines */}
-                                <line x1="50" y1="10" x2="50" y2="90" stroke="rgba(6, 182, 212, 0.15)" strokeWidth="0.3" />
-                                <line x1="10" y1="50" x2="90" y2="50" stroke="rgba(6, 182, 212, 0.15)" strokeWidth="0.3" />
-                            </svg>
+                        {/* Void do projeto: mesa de mixagem DAW + analisador FFT */}
+                        <div className="absolute inset-0 z-0 opacity-90 group-hover:opacity-100 transition-opacity duration-1000">
+                            <ToolVoidCanvas activeShape="daw-spectrum" accentColor="#06b6d4" secondaryColor="#8b5cf6" />
                         </div>
 
                         {/* Informações da Ferramenta */}

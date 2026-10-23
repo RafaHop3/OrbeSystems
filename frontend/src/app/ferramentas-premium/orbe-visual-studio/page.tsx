@@ -450,7 +450,7 @@ export default function OrbeVisualStudioPage() {
                                         )
                                     })}
                                 </div>
-                                <p className="text-[9px] text-center text-[#8b949e]">Orbe Synth Engine v1.0 (Interactive Mapped Keyboard)</p>
+                                <p className="text-[9px] text-center text-[#8b949e]">Motor de Síntese Orbe v1.0 (Teclado Mapeado Interativo)</p>
                             </div>
                         </div>
                     </div>
@@ -605,7 +605,7 @@ export default function OrbeVisualStudioPage() {
                                             <option value="high">Treble/Hats (2k-16k)</option>
                                             <option value="peak">Transient (Peak)</option>
                                             <option value="rms">Master (RMS)</option>
-                                            <option value="lfo">LFO 1 (Free)</option>
+                                            <option value="lfo">LFO 1 (Livre)</option>
                                         </select>
                                         <span className="text-[#8b949e] text-xs">→</span>
                                         <select
@@ -745,7 +745,7 @@ export default function OrbeVisualStudioPage() {
                             </button>
                         </div>
                     </div>
-                    <p className="text-[9px] text-[#8b949e] text-center mt-6">Code Snippet Engine v1.1.2 - Deploy Framework atrelado ao motor principal.</p>
+                    <p className="text-[9px] text-[#8b949e] text-center mt-6">Motor de Trechos de Código v1.1.2 - Framework de deploy atrelado ao motor principal.</p>
                 </div>
             </div>
         </div>

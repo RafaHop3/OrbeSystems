@@ -371,7 +371,7 @@ export default function CyberSecurityPage() {
           </Link>
           <div className="flex items-center gap-2 opacity-30 text-xs text-terminal-muted">
             <Lock size={12} className="text-neon-green" />
-            <span>VDE Shield Protocol Active</span>
+            <span>Protocolo VDE Shield Ativo</span>
           </div>
         </div>
       </ScrollReveal>

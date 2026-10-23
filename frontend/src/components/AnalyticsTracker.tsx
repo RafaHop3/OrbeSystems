@@ -14,12 +14,21 @@ import { useEffect, useRef } from 'react';
  *
  * Security [A3]: Uses relative /api/proxy path — backend URL never exposed to browser.
  */
+// LGPD: a telemetria de uso só roda após o aceite explícito ('Aceitar Todos').
+function hasAnalyticsConsent(): boolean {
+  try {
+    return localStorage.getItem('orbesystems_lgpd_consent') === 'true';
+  } catch {
+    return false;
+  }
+}
+
 export default function AnalyticsTracker() {
   const sessionIdRef = useRef<string>('');
   const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') return;
+    if (process.env.NODE_ENV === 'development' || !hasAnalyticsConsent()) return;
 
     // Generate or retrieve session ID
     const getOrCreateSessionId = () => {
@@ -84,7 +93,7 @@ export default function AnalyticsTracker() {
 
   // Track route changes for heartbeat updates
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') return;
+    if (process.env.NODE_ENV === 'development' || !hasAnalyticsConsent()) return;
 
     const handleRouteChange = () => {
       if (sessionIdRef.current) {

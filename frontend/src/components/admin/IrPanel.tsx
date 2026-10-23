@@ -61,7 +61,7 @@ export default function IrPanel({ apiUrl, token }: { apiUrl: string; token: stri
         return () => clearInterval(interval);
     }, []);
 
-    if (loading && !metrics) return <div className="text-neon-green/40 text-xs animate-pulse">LOADING IR MODULE...</div>;
+    if (loading && !metrics) return <div className="text-neon-green/40 text-xs animate-pulse">CARREGANDO MÓDULO IR...</div>;
 
     return (
         <div className="space-y-4">

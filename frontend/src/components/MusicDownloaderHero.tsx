@@ -64,13 +64,13 @@ export default function MusicDownloaderHero() {
                     className="lg:w-1/2 space-y-8"
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-purple-500/10 border border-purple-500/30 rounded-full text-xs text-neon-purple uppercase font-bold tracking-widest shadow-[0_0_15px_rgba(188,19,254,0.3)] backdrop-blur-md">
-                        <Activity size={16} className="animate-pulse" /> YT Extract Protocol
+                        <Activity size={16} className="animate-pulse" /> Protocolo de Extração YT
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold font-tilt-neon text-white leading-tight mb-4 drop-shadow-2xl">
                         Desbloqueie <br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-cyan-400 to-blue-400 animate-gradient-x text-shimmer">
-                            Suas Tracks
+                            Suas Faixas
                         </span>
                     </h1>
 
@@ -92,8 +92,9 @@ export default function MusicDownloaderHero() {
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-cyan-500/20 rounded-full blur-[60px] pointer-events-none"></div>
 
                         <div className="relative z-10 space-y-4">
-                            <h3 className="text-2xl font-tilt-neon tracking-widest text-[#00fff5] mb-2 text-shimmer" style={{ textShadow: '0 0 10px #00fff5' }}>YT MP3 Extractor</h3>
-                            <p className="text-sm text-slate-300">Acesse a aplicação dedicada para buscar artistas, pré-visualizar tracks e fazer o download de coleções completas em alta qualidade.</p>
+                            <h3 className="text-2xl font-tilt-neon tracking-widest text-[#00fff5] mb-2 text-shimmer" style={{ textShadow: '0 0 10px #00fff5' }}>Extrator de MP3 do YouTube</h3>
+                            <p className="text-sm text-slate-300">Acesse a aplicação dedicada para buscar artistas, pré-visualizar faixas e fazer o download de coleções completas em alta qualidade.</p>
+                            <p className="text-[11px] text-slate-400 leading-snug">Use somente conteúdo de sua autoria ou com licença que permita o download (Lei nº 9.610/98).</p>
 
                             <Link
                                 href="/youtube-mp3"

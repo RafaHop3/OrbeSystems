@@ -1,6 +1,8 @@
 'use strict';
 import Link from 'next/link';
 import { Briefcase, Building2, Key, ArrowRight, QrCode, ShieldCheck, Zap } from 'lucide-react';
+import ToolVoidPanel from '@/components/ToolVoidPanel';
+import ProductMetrics from '@/components/ProductMetrics';
 
 export default function InhoPromo() {
     const inhoUrl = 'https://inho.orbesystems.com.br';
@@ -29,9 +31,15 @@ export default function InhoPromo() {
                     </h2>
 
                     <p className="text-slate-400 font-sans leading-relaxed text-lg max-w-xl">
-                        A plataforma definitiva de Administração Corporativa e Automação de Cobranças.
-                        Gerencie até 3 empresas isoladas com segurança criptográfica, emissão de PIX instantâneo e notificações no WhatsApp.
+                        Plataforma corporativa de gestão multiempresa e automação de cobranças.
+                        Opere até 3 empresas com dados isolados, cobrança PIX dinâmica em 1 clique, conciliação por webhooks assinados (HMAC-SHA256), régua de cobrança no OrBrick WhatsApp e relatórios DRE executivos.
                     </p>
+
+                    <ProductMetrics metrics={[
+                        { label: 'Latência BI / DRE', value: '< 290 ms' },
+                        { label: 'Isolamento de Dados', value: 'Multiempresa UUID' },
+                        { label: 'Mensageria', value: 'OrBrick WhatsApp' },
+                    ]} />
 
                     <div className="flex flex-wrap gap-4 pt-4">
                         <a
@@ -42,7 +50,14 @@ export default function InhoPromo() {
                         >
                             Acessar INHO via Orbe SSO <ArrowRight size={18} />
                         </a>
+                        <a
+                            href="/database-architecture"
+                            className="inline-flex items-center gap-3 border border-[#8b5cf6]/50 text-[#c4b5fd] hover:bg-[#8b5cf6]/20 font-bold uppercase tracking-widest text-sm px-8 py-4 transition-all duration-300"
+                        >
+                            Arquitetura de Dados
+                        </a>
                     </div>
+                    <p className="text-[11px] text-slate-500 max-w-xl">Acesso restrito a contas provisionadas por assinatura ativa ou homologação administrativa. Não há cadastro público.</p>
                 </div>
 
                 {/* Right Interactive Visual Infographic */}
@@ -50,6 +65,9 @@ export default function InhoPromo() {
                     <div className="absolute -inset-4 bg-gradient-to-l from-purple-500/20 to-[#8b5cf6]/20 blur-2xl rounded-full z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                     <div className="relative z-10 w-full max-w-md flex flex-col gap-4">
+                        {/* Void do projeto: marcadores de QR Code PIX + barras DRE */}
+                        <ToolVoidPanel shape="inho-pix-dre" accentColor="#00fff5" secondaryColor="#3b82f6" label="Void // INHO PIX + DRE" className="h-56 ml-8" />
+
 
                         {/* Passo 1: Multi-Tenants */}
                         <div className="bg-black/60 backdrop-blur-xl border border-purple-500/30 rounded-xl p-4 flex items-center gap-4 hover:scale-105 transition-transform cursor-default ml-16">
@@ -57,8 +75,8 @@ export default function InhoPromo() {
                                 <Building2 className="text-purple-400" size={24} />
                             </div>
                             <div>
-                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>1. Multi-Tenant Isolado</h3>
-                                <p className="text-xs text-slate-400 mt-1">Até 3 matrizes/empresa com banco de dados segregado e seguro.</p>
+                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>1. Multiempresa Isolado</h3>
+                                <p className="text-xs text-slate-400 mt-1">Até 3 empresas com dados segregados por identificador único (UUID).</p>
                             </div>
                         </div>
 
@@ -71,7 +89,7 @@ export default function InhoPromo() {
                             </div>
                             <div>
                                 <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>2. Cobranças PIX + WhatsApp</h3>
-                                <p className="text-xs text-slate-400 mt-1">QR Code PIX instantâneo e lembretes automáticos em 1 clique.</p>
+                                <p className="text-xs text-slate-400 mt-1">Cobrança PIX e régua automática no OrBrick (D-3, D0 e D+3).</p>
                             </div>
                         </div>
 

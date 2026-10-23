@@ -13,7 +13,7 @@ const sites = [
         accent: '#eab308',
         accentBg: 'rgba(234, 179, 8, 0.08)',
         accentBorder: 'rgba(234, 179, 8, 0.4)',
-        badge: '🌟 NOVO! FREE',
+        badge: '🌟 NOVO! GRÁTIS',
         isAnimated: true,
     },
     {
@@ -24,7 +24,7 @@ const sites = [
         accent: '#00f2fe',
         accentBg: 'rgba(0, 242, 254, 0.08)',
         accentBorder: 'rgba(0, 242, 254, 0.25)',
-        badge: '👻 Opt-Out',
+        badge: '👻 Remoção de Dados',
         isAnimated: true,
     },
     {
@@ -40,34 +40,34 @@ const sites = [
     },
     {
         name: 'AstroWatch',
-        tagline: 'Universe Explorer · Satélites & Cosmos 3D',
+        tagline: 'Explorador do Universo · Satélites & Cosmos 3D',
         url: 'https://astro-watch-chi.vercel.app/',
         image: '/featured-astrowatch.png',
         accent: '#00d4ff',
         accentBg: 'rgba(0, 212, 255, 0.08)',
         accentBorder: 'rgba(0, 212, 255, 0.25)',
-        badge: '🚀 Space Tech',
+        badge: '🚀 Tecnologia Espacial',
     },
     {
         name: 'Nexus Core',
-        tagline: 'Discover · Connect · Play',
+        tagline: 'Descubra · Conecte · Jogue',
         url: 'https://nexus-core-discover-connect-play.vercel.app/',
         image: '/featured-nexuscore.png',
         accent: '#39ff14',
         accentBg: 'rgba(57, 255, 20, 0.08)',
         accentBorder: 'rgba(57, 255, 20, 0.4)',
-        badge: '🕹 Arcade',
+        badge: '🕹 Fliperama',
         isAnimated: true,
     },
     {
         name: 'PDF Ever',
-        tagline: 'Compressão Inteligente · PDF Toolkit',
+        tagline: 'Compressão Inteligente · Ferramentas de PDF',
         url: 'https://pdf-8-ever.vercel.app/',
         image: '/featured-pdfever.png',
         accent: '#30d158',
         accentBg: 'rgba(48, 209, 88, 0.08)',
         accentBorder: 'rgba(48, 209, 88, 0.25)',
-        badge: '📄 DevTool',
+        badge: '📄 Ferramenta Dev',
     },
     {
         name: 'Jovem Pano News',
@@ -77,7 +77,7 @@ const sites = [
         accent: '#f97316',
         accentBg: 'rgba(249, 115, 22, 0.08)',
         accentBorder: 'rgba(249, 115, 22, 0.25)',
-        badge: '📰 News',
+        badge: '📰 Notícias',
     },
     {
         name: 'Orbe Cleaner',
@@ -87,7 +87,7 @@ const sites = [
         accent: '#ff9900',
         accentBg: 'rgba(255, 153, 0, 0.08)',
         accentBorder: 'rgba(255, 153, 0, 0.35)',
-        badge: '🧹 SysTool',
+        badge: '🧹 Sistema',
         isAnimated: true,
     },
     {
@@ -98,7 +98,7 @@ const sites = [
         accent: '#3b82f6',
         accentBg: 'rgba(59, 130, 246, 0.08)',
         accentBorder: 'rgba(59, 130, 246, 0.35)',
-        badge: '🛡️ Security',
+        badge: '🛡️ Segurança',
         isAnimated: true,
     },
     {
@@ -113,7 +113,7 @@ const sites = [
     },
     {
         name: 'Imortal (Logic Engine)',
-        tagline: 'Formal Verification · Z3 Solver',
+        tagline: 'Verificação Formal · Solucionador Z3',
         url: '#',
         image: '/featured-imortal.png',
         accent: '#9333ea',
@@ -123,7 +123,7 @@ const sites = [
     },
     {
         name: 'Imobverse',
-        tagline: 'Proptech · Reputation Engine',
+        tagline: 'Proptech · Motor de Reputação',
         url: '#',
         image: '/featured-imobverse.png',
         accent: '#6366f1',
@@ -133,7 +133,7 @@ const sites = [
     },
     {
         name: 'PowerShell Bot',
-        tagline: 'SecDevOps · SAST Auditor',
+        tagline: 'SecDevOps · Auditor SAST',
         url: '#',
         image: '/featured-powershellbot.png',
         accent: '#10b981',
@@ -163,8 +163,10 @@ export default function FeaturedSitesSection() {
                     <a
                         key={site.name}
                         href={site.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        target={site.url === '#' ? undefined : '_blank'}
+                        rel={site.url === '#' ? undefined : 'noopener noreferrer'}
+                        aria-disabled={site.url === '#' ? true : undefined}
+                        onClick={site.url === '#' ? (e) => e.preventDefault() : undefined}
                         className={`group relative flex flex-col overflow-hidden rounded-lg border transition-all duration-500 ${site.isAnimated ? 'hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(57,255,20,0.5)]' : ''}`}
                         style={{
                             borderColor: site.accentBorder,
@@ -252,7 +254,7 @@ export default function FeaturedSitesSection() {
                                         background: `${site.accentBg}`,
                                     }}
                                 >
-                                    Acesse aqui
+                                    {site.url === '#' ? 'Em breve' : 'Acesse aqui'}
                                     <ExternalLink size={10} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                                 </span>
                             </div>

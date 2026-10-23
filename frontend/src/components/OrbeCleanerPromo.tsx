@@ -1,6 +1,8 @@
 'use strict';
 import Link from 'next/link';
 import { HardDrive, ServerCrash, Cpu, ArrowRight, Zap, ShieldCheck } from 'lucide-react';
+import ToolVoidPanel from '@/components/ToolVoidPanel';
+import ProductMetrics from '@/components/ProductMetrics';
 
 export default function OrbeCleanerPromo() {
     return (
@@ -16,7 +18,7 @@ export default function OrbeCleanerPromo() {
                 {/* Left Typography */}
                 <div className="lg:w-1/2 space-y-6">
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#f97316]/10 border border-[#f97316]/30 rounded-full text-[10px] text-orange-400 uppercase font-bold tracking-widest animate-pulse">
-                        <HardDrive size={14} /> SysTool · Orbe Ecosystem
+                        <HardDrive size={14} /> Ferramenta de Sistema · Ecossistema Orbe
                     </div>
 
                     <h2 className="text-4xl md:text-5xl font-bold font-tilt-neon text-white leading-tight mb-4">
@@ -27,9 +29,15 @@ export default function OrbeCleanerPromo() {
                     </h2>
 
                     <p className="text-slate-400 font-sans leading-relaxed text-lg max-w-xl">
-                        A utilidade definitiva de Esterilização de Sistema.
-                        Recupere de 30 a 60 Gigabytes de espaço limpando agressivamente caches ocultos, Windows Update, e lixos residuais do Next.js, Node e Python.
+                        Utilitário técnico de manutenção para estações de engenharia Windows.
+                        Recupere de 30 a 60 GB eliminando artefatos órfãos de compilação (Next.js, Node.js e ambientes virtuais Python), resíduos do Windows Update (WinSxS) e caches temporários, sem instalar serviços residentes em segundo plano.
                     </p>
+
+                    <ProductMetrics metrics={[
+                        { label: 'Recuperação Média', value: '30 a 60 GB' },
+                        { label: 'Modo de Operação', value: 'Linha de comando' },
+                        { label: 'Execução', value: 'Local' },
+                    ]} />
 
                     <div className="flex flex-wrap gap-4 pt-4">
                         <Link
@@ -46,6 +54,9 @@ export default function OrbeCleanerPromo() {
                     <div className="absolute -inset-4 bg-gradient-to-l from-orange-500/20 to-amber-500/20 blur-2xl rounded-full z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 
                     <div className="relative z-10 w-full max-w-md flex flex-col gap-4">
+                        {/* Void do projeto: SSD M.2 NVMe com blocos de cache ejetados */}
+                        <ToolVoidPanel shape="nvme-cleaner" accentColor="#f97316" secondaryColor="#00fff5" label="Void // SSD NVMe + Cache" className="h-56 ml-8" />
+
 
                         {/* Passo 1: Limpeza */}
                         <div className="bg-black/60 backdrop-blur-xl border border-orange-500/30 rounded-xl p-4 flex items-center gap-4 hover:scale-105 transition-transform cursor-default ml-16">
@@ -53,8 +64,8 @@ export default function OrbeCleanerPromo() {
                                 <ServerCrash className="text-orange-400" size={24} />
                             </div>
                             <div>
-                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>1. Esterilização Agressiva</h3>
-                                <p className="text-xs text-slate-400 mt-1">Dumps invisíveis, Caches abandonados de npm e WinSxS purgados.</p>
+                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>1. Limpeza Seletiva de Ambientes Dev</h3>
+                                <p className="text-xs text-slate-400 mt-1">Remove node_modules inativos, caches do npm, artefatos .next e dumps temporários.</p>
                             </div>
                         </div>
 
@@ -66,8 +77,8 @@ export default function OrbeCleanerPromo() {
                                 <Zap className="text-cyan-400 animate-pulse" size={24} />
                             </div>
                             <div>
-                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>2. Windows Optimization</h3>
-                                <p className="text-xs text-slate-400 mt-1">Hibernação desativada, CleanMgr silencioso e Winsock resetados.</p>
+                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>2. Otimização do Windows</h3>
+                                <p className="text-xs text-slate-400 mt-1">Redefinição segura do Winsock, limpeza silenciosa do WinSxS e otimização de unidades NVMe.</p>
                             </div>
                         </div>
 
@@ -79,8 +90,8 @@ export default function OrbeCleanerPromo() {
                                 <ShieldCheck className="text-emerald-400" size={24} />
                             </div>
                             <div>
-                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>3. Execução Controlada UI</h3>
-                                <p className="text-xs text-slate-400 mt-1">Controle total via linha de comando sem instalar nenhum app suspeito.</p>
+                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>3. Execução Transparente e Auditável</h3>
+                                <p className="text-xs text-slate-400 mt-1">Operação por linha de comando, com relatório de cada diretório liberado antes da confirmação.</p>
                             </div>
                         </div>
 
