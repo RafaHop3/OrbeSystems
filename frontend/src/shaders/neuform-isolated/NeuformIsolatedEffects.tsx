@@ -1926,7 +1926,7 @@ export function CustomInductionButton({ text, ...props }: NeuformIsolatedEffectP
       }
 
       // Inject click bubbler and CSS forced filter to prevent hue from dropping
-      src = src.replace('</head>', `<style>html { filter: hue-rotate(210deg) saturate(1.4) brightness(1.1) !important; }</style></head>`);
+      src = src.replace('</head>', `<style>#main-nav, nav, header, #intro-tags, #note-text, [data-split] { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; } body > *:not(#btn-container):not(canvas):not(script):not(style) { display: none !important; } html, body { background: transparent !important; overflow: hidden !important; filter: hue-rotate(210deg) saturate(1.4) brightness(1.1) !important; } #btn-container { margin: 0 !important; padding: 0 !important; position: absolute !important; inset: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; opacity: 1 !important; transform: none !important; }</style></head>`);
 
       src = src.replace('</body>', `<script>
         document.getElementById('btn').addEventListener('click', function() {

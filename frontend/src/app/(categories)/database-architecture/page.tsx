@@ -12,9 +12,9 @@ export default function DatabaseArchitecturePage() {
             <h1 className="text-2xl font-bold tracking-tight uppercase">Database Architecture</h1>
           </div>
 
-          <div className="space-y-2 opacity-80 font-mono">
+          <div className="space-y-2 opacity-90 font-mono">
             <p className="flex items-center gap-2">
-              <span className="text-neon-cyan">$</span>
+              <span className="text-neon-cyan select-none">$ </span>
               <span>./show_vision.sh</span>
             </p>
             <p className="text-terminal-muted leading-relaxed">
@@ -30,11 +30,11 @@ export default function DatabaseArchitecturePage() {
         <section className="space-y-6 pt-6 border-t border-terminal-border/30 font-mono">
           <div className="space-y-2">
             <p className="flex items-center gap-2">
-              <span className="text-neon-cyan">$</span>
+              <span className="text-neon-cyan select-none">$ </span>
               <span>ls -la ./schemas</span>
             </p>
 
-            <div className="grid grid-cols-1 gap-2 mt-4 text-xs md:text-sm">
+            <div className="grid grid-cols-1 gap-1.5 mt-4 text-xs md:text-sm">
               {[
                 { name: 'er-diagram-v3', type: 'rwxr--r--', size: '2.4MB', icon: Table2 },
                 { name: 'index-optimization-report', type: 'rwxr--r--', size: '890KB', icon: Database },
@@ -43,14 +43,14 @@ export default function DatabaseArchitecturePage() {
               ].map((item, i) => (
                 <ScrollReveal key={item.name} variant="fade-left" delay={i * 60}>
                   <div
-                    className="group flex items-center justify-between p-2 hover:bg-neon-green/5 rounded transition-colors cursor-default"
+                    className="group grid grid-cols-[12ch_1fr_auto] items-center gap-4 p-2.5 hover:bg-neon-green/5 rounded transition-colors cursor-default font-mono tabular-nums border-b border-terminal-border/10"
                   >
-                    <div className="flex items-center gap-4">
-                      <span className="text-terminal-muted/40">{item.type}</span>
-                      <item.icon size={12} className="text-neon-green/50 group-hover:text-neon-green transition-colors" />
-                      <span className="text-white group-hover:text-neon-green transition-colors">{item.name}</span>
+                    <span className="text-terminal-muted/60 tracking-wider font-semibold">{item.type}</span>
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <item.icon size={13} className="text-neon-green/50 group-hover:text-neon-green transition-colors flex-shrink-0" />
+                      <span className="text-white group-hover:text-neon-green transition-colors truncate">{item.name}</span>
                     </div>
-                    <span className="text-terminal-muted/40">{item.size}</span>
+                    <span className="text-terminal-muted/60 text-right">{item.size}</span>
                   </div>
                 </ScrollReveal>
               ))}
@@ -63,7 +63,7 @@ export default function DatabaseArchitecturePage() {
         <div className="pt-10">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs text-terminal-muted hover:text-neon-green transition-colors group"
+            className="inline-flex items-center gap-2 text-xs text-terminal-muted hover:text-neon-green transition-colors group font-mono"
           >
             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
             <span>cd ..</span>

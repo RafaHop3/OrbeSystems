@@ -12,9 +12,9 @@ export default function AutomationPage() {
             <h1 className="text-2xl font-bold tracking-tight uppercase">Automation</h1>
           </div>
           
-          <div className="space-y-4 opacity-80">
-            <p className="flex items-center gap-2">
-              <span className="text-neon-cyan">$</span> 
+          <div className="space-y-4 opacity-90">
+            <p className="flex items-center gap-2 font-mono">
+              <span className="text-neon-cyan select-none">$ </span> 
               <span>sh run_workflows.sh</span>
             </p>
             <div className="text-terminal-muted leading-relaxed space-y-2 border border-neon-cyan/20 p-4 bg-neon-cyan/5 rounded">
@@ -32,12 +32,12 @@ export default function AutomationPage() {
       <ScrollReveal variant="fade-up" delay={120}>
         <section className="space-y-6 pt-6 border-t border-terminal-border/30 font-mono text-xs md:text-sm">
           <div className="space-y-2">
-            <p className="flex items-center gap-2">
-              <span className="text-neon-cyan">$</span> 
+            <p className="flex items-center gap-2 font-mono">
+              <span className="text-neon-cyan select-none">$ </span> 
               <span>ls -la ./scripts</span>
             </p>
             
-            <div className="grid grid-cols-1 gap-2 mt-4">
+            <div className="grid grid-cols-1 gap-1.5 mt-4">
               {[
                 { name: 'backup-sync.py', type: '-rwxr-xr-x', size: '15KB' },
                 { name: 'deploy-prod.yaml', type: '-rwxr-xr-x', size: '2.5KB' },
@@ -45,12 +45,10 @@ export default function AutomationPage() {
                 { name: 'docker-compose-v3', type: '-rwxr-xr-x', size: '4KB' },
               ].map((item, i) => (
                 <ScrollReveal key={item.name} variant="fade-left" delay={i * 60}>
-                  <div className="group flex items-center justify-between p-2 hover:bg-neon-cyan/5 rounded transition-colors cursor-default border-b border-terminal-border/10">
-                    <div className="flex items-center gap-4">
-                      <span className="text-neon-cyan/40">{item.type}</span>
-                      <span className="text-white group-hover:text-neon-cyan transition-colors">{item.name}</span>
-                    </div>
-                    <span className="text-terminal-muted/40">{item.size}</span>
+                  <div className="group grid grid-cols-[12ch_1fr_auto] items-center gap-4 p-2.5 hover:bg-neon-cyan/5 rounded transition-colors cursor-default border-b border-terminal-border/10 font-mono tabular-nums">
+                    <span className="text-neon-cyan/60 tracking-wider font-semibold">{item.type}</span>
+                    <span className="text-white group-hover:text-neon-cyan transition-colors truncate">{item.name}</span>
+                    <span className="text-terminal-muted/60 text-right">{item.size}</span>
                   </div>
                 </ScrollReveal>
               ))}
