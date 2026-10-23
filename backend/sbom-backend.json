@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:b6034635-3bdf-4db5-978e-dc579bbfb9f6",
+  "serialNumber": "urn:uuid:7db947f2-7fde-436e-a32e-bec9af854afe",
   "metadata": {
-    "timestamp": "2026-10-19T18:56:55.265930+00:00",
+    "timestamp": "2026-10-23T17:10:41.880413+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -325,8 +325,8 @@
     {
       "type": "library",
       "name": "certifi",
-      "version": "2026.10.18",
-      "purl": "pkg:pypi/certifi@2026.10.18",
+      "version": "2026.10.23",
+      "purl": "pkg:pypi/certifi@2026.10.23",
       "licenses": [
         {
           "license": {
@@ -343,7 +343,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "46e0c89b557d5b5b21cc52bba092e7d86aaa59a77346d5302c8fd6e6877f0321"
+          "content": "9fa10479ad2f73d0afa65c80e6cb305effda7d43ef6d0605690fb9d782c90a2e"
         }
       ]
     },
@@ -1230,8 +1230,8 @@
     {
       "type": "library",
       "name": "pycparser",
-      "version": "3.11",
-      "purl": "pkg:pypi/pycparser@3.11",
+      "version": "3.12",
+      "purl": "pkg:pypi/pycparser@3.12",
       "licenses": [
         {
           "license": {
@@ -1248,7 +1248,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "dc2de4b5d404b9ae40c0d1842286e1eedab13e9952687cfcaac82ec0be384946"
+          "content": "5521d8fce0c780046693e2d2036bdceda2029c46f03672cb54aee6248c68e94c"
         }
       ]
     },
@@ -1740,8 +1740,8 @@
     {
       "type": "library",
       "name": "SQLAlchemy",
-      "version": "2.1.5",
-      "purl": "pkg:pypi/sqlalchemy@2.1.5",
+      "version": "2.1.6",
+      "purl": "pkg:pypi/sqlalchemy@2.1.6",
       "licenses": [
         {
           "license": {
@@ -1758,7 +1758,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "0c7269c15b5578962bc47ab204683a3ea938611ff977f192f7af8e79ba79e7cf"
+          "content": "405174305cd8c8cd136577f141f8c1dd507645b17c01b9151b254c1c432f0f5e"
         }
       ]
     },
@@ -1880,8 +1880,8 @@
     {
       "type": "library",
       "name": "tzlocal",
-      "version": "5.4.4",
-      "purl": "pkg:pypi/tzlocal@5.4.4",
+      "version": "5.4.5",
+      "purl": "pkg:pypi/tzlocal@5.4.5",
       "licenses": [
         {
           "license": {
@@ -1893,7 +1893,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "0d45f08d61568095344132b6232908bbe6c33d65586763722203439c42c86920"
+          "content": "3c6344498e2adf8b7295608928c71b1b99f35c7e872e1c48f682c9a61a0e5c29"
         }
       ]
     },
