@@ -72,7 +72,7 @@ export default function EloProtocolHero() {
             <span className="w-2 h-2 rounded-full bg-neon-cyan animate-pulse shadow-[0_0_8px_#00fff5]" />
             <span className="text-neon-cyan font-bold tracking-wider">{'ORBE HUD // SYS 12'}</span>
             <span className="text-slate-600">|</span>
-            <span className="tracking-wide">KINETIC SOCIAL GRAPH</span>
+            <span className="tracking-wide">MESH SOCIAL // KINETIC GRAPH</span>
             <span className="text-slate-600 hidden sm:inline">|</span>
             <span className="text-emerald-400 hidden sm:inline">ZERO-PAYWALL ENGINE</span>
           </div>
@@ -95,13 +95,13 @@ export default function EloProtocolHero() {
                 <span>Grafo de Reciprocidade Verificada</span>
               </div>
               <h2 className="text-3xl sm:text-5xl font-tilt-neon font-bold text-white tracking-tight leading-tight">
-                Protocolo ELO <br />
+                Mesh Social <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan via-blue-400 to-purple-400 drop-shadow-[0_0_30px_rgba(0,255,245,0.4)]">
                   Arquitetura Viva de Conexão Real
                 </span>
               </h2>
               <p className="text-slate-300 text-base sm:text-lg font-light leading-relaxed max-w-2xl">
-                Não construímos feeds para retenção comercial de desconhecidos. O <strong className="text-white font-medium">Protocolo ELO</strong> unifica fotos, vídeos curtos, vlogs longos e threads sob um grafo determinístico: <span className="text-neon-cyan">o acesso a camadas íntimas é conquistado por reciprocidade comprovada</span>, jamais por assinaturas ou paywalls.
+                Não construímos feeds para retenção comercial de desconhecidos. O <strong className="text-white font-medium">Mesh Social</strong> unifica fotos, vídeos curtos, vlogs longos e threads sob um grafo determinístico: <span className="text-neon-cyan">o acesso a camadas íntimas é conquistado por reciprocidade comprovada</span>, jamais por assinaturas ou paywalls.
               </p>
             </div>
 
@@ -146,14 +146,14 @@ export default function EloProtocolHero() {
             {/* CTAs */}
             <div className="flex flex-wrap items-center gap-4 pt-2 font-mono">
               <Link
-                href="/protocolo-elo"
+                href="/mesh-social"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-neon-cyan text-black font-bold text-xs uppercase tracking-wider hover:bg-cyan-300 transition-all duration-300 shadow-[0_0_25px_rgba(0,255,245,0.4)]"
               >
-                <span>Explorar Simulador ELO</span>
+                <span>Explorar Simulador Mesh Social</span>
                 <span aria-hidden="true">→</span>
               </Link>
               <Link
-                href="/protocolo-elo#analise"
+                href="/mesh-social#analise"
                 className="inline-flex items-center gap-2 px-5 py-3.5 rounded-lg bg-slate-900/80 border border-slate-700 text-slate-200 hover:border-neon-cyan/50 hover:text-neon-cyan text-xs uppercase tracking-wider font-semibold transition-all duration-300"
               >
                 Auditoria SAST &amp; Dunbar
@@ -170,7 +170,7 @@ export default function EloProtocolHero() {
                   <span className="w-2 h-2 rounded-full bg-emerald-400" />
                   <span className="text-slate-300 font-semibold">NODE: @marinacosta</span>
                 </div>
-                <span className="text-neon-cyan text-[11px] font-bold">VALENCE VERIFIED</span>
+                <span className="text-neon-cyan text-[11px] font-bold">MESH VERIFIED</span>
               </div>
 
               {/* Visual Body */}
