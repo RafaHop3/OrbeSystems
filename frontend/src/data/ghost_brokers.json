@@ -1,0 +1,547 @@
+[
+  {
+    "id": "casa_dos_dados",
+    "name": "Casa dos Dados",
+    "domain": "casadosdados.com.br",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@casadosdados.com.br",
+    "optout_url": "https://casadosdados.com.br/contato",
+    "sla_days": 15
+  },
+  {
+    "id": "cnpj_biz",
+    "name": "CNPJ Biz",
+    "domain": "cnpj.biz",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@cnpj.biz",
+    "optout_url": "https://cnpj.biz/privacidade",
+    "sla_days": 15
+  },
+  {
+    "id": "consulta_socio",
+    "name": "Consulta Sócio",
+    "domain": "consultasocio.com",
+    "category": "Corporate/OSINT",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.consultasocio.com/remocao",
+    "sla_days": 15
+  },
+  {
+    "id": "econodata",
+    "name": "Econodata",
+    "domain": "econodata.com.br",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "encarregado@econodata.com.br",
+    "optout_url": "https://www.econodata.com.br/privacidade",
+    "sla_days": 15
+  },
+  {
+    "id": "empresas_net",
+    "name": "Empresas.net",
+    "domain": "empresas.net.br",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "contato@empresas.net.br",
+    "sla_days": 15
+  },
+  {
+    "id": "informecadastral",
+    "name": "Informe Cadastral",
+    "domain": "informecadastral.com.br",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@informecadastral.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "transparencia_cc",
+    "name": "Transparência CC",
+    "domain": "transparencia.cc",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@transparencia.cc",
+    "sla_days": 15
+  },
+  {
+    "id": "cnpj_rocks",
+    "name": "CNPJ Rocks",
+    "domain": "cnpj.rocks",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "contato@cnpj.rocks",
+    "sla_days": 15
+  },
+  {
+    "id": "cadastro_empresa",
+    "name": "Cadastro Empresa",
+    "domain": "cadastroempresa.com.br",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@cadastroempresa.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "qsa_brasil",
+    "name": "QSA Brasil",
+    "domain": "qsabrasil.com.br",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@qsabrasil.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "hubd",
+    "name": "Hubd Agregador",
+    "domain": "hubd.com.br",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@hubd.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "situacao_cadastral",
+    "name": "Situação Cadastral",
+    "domain": "situacaocadastral.info",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "contato@situacaocadastral.info",
+    "sla_days": 15
+  },
+  {
+    "id": "consultas_cnpj",
+    "name": "Consultas CNPJ",
+    "domain": "consultascnpj.com",
+    "category": "Corporate/OSINT",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://consultascnpj.com/solicitar-exclusao",
+    "sla_days": 15
+  },
+  {
+    "id": "cenprot",
+    "name": "Cenprot Cartórios",
+    "domain": "cenprot.org.br",
+    "category": "Corporate/OSINT",
+    "method": "DPO_EMAIL",
+    "status": "STANDBY",
+    "dpo_email": "privacidade@cenprot.org.br",
+    "sla_days": 15
+  },
+  {
+    "id": "jusbrasil",
+    "name": "Jusbrasil",
+    "domain": "jusbrasil.com.br",
+    "category": "Legal",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "CLOUDFLARE_PROTECTED",
+    "optout_url": "https://www.jusbrasil.com.br/ajuda/remocao",
+    "sla_days": 15
+  },
+  {
+    "id": "escavador",
+    "name": "Escavador",
+    "domain": "escavador.com",
+    "category": "Legal",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.escavador.com/remocao-de-dados",
+    "sla_days": 15
+  },
+  {
+    "id": "radar_oficial",
+    "name": "Radar Oficial",
+    "domain": "radaroficial.com.br",
+    "category": "Legal",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "contato@radaroficial.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "digesto",
+    "name": "Digesto (Jusbrasil)",
+    "domain": "digesto.com.br",
+    "category": "Legal",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@digesto.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "processos_info",
+    "name": "Processos.info",
+    "domain": "processos.info",
+    "category": "Legal",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@processos.info",
+    "sla_days": 15
+  },
+  {
+    "id": "jusdocs",
+    "name": "JusDocs",
+    "domain": "jusdocs.com",
+    "category": "Legal",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@jusdocs.com",
+    "sla_days": 15
+  },
+  {
+    "id": "diarios_oficiais_br",
+    "name": "Agregador Diários Oficiais",
+    "domain": "diariosoficiais.com.br",
+    "category": "Legal",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "encarregado@diariosoficiais.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "tj_notificacoes",
+    "name": "TJ Notificações Jurídicas",
+    "domain": "tjnotificacoes.com.br",
+    "category": "Legal",
+    "method": "DPO_EMAIL",
+    "status": "STANDBY",
+    "dpo_email": "privacidade@tjnotificacoes.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "serasa",
+    "name": "Serasa Experian",
+    "domain": "serasa.com.br",
+    "category": "Credit Bureau",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@br.experian.com",
+    "optout_url": "https://www.serasaexperian.com.br/protecao-de-dados",
+    "sla_days": 15
+  },
+  {
+    "id": "boa_vista",
+    "name": "Boa Vista SCPC (Equifax)",
+    "domain": "boavistaservicos.com.br",
+    "category": "Credit Bureau",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@boavistaservicos.com.br",
+    "optout_url": "https://www.consumidorpositivo.com.br/atendimento",
+    "sla_days": 15
+  },
+  {
+    "id": "quod",
+    "name": "Quod (Inteligência de Crédito)",
+    "domain": "quod.com.br",
+    "category": "Credit Bureau",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@quod.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "acordo_certo",
+    "name": "Acordo Certo",
+    "domain": "acordocerto.com.br",
+    "category": "Credit Bureau",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@acordocerto.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "spc_brasil",
+    "name": "SPC Brasil (CNDL)",
+    "domain": "spcbrasil.org.br",
+    "category": "Credit Bureau",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "encarregadolgpd@spcbrasil.org.br",
+    "sla_days": 15
+  },
+  {
+    "id": "assertiva",
+    "name": "Assertiva Soluções",
+    "domain": "assertivasolucoes.com.br",
+    "category": "Credit Bureau",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@assertivasolucoes.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "neoway",
+    "name": "Neoway B3",
+    "domain": "neoway.com.br",
+    "category": "Big Data Broker",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@neoway.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "bigdatacorp",
+    "name": "BigDataCorp",
+    "domain": "bigdatacorp.com.br",
+    "category": "Big Data Broker",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@bigdatacorp.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "lusha",
+    "name": "Lusha Systems",
+    "domain": "lusha.com",
+    "category": "Global Lead Broker",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.lusha.com/privacy-center/opt-out/",
+    "sla_days": 15
+  },
+  {
+    "id": "apollo_io",
+    "name": "Apollo.io",
+    "domain": "apollo.io",
+    "category": "Global Lead Broker",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.apollo.io/privacy-policy/remove",
+    "sla_days": 15
+  },
+  {
+    "id": "rocketreach",
+    "name": "RocketReach",
+    "domain": "rocketreach.co",
+    "category": "Global Lead Broker",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://rocketreach.co/remove",
+    "sla_days": 15
+  },
+  {
+    "id": "zoominfo",
+    "name": "ZoomInfo",
+    "domain": "zoominfo.com",
+    "category": "Global Lead Broker",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.zoominfo.com/about-zoominfo/privacy-manage-profile",
+    "sla_days": 15
+  },
+  {
+    "id": "cognism",
+    "name": "Cognism",
+    "domain": "cognism.com",
+    "category": "Global Lead Broker",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacy@cognism.com",
+    "sla_days": 15
+  },
+  {
+    "id": "kaspr",
+    "name": "Kaspr Lead Engine",
+    "domain": "kaspr.io",
+    "category": "Global Lead Broker",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@kaspr.io",
+    "sla_days": 15
+  },
+  {
+    "id": "leadiq",
+    "name": "LeadIQ",
+    "domain": "leadiq.com",
+    "category": "Global Lead Broker",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://leadiq.com/opt-out",
+    "sla_days": 15
+  },
+  {
+    "id": "hunter_io",
+    "name": "Hunter.io",
+    "domain": "hunter.io",
+    "category": "Global Lead Broker",
+    "method": "HTTP_API",
+    "status": "ONLINE",
+    "optout_url": "https://hunter.io/claim-domain",
+    "sla_days": 15
+  },
+  {
+    "id": "telelistas",
+    "name": "TeleListas",
+    "domain": "telelistas.net",
+    "category": "Directory",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@telelistas.net",
+    "sla_days": 15
+  },
+  {
+    "id": "guiamais",
+    "name": "GuiaMais",
+    "domain": "guiamais.com.br",
+    "category": "Directory",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "lgpd@guiamais.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "solutudo",
+    "name": "Solutudo",
+    "domain": "solutudo.com.br",
+    "category": "Directory",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@solutudo.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "truecaller",
+    "name": "Truecaller",
+    "domain": "truecaller.com",
+    "category": "Caller ID",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.truecaller.com/unlisting",
+    "sla_days": 15
+  },
+  {
+    "id": "102busca",
+    "name": "102 Busca Telefônica",
+    "domain": "102busca.com.br",
+    "category": "Directory",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "contato@102busca.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "apontador",
+    "name": "Apontador Local",
+    "domain": "apontador.com.br",
+    "category": "Directory",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@apontador.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "guiatel",
+    "name": "GuiaTel Cadastral",
+    "domain": "guiatel.com.br",
+    "category": "Directory",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "dpo@guiatel.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "acheiaqui",
+    "name": "AcheiAqui Diretório",
+    "domain": "acheiaqui.com.br",
+    "category": "Directory",
+    "method": "DPO_EMAIL",
+    "status": "ONLINE",
+    "dpo_email": "privacidade@acheiaqui.com.br",
+    "sla_days": 15
+  },
+  {
+    "id": "spokeo",
+    "name": "Spokeo People Search",
+    "domain": "spokeo.com",
+    "category": "People Search",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.spokeo.com/optout",
+    "sla_days": 15
+  },
+  {
+    "id": "beenverified",
+    "name": "BeenVerified",
+    "domain": "beenverified.com",
+    "category": "People Search",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.beenverified.com/f/optout/search",
+    "sla_days": 15
+  },
+  {
+    "id": "whitepages",
+    "name": "Whitepages Global",
+    "domain": "whitepages.com",
+    "category": "People Search",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.whitepages.com/suppression-requests",
+    "sla_days": 15
+  },
+  {
+    "id": "radaris",
+    "name": "Radaris Record Search",
+    "domain": "radaris.com",
+    "category": "People Search",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://radaris.com/control/privacy",
+    "sla_days": 15
+  },
+  {
+    "id": "intelius",
+    "name": "Intelius Background",
+    "domain": "intelius.com",
+    "category": "People Search",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.intelius.com/opt-out/submit",
+    "sla_days": 15
+  },
+  {
+    "id": "peekyou",
+    "name": "PeekYou Profiler",
+    "domain": "peekyou.com",
+    "category": "People Search",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.peekyou.com/about/contact/optout/index.php",
+    "sla_days": 15
+  },
+  {
+    "id": "fastpeoplesearch",
+    "name": "FastPeopleSearch",
+    "domain": "fastpeoplesearch.com",
+    "category": "People Search",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.fastpeoplesearch.com/removal",
+    "sla_days": 15
+  },
+  {
+    "id": "numlookup",
+    "name": "NumLookup Intelligence",
+    "domain": "numlookup.com",
+    "category": "People Search",
+    "method": "PLAYWRIGHT_DOM",
+    "status": "ONLINE",
+    "optout_url": "https://www.numlookup.com/opt-out",
+    "sla_days": 15
+  }
+]
