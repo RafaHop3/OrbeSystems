@@ -158,6 +158,53 @@ export default function GhostEnginePage() {
                 </div>
             </section>
 
+            {/* ── Pricing & Unlock Pass Section ────────────────────────────── */}
+            <section className="py-20 px-6 border-t border-slate-800 bg-gradient-to-b from-black to-[#050810]">
+                <div className="max-w-4xl mx-auto rounded-3xl p-8 sm:p-12 bg-gradient-to-br from-cyan-950/40 via-black to-slate-950/80 border border-cyan-500/40 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-80 h-80 bg-[#00fff5]/10 rounded-full blur-3xl pointer-events-none -mr-20 -mt-20"></div>
+
+                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                        <div className="space-y-4">
+                            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-mono uppercase bg-cyan-950 text-[#00fff5] border border-cyan-500/40 font-bold">
+                                ACESSO IMEDIATO // SEM MENSALIDADE
+                            </span>
+                            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
+                                Desbloqueie o Ghost Engine
+                            </h2>
+                            <p className="text-slate-300 text-sm max-w-lg leading-relaxed">
+                                Execute a desindexação massiva em todos os <strong className="text-white">54 Data Brokers catalogados</strong>, com envio de notificações aos DPOs amparadas pela LGPD e Livro Razão de provas criptográficas.
+                            </p>
+                            <ul className="text-xs text-slate-400 space-y-1.5 font-sans">
+                                <li className="flex items-center gap-2 text-emerald-400 font-medium">✓ Varredura Completa nos 54 Alvos Homologados</li>
+                                <li className="flex items-center gap-2 text-emerald-400 font-medium">✓ Notificações Formais DPO (Art. 18 LGPD) com Protocolo</li>
+                                <li className="flex items-center gap-2 text-emerald-400 font-medium">✓ Prova Criptográfica SHA-256 e Exportação JSON</li>
+                            </ul>
+                        </div>
+
+                        <div className="flex flex-col items-center justify-center p-6 rounded-2xl bg-black/60 border border-cyan-500/30 text-center min-w-[260px] space-y-4">
+                            <div>
+                                <span className="text-[10px] font-mono text-slate-500 uppercase">Pagamento Único</span>
+                                <div className="text-4xl font-black font-mono text-white mt-1">
+                                    R$ 19,90
+                                </div>
+                                <span className="text-[11px] text-[#00fff5] font-mono">Desbloqueio Vitalício do Lote</span>
+                            </div>
+
+                            <Link
+                                href="/ferramentas-premium/databroker-optout"
+                                className="w-full py-4 px-6 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-gradient-to-r from-[#00fff5] to-emerald-400 text-black shadow-lg shadow-[#00fff5]/20 hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+                            >
+                                <Zap size={14} className="fill-black" />
+                                <span>Liberar por R$ 19,90</span>
+                            </Link>
+                            <span className="text-[9px] text-slate-500 font-mono">
+                                🔒 Checkout Seguro via Stripe
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <Footer />
         </main>
     );

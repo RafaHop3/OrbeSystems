@@ -8,7 +8,7 @@ import {
     Database, Mail, Globe, CheckSquare, Square, Download, Copy, Check
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getAuthTokenAction } from "@/lib/auth-actions";
 import brokersCatalogData from "@/data/ghost_brokers.json";
 
@@ -123,6 +123,45 @@ function EncryptionAnimation() {
 export default function DataBrokerOptOutPage() {
     const { user } = useAuth();
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const [isPassUnlocked, setIsPassUnlocked] = useState(false);
+    const [isStripeLoading, setIsStripeLoading] = useState(false);
+
+    useEffect(() => {
+        if (searchParams.get("unlocked") === "true") {
+            setIsPassUnlocked(true);
+            try { localStorage.setItem("orbe_ghost_unlocked", "true"); } catch (e) {}
+        } else {
+            try {
+                if (localStorage.getItem("orbe_ghost_unlocked") === "true") {
+                    setIsPassUnlocked(true);
+                }
+            } catch (e) {}
+        }
+    }, [searchParams]);
+
+    const isUnlocked = user?.role === "premium" || isPassUnlocked;
+
+    const handleStripeUnlock = async () => {
+        setIsStripeLoading(true);
+        try {
+            const res = await fetch("/api/v1/ghost/checkout", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: user?.email, return_url: window.location.href }),
+            });
+            const data = await res.json();
+            if (data.checkout_url) {
+                window.location.href = data.checkout_url;
+            } else {
+                alert(data.error || "Erro ao conectar com Stripe.");
+            }
+        } catch {
+            alert("Erro de conexão ao iniciar checkout do Stripe.");
+        } finally {
+            setIsStripeLoading(false);
+        }
+    };
     const [tickets, setTickets] = useState<OptOutTicket[]>([]);
     const [sseStatus, setSseStatus] = useState<"connecting" | "live" | "error">("connecting");
     const esRef = useRef<EventSource | null>(null);
@@ -403,7 +442,40 @@ export default function DataBrokerOptOutPage() {
                                 </div>
                             )}
 
-                            {formStep === "form" && (
+                            {formStep === "form" && !isUnlocked ? (
+                                <div className="space-y-4 py-2">
+                                    <div className="p-4 rounded-xl bg-gradient-to-br from-cyan-950/40 via-black to-blue-950/40 border border-cyan-500/40 space-y-3">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded bg-cyan-950 text-[#00fff5] border border-cyan-500/40 font-bold">
+                                                GHOST ENGINE PASS
+                                            </span>
+                                            <span className="text-xl font-black font-mono text-white">
+                                                R$ 19,90
+                                            </span>
+                                        </div>
+                                        <p className="text-xs text-slate-300 leading-relaxed">
+                                            Desbloqueie o disparo massivo nos <strong className="text-[#00fff5]">54 Data Brokers</strong> com notificações legais aos DPOs (Art. 18 LGPD) e prova criptográfica com Hash SHA-256 no Livro Razão.
+                                        </p>
+                                        <ul className="text-[11px] text-slate-400 space-y-1 font-sans">
+                                            <li className="flex items-center gap-1.5 text-emerald-400">✓ Varredura Completa nos 54 Alvos</li>
+                                            <li className="flex items-center gap-1.5 text-emerald-400">✓ Emissão de Notificações DPO com Protocolo</li>
+                                            <li className="flex items-center gap-1.5 text-emerald-400">✓ Download de Dossiê Criptográfico JSON</li>
+                                        </ul>
+                                        <button
+                                            type="button"
+                                            disabled={isStripeLoading}
+                                            onClick={handleStripeUnlock}
+                                            className="w-full py-3.5 px-4 rounded-xl font-extrabold text-xs uppercase tracking-wider bg-gradient-to-r from-[#00fff5] to-emerald-400 text-black shadow-lg shadow-[#00fff5]/20 hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+                                        >
+                                            <Zap size={14} className="fill-black" />
+                                            <span>{isStripeLoading ? "INICIANDO STRIPE..." : "LIBERAR POR R$ 19,90 VIA STRIPE"}</span>
+                                        </button>
+                                    </div>
+                                    <p className="text-[10px] text-slate-500 text-center font-mono">
+                                        🔒 Checkout seguro processado via Stripe • Acesso instantâneo
+                                    </p>
+                                </div>
+                            ) : formStep === "form" && (
                                 <form onSubmit={executeGhostSweep} className="space-y-4">
                                     <div>
                                         <label className="block text-[11px] uppercase tracking-wider text-slate-400 mb-1">

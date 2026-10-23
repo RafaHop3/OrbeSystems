@@ -50,6 +50,24 @@ const PLANS = [
     ctaHref: "/login?mode=register",
   },
   {
+    id: "ghost_engine",
+    label: "GHOST ENGINE PASS",
+    price: "R$ 19,90",
+    color: "#00fff5",
+    glow: "rgba(0,255,245,0.25)",
+    badge: "50+ DATA BROKERS",
+    features: [
+      { text: "Varredura nos 54 Data Brokers", ok: true },
+      { text: "Notificações aos DPOs (Art. 18 LGPD)", ok: true },
+      { text: "Playwright Stealth nos portais", ok: true },
+      { text: "Prova com Hash SHA-256", ok: true },
+      { text: "Dossiê de Auditoria JSON", ok: true },
+      { text: "Demais ferramentas Premium", ok: false },
+    ],
+    cta: "Desbloquear por R$ 19,90",
+    isGhostPass: true,
+  },
+  {
     id: "premium",
     label: "PREMIUM",
     price: "R$ 290,00/mês",
@@ -78,6 +96,27 @@ function AssinarPageContent() {
   const [error, setError] = useState<string | null>(null);
 
   const banner = null;
+
+  const handleGhostCheckout = () => {
+    setError(null);
+    startTransition(async () => {
+      try {
+        const res = await fetch("/api/v1/ghost/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ return_url: window.location.href }),
+        });
+        const data = await res.json();
+        if (data.checkout_url) {
+          window.location.href = data.checkout_url;
+        } else {
+          setError(data.error || "Erro ao processar checkout.");
+        }
+      } catch {
+        setError("Erro de conexão ao processar checkout do Ghost Engine.");
+      }
+    });
+  };
 
   const handleStripeCheckout = () => {
     setError(null);
@@ -196,7 +235,9 @@ function AssinarPageContent() {
                     cursor: plan.isStripe && isPending ? "not-allowed" : "pointer",
                   }}
                   onClick={() => {
-                    if (plan.isStripe) {
+                    if (plan.isGhostPass) {
+                      handleGhostCheckout();
+                    } else if (plan.isStripe) {
                       handleStripeCheckout();
                     } else if (plan.ctaHref) {
                       router.push(plan.ctaHref);
