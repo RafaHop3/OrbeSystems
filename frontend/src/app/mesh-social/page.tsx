@@ -25,7 +25,9 @@ import {
   Share2,
   Camera,
   Video,
-  Smile
+  Smile,
+  Check,
+  UserCheck
 } from 'lucide-react';
 
 interface Story {
@@ -350,6 +352,12 @@ export default function MeshSocialApp() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(true);
   const [currentUser, setCurrentUser] = useState<UserProfile>(DEFAULT_GOOGLE_USER);
 
+  // Google Sign-In Selector Modal
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState<boolean>(false);
+  const [customGoogleName, setCustomGoogleName] = useState<string>('');
+  const [customGoogleEmail, setCustomGoogleEmail] = useState<string>('');
+  const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
+
   // Tabs: 'feed' | 'explore' | 'vault' | 'profile'
   const [activeTab, setActiveTab] = useState<'feed' | 'explore' | 'vault' | 'profile'>('feed');
 
@@ -397,15 +405,39 @@ export default function MeshSocialApp() {
     }
   }, []);
 
-  // Login com Google
-  const handleGoogleSignIn = () => {
-    const googleUser: UserProfile = { ...DEFAULT_GOOGLE_USER };
-    setCurrentUser(googleUser);
+  // Login com Google: Conta Selecionada
+  const executeGoogleLogin = (userToLogin: UserProfile) => {
+    setCurrentUser(userToLogin);
     setIsLoggedIn(true);
+    setIsGoogleModalOpen(false);
+    setIsCustomMode(false);
     try {
-      localStorage.setItem('mesh_social_user', JSON.stringify(googleUser));
+      localStorage.setItem('mesh_social_user', JSON.stringify(userToLogin));
     } catch (e) {}
-    showToast(`Bem-vindo, ${googleUser.name}! Login com Google realizado com sucesso.`);
+    showToast(`Bem-vindo, ${userToLogin.name}! Conectado via Google com sucesso.`);
+  };
+
+  // Login com Conta Google Personalizada (Cadastro Instantâneo)
+  const handleCustomGoogleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanName = customGoogleName.trim() || 'Usuário Google';
+    const cleanEmail = customGoogleEmail.trim() || `${cleanName.toLowerCase().replace(/\s+/g, '')}@gmail.com`;
+    const cleanHandle = `@${cleanName.toLowerCase().replace(/\s+/g, '_')}`;
+
+    const newUser: UserProfile = {
+      id: `u_google_${Date.now()}`,
+      name: cleanName,
+      handle: cleanHandle,
+      email: cleanEmail,
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=300&q=80',
+      bio: 'Perfil registrado com o Google no Mesh Social. Conexões autênticas e amizades reais.',
+      provider: 'google',
+      postsCount: 1,
+      friendsCount: 15,
+      bestFriendsCount: 3,
+    };
+
+    executeGoogleLogin(newUser);
   };
 
   // Trocar conta de teste
@@ -425,7 +457,7 @@ export default function MeshSocialApp() {
     try {
       localStorage.removeItem('mesh_social_user');
     } catch (e) {}
-    showToast('Você saiu da sua conta.');
+    showToast('Você saiu da sua conta. Acesse novamente com o Google quando desejar!');
   };
 
   // Curtir Post
@@ -665,7 +697,7 @@ export default function MeshSocialApp() {
               <div className="space-y-3">
                 <button
                   type="button"
-                  onClick={handleGoogleSignIn}
+                  onClick={() => setIsGoogleModalOpen(true)}
                   className="w-full py-3.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-sm flex items-center justify-center gap-3 transition-all duration-200 shadow-lg group hover:scale-[1.02]"
                 >
                   {/* Google SVG G icon */}
@@ -745,6 +777,128 @@ export default function MeshSocialApp() {
             </div>
           </div>
         </div>
+
+        {/* MODAL OFICIAL DE SELEÇÃO DE CONTA GOOGLE */}
+        {isGoogleModalOpen && (
+          <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="w-full max-w-md rounded-3xl bg-[#0b0f19] border border-slate-700 shadow-2xl p-6 space-y-5 animate-in fade-in zoom-in-95 duration-200">
+              {/* Header Google */}
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-2.5">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                  </svg>
+                  <span className="font-bold text-sm text-white">Fazer login com o Google</span>
+                </div>
+                <button
+                  onClick={() => setIsGoogleModalOpen(false)}
+                  className="text-slate-400 hover:text-white p-1"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <p className="text-xs text-slate-300">
+                Escolha uma conta Google para acessar o <strong>Mesh Social</strong> da Orbe Systems:
+              </p>
+
+              {/* Lista de Contas */}
+              {!isCustomMode ? (
+                <div className="space-y-3">
+                  {/* Conta Padrão Rafael */}
+                  <button
+                    type="button"
+                    onClick={() => executeGoogleLogin(DEFAULT_GOOGLE_USER)}
+                    className="w-full p-3.5 rounded-2xl bg-[#060911] hover:bg-slate-800/80 border border-slate-800 hover:border-neon-cyan/50 flex items-center justify-between transition-all group text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={DEFAULT_GOOGLE_USER.avatar}
+                        alt="Rafael"
+                        className="w-10 h-10 rounded-full object-cover border border-neon-cyan"
+                      />
+                      <div>
+                        <div className="text-xs font-bold text-white group-hover:text-neon-cyan transition-colors">
+                          {DEFAULT_GOOGLE_USER.name}
+                        </div>
+                        <div className="text-[11px] text-slate-400">
+                          {DEFAULT_GOOGLE_USER.email}
+                        </div>
+                      </div>
+                    </div>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold">
+                      Disponível
+                    </span>
+                  </button>
+
+                  {/* Opção para cadastrar com outro nome/email */}
+                  <button
+                    type="button"
+                    onClick={() => setIsCustomMode(true)}
+                    className="w-full p-3 rounded-2xl bg-[#060911]/60 hover:bg-slate-800/60 border border-slate-800 text-xs text-slate-300 flex items-center justify-center gap-2 transition-colors"
+                  >
+                    <UserCheck className="w-4 h-4 text-neon-cyan" />
+                    <span>Usar outra conta do Google (Digitar meu nome)</span>
+                  </button>
+                </div>
+              ) : (
+                /* Formulário de Cadastro Rápido com Google */
+                <form onSubmit={handleCustomGoogleSubmit} className="space-y-3.5">
+                  <div>
+                    <label className="block text-[11px] text-slate-400 mb-1 font-mono uppercase">
+                      Seu Nome Completo
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={customGoogleName}
+                      onChange={(e) => setCustomGoogleName(e.target.value)}
+                      placeholder="Ex: Rafael Souza"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#04060c] border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-neon-cyan"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] text-slate-400 mb-1 font-mono uppercase">
+                      Seu E-mail Google
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={customGoogleEmail}
+                      onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                      placeholder="Ex: seuemail@gmail.com"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#04060c] border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-neon-cyan"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomMode(false)}
+                      className="w-1/3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 font-semibold"
+                    >
+                      Voltar
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 py-2.5 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-bold shadow-md transition-colors"
+                    >
+                      Confirmar e Entrar com Google
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              <div className="pt-2 border-t border-slate-800 text-[10px] text-slate-500 text-center">
+                Ao continuar, o Google compartilhará seu nome, endereço de e-mail e foto de perfil com o Mesh Social.
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     );
   }
@@ -768,7 +922,7 @@ export default function MeshSocialApp() {
 
         {/* User Badge Mobile */}
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-2 bg-[#080d1a] border border-slate-800 px-2 py-1 rounded-full">
+          <div className="flex items-center gap-2 bg-[#080d1a] border border-slate-800 px-2.5 py-1 rounded-full">
             <div className="relative">
               <img
                 src={currentUser.avatar}
@@ -782,7 +936,7 @@ export default function MeshSocialApp() {
 
           <button
             onClick={handleLogout}
-            title="Sair"
+            title="Sair / Trocar de Conta"
             className="text-slate-400 hover:text-rose-400 p-1"
           >
             <LogOut className="w-4 h-4" />
@@ -809,13 +963,13 @@ export default function MeshSocialApp() {
           </div>
 
           {/* VISUALIZAÇÃO CLARA DO USUÁRIO LOGADO */}
-          <div className="p-3 rounded-2xl bg-[#080d1a] border border-slate-800/80 space-y-2">
+          <div className="p-3.5 rounded-2xl bg-[#080d1a] border border-slate-800/80 space-y-2.5 shadow-md">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <img
                   src={currentUser.avatar}
                   alt={currentUser.name}
-                  className="w-11 h-11 rounded-full object-cover border-2 border-neon-cyan"
+                  className="w-11 h-11 rounded-full object-cover border-2 border-neon-cyan shadow-[0_0_10px_rgba(0,255,245,0.3)]"
                 />
                 <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-black" />
               </div>
@@ -823,19 +977,23 @@ export default function MeshSocialApp() {
                 <div className="flex items-center gap-1.5">
                   <span className="text-xs font-bold text-white truncate">{currentUser.name}</span>
                   {currentUser.provider === 'google' && (
-                    <span className="text-[10px] text-emerald-400" title="Verificado via Google">✓</span>
+                    <span className="w-3.5 h-3.5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[9px] font-bold" title="Conta Verificada via Google">
+                      ✓
+                    </span>
                   )}
                 </div>
                 <span className="text-[11px] text-slate-400 truncate block">{currentUser.handle}</span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-1 border-t border-slate-800/60 text-[10px] text-slate-400 font-mono">
-              <span className="flex items-center gap-1 text-emerald-400">
+            <div className="flex items-center justify-between pt-2 border-t border-slate-800/60 text-[10px] text-slate-400 font-mono">
+              <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 Conectado
               </span>
-              <span className="text-slate-500">{currentUser.provider === 'google' ? 'Google ID' : 'Perfil Ativo'}</span>
+              <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-300">
+                {currentUser.provider === 'google' ? 'Google SSO' : 'Perfil Ativo'}
+              </span>
             </div>
           </div>
 
@@ -941,7 +1099,7 @@ export default function MeshSocialApp() {
             className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-slate-900 hover:bg-rose-950/40 text-slate-400 hover:text-rose-300 text-xs transition-colors border border-slate-800"
           >
             <LogOut className="w-4 h-4" />
-            <span>Encerrar Sessão</span>
+            <span>Sair / Trocar de Conta</span>
           </button>
         </div>
       </aside>
@@ -1102,7 +1260,7 @@ export default function MeshSocialApp() {
 
                     <div className="flex items-center gap-2">
                       <button 
-                        onClick={() => showToast('Opções do post')}
+                        onClick={() => showToast('Opções da publicação')}
                         className="text-slate-500 hover:text-white p-1"
                       >
                         <MoreHorizontal className="w-5 h-5" />

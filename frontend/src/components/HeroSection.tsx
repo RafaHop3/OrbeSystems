@@ -1,125 +1,137 @@
 'use client';
 
 import Link from 'next/link';
-import { Code2, Database, Shield, Zap, Sparkles } from 'lucide-react';
-import { colorMap } from '@/lib/utils';
+import { Code2, Database, Shield, Zap, Sparkles, Users, Lock, ArrowRight, Heart } from 'lucide-react';
 import { MagicCard } from '@/components/ui/magic-card';
 import { AuroraText } from '@/components/ui/aurora-text';
 import ToolVoidPanel from '@/components/ToolVoidPanel';
 import ProductMetrics from '@/components/ProductMetrics';
 
-const skills = [
-  { icon: Code2, label: 'Software Engineering', color: 'cyan', href: '/software-engineering' },
-  { icon: Database, label: 'Database Architecture', color: 'green', href: '/database-architecture' },
-  { icon: Zap, label: 'Automation', color: 'cyan', href: '/automation' },
+const highlightKeywords = [
+  { icon: Users, label: 'Mesh Social (Rede Social)', color: 'cyan', href: '/mesh-social' },
+  { icon: Shield, label: 'Privacidade Digital LGPD', color: 'green', href: '/ferramentas-premium/databroker-optout' },
+  { icon: Code2, label: 'Engenharia de Software', color: 'cyan', href: '/software-engineering' },
+  { icon: Zap, label: 'Automação & IA', color: 'purple', href: '/automation' },
 ];
 
 export default function HeroSection() {
   return (
     <section
       id="hero"
-      className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-28 pb-16 overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 pt-24 pb-16 overflow-hidden"
     >
       <div className="relative z-10 text-center w-full max-w-5xl mx-auto">
-        <MagicCard className="w-full mx-auto flex flex-col items-center justify-center -mt-8 mb-10 py-16 px-6 bg-black/40 backdrop-blur-3xl border-neon-blue/40 shadow-[0_0_50px_rgba(0,0,0,0.9)]">
-          <div className="relative z-10 text-center">
-            <div className="inline-flex items-center gap-3 border border-neon-cyan/60 rounded-full px-5 py-2 mb-10 bg-navy-deep/80 backdrop-blur-md shadow-[0_0_20px_rgba(126,184,224,0.6)] hover:shadow-[0_0_35px_rgba(126,184,224,0.9)] hover:scale-105 transition-all duration-300">
-              <span className="w-2.5 h-2.5 rounded-full bg-neon-cyan animate-pulse-neon shadow-[0_0_10px_rgba(126,184,224,1)]" />
-              <span className="font-mono text-xs md:text-sm text-neon-cyan tracking-widest uppercase font-black drop-shadow-[0_0_10px_rgba(126,184,224,0.8)]">
-                Orbe Systems · Orbe Hub v2.0
+        <MagicCard className="w-full mx-auto flex flex-col items-center justify-center -mt-8 mb-10 py-12 sm:py-16 px-4 sm:px-8 bg-black/40 backdrop-blur-3xl border-neon-blue/40 shadow-[0_0_50px_rgba(0,0,0,0.9)]">
+          <div className="relative z-10 text-center space-y-6">
+            
+            {/* SEO & Public Friendly Badge */}
+            <div className="inline-flex items-center gap-2.5 border border-neon-cyan/50 rounded-full px-4 py-2 bg-navy-deep/80 backdrop-blur-md shadow-[0_0_20px_rgba(0,255,245,0.25)] hover:scale-105 transition-all duration-300">
+              <span className="w-2.5 h-2.5 rounded-full bg-neon-cyan animate-pulse shadow-[0_0_10px_#00fff5]" />
+              <span className="text-xs sm:text-sm text-neon-cyan tracking-wider uppercase font-bold">
+                Orbe Systems · Tecnologia, Inovação &amp; Conexão Humana
               </span>
             </div>
 
-            <h1 className="font-sans text-5xl md:text-7xl font-black mb-8 leading-tight tracking-tight text-white/95 mix-blend-screen drop-shadow-[0_0_25px_rgba(255,255,255,0.6)]">
-              O terminal é a sua ferramenta.<br />
-              <span className="block mt-4">A tecnologia é o <AuroraText text="Seu Poder." className="mt-2" /></span>
+            {/* Main SEO H1 Heading */}
+            <h1 className="font-sans text-4xl sm:text-6xl md:text-7xl font-black leading-tight tracking-tight text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.5)]">
+              Tecnologia simples e poderosa para <br className="hidden sm:inline" />
+              <span className="block mt-2">
+                conectar e proteger o seu <AuroraText text="Mundo Digital." className="mt-1" />
+              </span>
             </h1>
 
-            <div className="font-sans text-base md:text-xl text-navy-mist/90 max-w-2xl mx-auto mb-10 leading-relaxed font-light space-y-6">
-              <p className="italic border-l-4 border-neon-cyan pl-6 text-white text-lg drop-shadow-[0_0_15px_rgba(255,255,255,0.7)] text-left font-bold">
-                "Um sonho que se sonha sozinho é só um sonho, mas um sonho que se sonha junto se torna realidade."
+            {/* Welcoming Public Paragraph with High-Rank Google Search Terms */}
+            <div className="font-sans text-base sm:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal space-y-4">
+              <p className="text-center sm:text-lg text-slate-200">
+                Seja bem-vindo à <strong>Orbe Systems</strong>. Criamos tecnologia brasileira de ponta com um objetivo claro: 
+                aproximar pessoas, proteger a sua privacidade e acelerar ideias criativas.
               </p>
-              <p className="text-left font-medium text-lg">
-                Nós somos a <strong className="text-neon-cyan text-2xl drop-shadow-[0_0_15px_rgba(126,184,224,0.8)]">ORBE SYSTEMS</strong>.
-              </p>
-              <p className="text-sm md:text-lg opacity-90 text-left font-normal leading-loose">
-                Não desenvolvemos software em salas escuras. Construímos <strong>Arquiteturas Vivas</strong>.
-                O seu projeto estratégico encontra aqui uma base imaculada de engenharia e Cyber Segurança.
+              <p className="text-sm sm:text-base text-slate-400">
+                Conheça a <strong className="text-neon-cyan">Mesh Social</strong> — a nova rede social autêntica, 100% gratuita e livre de anúncios invasivos —, além de soluções de ponta em <strong className="text-white">Engenharia de Software, Cyber Segurança, Proteção de Dados LGPD e Inteligência Artificial</strong>.
               </p>
             </div>
 
-            {/* Void Institucional: Cluster de Servidores Blade + Topologia de Dados */}
-            <div className="w-full max-w-lg mx-auto my-6">
+            {/* Visual Void Panel: Servidores e Nuvem Orbe */}
+            <div className="w-full max-w-lg mx-auto my-4">
               <ToolVoidPanel
                 shape="server-cluster"
                 accentColor="#00fff5"
                 secondaryColor="#3b82f6"
-                label="Void // Cluster de Servidores Blade"
-                className="h-52"
+                label="Infraestrutura Orbe Cloud // Conexão Segura & Alta Disponibilidade"
+                className="h-44 sm:h-52"
               />
             </div>
 
-            {/* Métricas Homologadas de Engenharia */}
-            <div className="flex justify-center mb-8">
+            {/* Métricas Homologadas de Confiança & Segurança */}
+            <div className="flex justify-center my-4">
               <ProductMetrics
                 metrics={[
-                  { label: 'Identidade Unificada', value: 'Orbe SSO UUID v4' },
-                  { label: 'SLA Homologado BI', value: '< 290 ms' },
-                  { label: 'Criptografia', value: 'KMS MultiFernet' },
+                  { label: 'Rede Social Mesh', value: '100% Gratuita' },
+                  { label: 'Privacidade de Dados', value: 'Conforme LGPD' },
+                  { label: 'Segurança & Criptografia', value: 'Ponta a Ponta' },
                 ]}
               />
             </div>
 
-            <div className="flex flex-wrap justify-center gap-4 mb-4">
-              {skills.map(({ icon: Icon, label, href }) => (
+            {/* SEO Keyword Navigation Badges */}
+            <div className="flex flex-wrap justify-center gap-3 pt-2">
+              {highlightKeywords.map(({ icon: Icon, label, href }) => (
                 <Link
                   key={label}
                   href={href}
-                  className="group flex items-center gap-3 border border-neon-blue/40 rounded-xl px-5 py-3 transition-all duration-300 bg-navy-void/80 hover:border-neon-cyan/80 hover:bg-neon-blue/30 backdrop-blur-md shadow-[0_0_15px_rgba(0,0,0,0.5)] hover:shadow-[0_0_30px_rgba(126,184,224,0.6)] hover:-translate-y-1"
+                  className="group flex items-center gap-2.5 border border-slate-700/80 rounded-xl px-4 py-2.5 transition-all duration-300 bg-[#060911]/80 hover:border-neon-cyan hover:bg-neon-cyan/10 backdrop-blur-md shadow-md hover:-translate-y-0.5"
                 >
-                  <Icon size={18} className="text-neon-blue group-hover:text-neon-cyan drop-shadow-[0_0_10px_rgba(126,184,224,0.8)] transition-colors" />
-                  <span className="font-mono text-sm tracking-wider uppercase text-navy-mist/90 group-hover:text-white font-bold transition-colors">{label}</span>
+                  <Icon size={16} className="text-neon-cyan transition-colors" />
+                  <span className="text-xs sm:text-sm text-slate-300 group-hover:text-white font-medium transition-colors">
+                    {label}
+                  </span>
                 </Link>
               ))}
             </div>
+
           </div>
         </MagicCard>
 
-        <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
+        {/* Action Buttons: Inviting & Accessible for Everyone */}
+        <div className="flex flex-wrap justify-center items-center gap-4">
+          <Link
+            href="/mesh-social"
+            className="inline-flex items-center gap-2.5 font-bold text-xs sm:text-sm uppercase tracking-wider bg-neon-cyan hover:bg-cyan-300 text-black px-7 py-3.5 rounded-xl shadow-[0_0_25px_rgba(0,255,245,0.4)] transition-all duration-300 hover:scale-105"
+          >
+            <Sparkles size={16} />
+            <span>Acessar Mesh Social (Grátis)</span>
+            <ArrowRight size={16} />
+          </Link>
+
           <Link
             href="/workspace"
-            className="inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wider border border-navy-glow text-white px-8 py-4 rounded-xl hover:bg-navy-mid/60 hover:border-navy-glow hover:shadow-[0_0_30px_rgba(126,184,224,0.5)] transition-all duration-500 bg-navy-deep/60 backdrop-blur-lg hover:-translate-y-1"
+            className="inline-flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider border border-slate-700 text-white px-6 py-3.5 rounded-xl hover:bg-slate-800/80 hover:border-slate-500 transition-all duration-300 bg-slate-900/60 backdrop-blur-lg"
           >
-            <span className="w-2 h-2 rounded-full bg-navy-glow animate-pulse" />
-            Abrir Workspace
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Explorar Ferramentas</span>
           </Link>
+
           <Link
             href="/ferramentas-premium/databroker-optout"
-            className="inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wider border border-[#00f2fe] text-[#00f2fe] drop-shadow-[0_0_10px_rgba(0,242,254,0.4)] px-8 py-4 rounded-xl hover:bg-[#00f2fe]/20 hover:border-[#00f2fe] hover:shadow-[0_0_40px_rgba(0,242,254,0.6)] hover:text-white transition-all duration-500 bg-navy-deep/60 backdrop-blur-lg hover:-translate-y-1"
+            className="inline-flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider border border-cyan-500/50 text-cyan-300 px-6 py-3.5 rounded-xl hover:bg-cyan-950/40 hover:border-cyan-400 transition-all duration-300 bg-slate-900/60 backdrop-blur-lg"
           >
-            <Zap size={16} className="text-[#00f2fe]" />
-            Ghost Engine
+            <Shield size={16} className="text-cyan-400" />
+            <span>Ghost Engine (LGPD)</span>
           </Link>
-          <Link
-            href="/ferramentas-premium/powershell-bot"
-            className="inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wider border border-navy-metallic/50 text-navy-mist px-8 py-4 rounded-xl hover:border-navy-glow hover:shadow-[0_0_20px_rgba(126,184,224,0.3)] transition-all duration-500 bg-navy-void/40 backdrop-blur-sm hover:-translate-y-1"
-          >
-            <Shield size={16} className="text-navy-shine" />
-            Auditoria SAST
-          </Link>
+
           <Link
             href="/ferramentas-premium/orbe-visual-studio"
-            className="inline-flex items-center gap-2 font-mono text-sm uppercase tracking-wider border border-[#eab308] text-[#eab308] drop-shadow-[0_0_10px_rgba(234,179,8,0.4)] px-8 py-4 rounded-xl hover:bg-[#eab308]/20 hover:border-[#eab308] hover:shadow-[0_0_40px_rgba(234,179,8,0.6)] hover:text-white transition-all duration-500 bg-navy-deep/60 backdrop-blur-lg hover:-translate-y-1"
+            className="inline-flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider border border-amber-500/50 text-amber-300 px-6 py-3.5 rounded-xl hover:bg-amber-950/40 hover:border-amber-400 transition-all duration-300 bg-slate-900/60 backdrop-blur-lg"
           >
-            <Sparkles size={16} className="text-[#eab308]" />
-            Orbe Studio (Free Beta)
+            <Sparkles size={16} className="text-amber-400" />
+            <span>Orbe Studio</span>
           </Link>
         </div>
       </div>
 
-      <div className="w-full flex flex-col items-center gap-2 opacity-50 mt-16 md:mt-24">
-        <span className="font-mono text-[10px] tracking-widest text-neon-cyan uppercase animate-pulse">scroll</span>
-        <div className="w-px h-12 bg-gradient-to-b from-neon-cyan to-transparent animate-pulse-neon" />
+      <div className="w-full flex flex-col items-center gap-2 opacity-50 mt-12 md:mt-20">
+        <span className="font-mono text-[10px] tracking-widest text-neon-cyan uppercase animate-pulse">Role para explorar mais</span>
+        <div className="w-px h-10 bg-gradient-to-b from-neon-cyan to-transparent animate-pulse" />
       </div>
     </section>
   );
