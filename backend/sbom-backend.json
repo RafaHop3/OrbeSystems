@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:7ed1dc61-17ea-402d-ac8e-9f7f9551feee",
+  "serialNumber": "urn:uuid:15abae8e-0b14-414f-97ad-ff02b96e9037",
   "metadata": {
-    "timestamp": "2026-10-23T22:35:22.283853+00:00",
+    "timestamp": "2026-10-26T23:35:37.374888+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -1079,6 +1079,31 @@
     },
     {
       "type": "library",
+      "name": "pillow",
+      "version": "13.0.0",
+      "purl": "pkg:pypi/pillow@13.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Unknown"
+          }
+        }
+      ],
+      "externalReferences": [
+        {
+          "type": "website",
+          "url": "https://python-pillow.org"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "410c31384c6f0e85806d9cf0d590694f2a648d79a6fba5d883080ff51d1381a7"
+        }
+      ]
+    },
+    {
+      "type": "library",
       "name": "pip",
       "version": "26.2.1",
       "purl": "pkg:pypi/pip@26.2.1",
@@ -2089,10 +2114,10 @@
     }
   ],
   "_orbe_meta": {
-    "total_dependencies": 87,
+    "total_dependencies": 88,
     "license_summary": {
       "Apache 2": 5,
-      "Unknown": 32,
+      "Unknown": 33,
       "MIT": 15,
       "MIT License": 3,
       "Apache-2.0": 5,
