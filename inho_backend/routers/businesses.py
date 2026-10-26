@@ -12,12 +12,19 @@ from typing import Optional
 router = APIRouter(prefix="/businesses", tags=["Businesses"])
 
 from uuid import UUID
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 class BusinessCreate(BaseModel):
     name: str
     cnpj: str | None = None
     category: BusinessCategory = BusinessCategory.OUTROS
+
+    @field_validator("category", mode="before")
+    @classmethod
+    def _normalize_category(cls, v):
+        if isinstance(v, str):
+            return v.strip().upper()
+        return v
 
 class BusinessResponse(BaseModel):
     id: UUID | str
@@ -64,6 +71,28 @@ async def create_business(
             detail="Limite de negócios alcançado. Seu plano permite no máximo 3 repositórios/empresas."
         )
 
+    from routers.billing import _BIZ_CACHE
+    from models.models import BusinessOperator
+
+    # Se o usuário possui apenas a empresa placeholder auto-gerada ("Empresa de ..."), atualiza-a in-place
+    existing_res = await db.execute(
+        select(Business).where(cast(Business.user_id, String) == str(current_user.id))
+    )
+    existing_list = existing_res.scalars().all()
+    if (
+        len(existing_list) == 1
+        and existing_list[0].name.startswith("Empresa de ")
+        and not existing_list[0].cnpj
+    ):
+        placeholder = existing_list[0]
+        placeholder.name = item.name
+        placeholder.cnpj = item.cnpj
+        placeholder.category = item.category
+        await db.commit()
+        await db.refresh(placeholder)
+        _BIZ_CACHE.pop(str(current_user.id), None)
+        return placeholder
+
     new_business = Business(
         user_id=current_user.id,
         name=item.name,
@@ -71,8 +100,15 @@ async def create_business(
         category=item.category
     )
     db.add(new_business)
+    await db.flush()
+
+    db.add(BusinessOperator(
+        business_id=new_business.id,
+        user_id=current_user.id,
+    ))
     await db.commit()
     await db.refresh(new_business)
+    _BIZ_CACHE.pop(str(current_user.id), None)
 
     return new_business
 

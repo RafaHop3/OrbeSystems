@@ -46,8 +46,12 @@ async def _get_user_business(db: AsyncSession, user: User) -> Business:
         _BIZ_CACHE.move_to_end(uid_str)
         return cached_biz[1]
 
-    # 1. Verifica se o usuario e dono direto de uma empresa
-    result = await db.execute(select(Business).where(cast(Business.user_id, String) == uid_str))
+    # 1. Verifica se o usuario e dono direto de uma empresa (prioriza a mais recente / configurada)
+    result = await db.execute(
+        select(Business)
+        .where(cast(Business.user_id, String) == uid_str)
+        .order_by(Business.created_at.desc())
+    )
     business = result.scalars().first()
     if business:
         cloned = _clone_biz(business)
@@ -59,6 +63,7 @@ async def _get_user_business(db: AsyncSession, user: User) -> Business:
         select(Business)
         .join(BusinessOperator, BusinessOperator.business_id == Business.id)
         .where(cast(BusinessOperator.user_id, String) == uid_str)
+        .order_by(Business.created_at.desc())
     )
     op_business = op_res.scalars().first()
     if op_business:
@@ -66,14 +71,13 @@ async def _get_user_business(db: AsyncSession, user: User) -> Business:
         _BIZ_CACHE[uid_str] = (now_ts, cloned)
         return cloned
 
-    # 3. Se for operador sem vinculo ainda, vincula ao primeiro negocio ativo da cooperativa
+    # 3. Isolamento Multi-Tenant Estrito: Operador sem vínculo não pode herdar empresa de outro tenant
     role_val = (user.role.value if hasattr(user.role, "value") else str(user.role or "")).strip().lower()
-    if role_val == "operator":
-        first_biz = (await db.execute(select(Business).order_by(Business.created_at.asc()).limit(1))).scalars().first()
-        if first_biz:
-            db.add(BusinessOperator(id=str(uuid.uuid4()), business_id=first_biz.id, user_id=str(user.id)))
-            await db.commit()
-            return first_biz
+    if role_val in ("operator", "viewer", "client"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Operador não vinculado a nenhuma empresa/cooperativa ativa.",
+        )
 
     # 4. Cria empresa padrao para o administrador
     business = Business(
@@ -201,34 +205,38 @@ async def create_invoice(
     current_user: User = Depends(get_current_user)
 ):
     from models.models import InvoiceType
+    from routers.accounting import ensure_period_not_closed
     business = await _get_user_business(db, current_user)
+    await ensure_period_not_closed(db, business.id, payload.data_competencia or payload.due_date)
 
     # Herda telefone do cooperado/contato CRM para a régua automática de cobrança
     if not payload.customer_phone:
         from models.models import Cooperado, CRMContact
         inherited_phone = None
+        from routers.crm import get_uuid
         if payload.cooperado_id:
             coop = (await db.execute(select(Cooperado).where(
-                Cooperado.id == payload.cooperado_id, Cooperado.business_id == business.id
+                Cooperado.id == get_uuid(payload.cooperado_id), Cooperado.business_id == get_uuid(business.id)
             ))).scalars().first()
             inherited_phone = coop.phone if coop else None
         if not inherited_phone and payload.customer_doc:
             contact = (await db.execute(select(CRMContact).where(
-                CRMContact.business_id == business.id, CRMContact.document == payload.customer_doc
+                CRMContact.business_id == get_uuid(business.id), CRMContact.document == payload.customer_doc
             ))).scalars().first()
             inherited_phone = contact.phone if contact else None
         payload.customer_phone = inherited_phone
 
+    from routers.crm import get_uuid
     invoice_id = uuid.uuid4()
-    pix_code, _ = await _generate_authenticated_pix_code(db, business.id, invoice_id, payload.amount, payload.customer_name)
+    pix_code, _ = await _generate_authenticated_pix_code(db, get_uuid(business.id), invoice_id, payload.amount, payload.customer_name)
     pix_qr_url = f"https://api.qrserver.com/v1/create-qr-code/?size=250x250&data={urllib.parse.quote(pix_code)}"
 
     invoice = BillingInvoice(
-        id=invoice_id,
-        business_id=business.id,
-        cooperado_id=payload.cooperado_id,
-        crm_contact_id=payload.crm_contact_id,
-        category_id=payload.category_id,
+        id=get_uuid(invoice_id),
+        business_id=get_uuid(business.id),
+        cooperado_id=get_uuid(payload.cooperado_id),
+        crm_contact_id=get_uuid(payload.crm_contact_id),
+        category_id=get_uuid(payload.category_id),
         invoice_type=payload.invoice_type or InvoiceType.OUTROS,
         customer_name=payload.customer_name,
         customer_phone=payload.customer_phone,
@@ -243,9 +251,9 @@ async def create_invoice(
         payment_method=payload.payment_method or PaymentMethod.PIX,
         description=payload.description,
         project_id=payload.project_id,
-        created_by_id=current_user.id,
+        created_by_id=get_uuid(current_user.id),
         created_by_name=f"{current_user.full_name} ({current_user.role_label})",
-        updated_by_id=current_user.id,
+        updated_by_id=get_uuid(current_user.id),
         updated_by_name=f"{current_user.full_name} ({current_user.role_label})"
     )
     try:
@@ -963,14 +971,27 @@ async def _process_banking_webhook_core(
             await db.execute(text("SET LOCAL lock_timeout = '5s'"))
 
         if not existing_log:
-            w_log = WebhookLog(
-                event_id=idem_key,
-                provider=provider_norm,
-                payload=payload.model_dump_json(),
-                status=WebhookProcessingStatus.RECEIVED,
-            )
-            db.add(w_log)
-            await db.flush()
+            from sqlalchemy.exc import IntegrityError
+            try:
+                async with db.begin_nested():
+                    w_log = WebhookLog(
+                        event_id=idem_key,
+                        provider=provider_norm,
+                        payload=payload.model_dump_json(),
+                        status=WebhookProcessingStatus.RECEIVED,
+                    )
+                    db.add(w_log)
+                    await db.flush()
+            except IntegrityError:
+                resp_race = {
+                    "status": "idempotent_ok",
+                    "provider": provider_norm,
+                    "event_id": idem_key,
+                    "cached_replay": True,
+                    "message": "Webhook concorrente interceptado com idempotência.",
+                }
+                _cache_set(_IDEMPOTENCY_CACHE, cache_key, resp_race, _MAX_IDEMPOTENCY_KEYS)
+                return JSONResponse(status_code=200, content=resp_race)
         else:
             w_log = existing_log
 
@@ -1088,7 +1109,7 @@ async def _process_banking_webhook_core(
         # 7. Dispatch OrBrick WhatsApp Receipt & Record OmnichannelLog + AuditLog
         biz_obj = (await db.execute(select(Business).where(Business.id == inv.business_id))).scalars().first()
         b_name = biz_obj.name if biz_obj else "Orbe Cooperativa"
-        ph = ((cooperado.phone if cooperado else None) or inv.customer_phone or "5511999999999").replace("+", "").replace("-", "").replace(" ", "")
+        ph = ((cooperado.phone if cooperado else None) or inv.customer_phone or os.getenv("ORBE_DEFAULT_WHATSAPP", "5551981598760")).replace("+", "").replace("-", "").replace(" ", "")
         amt_fmt = f"R$ {float(inv.amount):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
         receipt_msg = (
             f"✅ *COMPROVANTE DE LIQUIDAÇÃO ({provider_norm}) - {b_name}*\n"

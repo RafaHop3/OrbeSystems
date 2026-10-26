@@ -97,7 +97,11 @@ class User(Base):
 
     @property
     def is_active(self) -> bool:
-        return True
+        return (getattr(self, "subscription_status", "active") or "active").lower() != "suspended"
+
+    @is_active.setter
+    def is_active(self, value: bool) -> None:
+        self.subscription_status = "active" if bool(value) else "suspended"
 
     @property
     def is_verified(self) -> bool:

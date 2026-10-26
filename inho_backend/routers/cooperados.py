@@ -179,53 +179,73 @@ async def _compute_rateio_sobras_data(
     )
     payables = pay_res.scalars().all()
 
+    from decimal import Decimal, ROUND_HALF_EVEN
+    two_places = Decimal("0.01")
+    four_places = Decimal("0.0001")
+    montante_dec = Decimal(str(montante_sobras)).quantize(two_places, rounding=ROUND_HALF_EVEN)
+
     items = []
-    total_movimentacao = 0.0
+    total_mov_dec = Decimal("0.00")
     for c in coops:
         c_id_str = str(c.id)
         c_doc_clean = (c.document or "").replace(".", "").replace("-", "").replace("/", "")
-        aportes = sum(
-            float(i.amount)
-            for i in invoices
-            if (i.cooperado_id and str(i.cooperado_id) == c_id_str)
-            or (c_doc_clean and (i.customer_doc or "").replace(".", "").replace("-", "").replace("/", "") == c_doc_clean)
-            or (c.name and i.customer_name and c.name.lower() in i.customer_name.lower())
-        )
-        repasses = sum(
-            float(p.amount)
-            for p in payables
-            if (c.name and p.description and c.name.lower() in p.description.lower())
-        )
-        mov = round(aportes + repasses, 2)
-        total_movimentacao += mov
+        aportes_dec = sum(
+            (Decimal(str(i.amount or 0)) for i in invoices
+             if (i.cooperado_id and str(i.cooperado_id) == c_id_str)
+             or (c_doc_clean and (i.customer_doc or "").replace(".", "").replace("-", "").replace("/", "") == c_doc_clean)
+             or (c.name and i.customer_name and c.name.lower() in i.customer_name.lower())),
+            Decimal("0.00"),
+        ).quantize(two_places, rounding=ROUND_HALF_EVEN)
+        repasses_dec = sum(
+            (Decimal(str(p.amount or 0)) for p in payables
+             if (c.name and p.description and c.name.lower() in p.description.lower())),
+            Decimal("0.00"),
+        ).quantize(two_places, rounding=ROUND_HALF_EVEN)
+        mov_dec = (aportes_dec + repasses_dec).quantize(two_places, rounding=ROUND_HALF_EVEN)
+        total_mov_dec += mov_dec
         items.append({
             "cooperado_id": c_id_str,
             "cooperado_name": c.name,
             "document": c.document,
             "status": c.status.value if hasattr(c.status, "value") else str(c.status),
-            "aportes_12m": round(aportes, 2),
-            "repasses_12m": round(repasses, 2),
-            "movimentacao_total_12m": mov,
+            "aportes_12m": float(aportes_dec),
+            "repasses_12m": float(repasses_dec),
+            "movimentacao_total_12m": float(mov_dec),
+            "_mov_dec": mov_dec,
             "participacao_pct": 0.0,
             "valor_rateio": 0.0,
         })
 
     n_coops = len(items)
+    allocated_dec = Decimal("0.00")
+    rateio_decs = []
     for it in items:
-        if total_movimentacao > 0:
-            pct = (it["movimentacao_total_12m"] / total_movimentacao) * 100.0
+        mov_dec = it.pop("_mov_dec")
+        if total_mov_dec > Decimal("0.00"):
+            ratio = mov_dec / total_mov_dec
         elif n_coops > 0:
-            pct = 100.0 / n_coops
+            ratio = Decimal(1) / Decimal(n_coops)
         else:
-            pct = 0.0
-        it["participacao_pct"] = round(pct, 4)
-        it["valor_rateio"] = round(montante_sobras * (pct / 100.0), 2)
+            ratio = Decimal("0")
+        pct_dec = (ratio * Decimal("100")).quantize(four_places, rounding=ROUND_HALF_EVEN)
+        val_dec = (montante_dec * ratio).quantize(two_places, rounding=ROUND_HALF_EVEN)
+        it["participacao_pct"] = float(pct_dec)
+        rateio_decs.append(val_dec)
+        allocated_dec += val_dec
+
+    if n_coops > 0 and allocated_dec != montante_dec:
+        diff = montante_dec - allocated_dec
+        max_idx = max(range(n_coops), key=lambda idx: rateio_decs[idx])
+        rateio_decs[max_idx] = (rateio_decs[max_idx] + diff).quantize(two_places, rounding=ROUND_HALF_EVEN)
+
+    for idx, it in enumerate(items):
+        it["valor_rateio"] = float(rateio_decs[idx])
 
     return {
         "ano_base": ano_base,
-        "montante_sobras": round(float(montante_sobras), 2),
+        "montante_sobras": float(montante_dec),
         "total_cooperados_elegiveis": n_coops,
-        "total_movimentacao_12m": round(total_movimentacao, 2),
+        "total_movimentacao_12m": float(total_mov_dec),
         "items": items,
     }
 

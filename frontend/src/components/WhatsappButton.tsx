@@ -1,8 +1,8 @@
 'use client';
 
 export default function WhatsappButton() {
-    // Substitua pelo número real de suporte Orbe Systems
-    const wppNumber = "5511999999999";
+    // Configurável via variável de ambiente com fallback para o número oficial Orbe Systems
+    const wppNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "5551981598760";
     const message = encodeURIComponent("Olá! Vim pelo site da Orbe Systems e gostaria de falar com o suporte.");
 
     return (

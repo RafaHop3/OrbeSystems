@@ -17,7 +17,7 @@ from keep_alive import start_keep_alive, stop_keep_alive
 from routers import (
     auth, users, audit, contracts, sales_orders, pdv, admin, pco, businesses, billing, ghost_engine, crm
 )
-from routers import cooperados, categories, notes, recurrences, accounting, reports, settings as settings_router
+from routers import cooperados, categories, notes, recurrences, accounting, reports, settings as settings_router, open_finance
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger("inho")
@@ -29,16 +29,16 @@ limiter = Limiter(key_func=get_remote_address, default_limits=[f"{settings.RATE_
 # ── Lifespan ──────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # FIX: app.state em vez de global — cada worker tem seu proprio estado isolado
     app.state.db_ready = False
     logger.info("INHO API iniciando...")
 
+    is_sqlite = str(settings.DATABASE_URL).startswith("sqlite")
     for stmt in [
         "ALTER TABLE public.users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255)",
         "UPDATE public.users SET full_name = 'rafael_admin', role = 'ADMIN', subscription_status = 'active' WHERE LOWER(email) = 'rafael@orbesystems.com.br'",
         "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS bank_details TEXT",
         "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS notes TEXT",
-        "CREATE TABLE IF NOT EXISTS inho.omnichannel_logs (id UUID PRIMARY KEY, business_id UUID NOT NULL, sender_id UUID NOT NULL, contact_id UUID, channel VARCHAR(50) NOT NULL, recipient VARCHAR(255) NOT NULL, message_content TEXT NOT NULL, status VARCHAR(50) NOT NULL DEFAULT 'SENT', error_message TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
+        "CREATE TABLE IF NOT EXISTS inho.omnichannel_logs (id UUID PRIMARY KEY, business_id UUID NOT NULL, sender_id UUID NOT NULL, contact_id UUID, channel VARCHAR(50) NOT NULL, recipient VARCHAR(50) NOT NULL, message_content TEXT NOT NULL, status VARCHAR(50) NOT NULL DEFAULT 'SENT', error_message TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
         "CREATE INDEX IF NOT EXISTS ix_billing_invoices_biz_status_due ON inho.billing_invoices (business_id, status, due_date)",
         "CREATE INDEX IF NOT EXISTS ix_billing_invoices_biz_comp ON inho.billing_invoices (business_id, data_competencia)",
         "CREATE INDEX IF NOT EXISTS ix_accounts_payable_biz_status_due ON inho.accounts_payable (business_id, status, due_date)",
@@ -46,6 +46,8 @@ async def lifespan(app: FastAPI):
     ]:
         try:
             async with engine.begin() as ddl_conn:
+                if not is_sqlite:
+                    await ddl_conn.execute(text("SET LOCAL lock_timeout = '3s'"))
                 await ddl_conn.execute(text(stmt))
         except Exception as ddl_err:
             logger.warning(f"DDL startup warning: {ddl_err}")
@@ -162,7 +164,7 @@ class XForwardedProtoMiddleware(BaseHTTPMiddleware):
                 try:
                     cf_data = json.loads(cf_visitor)
                     forwarded_proto = cf_data.get("scheme")
-                except:
+                except Exception:
                     pass
         if forwarded_proto:
             request.scope["scheme"] = forwarded_proto
@@ -222,6 +224,7 @@ app.include_router(crm.router, prefix="/api/v1")
 app.include_router(cooperados.router)   # /api/v1/crm/cooperados
 app.include_router(categories.router)  # /api/v1/categories
 app.include_router(notes.router)       # /api/v1/notes
+app.include_router(open_finance.router, prefix="/api/v1/open-finance", tags=["Open Finance Brasil (BACEN)"])
 
 @app.post("/api/v1/webhooks/banking/{provider}", tags=["Banking Webhooks"])
 async def banking_webhook_entry(
@@ -292,7 +295,5 @@ async def favicon():
 app.include_router(accounting.router, prefix="/api/v1/accounting", tags=["Accounting & Month Close"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Business Intelligence & Reports"])
 app.include_router(settings_router.router, prefix="/api/v1/settings", tags=["Money Layer & Global Settings"])
-# Mangum translates Lambda/API-Gateway events → ASGI → FastAPI.
-# Used in production (AWS Lambda). Ignored when running with uvicorn locally.
 from mangum import Mangum  # noqa: E402
 handler = Mangum(app)

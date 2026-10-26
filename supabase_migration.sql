@@ -242,3 +242,97 @@ SET repo_name          = EXCLUDED.repo_name,
 -- ════════════════════════════════════════════════════════════════════════════════
 -- Após este script, execute o lockdown de RLS para bloquear acesso via chave anon:
 --   python run_migration.py "DATABASE_URL" --rls
+
+
+-- ════════════════════════════════════════════════════════════════════════════════
+-- FASE 2: MESH SOCIAL & NEXUS CORE — ISOLAMENTO LÓGICO (SCHEMA mesh_core + RLS)
+-- ════════════════════════════════════════════════════════════════════════════════
+
+CREATE SCHEMA IF NOT EXISTS mesh_core;
+
+CREATE TABLE IF NOT EXISTS mesh_core.posts (
+    id UUID DEFAULT gen_random_uuid(),
+    author_id UUID NOT NULL,
+    content_text VARCHAR(1000) NOT NULL,
+    content_hash VARCHAR(64) NOT NULL,
+    signature_hex VARCHAR(128),
+    public_key_hex VARCHAR(64),
+    media_url VARCHAR(512),
+    orbit_level INTEGER NOT NULL DEFAULT 1,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    PRIMARY KEY (id, created_at)
+) PARTITION BY RANGE (created_at);
+
+-- Partição default + partição anual para garantir escrita contínua sem erro de range
+CREATE TABLE IF NOT EXISTS mesh_core.posts_y2026 PARTITION OF mesh_core.posts
+    FOR VALUES FROM ('2026-01-01 00:00:00+00') TO ('2027-01-01 00:00:00+00');
+
+CREATE TABLE IF NOT EXISTS mesh_core.posts_default PARTITION OF mesh_core.posts DEFAULT;
+
+CREATE INDEX IF NOT EXISTS ix_mesh_core_posts_author_created
+    ON mesh_core.posts (author_id, created_at DESC);
+
+ALTER TABLE mesh_core.posts ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS mesh_posts_rls_isolation ON mesh_core.posts;
+CREATE POLICY mesh_posts_rls_isolation ON mesh_core.posts
+    FOR ALL
+    TO anon, authenticated
+    USING (false)
+    WITH CHECK (false);
+
+-- ════════════════════════════════════════════════════════════════════════════════
+-- FASE 3 & 4: BLINDAGEM FINANCEIRA (IDEMPOTÊNCIA, PRECISÃO FIDC & VIEWS CONCORRENTES)
+-- ════════════════════════════════════════════════════════════════════════════════
+
+-- 12. Idempotência estrita em Webhooks (UNIQUE idempotency_key + ON CONFLICT DO NOTHING)
+CREATE TABLE IF NOT EXISTS webhook_idempotency_keys (
+    idempotency_key VARCHAR(128) NOT NULL,
+    provider        VARCHAR(50)  NOT NULL DEFAULT 'stripe',
+    event_type      VARCHAR(100) NOT NULL,
+    status          VARCHAR(30)  NOT NULL DEFAULT 'processed',
+    payload_hash    VARCHAR(64),
+    created_at      TIMESTAMPTZ  NOT NULL DEFAULT NOW(),
+    CONSTRAINT uq_webhook_idempotency_key UNIQUE (idempotency_key)
+);
+
+-- 13. Cálculos Financeiros / Cessão FIDC com Precisão Pro-Rata (NUMERIC(18,8) e NUMERIC(15,2))
+CREATE TABLE IF NOT EXISTS fidc_operations (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    external_ref      VARCHAR(100) NOT NULL UNIQUE,
+    face_value        NUMERIC(15,2) NOT NULL,
+    daily_rate        NUMERIC(18,8) NOT NULL,
+    discount_factor   NUMERIC(18,8) NOT NULL,
+    quota_pu          NUMERIC(18,8) NOT NULL,
+    net_settlement    NUMERIC(15,2) NOT NULL,
+    rounding_mode     VARCHAR(30) NOT NULL DEFAULT 'ROUND_HALF_EVEN',
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 14. Fila de Jobs Assíncronos (202 Accepted — Prevenção de Deadlocks/Timeouts em OCR/n8n)
+CREATE TABLE IF NOT EXISTS async_processing_jobs (
+    job_id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    job_type          VARCHAR(60) NOT NULL,
+    status            VARCHAR(30) NOT NULL DEFAULT 'accepted',
+    payload_hash      VARCHAR(64) NOT NULL,
+    result_summary    TEXT,
+    error_detail      TEXT,
+    created_at        TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    completed_at      TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS ix_async_jobs_status ON async_processing_jobs (status, created_at DESC);
+
+-- 15. Governança de Dados Analíticos (Materialized View com UNIQUE INDEX para REFRESH CONCURRENTLY)
+CREATE MATERIALIZED VIEW IF NOT EXISTS mv_analytics_daily_summary AS
+SELECT
+    date_trunc('day', timestamp) AS metric_day,
+    COALESCE(event_type, 'page_view') AS event_type,
+    COUNT(*) AS total_events,
+    COUNT(DISTINCT ip) AS unique_visitors,
+    COALESCE(AVG(risk_score), 0.0) AS avg_risk_score
+FROM visit_logs
+GROUP BY date_trunc('day', timestamp), COALESCE(event_type, 'page_view');
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_mv_analytics_daily_summary
+    ON mv_analytics_daily_summary (metric_day, event_type);

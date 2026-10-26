@@ -57,7 +57,7 @@ export default function Footer() {
             </a>
             <div className="flex items-center gap-4">
               <a
-                href="https://github.com/theorbesystems-sketch"
+                href="https://github.com/RafaHop3"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="GitHub"

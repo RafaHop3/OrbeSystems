@@ -11,14 +11,16 @@ const OrbeAssistant = dynamic(() => import('@/components/OrbeAssistant'), { ssr:
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://orbesystems.com.br'),
-  title: 'Orbe Systems | Tecnologia, Mesh Social & Engenharia de Software',
+  title: 'Orbe Systems | Engineering & Mesh Core',
   description:
-    'Hub tecnológico da Orbe Systems: Conheça a Mesh Social (nova rede social autêntica, sem anúncios e gratuita), soluções em engenharia de software, cyber segurança, privacidade LGPD e inteligência artificial.',
+    'Hub tecnológico da Orbe Systems: Conheça a Mesh Social / Nexus Core (nova rede social autêntica, sem anúncios e gratuita), soluções em engenharia de software, cyber segurança, privacidade LGPD e inteligência artificial.',
   keywords: [
+    'Orbe Systems',
+    'Mesh Core',
+    'Nexus Core',
     'Mesh Social',
     'rede social sem anuncios',
     'rede social amigos',
-    'Orbe Systems',
     'engenharia de software',
     'cyber seguranca',
     'privacidade digital',
@@ -34,8 +36,8 @@ export const metadata: Metadata = {
     icon: '/favicon.ico',
   },
   openGraph: {
-    title: 'Orbe Systems | Tecnologia, Mesh Social & Inovação',
-    description: 'Hub tecnológico: Mesh Social, engenharia de software, cyber safety e soluções digitais.',
+    title: 'Orbe Systems | Engineering & Mesh Core',
+    description: 'Hub tecnológico: Mesh Social, Nexus Core, engenharia de software, cyber safety e soluções digitais.',
     url: 'https://orbesystems.com.br',
     siteName: 'Orbe Systems',
     type: 'website',

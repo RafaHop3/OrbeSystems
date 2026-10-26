@@ -30,6 +30,7 @@ from routes.sbom import router as sbom_router
 from routes.ir import router as ir_router
 from routes.chat import router as chat_router
 from routes.optout import router as optout_router
+from routes.mesh_and_hardening import router as mesh_hardening_router
 from security.auth import verify_password
 from security.supabase_rls import ensure_supabase_rls
 from sqlalchemy import inspect, text
@@ -50,12 +51,13 @@ import models.incident_report  # Import to register incident_reports table (IR l
 import models.chat_logs        # Import to register ai_chat_logs table
 import models.test_event        # Import to register test_events table (required before run_migrations seeds it)
 import models.optout            # Import to register optout_requests table
+import models.hardening         # Import to register webhook_idempotency_keys, fidc_operations, async_processing_jobs
 
 
 def run_migrations():
     """ 
-    Self-healing migration: Automatically adds missing columns 
-    without requiring Alembic. Critical for non-destructive schema updates.
+    Self-healing migration: Automatically adds missing columns and non-breaking
+    isolated schemas (`mesh_core`) without requiring Alembic.
     """
     inspector = inspect(engine)
     columns = [col['name'] for col in inspector.get_columns('projects_metadata')]
@@ -120,12 +122,11 @@ def run_migrations():
 
         # Seed initial test events if table is empty
         try:
-            # Check if table has rows
             row_count = conn.execute(text("SELECT COUNT(*) FROM test_events")).fetchone()[0]
             if row_count == 0:
                 print("INFO: [Migration] Seeding initial test events...")
                 import uuid
-                from datetime import datetime, timezone
+                from datetime import datetime
                 conn.execute(text(
                     "INSERT INTO test_events (id, event_type, service, status, message, details, created_at) VALUES "
                     f"('{str(uuid.uuid4())}', 'system_init', 'gateway', 'success', 'OrbeSystems API Gateway initialized successfully', NULL, '{datetime.utcnow().isoformat()}'),"
@@ -153,19 +154,66 @@ def run_migrations():
             print("INFO: [Migration] Adding 'incident_id' to security_alerts...")
             conn.execute(text("ALTER TABLE security_alerts ADD COLUMN incident_id TEXT"))
 
+        # ── Fase 2 & 4 (Dossiê de Blindagem): mesh_core + Views Analíticas ─
+        if engine.dialect.name == "postgresql":
+            conn.execute(text("CREATE SCHEMA IF NOT EXISTS mesh_core"))
+            conn.execute(text(
+                """
+                CREATE TABLE IF NOT EXISTS mesh_core.posts (
+                    id UUID DEFAULT gen_random_uuid(),
+                    author_id UUID NOT NULL,
+                    content_text VARCHAR(1000) NOT NULL,
+                    content_hash VARCHAR(64) NOT NULL,
+                    signature_hex VARCHAR(128),
+                    public_key_hex VARCHAR(64),
+                    media_url VARCHAR(512),
+                    orbit_level INTEGER NOT NULL DEFAULT 1,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    PRIMARY KEY (id, created_at)
+                ) PARTITION BY RANGE (created_at)
+                """
+            ))
+            conn.execute(text(
+                "CREATE TABLE IF NOT EXISTS mesh_core.posts_default PARTITION OF mesh_core.posts DEFAULT"
+            ))
+            conn.execute(text(
+                """
+                CREATE MATERIALIZED VIEW IF NOT EXISTS mv_analytics_daily_summary AS
+                SELECT
+                    date_trunc('day', timestamp) AS metric_day,
+                    COALESCE(event_type, 'page_view') AS event_type,
+                    COUNT(*) AS total_events,
+                    COUNT(DISTINCT ip) AS unique_visitors,
+                    COALESCE(AVG(risk_score), 0.0) AS avg_risk_score
+                FROM visit_logs
+                GROUP BY date_trunc('day', timestamp), COALESCE(event_type, 'page_view')
+                """
+            ))
+            conn.execute(text(
+                "CREATE UNIQUE INDEX IF NOT EXISTS uq_mv_analytics_daily_summary "
+                "ON mv_analytics_daily_summary (metric_day, event_type)"
+            ))
+        else:
+            # Fallback compatível com SQLite para testes unitários locais
+            conn.execute(text(
+                """
+                CREATE TABLE IF NOT EXISTS mesh_core_posts (
+                    id TEXT NOT NULL,
+                    author_id TEXT NOT NULL,
+                    content_text VARCHAR(1000) NOT NULL,
+                    content_hash VARCHAR(64) NOT NULL,
+                    signature_hex VARCHAR(128),
+                    public_key_hex VARCHAR(64),
+                    media_url VARCHAR(512),
+                    orbit_level INTEGER NOT NULL DEFAULT 1,
+                    created_at TIMESTAMP NOT NULL,
+                    PRIMARY KEY (id, created_at)
+                )
+                """
+            ))
+
     print("INFO: [Migration] Schema is up to date.")
 
-# Task List:
-# - [x] Install/Add Backend dependency (`cloudinary`)
-# - [x] Update `backend/config.py` with Cloudinary fields
-# - [x] Create `backend/services/upload_service.py`
-# - [x] Create `backend/routes/upload.py`
-# - [x] Integrate upload route in `backend/main.py`
-# - [/] Create Frontend `FileUploader` component
-# - [ ] Integrate `FileUploader` into `app/admin/page.tsx`
-# - [ ] Verify upload flow to production CDN
-# - [ ] Integrate Tracking Script in Global Layout
-# - [ ] Verify with Subagent test
 
 security_basic = HTTPBasic()
 
@@ -181,7 +229,6 @@ async def lifespan(app: FastAPI):
         print(" Configuration validated")
     except ValueError as e:
         print(f" Configuration error: {e}")
-        # Vercel: We do not raise here so the function can still boot and return meaningful errors.
         
     # Strict Database Guard against Sandbox configurations in Production
     import os
@@ -201,19 +248,21 @@ async def lifespan(app: FastAPI):
     # Run migrations safely
     try:
         print(f"INFO: [Database] Initializing tables and schemas...")
-        with engine.begin() as conn:
-            conn.execute(text("CREATE SCHEMA IF NOT EXISTS schema_ghostengine"))
-            conn.execute(text("CREATE SCHEMA IF NOT EXISTS schema_imobverse"))
-            for sql in [
-                "ALTER TABLE IF EXISTS public.optout_requests SET SCHEMA schema_ghostengine",
-                "ALTER TABLE IF EXISTS public.imob_properties SET SCHEMA schema_imobverse",
-                "ALTER TABLE IF EXISTS public.imob_inspection_items SET SCHEMA schema_imobverse",
-                "ALTER TABLE IF EXISTS public.imob_leads SET SCHEMA schema_imobverse"
-            ]:
-                try:
-                    conn.execute(text(sql))
-                except Exception:
-                    pass
+        if engine.dialect.name == "postgresql":
+            with engine.begin() as conn:
+                conn.execute(text("CREATE SCHEMA IF NOT EXISTS schema_ghostengine"))
+                conn.execute(text("CREATE SCHEMA IF NOT EXISTS schema_imobverse"))
+                conn.execute(text("CREATE SCHEMA IF NOT EXISTS mesh_core"))
+                for sql in [
+                    "ALTER TABLE IF EXISTS public.optout_requests SET SCHEMA schema_ghostengine",
+                    "ALTER TABLE IF EXISTS public.imob_properties SET SCHEMA schema_imobverse",
+                    "ALTER TABLE IF EXISTS public.imob_inspection_items SET SCHEMA schema_imobverse",
+                    "ALTER TABLE IF EXISTS public.imob_leads SET SCHEMA schema_imobverse"
+                ]:
+                    try:
+                        conn.execute(text(sql))
+                    except Exception:
+                        pass
         Base.metadata.create_all(bind=engine)
         run_migrations()
         ensure_supabase_rls(engine)
@@ -288,9 +337,6 @@ app = FastAPI(
 )
 
 # ── CORS Middleware ────────────────────────────────────────────────────────
-# IMPORTANT: Must be registered FIRST, before any exception handlers.
-# This ensures CORS headers are present even on 500 error responses.
-# Without this, the browser blocks the response before the JS can read the error.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -312,11 +358,7 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    """Global handler: logs full traceback server-side, returns a GENERIC message to clients.
-    
-    Security [M4]: Never expose str(exc) to clients — it may contain DB schema names,
-    file paths, or internal stack context. Full detail stays in server logs only.
-    """
+    """Global handler: logs full traceback server-side, returns a GENERIC message to clients."""
     err_msg = traceback.format_exc()
     print(f"CRITICAL UNHANDLED ERROR: {err_msg}")
     return JSONResponse(
@@ -376,6 +418,7 @@ app.include_router(imobverse_router, prefix="/api", tags=["imobverse"])
 app.include_router(powershell_bot_router, prefix="/api", tags=["PowerShell Bot"])
 app.include_router(chat_router, prefix="/api", tags=["chat"])
 app.include_router(optout_router, prefix="/api/optout", tags=["data-broker-mvp"])
+app.include_router(mesh_hardening_router, prefix="/api", tags=["mesh-core-and-hardening"])
 from routes.suite_inteligente import router as suite_inteligente_router
 app.include_router(suite_inteligente_router)
 from routes.offline_agent import router as offline_agent_router
@@ -390,13 +433,11 @@ app.include_router(admin_inho_router, prefix="/api/admin/inho", tags=["admin-inh
 @app.get("/health", tags=["health"])
 async def health_check():
     """Health probe for keep-alive pings. Also queries the database to prevent Supabase auto-pausing."""
-    from datetime import datetime
     from database import SessionLocal
     
     db_status = "unknown"
     try:
         db = SessionLocal()
-        # Fast query to keep Supabase active
         db.execute(text("SELECT 1")).fetchone()
         db_status = "connected"
     except Exception as e:
@@ -407,22 +448,13 @@ async def health_check():
     return {
         "status": "operational",
         "service": "orbe-systems-api",
-        # Security [L1]: version and deployed_at removed to prevent fingerprinting.
-        # Correlating version strings with CVE databases is a common recon step.
         "database": db_status,
     }
 
 
-
-# SECURITY NOTE: The /debug/github-lookup endpoint has been removed.
-# Debug routes must never be public — use /docs (HTTP Basic protected) for manual testing.
-
 # ── AWS Lambda Handler (Mangum) ───────────────────────────────────────────────
-# This adapter allows FastAPI to run on AWS Lambda via API Gateway.
-# In local dev, uvicorn is used normally — Mangum is only invoked by Lambda.
 try:
     from mangum import Mangum
     handler = Mangum(app, lifespan="off")
 except ImportError:
-    pass  # mangum not required for local dev
-
+    pass

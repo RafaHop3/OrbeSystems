@@ -1,15 +1,12 @@
 from sqlalchemy import cast, String
 """
-INHO – Users Router (RBAC-protected)
+INHO – Users Router (RBAC-protected, Manual 01/02/06 Compliant)
 """
-from typing import Annotated
-from uuid import UUID
-
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from sqlalchemy import select, cast, String
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.deps import get_current_user, require_admin
+from core.deps import get_current_user, require_admin, _USER_CACHE
 from db.session import get_db
 from models.models import AuditAction, User
 from schemas.schemas import UserOut, UserUpdate, UserCreate
@@ -52,26 +49,40 @@ async def create_user(
     db: AsyncSession = Depends(get_db),
 ):
     from core.security import hash_password
+    from routers.billing import _get_user_business
+    from routers.crm import get_uuid
+    from models.models import BusinessOperator
 
     existing = await db.execute(select(User).where(User.email == body.email))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Já existe um usuário cadastrado com este e-mail")
 
+    role_input = (body.role.value if hasattr(body.role, "value") else str(body.role or "operator")).strip().lower()
+
     user = User(
-        email=body.email,
+        email=body.email.strip().lower(),
+        full_name_db=body.full_name.strip() if getattr(body, "full_name", None) else None,
         password_hash=hash_password(body.password),
-        role=body.role,
+        role=role_input,
         is_email_verified=True,
+        subscription_status="active",
     )
     db.add(user)
     await db.flush()
 
-    from models.models import BusinessOperator, UserRole
-    role_val = user.role.value if hasattr(user.role, "value") else str(user.role)
-    if role_val == UserRole.OPERATOR and body.business_id:
-        biz_op = BusinessOperator(business_id=body.business_id, user_id=user.id)
-        db.add(biz_op)
-        user.business_id = body.business_id
+    # Manual 06 §3 & §4: Comparar sempre em lowercase e vincular Operador ao Business da cooperativa
+    if role_input == "operator":
+        target_biz_id = body.business_id
+        if not target_biz_id:
+            admin_biz = await _get_user_business(db, current_user)
+            target_biz_id = admin_biz.id if admin_biz else None
+        if target_biz_id:
+            biz_op = BusinessOperator(
+                business_id=get_uuid(target_biz_id),
+                user_id=get_uuid(user.id),
+            )
+            db.add(biz_op)
+            user.business_id = target_biz_id
 
     await write_audit(
         db, AuditAction.CREATE, "User",
@@ -79,7 +90,7 @@ async def create_user(
         detail={
             "created_user_email": user.email,
             "created_user_name": user.full_name,
-            "role": user.role.value if hasattr(user.role, "value") else str(user.role),
+            "role": role_input,
             "created_by": current_user.email
         },
         request=request,
@@ -97,7 +108,14 @@ async def update_user(
     current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(User).where(User.id == user_id))
+    from routers.admin import _is_platform_owner, _tenant
+    if not _is_platform_owner(current_user):
+        _, tenant_ids = await _tenant(db, current_user)
+        if str(user_id) not in tenant_ids:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    # Manual 01: sempre usar cast(User.id, String) == str(user_id)
+    result = await db.execute(select(User).where(cast(User.id, String) == str(user_id)))
     user: User | None = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
@@ -106,10 +124,20 @@ async def update_user(
     if "password" in changes and changes["password"]:
         from core.security import hash_password
         changes["password_hash"] = hash_password(changes.pop("password"))
-    
-    # Remove unsupported schema fields injected by older UserUpdate schemas
-    changes.pop("full_name", None)
-    changes.pop("is_active", None)
+
+    if "full_name" in changes:
+        fn_val = changes.pop("full_name")
+        if fn_val is not None:
+            user.full_name_db = fn_val.strip()
+
+    if "is_active" in changes:
+        active_val = changes.pop("is_active")
+        if active_val is not None:
+            user.is_active = bool(active_val)
+
+    if "role" in changes and changes["role"] is not None:
+        r_val = changes["role"]
+        changes["role"] = (r_val.value if hasattr(r_val, "value") else str(r_val)).strip().lower()
 
     for field, value in changes.items():
         setattr(user, field, value)
@@ -117,11 +145,15 @@ async def update_user(
     await write_audit(
         db, AuditAction.UPDATE, "User",
         user_id=current_user.id, entity_id=str(user_id),
-        detail={k: str(v) for k, v in changes.items() if k != "hashed_password"},
+        detail={k: str(v) for k, v in changes.items() if k not in ("hashed_password", "password_hash")},
         request=request,
     )
     await db.commit()
     await db.refresh(user)
+
+    # Invalida cache em memória do usuário alterado
+    _USER_CACHE.pop(str(user.id), None)
+    _USER_CACHE.pop(str(user.email), None)
     return user
 
 
@@ -132,10 +164,16 @@ async def delete_user(
     current_user: User = Depends(require_admin),
     db: AsyncSession = Depends(get_db),
 ):
-    if user_id == current_user.id:
+    if str(user_id) == str(current_user.id):
         raise HTTPException(status_code=400, detail="Você não pode excluir seu próprio usuário mestre")
 
-    result = await db.execute(select(User).where(User.id == user_id))
+    from routers.admin import _is_platform_owner, _tenant
+    if not _is_platform_owner(current_user):
+        _, tenant_ids = await _tenant(db, current_user)
+        if str(user_id) not in tenant_ids:
+            raise HTTPException(status_code=404, detail="Usuário não encontrado")
+
+    result = await db.execute(select(User).where(cast(User.id, String) == str(user_id)))
     user: User | None = result.scalar_one_or_none()
     if not user:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
@@ -150,4 +188,6 @@ async def delete_user(
         request=request,
     )
     await db.commit()
+    _USER_CACHE.pop(str(user_id), None)
+    _USER_CACHE.pop(str(email), None)
     return None

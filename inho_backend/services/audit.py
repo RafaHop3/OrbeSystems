@@ -41,11 +41,8 @@ async def write_audit(
         except ValueError:
             pass
 
-    if isinstance(business_id, str):
-        try:
-            business_id = UUID(business_id)
-        except ValueError:
-            pass
+    if business_id:
+        business_id = str(business_id)
 
     # Auto-resolve user_name and user_role if user_id is provided and user_name is missing
     if user_id:

@@ -1,8 +1,9 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    # GitHub Token — Set via .env or environment variable.
+    # GitHub Token & Principal Username — Set via .env or environment variable.
     GITHUB_TOKEN: str = ""
+    GITHUB_USERNAME: str = "RafaHop3"
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://localhost:3001,http://localhost:3002,http://127.0.0.1:3000,http://127.0.0.1:3001,http://127.0.0.1:3002,https://orbesystems.com.br,https://www.orbesystems.com.br"
     
     # Critical credentials. Defaults to empty strings to avoid Vercel import-time crashes.
@@ -11,11 +12,18 @@ class Settings(BaseSettings):
     ADMIN_USERNAME: str = ""
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     
-    # Cloudinary Uplink (Permanent Storage)
+    # Cloudinary Uplink (Permanent Storage Fallback)
     CLOUDINARY_URL: str = ""
     CLOUDINARY_CLOUD_NAME: str = "doxx9wyvw"
     CLOUDINARY_API_KEY: str = ""
     CLOUDINARY_API_SECRET: str = ""
+
+    # ── Cloudflare R2 (Zero-Egress Object Storage) ─────────────────────────────
+    R2_ENDPOINT_URL: str = ""
+    R2_ACCESS_KEY_ID: str = ""
+    R2_SECRET_ACCESS_KEY: str = ""
+    R2_BUCKET_NAME: str = "orbe-mesh-media"
+    R2_PUBLIC_DOMAIN: str = ""
 
     # ── Stripe Payment Gateway ─────────────────────────────────────────────────
     STRIPE_SECRET_KEY: str = ""           # sk_live_... or sk_test_...
@@ -45,9 +53,6 @@ class Settings(BaseSettings):
     BLOCKED_COUNTRIES: str = ""    # Comma-separated, e.g. "Russia,North Korea" (case-insensitive)
 
     # ── XFF / Proxy Hardening ──────────────────────────────────────────────────
-    # Number of trusted reverse proxies in front of the API.
-    # Render.com injects 1 proxy. Set to 2 if behind Cloudflare + Render.
-    # Set to 0 for direct exposure (no proxy) — rare in production.
     NUM_TRUSTED_PROXIES: int = 1
     
     # ── Hugging Face Chatbot ──────────────────────────────────────────────────
@@ -70,7 +75,6 @@ class Settings(BaseSettings):
             raise ValueError("ADMIN_PASSWORD_HASH é obrigatório")
         if not self.ADMIN_USERNAME:
             raise ValueError("ADMIN_USERNAME é obrigatório")
-        # GITHUB_TOKEN é opcional - o código tem fallback robusto sem ele
         
         # Validar Stripe se configurado
         if self.STRIPE_SECRET_KEY or self.STRIPE_WEBHOOK_SECRET or self.STRIPE_PREMIUM_PRICE_ID:

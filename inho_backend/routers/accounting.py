@@ -3,10 +3,11 @@ import uuid
 import hashlib
 import json
 from datetime import datetime, timezone
+from decimal import Decimal, ROUND_HALF_EVEN
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, cast, String
+from sqlalchemy import select
 
 from db.session import get_db
 from models.models import User, Business, MonthClose, BillingInvoice, AccountPayable, AuditAction
@@ -16,6 +17,34 @@ from routers.billing import _get_user_business
 from services.audit import write_audit
 
 router = APIRouter()
+
+_Q_MONEY = Decimal("0.01")
+
+
+async def ensure_period_not_closed(db: AsyncSession, business_id, target_dt: datetime | None) -> None:
+    """
+    Spec §4.1: Verifica se a competência (ano/mês) já possui fechamento contábil
+    imutável (`MonthClose`). Caso positivo, bloqueia mutações retroativas com HTTP 409.
+    """
+    if not target_dt or not business_id:
+        return
+    from routers.crm import get_uuid
+    b_id = get_uuid(business_id)
+    closed = (
+        await db.execute(
+            select(MonthClose.id).where(
+                MonthClose.business_id == b_id,
+                MonthClose.period_year == target_dt.year,
+                MonthClose.period_month == target_dt.month,
+            )
+        )
+    ).scalar_one_or_none()
+    if closed:
+        raise HTTPException(
+            status_code=409,
+            detail=f"O período contábil {target_dt.month:02d}/{target_dt.year} já está fechado e auditado (MonthClose imutável).",
+        )
+
 
 @router.post("/month-close", response_model=MonthCloseOut)
 async def create_month_close(
@@ -78,9 +107,19 @@ async def create_month_close(
         )
         pay_rows = (await db.execute(pay_stmt)).all()
 
+        # Precisão Decimal estrita com ROUND_HALF_EVEN
+        total_rev_dec = sum(
+            (Decimal(str(r.amount or 0)).quantize(_Q_MONEY, rounding=ROUND_HALF_EVEN) for r in inv_rows),
+            Decimal("0.00"),
+        )
+        total_cost_dec = sum(
+            (Decimal(str(r.amount or 0)).quantize(_Q_MONEY, rounding=ROUND_HALF_EVEN) for r in pay_rows),
+            Decimal("0.00"),
+        )
+
         summary = {
-            "total_revenue": sum(float(r.amount) for r in inv_rows),
-            "total_cost": sum(float(r.amount) for r in pay_rows),
+            "total_revenue": float(total_rev_dec),
+            "total_cost": float(total_cost_dec),
             "invoice_ids": [str(r.id) for r in inv_rows],
             "payable_ids": [str(r.id) for r in pay_rows],
         }
