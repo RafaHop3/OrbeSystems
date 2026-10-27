@@ -119,7 +119,7 @@ async def update_user_role(
 
     user.role = role_update.role
     await db.commit()
-    await db.refresh(user)
+    user = (await db.execute(select(User).where(cast(User.id, String) == str(user_id)))).scalar_one()
     return user
 
 
@@ -141,7 +141,7 @@ async def update_user_status(
 
     user.is_active = status_update.is_active
     await db.commit()
-    await db.refresh(user)
+    user = (await db.execute(select(User).where(cast(User.id, String) == str(user_id)))).scalar_one()
     return user
 
 

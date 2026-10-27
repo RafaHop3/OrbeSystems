@@ -210,21 +210,35 @@ async def create_invoice(
     await ensure_period_not_closed(db, business.id, payload.data_competencia or payload.due_date)
 
     # Herda telefone do cooperado/contato CRM para a régua automática de cobrança
-    if not payload.customer_phone:
-        from models.models import Cooperado, CRMContact
-        inherited_phone = None
-        from routers.crm import get_uuid
-        if payload.cooperado_id:
-            coop = (await db.execute(select(Cooperado).where(
-                Cooperado.id == get_uuid(payload.cooperado_id), Cooperado.business_id == get_uuid(business.id)
-            ))).scalars().first()
-            inherited_phone = coop.phone if coop else None
-        if not inherited_phone and payload.customer_doc:
-            contact = (await db.execute(select(CRMContact).where(
-                CRMContact.business_id == get_uuid(business.id), CRMContact.document == payload.customer_doc
-            ))).scalars().first()
-            inherited_phone = contact.phone if contact else None
-        payload.customer_phone = inherited_phone
+    from models.models import Cooperado, CRMContact
+    from routers.crm import get_uuid
+    b_uuid = get_uuid(business.id)
+    matched_coop = None
+    if payload.cooperado_id:
+        matched_coop = (await db.execute(select(Cooperado).where(
+            Cooperado.id == get_uuid(payload.cooperado_id), Cooperado.business_id == b_uuid
+        ))).scalars().first()
+    elif payload.customer_doc:
+        matched_coop = (await db.execute(select(Cooperado).where(
+            Cooperado.business_id == b_uuid, Cooperado.document == payload.customer_doc
+        ))).scalars().first()
+    elif payload.customer_name:
+        matched_coop = (await db.execute(select(Cooperado).where(
+            Cooperado.business_id == b_uuid, func.lower(Cooperado.name) == payload.customer_name.strip().lower()
+        ))).scalars().first()
+    if matched_coop:
+        if not payload.cooperado_id:
+            payload.cooperado_id = matched_coop.id
+        if not payload.customer_doc:
+            payload.customer_doc = matched_coop.document
+        if not payload.customer_phone and matched_coop.phone:
+            payload.customer_phone = matched_coop.phone
+    if not payload.customer_phone and payload.customer_doc:
+        contact = (await db.execute(select(CRMContact).where(
+            CRMContact.business_id == b_uuid, CRMContact.document == payload.customer_doc
+        ))).scalars().first()
+        if contact and contact.phone:
+            payload.customer_phone = contact.phone
 
     from routers.crm import get_uuid
     invoice_id = uuid.uuid4()

@@ -53,7 +53,9 @@ async def create_user(
     from routers.crm import get_uuid
     from models.models import BusinessOperator
 
-    existing = await db.execute(select(User).where(User.email == body.email))
+    from sqlalchemy import func
+    clean_email = body.email.strip().lower()
+    existing = await db.execute(select(User).where(func.lower(User.email) == clean_email))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Já existe um usuário cadastrado com este e-mail")
 
@@ -95,8 +97,12 @@ async def create_user(
         },
         request=request,
     )
+    uid_str = str(user.id)
+    saved_biz_id = getattr(user, 'business_id', None)
     await db.commit()
-    await db.refresh(user)
+    user = (await db.execute(select(User).where(cast(User.id, String) == uid_str))).scalar_one()
+    if saved_biz_id:
+        user.business_id = saved_biz_id
     return user
 
 
@@ -149,7 +155,7 @@ async def update_user(
         request=request,
     )
     await db.commit()
-    await db.refresh(user)
+    user = (await db.execute(select(User).where(cast(User.id, String) == str(user_id)))).scalar_one()
 
     # Invalida cache em memória do usuário alterado
     _USER_CACHE.pop(str(user.id), None)
@@ -179,7 +185,10 @@ async def delete_user(
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
     email = user.email
-    await db.delete(user)
+    from sqlalchemy import delete as sa_delete
+    from models.models import BusinessOperator
+    await db.execute(sa_delete(BusinessOperator).where(cast(BusinessOperator.user_id, String) == str(user_id)))
+    await db.execute(sa_delete(User).where(cast(User.id, String) == str(user_id)))
 
     await write_audit(
         db, AuditAction.DELETE, "User",

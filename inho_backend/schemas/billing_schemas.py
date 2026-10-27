@@ -1,6 +1,6 @@
 from uuid import UUID
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 from typing import Optional, List
 from decimal import Decimal
 from models.models import BillingStatus, PaymentMethod, InvoiceType
@@ -19,7 +19,14 @@ class BillingInvoiceCreate(BaseModel):
     data_competencia: Optional[datetime] = None
     payment_method: Optional[PaymentMethod] = PaymentMethod.PIX
     description: Optional[str] = None
-    project_id: Optional[str] = None
+    project_id: Optional[str] = None
+
+    @field_validator('invoice_type', mode='before')
+    @classmethod
+    def _normalize_invoice_type(cls, v):
+        if isinstance(v, str) and v.strip().upper() == 'INTEGRALIZACAO_COTA':
+            return InvoiceType.INTEGRALIZACAO_INICIAL
+        return v
 
 class BillingInvoiceStatusUpdate(BaseModel):
     status: BillingStatus
