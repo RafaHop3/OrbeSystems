@@ -9,9 +9,9 @@ module.exports = {
     extend: {
       colors: {
         // ── Orbe INHO — Padrão Executivo Ouro Claro (Sovereign Gold Light) ──
-        'terminal-bg': '#F6F4EE',
+        'terminal-bg': '#F8FAFC',
         'terminal-surface': '#FFFFFF',
-        'terminal-border': '#E5DEC9',
+        'terminal-border': '#E2E8F0',
 
         // Executive Accents (Remapped from legacy neon tokens)
         'neon-cyan': '#B8860B',   // Sovereign Executive Gold
@@ -22,22 +22,22 @@ module.exports = {
 
         // Text Hierarchy (High-Contrast Obsidian & Slate)
         'terminal-text': '#0F172A',
-        'terminal-muted': '#57606A',
+        'terminal-muted': '#64748B',
         'terminal-bright': '#0F172A',
 
         // ── INHO Sovereign Gold Brand Palette ───────────────────────────────
-        'inho-black': '#F6F4EE',   // Warm Alabaster Canvas
+        'inho-black': '#F8FAFC',   // Warm Alabaster Canvas
         'inho-dark': '#FFFFFF',    // Pure Crisp White Surface
-        'inho-surface': '#FAF8F2', // Warm Ivory Sub-surface
+        'inho-surface': '#F1F5F9', // Warm Ivory Sub-surface
         'inho-card': '#FFFFFF',    // Executive Card White
-        'inho-border': '#E5DEC9',  // Warm Champagne Stone Border
+        'inho-border': '#E2E8F0',  // Warm Champagne Stone Border
 
         'inho-gold': '#B8860B',       // Primary Sovereign Gold
         'inho-gold-light': '#D4AF37', // Metallic Champagne Gold
         'inho-gold-dark': '#8B6508',  // Deep Imperial Gold
         'inho-teal': '#B8860B',       // Mapped to Sovereign Gold
 
-        'inho-green': '#059669',
+        'inho-green': '#10B981',
         'inho-green-light': '#10B981',
         'inho-green-dark': '#065F46',
 
@@ -45,18 +45,18 @@ module.exports = {
         'inho-blue-light': '#2563EB',
 
         'inho-text': '#0F172A',
-        'inho-muted': '#57606A',
-        'inho-subtle': '#E5DEC9',
+        'inho-muted': '#64748B',
+        'inho-subtle': '#E2E8F0',
       },
       fontFamily: {
         sans: ['var(--font-outfit)', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['var(--font-jetbrains)', 'JetBrains Mono', 'monospace'],
       },
       backgroundImage: {
-        'inho-gradient': 'linear-gradient(135deg, #FAF8F2 0%, #FFFFFF 50%, #F4EFE2 100%)',
+        'inho-gradient': 'linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%)',
         'inho-gold-gradient': 'linear-gradient(135deg, #9A6F0B 0%, #D4AF37 50%, #B8860B 100%)',
-        'inho-hero-gradient': 'radial-gradient(ellipse at 50% 0%, rgba(212,175,55,0.18) 0%, transparent 65%), linear-gradient(180deg, #FAF8F2 0%, #F3EFE4 100%)',
-        'inho-card-gradient': 'linear-gradient(145deg, #FFFFFF 0%, #FAF8F2 100%)',
+        'inho-hero-gradient': 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
+        'inho-card-gradient': 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)',
         'mesh-pattern': "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23b8860b' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
       },
       animation: {
@@ -106,8 +106,8 @@ module.exports = {
         'inho-gold': '0 10px 25px -5px rgba(184,134,11,0.25), 0 4px 10px -2px rgba(184,134,11,0.12)',
         'glow-gold': '0 8px 22px -4px rgba(184,134,11,0.28), 0 2px 6px rgba(184,134,11,0.15)',
         'inho-green': '0 10px 25px -5px rgba(5,150,105,0.22)',
-        'inho-card': '0 1px 3px rgba(15,23,42,0.05), 0 8px 24px -4px rgba(180,145,55,0.07)',
-        'inho-hover': '0 16px 36px -8px rgba(15,23,42,0.09), 0 4px 16px rgba(184,134,11,0.12)',
+        'inho-card': '0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04)',
+        'inho-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.03)',
       },
     },
   },

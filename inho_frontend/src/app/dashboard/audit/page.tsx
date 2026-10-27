@@ -115,7 +115,7 @@ export default function AuditPage() {
                       </td>
                       <td className="px-6 py-4 text-xs font-mono text-[#0F172A] max-w-xs break-all">
                         {log.detail ? (
-                          <span className="bg-[#FAF8F2] p-1.5 rounded border border-inho-border block text-[10px]">
+                          <span className="bg-[#F1F5F9] p-1.5 rounded border border-inho-border block text-[10px]">
                             {log.detail}
                           </span>
                         ) : '-'}

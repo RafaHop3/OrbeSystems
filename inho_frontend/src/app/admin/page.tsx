@@ -48,7 +48,7 @@ export default function AdminDashboardPage() {
     <div className="animate-fade-in">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-[#0F172A] mb-2">Visão Global da Plataforma</h1>
-        <p className="text-[#57606A]">Acompanhe as métricas globais e o status do sistema.</p>
+        <p className="text-[#64748B]">Acompanhe as métricas globais e o status do sistema.</p>
       </header>
 
       {/* KPI Cards */}
@@ -56,7 +56,7 @@ export default function AdminDashboardPage() {
         {kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
-            <div key={idx} className="bg-white border border-[#E5DEC9] rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-[#E5DEC9] transition-colors">
+            <div key={idx} className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-xl relative overflow-hidden group hover:border-[#E2E8F0] transition-colors">
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Icon className={`w-24 h-24 ${kpi.color}`} />
               </div>
@@ -64,7 +64,7 @@ export default function AdminDashboardPage() {
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${kpi.bg}`}>
                   <Icon className={`w-6 h-6 ${kpi.color}`} />
                 </div>
-                <p className="text-[#57606A] text-sm font-medium mb-1">{kpi.title}</p>
+                <p className="text-[#64748B] text-sm font-medium mb-1">{kpi.title}</p>
                 <h3 className="text-3xl font-bold text-[#0F172A]">{kpi.value}</h3>
               </div>
             </div>
@@ -73,9 +73,9 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Futuristic placeholder for charts */}
-      <div className="bg-white border border-[#E5DEC9] rounded-2xl p-6 shadow-xl">
+      <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 shadow-xl">
         <h2 className="text-xl font-bold text-[#0F172A] mb-4">Crescimento da Base (Projeção)</h2>
-        <div className="h-64 flex items-center justify-center border border-dashed border-[#E5DEC9] rounded-xl bg-white">
+        <div className="h-64 flex items-center justify-center border border-dashed border-[#E2E8F0] rounded-xl bg-white">
           <p className="text-gray-500">Gráfico Analítico Integrado com Recharts (Em breve)</p>
         </div>
       </div>

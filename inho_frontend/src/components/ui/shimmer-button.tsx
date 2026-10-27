@@ -6,7 +6,7 @@ export function ShimmerButton({ children, onClick, className = '' }: { children:
     return (
         <button
             onClick={onClick}
-            className={`group relative flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-inho-black px-8 py-4 font-bold text-inho-text border border-[#E5DEC9] transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(245,166,35,0.3)] ${className}`}
+            className={`group relative flex items-center justify-center gap-2 overflow-hidden rounded-2xl bg-inho-black px-8 py-4 font-bold text-inho-text border border-[#E2E8F0] transition-all hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(245,166,35,0.3)] ${className}`}
         >
             <span className="relative z-10 flex items-center gap-2">{children}</span>
             <div className="absolute inset-0 z-0">

@@ -55,19 +55,19 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
   const isAdmin = normRole === 'super_admin' || normRole === 'admin';
 
   const roleColor: Record<string, string> = {
-    super_admin: 'text-[#8B6508] border-[#D4AF37]/50 bg-[#FDF7E2]',
-    admin: 'text-[#8B6508] border-[#D4AF37]/50 bg-[#FDF7E2]',
+    super_admin: 'text-[#8B6508] border-slate-200 bg-[#F1F5F9]',
+    admin: 'text-[#8B6508] border-slate-200 bg-[#F1F5F9]',
     operator: 'text-emerald-800 border-emerald-300 bg-emerald-50',
     viewer: 'text-slate-600 border-slate-300 bg-slate-100',
     client: 'text-slate-700 border-slate-300 bg-slate-100',
   };
 
   const navContent = (
-    <div className="flex flex-col h-full bg-white border-r border-[#E5DEC9] font-sans text-xs select-none shadow-[4px_0_24px_rgba(15,23,42,0.03)]">
+    <div className="flex flex-col h-full bg-white border-r border-[#E2E8F0] font-sans text-xs select-none shadow-[1px_0_10px_rgba(0,0,0,0.02)]">
       {/* Brand Header — Padrão Executivo Ouro */}
-      <div className="p-5 border-b border-[#E5DEC9] flex items-center justify-between bg-gradient-to-r from-[#FAF6EB] via-white to-[#FAF6EB]">
+      <div className="p-5 border-b border-[#E2E8F0] flex items-center justify-between bg-gradient-to-r from-[#F8FAFC] via-white to-[#F8FAFC]">
         <Link href="/dashboard" className="flex items-center gap-3" onClick={() => setMobileOpen(false)}>
-          <div className="w-9 h-9 rounded-xl bg-[#FDF8E8] border border-[#D4AF37]/40 flex items-center justify-center shadow-sm">
+          <div className="w-9 h-9 rounded-xl bg-[#FFFFFF] border border-slate-200 flex items-center justify-center shadow-sm">
             <OrbeLogo className="w-6 h-6" variant="header" />
           </div>
           <div>
@@ -93,8 +93,8 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
           onClick={() => { setActiveCategory(null); setMobileOpen(false); }}
           className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 ${
             isExactOrSub('/dashboard')
-              ? 'bg-gradient-to-r from-[#FDF7E2] to-[#FAF0CA] text-[#7A5605] border border-[#D4AF37]/60 shadow-sm font-extrabold'
-              : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#FAF7EE] border border-transparent font-semibold'
+              ? 'bg-gradient-to-r from-[#F1F5F9] to-[#F1F5F9] text-[#0F172A] border border-slate-300 shadow-sm font-extrabold'
+              : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC] border border-transparent font-semibold'
           }`}
         >
           <BarChart3 size={16} className={isExactOrSub('/dashboard') ? 'text-[#B8860B]' : 'text-[#64748B]'} />
@@ -105,7 +105,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         <div className="space-y-1">
           <button
             onClick={() => setCrmOpen(!crmOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#FAF7EE] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
+            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
           >
             <span className="flex items-center gap-2.5">
               <Users size={15} className="text-[#B8860B]" />
@@ -115,7 +115,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
           </button>
 
           {crmOpen && (
-            <div className="pl-3 space-y-1 ml-2 mt-1 border-l-2 border-[#E5DEC9]">
+            <div className="pl-3 space-y-1 ml-2 mt-1 border-l-2 border-[#E2E8F0]">
               {[
                 { label: 'CLIENTES', href: '/dashboard/contacts?category=CUSTOMER', cat: 'CUSTOMER' },
                 { label: 'FORNECEDORES', href: '/dashboard/contacts?category=SUPPLIER', cat: 'SUPPLIER' },
@@ -136,8 +136,8 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
                     }}
                     className={`block px-3.5 py-2 rounded-xl tracking-wider uppercase transition-all text-xs ${
                       isActive
-                        ? 'bg-gradient-to-r from-[#FDF7E2] to-[#FAF0CA] text-[#7A5605] font-extrabold border border-[#D4AF37]/60 shadow-sm'
-                        : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#FAF7EE] font-semibold'
+                        ? 'bg-gradient-to-r from-[#F1F5F9] to-[#F1F5F9] text-[#0F172A] font-extrabold border border-slate-300 shadow-sm'
+                        : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC] font-semibold'
                     }`}
                   >
                     {item.label}
@@ -152,7 +152,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         <div className="space-y-1">
           <button
             onClick={() => setRecOpen(!recOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#FAF7EE] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
+            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
           >
             <span className="flex items-center gap-2.5">
               <span className="w-3.5 h-3.5 rounded-full bg-emerald-100 border border-emerald-600 flex items-center justify-center">
@@ -178,7 +178,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
                   className={`block px-3.5 py-2 rounded-lg transition-colors text-xs ${
                     isExactOrSub(item.href)
                       ? 'bg-emerald-50 text-emerald-900 font-extrabold border border-emerald-300 shadow-sm'
-                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#FAF7EE] font-medium'
+                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC] font-medium'
                   }`}
                 >
                   {item.label}
@@ -192,7 +192,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         <div className="space-y-1">
           <button
             onClick={() => setPagOpen(!pagOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#FAF7EE] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
+            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
           >
             <span className="flex items-center gap-2.5">
               <span className="w-3.5 h-3.5 rounded-full bg-amber-100 border border-[#B8860B] flex items-center justify-center">
@@ -204,7 +204,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
           </button>
 
           {pagOpen && (
-            <div className="pl-4 space-y-1 ml-2.5 mt-1 border-l-2 border-[#E5DEC9]">
+            <div className="pl-4 space-y-1 ml-2.5 mt-1 border-l-2 border-[#E2E8F0]">
               {[
                 { label: 'Contas a Pagar', href: '/dashboard/payable', icon: Wallet },
                 { label: 'Agendar Pagamentos', href: '/dashboard/payable/schedule', icon: Calendar },
@@ -215,8 +215,8 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
                   onClick={() => { setActiveCategory(null); setMobileOpen(false); }}
                   className={`flex items-center gap-2.5 px-3.5 py-2 rounded-lg transition-colors text-xs ${
                     isExactOrSub(item.href)
-                      ? 'bg-[#FDF7E2] text-[#7A5605] font-extrabold border border-[#D4AF37]/60 shadow-sm'
-                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#FAF7EE] font-medium'
+                      ? 'bg-[#F1F5F9] text-[#0F172A] font-extrabold border border-slate-300 shadow-sm'
+                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC] font-medium'
                   }`}
                 >
                   <item.icon size={13} className={isExactOrSub(item.href) ? 'text-[#B8860B]' : 'text-[#64748B]'} />
@@ -231,7 +231,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         <div className="space-y-1">
           <button
             onClick={() => setOrgOpen(!orgOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 text-[#7A5605] hover:bg-[#FAF7EE] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
+            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
           >
             <span className="flex items-center gap-2">
               <span className="w-1 h-3.5 bg-[#B8860B] rounded-full" />
@@ -241,7 +241,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
           </button>
 
           {orgOpen && (
-            <div className="pl-3 space-y-1 border-l-2 border-[#E5DEC9] ml-3 mt-1">
+            <div className="pl-3 space-y-1 border-l-2 border-[#E2E8F0] ml-3 mt-1">
               {[
                 { label: 'GESTÃO DE CONTATOS', href: '/dashboard/contacts', icon: Users },
                 { label: 'WHATSAPP (ORBRICK)', href: '/dashboard/whatsapp', icon: MessageSquare },
@@ -258,8 +258,8 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
                   onClick={() => { setActiveCategory(null); setMobileOpen(false); }}
                   className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-[11px] tracking-wider ${
                     isExactOrSub(item.href)
-                      ? 'bg-[#FDF7E2] text-[#7A5605] font-extrabold border border-[#D4AF37]/60 shadow-sm'
-                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#FAF7EE] font-medium'
+                      ? 'bg-[#F1F5F9] text-[#0F172A] font-extrabold border border-slate-300 shadow-sm'
+                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC] font-medium'
                   }`}
                 >
                   <item.icon size={14} className={isExactOrSub(item.href) ? 'text-[#B8860B]' : 'text-[#64748B]'} />
@@ -274,7 +274,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         <div className="space-y-1">
           <button
             onClick={() => setAccOpen(!accOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#FAF7EE] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
+            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
           >
             <span className="flex items-center gap-2">
               <span className="w-1 h-3.5 bg-[#059669] rounded-full" />
@@ -284,7 +284,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
           </button>
 
           {accOpen && (
-            <div className="pl-3 space-y-1 border-l-2 border-[#E5DEC9] ml-3 mt-1">
+            <div className="pl-3 space-y-1 border-l-2 border-[#E2E8F0] ml-3 mt-1">
               {[
                 { label: 'RELATÓRIOS & DRE', href: '/dashboard/reports', icon: BarChart3 },
                 { label: 'PLANO DE CONTAS', href: '/dashboard/categories', icon: Layers },
@@ -296,8 +296,8 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
                   onClick={() => { setActiveCategory(null); setMobileOpen(false); }}
                   className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-[11px] tracking-wider ${
                     isExactOrSub(item.href)
-                      ? 'bg-[#FDF7E2] text-[#7A5605] font-extrabold border border-[#D4AF37]/60 shadow-sm'
-                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#FAF7EE] font-medium'
+                      ? 'bg-[#F1F5F9] text-[#0F172A] font-extrabold border border-slate-300 shadow-sm'
+                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC] font-medium'
                   }`}
                 >
                   <item.icon size={14} className={isExactOrSub(item.href) ? 'text-[#B8860B]' : 'text-[#64748B]'} />
@@ -309,10 +309,10 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         </div>
 
         {/* SESSÃO 6: SISTEMA & GOVERNANÇA */}
-        <div className="space-y-1 pt-2 border-t border-[#E5DEC9]">
+        <div className="space-y-1 pt-2 border-t border-[#E2E8F0]">
           <button
             onClick={() => setSysOpen(!sysOpen)}
-            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#FAF7EE] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
+            className="w-full flex items-center justify-between px-3 py-2 text-[#0F172A] hover:bg-[#F8FAFC] rounded-lg transition-colors font-extrabold uppercase tracking-wider text-[11px]"
           >
             <span className="flex items-center gap-2">
               <span className="w-1 h-3.5 bg-[#1D4ED8] rounded-full" />
@@ -322,7 +322,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
           </button>
 
           {sysOpen && (
-            <div className="pl-3 space-y-1 border-l-2 border-[#E5DEC9] ml-3 mt-1">
+            <div className="pl-3 space-y-1 border-l-2 border-[#E2E8F0] ml-3 mt-1">
               {[
                 { label: 'PESQUISA DE CLIMA (PCO)', href: '/dashboard/pco', icon: Users },
                 ...(isAdmin
@@ -339,8 +339,8 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
                   onClick={() => { setActiveCategory(null); setMobileOpen(false); }}
                   className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-colors text-[11px] tracking-wider ${
                     isExactOrSub(item.href)
-                      ? 'bg-[#FDF7E2] text-[#7A5605] font-extrabold border border-[#D4AF37]/60 shadow-sm'
-                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#FAF7EE] font-medium'
+                      ? 'bg-[#F1F5F9] text-[#0F172A] font-extrabold border border-slate-300 shadow-sm'
+                      : 'text-[#475569] hover:text-[#0F172A] hover:bg-[#F8FAFC] font-medium'
                   }`}
                 >
                   <item.icon size={14} className={isExactOrSub(item.href) ? 'text-[#B8860B]' : 'text-[#64748B]'} />
@@ -354,9 +354,9 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
 
       {/* User Session Footer — Cartão de Identidade Executivo */}
       {user && (
-        <div className="p-4 border-t border-[#E5DEC9] space-y-3 bg-[#FAF8F2]">
+        <div className="p-4 border-t border-[#E2E8F0] space-y-3 bg-[#F1F5F9]">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FDF7E2] to-[#F3E5AB] border border-[#D4AF37]/50 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#F1F5F9] to-[#F3E5AB] border border-slate-200 flex items-center justify-center flex-shrink-0 shadow-sm">
               <User size={15} className="text-[#8B6508]" />
             </div>
             <div className="min-w-0 flex-1">
@@ -370,7 +370,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 bg-white border border-[#DED6C1] hover:border-red-400 hover:bg-red-50 hover:text-red-700 text-[#475569] py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-wider shadow-sm"
+            className="w-full flex items-center justify-center gap-2 bg-white border border-[#E2E8F0] hover:border-red-400 hover:bg-red-50 hover:text-red-700 text-[#475569] py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-wider shadow-sm"
           >
             <LogOut size={12} />
             Sair da Conta

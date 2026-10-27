@@ -167,7 +167,7 @@ export default function SettingsPage() {
             <div>
               <h1 className="text-2xl font-bold text-[#0F172A] flex items-center gap-2">
                 Configurações Globais & Governança Técnica
-                <Settings size={22} className="text-[#57606A]" />
+                <Settings size={22} className="text-[#64748B]" />
               </h1>
               <p className="text-xs text-inho-muted mt-1">
                 Gerencie dados do Tenant, integrações bancárias (MultiFernet AES-256), Tokens SHA-256 e Telemetria APM.
@@ -176,7 +176,7 @@ export default function SettingsPage() {
           </div>
           <button
             onClick={loadSettings}
-            className="bg-[#FAF8F2] hover:bg-[#FAF8F2] text-[#0F172A] border border-[#E5DEC9] p-2.5 rounded-xl transition-colors"
+            className="bg-[#F1F5F9] hover:bg-[#F1F5F9] text-[#0F172A] border border-[#E2E8F0] p-2.5 rounded-xl transition-colors"
             title="Recarregar configurações"
           >
             <RefreshCw size={16} className={loading ? 'animate-spin text-inho-teal' : ''} />
@@ -191,7 +191,7 @@ export default function SettingsPage() {
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'COMPANY'
                   ? 'bg-inho-teal/10 text-inho-teal border border-inho-teal/30'
-                  : 'text-inho-muted hover:bg-[#FAF8F2] hover:text-[#0F172A]'
+                  : 'text-inho-muted hover:bg-[#F1F5F9] hover:text-[#0F172A]'
               }`}
             >
               <Building2 size={16} /> Dados da Empresa
@@ -201,7 +201,7 @@ export default function SettingsPage() {
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'BANKS'
                   ? 'bg-inho-teal/10 text-inho-teal border border-inho-teal/30'
-                  : 'text-inho-muted hover:bg-[#FAF8F2] hover:text-[#0F172A]'
+                  : 'text-inho-muted hover:bg-[#F1F5F9] hover:text-[#0F172A]'
               }`}
             >
               <CreditCard size={16} /> Integrações Bancárias ({banks.length})
@@ -211,7 +211,7 @@ export default function SettingsPage() {
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'API'
                   ? 'bg-inho-teal/10 text-inho-teal border border-inho-teal/30'
-                  : 'text-inho-muted hover:bg-[#FAF8F2] hover:text-[#0F172A]'
+                  : 'text-inho-muted hover:bg-[#F1F5F9] hover:text-[#0F172A]'
               }`}
             >
               <Key size={16} /> Chaves de API ({tokens.length})
@@ -221,7 +221,7 @@ export default function SettingsPage() {
               className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
                 activeTab === 'TELEMETRY'
                   ? 'bg-inho-teal/10 text-inho-teal border border-inho-teal/30'
-                  : 'text-inho-muted hover:bg-[#FAF8F2] hover:text-[#0F172A]'
+                  : 'text-inho-muted hover:bg-[#F1F5F9] hover:text-[#0F172A]'
               }`}
             >
               <Activity size={16} /> Telemetria APM & KMS
@@ -276,7 +276,7 @@ export default function SettingsPage() {
                       type="text"
                       readOnly
                       value={business?.id || 'Ativo'}
-                      className="w-full bg-inho-dark border border-inho-border rounded-lg p-2.5 text-xs text-[#57606A] font-mono outline-none"
+                      className="w-full bg-inho-dark border border-inho-border rounded-lg p-2.5 text-xs text-[#64748B] font-mono outline-none"
                     />
                   </div>
                 </div>
@@ -303,7 +303,7 @@ export default function SettingsPage() {
                     <select
                       value={newBankName}
                       onChange={(e) => setNewBankName(e.target.value)}
-                      className="w-full bg-[#FAF8F2] border border-inho-border rounded-lg p-2 text-xs text-[#0F172A] outline-none focus:border-inho-teal"
+                      className="w-full bg-[#F1F5F9] border border-inho-border rounded-lg p-2 text-xs text-[#0F172A] outline-none focus:border-inho-teal"
                     >
                       <option value="BANCO_INTER">Banco Inter (PIX & Boleto)</option>
                       <option value="CORA">Banco Cora</option>
@@ -323,7 +323,7 @@ export default function SettingsPage() {
                       value={newBankKey}
                       onChange={(e) => setNewBankKey(e.target.value)}
                       placeholder="Cole a chave secreta da API bancária..."
-                      className="w-full bg-[#FAF8F2] border border-inho-border rounded-lg p-2 text-xs text-[#0F172A] outline-none focus:border-inho-teal"
+                      className="w-full bg-[#F1F5F9] border border-inho-border rounded-lg p-2 text-xs text-[#0F172A] outline-none focus:border-inho-teal"
                     />
                   </div>
                   <button
@@ -347,7 +347,7 @@ export default function SettingsPage() {
                         className="p-4 rounded-xl bg-inho-dark border border-inho-border flex items-center justify-between"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-lg bg-[#FAF8F2] flex items-center justify-center text-inho-teal font-black font-mono">
+                          <div className="w-10 h-10 rounded-lg bg-[#F1F5F9] flex items-center justify-center text-inho-teal font-black font-mono">
                             {b.bank_name.substring(0, 2)}
                           </div>
                           <div>
@@ -412,7 +412,7 @@ export default function SettingsPage() {
                   <button
                     type="submit"
                     disabled={creatingToken}
-                    className="bg-[#FAF8F2] hover:bg-white/20 text-[#0F172A] font-bold px-4 py-2 rounded-xl text-xs transition-colors flex items-center gap-1.5"
+                    className="bg-[#F1F5F9] hover:bg-white/20 text-[#0F172A] font-bold px-4 py-2 rounded-xl text-xs transition-colors flex items-center gap-1.5"
                   >
                     <Plus size={14} /> {creatingToken ? 'Gerando...' : 'Gerar Novo Token'}
                   </button>

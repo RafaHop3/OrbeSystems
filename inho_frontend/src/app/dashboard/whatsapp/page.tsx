@@ -163,14 +163,14 @@ export default function WhatsAppCentralPage() {
 
     return (
         <main className="flex-1 flex flex-col p-6 relative bg-transparent overflow-hidden h-[calc(100vh-80px)]">
-            <div className="flex items-center justify-between mb-4 border-b border-[#E5DEC9] pb-4">
+            <div className="flex items-center justify-between mb-4 border-b border-[#E2E8F0] pb-4">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[#FDF7E2] border border-[#D4AF37]/50 rounded-lg flex items-center justify-center">
+                    <div className="w-10 h-10 bg-[#F1F5F9] border border-slate-200 rounded-lg flex items-center justify-center">
                         <MessageSquare className="text-[#8B6508]" size={20} />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-[#0F172A] tracking-wide uppercase">Central WhatsApp</h1>
-                        <p className="text-[#57606A] text-xs mt-0.5 flex items-center gap-2">
+                        <p className="text-[#64748B] text-xs mt-0.5 flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full animate-pulse"></span>
                             Online via Orbe Bot (AWS Baileys Proxy)
                         </p>
@@ -182,16 +182,16 @@ export default function WhatsAppCentralPage() {
             <div className="flex-1 flex gap-4 h-[calc(100vh-140px)]">
 
                 {/* COLUMN 1: CONVERSATIONS */}
-                <div className="w-80 flex flex-col bg-white shadow-sm border border-[#E5DEC9] rounded-xl overflow-hidden shadow-lg shrink-0">
-                    <div className="p-4 border-b border-[#E5DEC9]">
+                <div className="w-80 flex flex-col bg-white shadow-sm border border-[#E2E8F0] rounded-xl overflow-hidden shadow-lg shrink-0">
+                    <div className="p-4 border-b border-[#E2E8F0]">
                         <div className="relative">
-                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#57606A]" />
+                            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#64748B]" />
                             <input
                                 type="text"
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Buscar Contatos do CRM..."
-                                className="w-full bg-[#FAF8F2] border border-[#E5DEC9] rounded-md py-2 pl-9 pr-3 text-xs text-[#0F172A] focus:border-[#B8860B] outline-none transition-colors"
+                                className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-md py-2 pl-9 pr-3 text-xs text-[#0F172A] focus:border-[#B8860B] outline-none transition-colors"
                             />
                         </div>
                     </div>
@@ -204,16 +204,16 @@ export default function WhatsAppCentralPage() {
                                         setActiveContact(contact);
                                         setMessages([]); // clear dummy messages
                                     }}
-                                    className={`flex items-center gap-3 p-4 border-l-2 cursor-pointer transition-colors ${activeContact?.id === contact.id ? 'border-[#B8860B] bg-[#FAF8F2]' : 'border-transparent hover:bg-[#FAF8F2]'}`}
+                                    className={`flex items-center gap-3 p-4 border-l-2 cursor-pointer transition-colors ${activeContact?.id === contact.id ? 'border-[#B8860B] bg-[#F1F5F9]' : 'border-transparent hover:bg-[#F1F5F9]'}`}
                                 >
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#D4AF37]/25 to-[#B8860B]/15 border border-[#D4AF37]/50 flex items-center justify-center shrink-0 object-cover overflow-hidden">
+                                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#D4AF37]/25 to-[#B8860B]/15 border border-slate-200 flex items-center justify-center shrink-0 object-cover overflow-hidden">
                                         <span className="text-xs font-bold text-[#8B6508]">{contact.name.substring(0, 2).toUpperCase()}</span>
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-start">
                                             <h3 className="text-sm font-bold text-[#0F172A] truncate">{contact.name}</h3>
                                         </div>
-                                        <p className="text-xs text-[#57606A] truncate mt-1">{contact.phone || 'Sem Telefone'}</p>
+                                        <p className="text-xs text-[#64748B] truncate mt-1">{contact.phone || 'Sem Telefone'}</p>
                                     </div>
                                 </div>
                             ))
@@ -224,9 +224,9 @@ export default function WhatsAppCentralPage() {
                 </div>
 
                 {/* COLUMN 2: ACTIVE CHAT */}
-                <div className="flex-1 flex flex-col bg-white shadow-sm border border-[#E5DEC9] rounded-xl overflow-hidden shadow-lg">
+                <div className="flex-1 flex flex-col bg-white shadow-sm border border-[#E2E8F0] rounded-xl overflow-hidden shadow-lg">
                     {/* Chat Topbar */}
-                    <div className="p-4 border-b border-[#E5DEC9] flex items-center justify-between bg-[#FAF8F2]">
+                    <div className="p-4 border-b border-[#E2E8F0] flex items-center justify-between bg-[#F1F5F9]">
                         <div className="flex items-center gap-4">
                             <div>
                                 <h2 className="text-base font-bold text-[#0F172A]">
@@ -239,7 +239,7 @@ export default function WhatsAppCentralPage() {
                                             type="text"
                                             value={activeContact.phone || ''}
                                             onChange={(e) => setActiveContact({ ...activeContact, phone: e.target.value })}
-                                            className="bg-[#FAF8F2] border border-[#D4AF37]/50 text-[#8B6508] text-xs px-2 py-0.5 rounded outline-none focus:border-[#B8860B] w-32 font-mono"
+                                            className="bg-[#F1F5F9] border border-slate-200 text-[#8B6508] text-xs px-2 py-0.5 rounded outline-none focus:border-[#B8860B] w-32 font-mono"
                                             title="Edite este número temporariamente para testar o envio para o seu próprio WhatsApp (formato recomendado: 5511999999999)"
                                         />
                                         <span className="text-[10px] text-gray-500">(Editável p/ Teste)</span>
@@ -250,20 +250,20 @@ export default function WhatsAppCentralPage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
-                            <button className="p-2 text-[#57606A] hover:bg-[#FAF8F2] hover:text-[#0F172A] rounded-md transition-colors">
+                            <button className="p-2 text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A] rounded-md transition-colors">
                                 <Phone size={16} />
                             </button>
-                            <button className="p-2 text-[#57606A] hover:bg-[#FAF8F2] hover:text-[#0F172A] rounded-md transition-colors">
+                            <button className="p-2 text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A] rounded-md transition-colors">
                                 <MoreVertical size={16} />
                             </button>
                         </div>
                     </div>
 
                     {/* Chat Messages */}
-                    <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-[#FAF8F2] relative">
+                    <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-[#F1F5F9] relative">
                         {activeContact && (
                             <div className="flex justify-center mb-6">
-                                <div className="flex items-center gap-2 bg-[#FAF8F2] px-4 py-1.5 rounded-lg text-xs font-semibold text-[#57606A] shadow-sm">
+                                <div className="flex items-center gap-2 bg-[#F1F5F9] px-4 py-1.5 rounded-lg text-xs font-semibold text-[#64748B] shadow-sm">
                                     <Zap size={14} className="text-emerald-700" /> Canal Sincronizado: WhatsApp E2E
                                 </div>
                             </div>
@@ -272,11 +272,11 @@ export default function WhatsAppCentralPage() {
                         {messages.map((msg) => (
                             <div key={msg.id} className={`flex flex-col ${msg.isOut ? 'items-end' : 'items-start'} mb-2`}>
                                 <div className={`relative px-3 py-2 rounded-lg max-w-[85%] shadow-sm ${msg.isOut
-                                    ? 'bg-[#FDF7E2] border border-[#D4AF37]/50 text-[#0F172A] rounded-tr-none'
+                                    ? 'bg-[#F1F5F9] border border-slate-200 text-[#0F172A] rounded-tr-none'
                                     : 'bg-white text-[#0F172A] rounded-tl-none'}`}>
                                     <p className="text-[14.5px] leading-snug whitespace-pre-wrap pr-12">{msg.text}</p>
                                     <div className="absolute bottom-1 right-2 flex items-center gap-1">
-                                        <span className="text-[10px] text-[#57606A] font-medium">{msg.time}</span>
+                                        <span className="text-[10px] text-[#64748B] font-medium">{msg.time}</span>
                                         {msg.isOut && <CheckCircle2 size={12} className="text-[#B8860B]" />}
                                     </div>
                                 </div>
@@ -285,7 +285,7 @@ export default function WhatsAppCentralPage() {
                     </div>
 
                     {/* Chat Input & Fast Actions */}
-                    <div className="bg-[#FAF8F2] border-t border-[#E5DEC9] p-4 flex flex-col gap-3">
+                    <div className="bg-[#F1F5F9] border-t border-[#E2E8F0] p-4 flex flex-col gap-3">
                         <div className="flex items-center gap-2">
                             <button onClick={() => insertTemplate('pix')} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase rounded-md border border-emerald-300 transition-colors">
                                 <Zap size={12} /> Chave Pix
@@ -298,7 +298,7 @@ export default function WhatsAppCentralPage() {
                             </button>
                         </div>
                         <div className="flex items-end gap-3">
-                            <div className="flex-1 bg-[#FAF8F2] border border-[#E5DEC9] rounded-xl overflow-hidden focus-within:border-[#D4AF37]/70 transition-colors flex">
+                            <div className="flex-1 bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl overflow-hidden focus-within:border-[#D4AF37]/70 transition-colors flex">
                                 <textarea
                                     value={messageInput}
                                     onChange={(e) => setMessageInput(e.target.value)}
@@ -324,9 +324,9 @@ export default function WhatsAppCentralPage() {
                 </div>
 
                 {/* COLUMN 3: CRM PANEL */}
-                <div className="w-[300px] flex flex-col bg-white shadow-sm border border-[#E5DEC9] rounded-xl overflow-hidden shadow-lg shrink-0">
-                    <div className="p-4 border-b border-[#E5DEC9] bg-[#FAF8F2]">
-                        <h2 className="text-sm font-bold text-[#57606A] uppercase tracking-widest flex items-center gap-2">
+                <div className="w-[300px] flex flex-col bg-white shadow-sm border border-[#E2E8F0] rounded-xl overflow-hidden shadow-lg shrink-0">
+                    <div className="p-4 border-b border-[#E2E8F0] bg-[#F1F5F9]">
+                        <h2 className="text-sm font-bold text-[#64748B] uppercase tracking-widest flex items-center gap-2">
                             <UserCheck size={14} /> Ficha do Lead
                         </h2>
                     </div>
@@ -335,7 +335,7 @@ export default function WhatsAppCentralPage() {
                             <>
                                 {/* Profile Details */}
                                 <div className="flex flex-col items-center text-center">
-                                    <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-tr from-[#D4AF37]/25 to-[#B8860B]/15 border-2 border-[#E5DEC9] flex items-center justify-center mb-3">
+                                    <div className="w-20 h-20 rounded-[2rem] bg-gradient-to-tr from-[#D4AF37]/25 to-[#B8860B]/15 border-2 border-[#E2E8F0] flex items-center justify-center mb-3">
                                         <span className="text-xl font-bold text-[#0F172A]">{activeContact.name ? activeContact.name.substring(0, 2).toUpperCase() : 'NA'}</span>
                                     </div>
                                     <h3 className="text-lg font-bold text-[#0F172A]">{activeContact.name || 'Nome não disponível'}</h3>
@@ -346,7 +346,7 @@ export default function WhatsAppCentralPage() {
                                     </p>
                                 </div>
 
-                                <div className="w-full h-px bg-[#FAF8F2]"></div>
+                                <div className="w-full h-px bg-[#F1F5F9]"></div>
 
                                 {/* Funnel Info */}
                                 <div className="flex flex-col gap-4">
@@ -377,10 +377,10 @@ export default function WhatsAppCentralPage() {
                                 </div>
                             </>
                         ) : (
-                            <div className="text-center text-[#57606A] text-xs">Busque e selecione um contato na lista à esquerda para carregar a Ficha CRM.</div>
+                            <div className="text-center text-[#64748B] text-xs">Busque e selecione um contato na lista à esquerda para carregar a Ficha CRM.</div>
                         )}
 
-                        <div className="w-full h-px bg-[#FAF8F2]"></div>
+                        <div className="w-full h-px bg-[#F1F5F9]"></div>
                         <div>
                             <span className="text-[10px] text-[#64748B] uppercase block mb-2">Fila de Cobranças Automáticas</span>
                             {queue.length === 0 ? (

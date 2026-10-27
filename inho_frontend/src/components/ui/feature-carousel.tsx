@@ -27,7 +27,7 @@ export function FeatureCarousel({ items }: { items: CarouselItem[] }) {
                         animate={{ opacity: 1, x: 0, scale: 1 }}
                         exit={{ opacity: 0, x: -50, scale: 0.95 }}
                         transition={{ duration: 0.4 }}
-                        className="absolute inset-0 m-auto flex flex-col items-center justify-center p-8 text-center bg-[#FAF8F2] backdrop-blur-md rounded-2xl border border-inho-gold/20 shadow-inho-card"
+                        className="absolute inset-0 m-auto flex flex-col items-center justify-center p-8 text-center bg-[#F1F5F9] backdrop-blur-md rounded-2xl border border-inho-gold/20 shadow-inho-card"
                     >
                         {items[currentIndex].icon && <div className="mb-4 text-inho-gold">{items[currentIndex].icon}</div>}
                         <h3 className="text-2xl font-bold text-inho-text mb-2">{items[currentIndex].title}</h3>

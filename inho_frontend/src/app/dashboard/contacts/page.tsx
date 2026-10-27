@@ -123,7 +123,7 @@ function ContactsContent() {
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${activeTab === tab.id
                                     ? 'bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30'
-                                    : 'text-inho-muted hover:text-[#0F172A] hover:bg-[#FAF8F2] border border-transparent'
+                                    : 'text-inho-muted hover:text-[#0F172A] hover:bg-[#F1F5F9] border border-transparent'
                                     }`}
                             >
                                 {tab.label}
@@ -138,7 +138,7 @@ function ContactsContent() {
                             placeholder="Buscar por nome ou documento..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-[#FAF8F2] border border-inho-border rounded-xl py-2.5 pl-10 pr-4 text-xs text-[#0F172A] focus:outline-none focus:border-neon-cyan/50 focus:ring-1 focus:ring-neon-cyan/50 transition-all placeholder:text-inho-muted"
+                            className="w-full bg-[#F1F5F9] border border-inho-border rounded-xl py-2.5 pl-10 pr-4 text-xs text-[#0F172A] focus:outline-none focus:border-neon-cyan/50 focus:ring-1 focus:ring-neon-cyan/50 transition-all placeholder:text-inho-muted"
                         />
                     </div>
                 </div>
@@ -190,7 +190,7 @@ function ContactsContent() {
                                             <td className="px-6 py-4 text-right">
                                                 <Link
                                                     href={`/dashboard/contacts/${c.id}`}
-                                                    className="px-3 py-1.5 opacity-0 group-hover:opacity-100 bg-[#FAF8F2] border border-[#E5DEC9] hover:border-neon-cyan/50 hover:text-neon-cyan rounded-lg text-xs font-bold transition-all inline-block"
+                                                    className="px-3 py-1.5 opacity-0 group-hover:opacity-100 bg-[#F1F5F9] border border-[#E2E8F0] hover:border-neon-cyan/50 hover:text-neon-cyan rounded-lg text-xs font-bold transition-all inline-block"
                                                 >
                                                     Dossiê Completo
                                                 </Link>

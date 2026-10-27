@@ -29,7 +29,7 @@ export default function OrbeLogo({ className = '', variant = 'header' }: { class
                 <linearGradient id="grad-gold" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#D4AF37" />
                     <stop offset="50%" stopColor="#B8860B" />
-                    <stop offset="100%" stopColor="#7A5605" />
+                    <stop offset="100%" stopColor="#0F172A" />
                 </linearGradient>
             </defs>
 

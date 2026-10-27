@@ -166,7 +166,7 @@ export default function ReportsPage() {
 
             <button
               onClick={loadAllReports}
-              className="bg-[#FAF8F2] hover:bg-[#FAF8F2] text-[#0F172A] border border-[#E5DEC9] p-2 rounded-xl transition-colors"
+              className="bg-[#F1F5F9] hover:bg-[#F1F5F9] text-[#0F172A] border border-[#E2E8F0] p-2 rounded-xl transition-colors"
               title="Atualizar dados"
             >
               <RefreshCw size={15} className={loading ? 'animate-spin text-inho-teal' : ''} />
@@ -353,13 +353,13 @@ export default function ReportsPage() {
               Orçado vs Realizado ({budget?.year || year}/{String(budget?.month || month).padStart(2, '0')})
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-[#E5DEC9]">
+              <div className="p-4 rounded-xl bg-white/[0.02] border border-[#E2E8F0]">
                 <p className="text-xs text-inho-muted font-mono">Total Orçado</p>
                 <p className="text-2xl font-black font-mono text-[#0F172A] mt-1">
                   {fmtCurrency(budget?.total_budgeted || 0)}
                 </p>
               </div>
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-[#E5DEC9]">
+              <div className="p-4 rounded-xl bg-white/[0.02] border border-[#E2E8F0]">
                 <p className="text-xs text-inho-muted font-mono">Total Realizado (Pago)</p>
                 <p className="text-2xl font-black font-mono text-inho-teal mt-1">
                   {fmtCurrency(budget?.total_actual || 0)}

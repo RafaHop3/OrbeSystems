@@ -11,28 +11,28 @@
   --font-jetbrains: 'JetBrains Mono', monospace;
 
   /* ── Orbe INHO Sovereign Executive Gold Light Tokens ────────── */
-  --terminal-bg: #F6F4EE;
+  --terminal-bg: #F8FAFC;
   --terminal-surface: #FFFFFF;
-  --terminal-border: #E5DEC9;
+  --terminal-border: #E2E8F0;
   --neon-cyan: #B8860B;
   --neon-green: #059669;
   --neon-purple: #7C3AED;
   --terminal-text: #0F172A;
-  --terminal-muted: #57606A;
+  --terminal-muted: #64748B;
 
   /* Brand Tokens */
   --inho-gold: #B8860B;
   --inho-gold-light: #D4AF37;
   --inho-gold-dark: #8B6508;
-  --inho-green: #059669;
+  --inho-green: #10B981;
   --inho-blue: #1D4ED8;
-  --inho-black: #F6F4EE;
+  --inho-black: #F8FAFC;
   --inho-dark: #FFFFFF;
-  --inho-surface: #FAF8F2;
+  --inho-surface: #F1F5F9;
   --inho-card: #FFFFFF;
-  --inho-border: #E5DEC9;
+  --inho-border: #E2E8F0;
   --inho-text: #0F172A;
-  --inho-muted: #57606A;
+  --inho-muted: #64748B;
 }
 
 /* ── Base Reset & Typography ───────────────────────────────────── */
@@ -72,11 +72,11 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F3EFE4;
+  background: #F1F5F9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D5CBB0;
+  background: #CBD5E1;
   border-radius: 3px;
 }
 
@@ -90,7 +90,7 @@ select,
 textarea {
   background-color: #FFFFFF;
   color: #0F172A;
-  border-color: #DED6C1;
+  border-color: #E2E8F0;
   font-family: var(--font-outfit);
 }
 
@@ -107,18 +107,18 @@ textarea:focus {
 }
 
 table thead {
-  background-color: #FAF7EE !important;
-  border-bottom: 1px solid #E5DEC9 !important;
+  background-color: #F8FAFC !important;
+  border-bottom: 1px solid #E2E8F0 !important;
 }
 
 table thead th {
-  color: #57606A !important;
+  color: #64748B !important;
   font-weight: 700;
   letter-spacing: 0.05em;
 }
 
 table tbody tr {
-  border-color: #EFEAD9 !important;
+  border-color: #E2E8F0 !important;
   transition: background-color 0.15s ease;
 }
 
@@ -141,13 +141,13 @@ table tbody tr:hover {
     background: rgba(255, 255, 255, 0.96);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid #E5DEC9;
+    border: 1px solid #E2E8F0;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px -4px rgba(184, 134, 11, 0.07);
   }
 
   .executive-card {
     background: #FFFFFF;
-    border: 1px solid #E5DEC9;
+    border: 1px solid #E2E8F0;
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 10px 25px -5px rgba(184, 134, 11, 0.06);
   }
 

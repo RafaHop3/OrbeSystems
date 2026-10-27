@@ -127,7 +127,7 @@ export default function HomePage() {
               Assinatura Premium
               <ArrowRight size={18} />
             </GlassButton>
-            <GlassButton glowColor="blue" onClick={() => window.location.href = '#about'} className="w-full sm:w-auto min-w-[200px] justify-center text-[#0F172A] border-[#E5DEC9]">
+            <GlassButton glowColor="blue" onClick={() => window.location.href = '#about'} className="w-full sm:w-auto min-w-[200px] justify-center text-[#0F172A] border-[#E2E8F0]">
               Conhecer a visão
               <ChevronRight size={18} />
             </GlassButton>

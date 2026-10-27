@@ -27,15 +27,15 @@ export default function Footer() {
             </p>
             <div className="flex items-center gap-3 mt-2">
               <a href="https://github.com" id="footer-github" target="_blank" rel="noopener noreferrer"
-                className="p-2 rounded-lg text-inho-muted hover:text-inho-gold hover:bg-[#FAF8F2] transition-all">
+                className="p-2 rounded-lg text-inho-muted hover:text-inho-gold hover:bg-[#F1F5F9] transition-all">
                 <Github size={18} />
               </a>
               <a href="mailto:contato@inho.io" id="footer-email"
-                className="p-2 rounded-lg text-inho-muted hover:text-inho-gold hover:bg-[#FAF8F2] transition-all">
+                className="p-2 rounded-lg text-inho-muted hover:text-inho-gold hover:bg-[#F1F5F9] transition-all">
                 <Mail size={18} />
               </a>
               <a href="#" id="footer-global"
-                className="p-2 rounded-lg text-inho-muted hover:text-inho-gold hover:bg-[#FAF8F2] transition-all">
+                className="p-2 rounded-lg text-inho-muted hover:text-inho-gold hover:bg-[#F1F5F9] transition-all">
                 <Globe size={18} />
               </a>
             </div>

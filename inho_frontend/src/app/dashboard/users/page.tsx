@@ -130,7 +130,7 @@ export default function UsersPage() {
             );
         }
         return (
-            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white text-zinc-300 border border-[#E5DEC9]">
+            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white text-zinc-300 border border-[#E2E8F0]">
                 {label}
             </span>
         );

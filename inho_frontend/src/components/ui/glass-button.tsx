@@ -22,7 +22,7 @@ export function GlassButton({ children, className, glowColor = "gold", ...props 
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className={cn(
-                "relative overflow-hidden rounded-xl bg-[#FAF8F2] px-6 py-3 font-semibold text-[#0F172A] backdrop-blur-md transition-all duration-300",
+                "relative overflow-hidden rounded-xl bg-[#F1F5F9] px-6 py-3 font-semibold text-[#0F172A] backdrop-blur-md transition-all duration-300",
                 "border",
                 glowMap[glowColor],
                 "before:absolute before:inset-0 before:z-[-1] before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000",

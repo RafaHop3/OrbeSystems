@@ -118,7 +118,7 @@ export default function ContactProfilePage({ params }: { params: Promise<{ id: s
                                 <div className="animate-fade-in">
                                     <div className="flex justify-between items-center mb-6">
                                         <h2 className="text-lg font-bold text-[#0F172A]">Log de Anotações</h2>
-                                        <button className="bg-[#FAF8F2] hover:bg-white/20 border border-[#E5DEC9] text-[#0F172A] px-4 py-2 text-xs font-bold rounded-lg transition-colors">
+                                        <button className="bg-[#F1F5F9] hover:bg-white/20 border border-[#E2E8F0] text-[#0F172A] px-4 py-2 text-xs font-bold rounded-lg transition-colors">
                                             + Adicionar Nota
                                         </button>
                                     </div>

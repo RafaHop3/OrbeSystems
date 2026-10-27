@@ -316,7 +316,7 @@ export default function SalesOrdersPage() {
                                         </h2>
                                         <p className="text-xs font-mono text-inho-muted mt-1">ID: {activeOrder?.id || '—'}</p>
                                     </div>
-                                    <button onClick={() => !submitting && setIsOpen(false)} className="text-inho-muted hover:text-inho-text bg-[#FAF8F2] p-2 rounded-xl">
+                                    <button onClick={() => !submitting && setIsOpen(false)} className="text-inho-muted hover:text-inho-text bg-[#F1F5F9] p-2 rounded-xl">
                                         <ArrowRight size={20} />
                                     </button>
                                 </div>
@@ -437,10 +437,10 @@ export default function SalesOrdersPage() {
                                 {/* 3. INVOICED Actions */}
                                 {activeOrder?.status === 'INVOICED' && (
                                     <div className="flex gap-3">
-                                        <button className="w-full flex-1 py-3 text-inho-text border border-inho-border rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-[#FAF8F2] opacity-80 cursor-not-allowed">
+                                        <button className="w-full flex-1 py-3 text-inho-text border border-inho-border rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-[#F1F5F9] opacity-80 cursor-not-allowed">
                                             Baixar XML (em breve) <FileText size={16} />
                                         </button>
-                                        <button className="w-full flex-1 py-3 text-inho-text border border-inho-border rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-[#FAF8F2] opacity-80 cursor-not-allowed">
+                                        <button className="w-full flex-1 py-3 text-inho-text border border-inho-border rounded-xl font-bold flex justify-center items-center gap-2 hover:bg-[#F1F5F9] opacity-80 cursor-not-allowed">
                                             Visualizar DANFE
                                         </button>
                                     </div>

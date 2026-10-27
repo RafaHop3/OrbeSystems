@@ -52,7 +52,7 @@ export default function Header() {
                 key={href}
                 href={href}
                 id={`nav-${label.toLowerCase()}`}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-inho-muted hover:text-inho-text hover:bg-[#FAF8F2] transition-all duration-200 text-sm font-medium uppercase tracking-wider"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-inho-muted hover:text-inho-text hover:bg-[#F1F5F9] transition-all duration-200 text-sm font-medium uppercase tracking-wider"
               >
                 <Icon size={14} />
                 {label}
@@ -103,7 +103,7 @@ export default function Header() {
               key={href}
               href={href}
               onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-inho-muted hover:text-inho-gold hover:bg-[#FAF8F2] transition-all text-sm font-medium uppercase tracking-wider"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-inho-muted hover:text-inho-gold hover:bg-[#F1F5F9] transition-all text-sm font-medium uppercase tracking-wider"
             >
               <Icon size={16} />
               {label}

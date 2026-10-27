@@ -76,7 +76,7 @@ export default function AdminUsersPage() {
     }),
     columnHelper.accessor('email', {
       header: 'Email',
-      cell: info => <span className="text-[#57606A]">{info.getValue()}</span>,
+      cell: info => <span className="text-[#64748B]">{info.getValue()}</span>,
     }),
     columnHelper.accessor('role', {
       header: 'Privilégio',
@@ -86,7 +86,7 @@ export default function AdminUsersPage() {
           SUPER_ADMIN: 'bg-red-500/10 text-red-700 border-red-500/20',
           ADMIN: 'bg-purple-500/10 text-purple-700 border-purple-500/20',
           OPERATOR: 'bg-blue-500/10 text-blue-700 border-blue-500/20',
-          CLIENT: 'bg-gray-500/10 text-[#57606A] border-gray-500/20',
+          CLIENT: 'bg-gray-500/10 text-[#64748B] border-gray-500/20',
         };
         return (
           <span className={`px-2 py-1 rounded-full text-xs font-medium border ${colors[role] || colors.CLIENT}`}>
@@ -148,21 +148,21 @@ export default function AdminUsersPage() {
           <h1 className="text-3xl font-bold text-[#0F172A] mb-2 flex items-center gap-2">
             <ShieldAlert className="text-purple-700" /> Controle de Acesso
           </h1>
-          <p className="text-[#57606A]">Gerencie contas, bloqueie acessos e distribua privilégios administrativos.</p>
+          <p className="text-[#64748B]">Gerencie contas, bloqueie acessos e distribua privilégios administrativos.</p>
         </div>
       </header>
 
       {loading ? (
-        <div className="text-[#57606A]">Carregando usuários...</div>
+        <div className="text-[#64748B]">Carregando usuários...</div>
       ) : (
-        <div className="bg-white border border-[#E5DEC9] rounded-2xl overflow-hidden shadow-xl">
+        <div className="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 {table.getHeaderGroups().map(headerGroup => (
-                  <tr key={headerGroup.id} className="border-b border-[#E5DEC9] bg-white">
+                  <tr key={headerGroup.id} className="border-b border-[#E2E8F0] bg-white">
                     {headerGroup.headers.map(header => (
-                      <th key={header.id} className="px-6 py-4 text-sm font-medium text-[#57606A] whitespace-nowrap">
+                      <th key={header.id} className="px-6 py-4 text-sm font-medium text-[#64748B] whitespace-nowrap">
                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </th>
                     ))}

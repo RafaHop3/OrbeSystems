@@ -220,7 +220,7 @@ export default function PayablePage() {
           <div className="flex items-center gap-2">
             <Link
               href="/dashboard/payable/schedule"
-              className="flex items-center gap-2 bg-[#FAF8F2] border border-[#E5DEC9] hover:border-purple-500/40 text-[#0F172A] font-bold px-3.5 py-2 rounded-xl transition-all text-xs"
+              className="flex items-center gap-2 bg-[#F1F5F9] border border-[#E2E8F0] hover:border-purple-500/40 text-[#0F172A] font-bold px-3.5 py-2 rounded-xl transition-all text-xs"
             >
               <CalendarClock size={15} className="text-purple-700" /> Agendar Recorrência
             </Link>
@@ -303,7 +303,7 @@ export default function PayablePage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar fornecedor, descrição ou doc..."
-                className="bg-[#FAF8F2] border border-inho-border rounded-lg pl-9 pr-3 py-1.5 text-xs text-[#0F172A] outline-none focus:border-purple-500 w-full"
+                className="bg-[#F1F5F9] border border-inho-border rounded-lg pl-9 pr-3 py-1.5 text-xs text-[#0F172A] outline-none focus:border-purple-500 w-full"
               />
             </div>
           </div>
@@ -372,7 +372,7 @@ export default function PayablePage() {
                         {p.notes && <p className="text-xs text-inho-muted font-mono mt-0.5">{p.notes}</p>}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[#FAF8F2] border border-[#E5DEC9] text-[#0F172A]">
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[#F1F5F9] border border-[#E2E8F0] text-[#0F172A]">
                           {p.payment_method || 'PIX'}
                         </span>
                       </td>
@@ -433,13 +433,13 @@ export default function PayablePage() {
         {/* Modal Nova Despesa */}
         {showModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-            <div className="bg-[#FFFFFF] border border-[#E5DEC9] rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl">
-              <div className="flex items-center justify-between border-b border-[#E5DEC9] pb-3">
+            <div className="bg-[#FFFFFF] border border-[#E2E8F0] rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-3">
                 <h2 className="text-lg font-bold text-[#0F172A] flex items-center gap-2">
                   <FileText size={18} className="text-purple-700" />
                   Nova Conta a Pagar
                 </h2>
-                <button onClick={() => setShowModal(false)} className="text-[#57606A] hover:text-[#0F172A]">
+                <button onClick={() => setShowModal(false)} className="text-[#64748B] hover:text-[#0F172A]">
                   <X size={18} />
                 </button>
               </div>
@@ -447,43 +447,43 @@ export default function PayablePage() {
               <form onSubmit={handleCreate} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-[#57606A] block mb-1">Fornecedor / Favorecido *</label>
+                    <label className="text-xs text-[#64748B] block mb-1">Fornecedor / Favorecido *</label>
                     <input
                       type="text"
                       required
                       value={form.supplier_name}
                       onChange={(e) => setForm({ ...form, supplier_name: e.target.value })}
                       placeholder="Ex: AWS Brasil / Cooperado"
-                      className="w-full bg-[#FAF8F2] border border-[#E5DEC9] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
+                      className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-[#57606A] block mb-1">CPF / CNPJ / Documento</label>
+                    <label className="text-xs text-[#64748B] block mb-1">CPF / CNPJ / Documento</label>
                     <input
                       type="text"
                       value={form.document}
                       onChange={(e) => setForm({ ...form, document: e.target.value })}
                       placeholder="00.000.000/0001-00"
-                      className="w-full bg-[#FAF8F2] border border-[#E5DEC9] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
+                      className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-xs text-[#57606A] block mb-1">Descrição da Despesa *</label>
+                  <label className="text-xs text-[#64748B] block mb-1">Descrição da Despesa *</label>
                   <input
                     type="text"
                     required
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     placeholder="Ex: Servidores Cloud Outubro / Liquidação Cotas"
-                    className="w-full bg-[#FAF8F2] border border-[#E5DEC9] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
+                    className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs text-[#57606A] block mb-1">Valor (R$) *</label>
+                    <label className="text-xs text-[#64748B] block mb-1">Valor (R$) *</label>
                     <input
                       type="number"
                       step="0.01"
@@ -491,25 +491,25 @@ export default function PayablePage() {
                       value={form.amount}
                       onChange={(e) => setForm({ ...form, amount: e.target.value })}
                       placeholder="450.00"
-                      className="w-full bg-[#FAF8F2] border border-[#E5DEC9] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
+                      className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-[#57606A] block mb-1">Vencimento *</label>
+                    <label className="text-xs text-[#64748B] block mb-1">Vencimento *</label>
                     <input
                       type="date"
                       required
                       value={form.due_date}
                       onChange={(e) => setForm({ ...form, due_date: e.target.value })}
-                      className="w-full bg-[#FAF8F2] border border-[#E5DEC9] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
+                      className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-[#57606A] block mb-1">Meio de Pagamento</label>
+                    <label className="text-xs text-[#64748B] block mb-1">Meio de Pagamento</label>
                     <select
                       value={form.payment_method}
                       onChange={(e) => setForm({ ...form, payment_method: e.target.value })}
-                      className="w-full bg-[#FAF8F2] border border-[#E5DEC9] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
+                      className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
                     >
                       <option value="PIX">PIX</option>
                       <option value="BOLETO">Boleto</option>
@@ -521,11 +521,11 @@ export default function PayablePage() {
 
                 {categories.length > 0 && (
                   <div>
-                    <label className="text-xs text-[#57606A] block mb-1">Categoria (Plano de Contas)</label>
+                    <label className="text-xs text-[#64748B] block mb-1">Categoria (Plano de Contas)</label>
                     <select
                       value={form.category_id}
                       onChange={(e) => setForm({ ...form, category_id: e.target.value })}
-                      className="w-full bg-[#FAF8F2] border border-[#E5DEC9] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
+                      className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-3 py-2 text-xs text-[#0F172A] outline-none focus:border-purple-500"
                     >
                       <option value="">Sem categoria específica</option>
                       {categories.map((c) => (
@@ -537,11 +537,11 @@ export default function PayablePage() {
                   </div>
                 )}
 
-                <div className="flex justify-end gap-2 pt-3 border-t border-[#E5DEC9]">
+                <div className="flex justify-end gap-2 pt-3 border-t border-[#E2E8F0]">
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
-                    className="px-4 py-2 rounded-xl text-xs text-[#57606A] hover:text-[#0F172A]"
+                    className="px-4 py-2 rounded-xl text-xs text-[#64748B] hover:text-[#0F172A]"
                   >
                     Cancelar
                   </button>

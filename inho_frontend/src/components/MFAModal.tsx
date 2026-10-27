@@ -171,7 +171,7 @@ export default function MFAModal({ isOpen, onClose }: MFAModalProps) {
                                 </div>
                                 <div className="grid grid-cols-2 gap-1 text-[11px] font-mono text-[#0F172A]">
                                     {mfaData.backup_codes.map((c, idx) => (
-                                        <div key={idx} className="bg-[#FAF8F2] px-2 py-1 rounded text-center border border-[#E5DEC9]">
+                                        <div key={idx} className="bg-[#F1F5F9] px-2 py-1 rounded text-center border border-[#E2E8F0]">
                                             {c}
                                         </div>
                                     ))}

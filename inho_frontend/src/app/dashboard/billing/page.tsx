@@ -195,7 +195,7 @@ export default function BillingPage() {
             case 'PENDING':
                 return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-yellow-500/10 text-amber-700 border border-yellow-500/20 flex items-center gap-1"><Clock size={12} /> Pendente</span>;
             default:
-                return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-500/10 text-[#57606A] border border-gray-500/20">{status}</span>;
+                return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-gray-500/10 text-[#64748B] border border-gray-500/20">{status}</span>;
         }
     };
 
@@ -595,7 +595,7 @@ export default function BillingPage() {
                         {/* PIX Copy Code */}
                         <div className="bg-inho-dark border border-inho-border rounded-xl p-3 text-left mb-6">
                             <p className="text-[10px] text-inho-muted font-mono uppercase mb-1">Chave PIX Copia e Cola</p>
-                            <p className="text-xs font-mono text-[#0F172A] break-all bg-[#FAF8F2] p-2 rounded border border-inho-border">
+                            <p className="text-xs font-mono text-[#0F172A] break-all bg-[#F1F5F9] p-2 rounded border border-inho-border">
                                 {activePixInvoice.pix_code}
                             </p>
                         </div>

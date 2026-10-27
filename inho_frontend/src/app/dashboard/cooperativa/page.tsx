@@ -440,20 +440,20 @@ export default function CooperativaInho() {
   const netVal = Math.max(0, grossVal - inssVal - irrfVal - taxaVal);
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#F6F4EE] min-h-screen font-sans text-[#0F172A]">
+    <div className="flex-1 overflow-y-auto bg-[#F8FAFC] min-h-screen font-sans text-[#0F172A]">
       {/* HEADER ESTILO NIBUS + ORBE */}
       <div className="border-b border-terminal-border px-8 py-6 bg-white flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight text-[#0F172A]">
             Módulo Cooperativismo
           </h1>
-          <p className="text-xs text-[#57606A] mt-1">
+          <p className="text-xs text-[#64748B] mt-1">
             Gestão da base associada B2B/B2C, liquidação de cotas e retenção fiscal.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex p-1 bg-[#FAF8F2] border border-terminal-border rounded-xl">
+          <div className="flex p-1 bg-[#F1F5F9] border border-terminal-border rounded-xl">
             {[
               { id: 'ASSOCIADOS', label: 'Base Associada (Sócios)', icon: Users },
               { id: 'COTAS_FISCAL', label: 'Liquidação de Cotas & Fiscal', icon: Calculator },
@@ -467,7 +467,7 @@ export default function CooperativaInho() {
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all ${
                   activeTab === tab.id
                     ? 'bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30'
-                    : 'text-[#57606A] hover:text-[#0F172A]'
+                    : 'text-[#64748B] hover:text-[#0F172A]'
                 }`}
               >
                 <tab.icon size={14} /> {tab.label}
@@ -515,7 +515,7 @@ export default function CooperativaInho() {
                     className={`px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase whitespace-nowrap border transition-all ${
                       statusFilter === st.id
                         ? 'bg-neon-cyan/15 text-neon-cyan border-neon-cyan/40'
-                        : 'bg-white shadow-sm text-[#57606A] border-terminal-border hover:text-[#0F172A]'
+                        : 'bg-white shadow-sm text-[#64748B] border-terminal-border hover:text-[#0F172A]'
                     }`}
                   >
                     {st.label}
@@ -527,13 +527,13 @@ export default function CooperativaInho() {
             {/* Table or Empty State (Idêntico à Referência NIBUS quando vazio) */}
             <div className="bg-white shadow-sm border border-terminal-border rounded-2xl overflow-hidden min-h-[380px] flex flex-col">
               {loading ? (
-                <div className="flex-1 flex flex-col items-center justify-center py-20 text-[#57606A] text-xs">
+                <div className="flex-1 flex flex-col items-center justify-center py-20 text-[#64748B] text-xs">
                   <Loader2 className="animate-spin mb-3 text-neon-cyan" size={28} />
                   Sincronizando base associada no Master DB...
                 </div>
               ) : filteredCooperados.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center py-24 px-4 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-[#FAF8F2] border border-terminal-border flex items-center justify-center mb-4">
+                  <div className="w-16 h-16 rounded-2xl bg-[#F1F5F9] border border-terminal-border flex items-center justify-center mb-4">
                     <Users size={32} className="text-[#0F172A]" />
                   </div>
                   <h3 className="text-base font-bold text-[#0F172A] mb-1">
@@ -545,7 +545,7 @@ export default function CooperativaInho() {
                 </div>
               ) : (
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-[#FAF8F2] border-b border-terminal-border text-[#57606A] uppercase tracking-wider">
+                  <thead className="bg-[#F1F5F9] border-b border-terminal-border text-[#64748B] uppercase tracking-wider">
                     <tr>
                       <th className="px-6 py-4">Associado / Sócio Cooperado</th>
                       <th className="px-6 py-4">CPF / CNPJ</th>
@@ -557,9 +557,9 @@ export default function CooperativaInho() {
                   </thead>
                   <tbody className="divide-y divide-terminal-border">
                     {filteredCooperados.map((coop) => {
-                      const st = STATUS_META[coop.status] || { label: coop.status, style: 'bg-[#FAF8F2] text-[#0F172A]' };
+                      const st = STATUS_META[coop.status] || { label: coop.status, style: 'bg-[#F1F5F9] text-[#0F172A]' };
                       return (
-                        <tr key={coop.id} className="hover:bg-[#FAF8F2] transition-colors">
+                        <tr key={coop.id} className="hover:bg-[#F1F5F9] transition-colors">
                           <td className="px-6 py-4 font-bold text-[#0F172A] flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-neon-cyan/10 border border-neon-cyan/30 flex items-center justify-center text-neon-cyan font-extrabold">
                               {coop.name.substring(0, 2).toUpperCase()}
@@ -569,8 +569,8 @@ export default function CooperativaInho() {
                               <div className="text-[10px] text-[#64748B]">PIX/Banco: {coop.bank_details || 'Não informado'}</div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-[#57606A]">{coop.document}</td>
-                          <td className="px-6 py-4 text-[#57606A] max-w-xs truncate">{coop.notes || '---'}</td>
+                          <td className="px-6 py-4 text-[#64748B]">{coop.document}</td>
+                          <td className="px-6 py-4 text-[#64748B] max-w-xs truncate">{coop.notes || '---'}</td>
                           <td className="px-6 py-4">
                             <div>{coop.phone || '---'}</div>
                             <div className="text-[10px] text-[#64748B]">{coop.email || ''}</div>
@@ -606,7 +606,7 @@ export default function CooperativaInho() {
                 <h2 className="text-base font-extrabold uppercase tracking-wider text-neon-cyan flex items-center gap-2">
                   <Calculator size={18} /> Motor de Liquidação de Cotas & Retenção Fiscal
                 </h2>
-                <p className="text-xs text-[#57606A] mt-1">
+                <p className="text-xs text-[#64748B] mt-1">
                   Calcule e registre integralização de cotas-partes ou repasse de produção com retenção de INSS, IRRF e Taxa Cooperativa.
                 </p>
               </div>
@@ -614,7 +614,7 @@ export default function CooperativaInho() {
               <form onSubmit={handleExecuteFiscalOperation} className="space-y-4 text-xs">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Selecionar Associado (Master DB)</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Selecionar Associado (Master DB)</label>
                     <select
                       value={fiscalForm.cooperado_id}
                       onChange={(e) => {
@@ -625,7 +625,7 @@ export default function CooperativaInho() {
                           cooperado_name: found ? found.name : fiscalForm.cooperado_name,
                         });
                       }}
-                      className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
+                      className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
                     >
                       <option value="">-- Escolher da lista ou digitar ao lado --</option>
                       {cooperados.map((c) => (
@@ -636,81 +636,81 @@ export default function CooperativaInho() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Nome do Cooperado / Associado</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Nome do Cooperado / Associado</label>
                     <input
                       required
                       value={fiscalForm.cooperado_name}
                       onChange={(e) => setFiscalForm({ ...fiscalForm, cooperado_name: e.target.value })}
                       placeholder="Nome do sócio cooperado"
-                      className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
+                      className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Natureza da Operação</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Natureza da Operação</label>
                     <select
                       value={fiscalForm.operation}
                       onChange={(e) => setFiscalForm({ ...fiscalForm, operation: e.target.value })}
-                      className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
+                      className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
                     >
                       <option value="REPASSE_PRODUCAO">Repasse de Produção (Com Retenção)</option>
                       <option value="INTEGRALIZACAO_COTA">Integralização de Cota-Parte (Cobrança PIX)</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Valor Bruto da Operação (R$)</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Valor Bruto da Operação (R$)</label>
                     <input
                       required
                       type="number"
                       step="0.01"
                       value={fiscalForm.gross_amount}
                       onChange={(e) => setFiscalForm({ ...fiscalForm, gross_amount: e.target.value })}
-                      className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A] font-bold"
+                      className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A] font-bold"
                     />
                   </div>
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Data de Liquidação / Venc.</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Data de Liquidação / Venc.</label>
                     <input
                       required
                       type="date"
                       value={fiscalForm.due_date}
                       onChange={(e) => setFiscalForm({ ...fiscalForm, due_date: e.target.value })}
-                      className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
+                      className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-4 pt-2">
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Retenção INSS (%)</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Retenção INSS (%)</label>
                     <input
                       type="number"
                       step="0.1"
                       value={fiscalForm.inss_rate}
                       onChange={(e) => setFiscalForm({ ...fiscalForm, inss_rate: e.target.value })}
-                      className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                      className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Retenção IRRF (%)</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Retenção IRRF (%)</label>
                     <input
                       type="number"
                       step="0.1"
                       value={fiscalForm.irrf_rate}
                       onChange={(e) => setFiscalForm({ ...fiscalForm, irrf_rate: e.target.value })}
-                      className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                      className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Taxa Adm. / FATES (%)</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Taxa Adm. / FATES (%)</label>
                     <input
                       type="number"
                       step="0.1"
                       value={fiscalForm.taxa_coop_rate}
                       onChange={(e) => setFiscalForm({ ...fiscalForm, taxa_coop_rate: e.target.value })}
-                      className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                      className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
                     />
                   </div>
                 </div>
@@ -733,7 +733,7 @@ export default function CooperativaInho() {
                 </h3>
                 <div className="space-y-2.5 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-[#57606A]">Valor Bruto:</span>
+                    <span className="text-[#64748B]">Valor Bruto:</span>
                     <span className="font-bold text-[#0F172A]">R$ {grossVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
                   </div>
                   <div className="flex justify-between text-amber-700">
@@ -755,7 +755,7 @@ export default function CooperativaInho() {
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-neon-cyan/5 border border-neon-cyan/20 text-[11px] text-[#57606A] mt-6">
+              <div className="p-3.5 rounded-xl bg-neon-cyan/5 border border-neon-cyan/20 text-[11px] text-[#64748B] mt-6">
                 <ShieldCheck size={15} className="text-neon-cyan inline mr-1.5" />
                 Integrado ao Contas a Receber, Contas a Pagar e Fechamento Contábil Mensal.
               </div>
@@ -766,13 +766,13 @@ export default function CooperativaInho() {
         {/* ─── ABA 3: FILA FINANCEIRA ─────────────────────────────────────── */}
         {activeTab === 'FINANCE' && (
           <div className="bg-white shadow-sm border border-terminal-border rounded-2xl overflow-hidden">
-            <div className="p-4 border-b border-terminal-border flex justify-between items-center bg-[#FAF8F2]">
+            <div className="p-4 border-b border-terminal-border flex justify-between items-center bg-[#F1F5F9]">
               <h3 className="font-bold tracking-widest uppercase text-xs text-[#0F172A]">
                 Obrigações & Repasses de Cooperados
               </h3>
             </div>
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#FAF8F2] border-b border-terminal-border text-[#57606A] uppercase">
+              <thead className="bg-[#F1F5F9] border-b border-terminal-border text-[#64748B] uppercase">
                 <tr>
                   <th className="px-6 py-4">Código</th>
                   <th className="px-6 py-4">Descrição / Associado</th>
@@ -784,14 +784,14 @@ export default function CooperativaInho() {
               <tbody className="divide-y divide-terminal-border">
                 {payables.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-10 text-center text-[#57606A]">
+                    <td colSpan={5} className="px-6 py-10 text-center text-[#64748B]">
                       Nenhuma obrigação financeira registrada.
                     </td>
                   </tr>
                 ) : (
                   payables.map((p) => (
-                    <tr key={p.id} className="hover:bg-[#FAF8F2]">
-                      <td className="px-6 py-4 text-[#57606A]">{p.id.slice(0, 8).toUpperCase()}</td>
+                    <tr key={p.id} className="hover:bg-[#F1F5F9]">
+                      <td className="px-6 py-4 text-[#64748B]">{p.id.slice(0, 8).toUpperCase()}</td>
                       <td className="px-6 py-4 font-bold">{p.description || p.supplier_name}</td>
                       <td className="px-6 py-4">{new Date(p.due_date).toLocaleDateString('pt-BR')}</td>
                       <td className="px-6 py-4">
@@ -820,7 +820,7 @@ export default function CooperativaInho() {
                   <h2 className="text-base font-extrabold uppercase tracking-wider text-neon-cyan flex items-center gap-2">
                     <Calculator size={18} /> Motor de Rateio de Sobras (AGO)
                   </h2>
-                  <p className="text-xs text-[#57606A] mt-1">
+                  <p className="text-xs text-[#64748B] mt-1">
                     Distribuição proporcional à movimentação financeira de 12 meses (Aportes + Repasses).
                   </p>
                 </div>
@@ -831,22 +831,22 @@ export default function CooperativaInho() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                 <div>
-                  <label className="block text-[#57606A] mb-1 uppercase">Sobras Líquidas AGO (R$)</label>
+                  <label className="block text-[#64748B] mb-1 uppercase">Sobras Líquidas AGO (R$)</label>
                   <input
                     type="number"
                     step="100"
                     value={rateioValor}
                     onChange={(e) => setRateioValor(e.target.value)}
-                    className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A] font-bold"
+                    className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A] font-bold"
                   />
                 </div>
                 <div>
-                  <label className="block text-[#57606A] mb-1 uppercase">Exercício Base</label>
+                  <label className="block text-[#64748B] mb-1 uppercase">Exercício Base</label>
                   <input
                     type="number"
                     value={rateioAno}
                     onChange={(e) => setRateioAno(Number(e.target.value))}
-                    className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
+                    className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
                   />
                 </div>
                 <div className="flex items-end gap-2">
@@ -864,20 +864,20 @@ export default function CooperativaInho() {
               {rateioPreview && (
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-3 text-xs">
-                    <div className="p-3 rounded-xl bg-[#F6F4EE] border border-terminal-border">
-                      <div className="text-[10px] text-[#57606A] uppercase">Movimentação 12M</div>
+                    <div className="p-3 rounded-xl bg-[#F8FAFC] border border-terminal-border">
+                      <div className="text-[10px] text-[#64748B] uppercase">Movimentação 12M</div>
                       <div className="text-sm font-extrabold text-[#0F172A] mt-0.5">
                         R$ {Number(rateioPreview.movimentacao_global_12m || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-[#F6F4EE] border border-terminal-border">
-                      <div className="text-[10px] text-[#57606A] uppercase">Sócios Elegíveis</div>
+                    <div className="p-3 rounded-xl bg-[#F8FAFC] border border-terminal-border">
+                      <div className="text-[10px] text-[#64748B] uppercase">Sócios Elegíveis</div>
                       <div className="text-sm font-extrabold text-neon-cyan mt-0.5">
                         {rateioPreview.total_cooperados_elegiveis} sócio(s)
                       </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-[#F6F4EE] border border-terminal-border">
-                      <div className="text-[10px] text-[#57606A] uppercase">Total a Ratear</div>
+                    <div className="p-3 rounded-xl bg-[#F8FAFC] border border-terminal-border">
+                      <div className="text-[10px] text-[#64748B] uppercase">Total a Ratear</div>
                       <div className="text-sm font-extrabold text-neon-green mt-0.5">
                         R$ {Number(rateioPreview.valor_total_sobras || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </div>
@@ -886,7 +886,7 @@ export default function CooperativaInho() {
 
                   <div className="border border-terminal-border rounded-xl overflow-hidden max-h-64 overflow-y-auto">
                     <table className="w-full text-left text-[11px]">
-                      <thead className="bg-[#FAF8F2] border-b border-terminal-border text-[#57606A] uppercase">
+                      <thead className="bg-[#F1F5F9] border-b border-terminal-border text-[#64748B] uppercase">
                         <tr>
                           <th className="px-4 py-2.5">Cooperado</th>
                           <th className="px-4 py-2.5 text-right">Mov. 12M</th>
@@ -896,9 +896,9 @@ export default function CooperativaInho() {
                       </thead>
                       <tbody className="divide-y divide-terminal-border">
                         {(rateioPreview.itens || []).map((it: any) => (
-                          <tr key={it.cooperado_id} className="hover:bg-[#FAF8F2]">
+                          <tr key={it.cooperado_id} className="hover:bg-[#F1F5F9]">
                             <td className="px-4 py-2.5 font-bold text-[#0F172A]">{it.cooperado_name}</td>
-                            <td className="px-4 py-2.5 text-right text-[#57606A]">
+                            <td className="px-4 py-2.5 text-right text-[#64748B]">
                               R$ {Number(it.movimentacao_total_12m || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                             </td>
                             <td className="px-4 py-2.5 text-right text-neon-cyan font-bold">
@@ -933,21 +933,21 @@ export default function CooperativaInho() {
                 <h2 className="text-base font-extrabold uppercase tracking-wider text-amber-700 flex items-center gap-2">
                   <Receipt size={18} /> Informe Anual de Rendimentos (IRPF / DIRF)
                 </h2>
-                <p className="text-xs text-[#57606A] mt-1">
+                <p className="text-xs text-[#64748B] mt-1">
                   Consolidação fiscal automática de Produção Cooperada, INSS, IRRF, FATES e Quotas de Capital Social.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                 <div className="md:col-span-2">
-                  <label className="block text-[#57606A] mb-1 uppercase">Selecionar Cooperado</label>
+                  <label className="block text-[#64748B] mb-1 uppercase">Selecionar Cooperado</label>
                   <select
                     value={informeSocioId}
                     onChange={(e) => {
                       setInformeSocioId(e.target.value);
                       if (e.target.value) handleLoadInforme(e.target.value, informeAno);
                     }}
-                    className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
+                    className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
                   >
                     <option value="">-- Escolha um sócio cooperado --</option>
                     {cooperados.map((c) => (
@@ -958,13 +958,13 @@ export default function CooperativaInho() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[#57606A] mb-1 uppercase">Ano-Calendário</label>
+                  <label className="block text-[#64748B] mb-1 uppercase">Ano-Calendário</label>
                   <div className="flex gap-2">
                     <input
                       type="number"
                       value={informeAno}
                       onChange={(e) => setInformeAno(Number(e.target.value))}
-                      className="w-full bg-[#F6F4EE] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
+                      className="w-full bg-[#F8FAFC] border border-terminal-border rounded-xl px-3 py-2.5 text-[#0F172A]"
                     />
                     <button
                       type="button"
@@ -979,12 +979,12 @@ export default function CooperativaInho() {
               </div>
 
               {loadingInforme ? (
-                <div className="py-12 text-center text-xs text-[#57606A]">
+                <div className="py-12 text-center text-xs text-[#64748B]">
                   <Loader2 className="animate-spin mx-auto mb-2 text-amber-700" size={20} />
                   Consolidando retenções fiscais e quotas de capital...
                 </div>
               ) : informeData ? (
-                <div className="space-y-3 text-xs bg-[#F6F4EE] border border-terminal-border rounded-xl p-4">
+                <div className="space-y-3 text-xs bg-[#F8FAFC] border border-terminal-border rounded-xl p-4">
                   <div className="flex justify-between items-start border-b border-terminal-border pb-3">
                     <div>
                       <div className="text-[10px] text-amber-700 font-bold uppercase">
@@ -993,14 +993,14 @@ export default function CooperativaInho() {
                       <div className="font-extrabold text-[#0F172A] text-sm mt-0.5">
                         {informeData.cooperado_name || informeData.beneficiario?.nome} • Doc: {informeData.document || informeData.beneficiario?.documento}
                       </div>
-                      <div className="text-[10px] text-[#57606A]">
+                      <div className="text-[10px] text-[#64748B]">
                         Fonte Pagadora: {informeData.fonte_pagadora?.nome} ({informeData.fonte_pagadora?.cnpj})
                       </div>
                     </div>
                     <button
                       type="button"
                       onClick={() => window.print()}
-                      className="px-3 py-1.5 rounded-lg bg-[#FAF8F2] hover:bg-white/20 text-[#0F172A] font-bold text-[10px] uppercase"
+                      className="px-3 py-1.5 rounded-lg bg-[#F1F5F9] hover:bg-white/20 text-[#0F172A] font-bold text-[10px] uppercase"
                     >
                       Imprimir / PDF
                     </button>
@@ -1011,7 +1011,7 @@ export default function CooperativaInho() {
                       3. Rendimentos Tributáveis e Retenções na Fonte
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#57606A]">01. Total dos Rendimentos Brutos (Produção):</span>
+                      <span className="text-[#64748B]">01. Total dos Rendimentos Brutos (Produção):</span>
                       <span className="font-bold text-[#0F172A]">
                         R$ {Number(informeData.resumo_fiscal?.rendimentos_brutos_producao ?? informeData.quadro_3_rendimentos_tributaveis?.rendimentos_brutos_producao ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
@@ -1041,13 +1041,13 @@ export default function CooperativaInho() {
                       4. Rendimentos Isentos / Sobras AGO & 7. Bens e Direitos
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#57606A]">Sobras Líquidas Distribuídas em Assembleia (AGO):</span>
+                      <span className="text-[#64748B]">Sobras Líquidas Distribuídas em Assembleia (AGO):</span>
                       <span className="font-bold text-neon-green">
                         R$ {Number(informeData.resumo_fiscal?.sobras_distribuidas_ago ?? informeData.quadro_4_rendimentos_isentos_exclusivos?.sobras_liquidas_ago_distribuicao ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-[#57606A]">Saldo Acumulado de Quotas-Partes de Capital Social:</span>
+                      <span className="text-[#64748B]">Saldo Acumulado de Quotas-Partes de Capital Social:</span>
                       <span className="font-bold text-neon-cyan">
                         R$ {Number(informeData.resumo_fiscal?.capital_social_integralizado ?? informeData.quadro_7_bens_e_direitos?.saldo_quotas_capital_social_acumulado ?? 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                       </span>
@@ -1096,7 +1096,7 @@ export default function CooperativaInho() {
 
                 <form onSubmit={handleCreateOfConsent} className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Instituição Participante (COMPE/ISPB)</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Instituição Participante (COMPE/ISPB)</label>
                     <select
                       value={ofConsentForm.bank_code}
                       onChange={(e) => setOfConsentForm({ ...ofConsentForm, bank_code: e.target.value })}
@@ -1118,7 +1118,7 @@ export default function CooperativaInho() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Provedor / Agregador Homologado</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Provedor / Agregador Homologado</label>
                     <select
                       value={ofConsentForm.aggregator}
                       onChange={(e) => setOfConsentForm({ ...ofConsentForm, aggregator: e.target.value })}
@@ -1130,7 +1130,7 @@ export default function CooperativaInho() {
                     </select>
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-[#57606A] mb-1 uppercase">Token OAuth2/FAPI ou Chave de Consentimento *</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Token OAuth2/FAPI ou Chave de Consentimento *</label>
                     <div className="flex gap-2">
                       <input
                         type="password"
@@ -1159,7 +1159,7 @@ export default function CooperativaInho() {
                           <CheckCircle2 size={14} className="text-neon-green" />
                           {c.compe_code} — {c.institution_full_name}
                         </div>
-                        <div className="text-[10px] text-[#57606A] mt-0.5">
+                        <div className="text-[10px] text-[#64748B] mt-0.5">
                           ISPB: {c.ispb} • Consent URN: {c.consent_urn}
                         </div>
                       </div>
@@ -1184,7 +1184,7 @@ export default function CooperativaInho() {
 
                 <form onSubmit={handleLinkCooperadoAccount} className="space-y-3 text-xs">
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Sócio Cooperado *</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Sócio Cooperado *</label>
                     <select
                       required
                       value={ofAccountForm.cooperado_id}
@@ -1201,7 +1201,7 @@ export default function CooperativaInho() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-[#57606A] mb-1 uppercase">Banco (COMPE)</label>
+                      <label className="block text-[#64748B] mb-1 uppercase">Banco (COMPE)</label>
                       <input
                         value={ofAccountForm.bank_code}
                         onChange={(e) => setOfAccountForm({ ...ofAccountForm, bank_code: e.target.value })}
@@ -1210,7 +1210,7 @@ export default function CooperativaInho() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[#57606A] mb-1 uppercase">Agência / Cooperativa</label>
+                      <label className="block text-[#64748B] mb-1 uppercase">Agência / Cooperativa</label>
                       <input
                         required
                         value={ofAccountForm.branch}
@@ -1220,7 +1220,7 @@ export default function CooperativaInho() {
                       />
                     </div>
                     <div>
-                      <label className="block text-[#57606A] mb-1 uppercase">Conta Corrente / Capital</label>
+                      <label className="block text-[#64748B] mb-1 uppercase">Conta Corrente / Capital</label>
                       <input
                         required
                         value={ofAccountForm.account_number}
@@ -1232,7 +1232,7 @@ export default function CooperativaInho() {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-[#57606A] mb-1 uppercase">Tipo de Conta</label>
+                      <label className="block text-[#64748B] mb-1 uppercase">Tipo de Conta</label>
                       <select
                         value={ofAccountForm.account_type}
                         onChange={(e) => setOfAccountForm({ ...ofAccountForm, account_type: e.target.value })}
@@ -1244,7 +1244,7 @@ export default function CooperativaInho() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-[#57606A] mb-1 uppercase">Chave PIX p/ Repasses (ITP) *</label>
+                      <label className="block text-[#64748B] mb-1 uppercase">Chave PIX p/ Repasses (ITP) *</label>
                       <input
                         required
                         value={ofAccountForm.pix_key}
@@ -1272,13 +1272,13 @@ export default function CooperativaInho() {
       {isNewSocioOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white backdrop-blur-sm p-4 overflow-y-auto">
           <div className="bg-white shadow-sm border border-terminal-border rounded-2xl p-6 w-full max-w-2xl relative my-8">
-            <button onClick={() => setIsNewSocioOpen(false)} className="absolute top-4 right-4 text-[#57606A] hover:text-[#0F172A]">
+            <button onClick={() => setIsNewSocioOpen(false)} className="absolute top-4 right-4 text-[#64748B] hover:text-[#0F172A]">
               <X size={20} />
             </button>
             <h2 className="text-lg font-extrabold text-[#0F172A] uppercase tracking-wider mb-1">
               Dossiê de Novo <span className="text-neon-cyan">Sócio / Cooperado</span>
             </h2>
-            <p className="text-xs text-[#57606A] mb-5">
+            <p className="text-xs text-[#64748B] mb-5">
               Submissão ao Master DB com sincronização imediata no OrBrick WhatsApp.
             </p>
 
@@ -1290,7 +1290,7 @@ export default function CooperativaInho() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">CPF ou CNPJ *</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">CPF ou CNPJ *</label>
                     <div className="flex bg-white shadow-sm border border-terminal-border rounded-xl overflow-hidden">
                       <input
                         required
@@ -1311,7 +1311,7 @@ export default function CooperativaInho() {
                     </div>
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-[#57606A] mb-1 uppercase">Nome Completo / Razão Social *</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Nome Completo / Razão Social *</label>
                     <input
                       required
                       value={socioForm.name}
@@ -1323,7 +1323,7 @@ export default function CooperativaInho() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">WhatsApp (OrBrick)</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">WhatsApp (OrBrick)</label>
                     <input
                       value={socioForm.phone}
                       onChange={(e) => setSocioForm({ ...socioForm, phone: e.target.value })}
@@ -1332,7 +1332,7 @@ export default function CooperativaInho() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">E-mail</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">E-mail</label>
                     <input
                       type="email"
                       value={socioForm.email}
@@ -1342,7 +1342,7 @@ export default function CooperativaInho() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Chave PIX / Dados Bancários</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Chave PIX / Dados Bancários</label>
                     <input
                       value={socioForm.bank_details}
                       onChange={(e) => setSocioForm({ ...socioForm, bank_details: e.target.value })}
@@ -1360,7 +1360,7 @@ export default function CooperativaInho() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">CEP</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">CEP</label>
                     <div className="flex bg-white shadow-sm border border-terminal-border rounded-xl overflow-hidden">
                       <input
                         value={socioForm.cep}
@@ -1379,7 +1379,7 @@ export default function CooperativaInho() {
                     </div>
                   </div>
                   <div className="md:col-span-3">
-                    <label className="block text-[#57606A] mb-1 uppercase">Logradouro / Endereço</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Logradouro / Endereço</label>
                     <input
                       value={socioForm.endereco}
                       onChange={(e) => setSocioForm({ ...socioForm, endereco: e.target.value })}
@@ -1417,7 +1417,7 @@ export default function CooperativaInho() {
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">NIS / PIS</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">NIS / PIS</label>
                     <input
                       value={socioForm.nis}
                       onChange={(e) => setSocioForm({ ...socioForm, nis: e.target.value })}
@@ -1426,7 +1426,7 @@ export default function CooperativaInho() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Matrícula Cooperativa</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Matrícula Cooperativa</label>
                     <input
                       value={socioForm.matricula}
                       onChange={(e) => setSocioForm({ ...socioForm, matricula: e.target.value })}
@@ -1435,7 +1435,7 @@ export default function CooperativaInho() {
                     />
                   </div>
                   <div>
-                    <label className="block text-[#57606A] mb-1 uppercase">Status Inicial</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Status Inicial</label>
                     <select
                       value={socioForm.status}
                       onChange={(e) => setSocioForm({ ...socioForm, status: e.target.value })}
@@ -1466,13 +1466,13 @@ export default function CooperativaInho() {
       {selectedSocio && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-white backdrop-blur-sm p-4">
           <div className="bg-white shadow-sm border border-terminal-border rounded-2xl p-6 w-full max-w-xl relative space-y-5 text-xs">
-            <button onClick={() => setSelectedSocio(null)} className="absolute top-4 right-4 text-[#57606A] hover:text-[#0F172A]">
+            <button onClick={() => setSelectedSocio(null)} className="absolute top-4 right-4 text-[#64748B] hover:text-[#0F172A]">
               <X size={18} />
             </button>
             <div>
               <span className="text-[10px] text-neon-cyan uppercase font-bold tracking-widest">Dossiê Individual do Associado</span>
               <h2 className="text-lg font-extrabold text-[#0F172A] mt-0.5">{selectedSocio.name}</h2>
-              <p className="text-[#57606A]">Doc: {selectedSocio.document} • {selectedSocio.notes || 'Sem observações'}</p>
+              <p className="text-[#64748B]">Doc: {selectedSocio.document} • {selectedSocio.notes || 'Sem observações'}</p>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -1483,7 +1483,7 @@ export default function CooperativaInho() {
                   className={`px-3 py-1.5 rounded-lg border text-[10px] font-bold uppercase ${
                     selectedSocio.status === st
                       ? 'bg-neon-cyan text-white border-neon-cyan'
-                      : 'bg-[#FAF8F2] text-[#57606A] border-terminal-border hover:text-[#0F172A]'
+                      : 'bg-[#F1F5F9] text-[#64748B] border-terminal-border hover:text-[#0F172A]'
                   }`}
                 >
                   {STATUS_META[st]?.label || st}
@@ -1492,25 +1492,25 @@ export default function CooperativaInho() {
             </div>
 
             {loadingBalance ? (
-              <div className="py-8 text-center text-[#57606A]">
+              <div className="py-8 text-center text-[#64748B]">
                 <Loader2 className="animate-spin mx-auto mb-2" size={18} /> Consultando extrato de aportes (12 meses)...
               </div>
             ) : socioBalance ? (
               <div className="grid grid-cols-3 gap-3">
                 <div className="p-3 rounded-xl bg-white border border-terminal-border">
-                  <div className="text-[10px] text-[#57606A] uppercase">Total Integralizado</div>
+                  <div className="text-[10px] text-[#64748B] uppercase">Total Integralizado</div>
                   <div className="text-sm font-extrabold text-neon-green mt-1">
                     R$ {Number(socioBalance.total_paid).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
                 </div>
                 <div className="p-3 rounded-xl bg-white border border-terminal-border">
-                  <div className="text-[10px] text-[#57606A] uppercase">Em Aberto</div>
+                  <div className="text-[10px] text-[#64748B] uppercase">Em Aberto</div>
                   <div className="text-sm font-extrabold text-amber-700 mt-1">
                     R$ {Number(socioBalance.total_pending).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>
                 </div>
                 <div className="p-3 rounded-xl bg-white border border-terminal-border">
-                  <div className="text-[10px] text-[#57606A] uppercase">Saldo Líquido</div>
+                  <div className="text-[10px] text-[#64748B] uppercase">Saldo Líquido</div>
                   <div className="text-sm font-extrabold text-neon-cyan mt-1">
                     R$ {Number(socioBalance.net_balance).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
                   </div>

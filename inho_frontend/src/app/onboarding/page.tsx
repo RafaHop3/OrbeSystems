@@ -107,7 +107,7 @@ export default function OnboardingPage() {
                                     <button
                                         key={b.id}
                                         onClick={() => handleSelect(b.id)}
-                                        className="flex justify-between items-center bg-[#FAF8F2] border border-[#E5DEC9] p-4 rounded-xl hover:bg-inho-gold/10 hover:border-inho-gold/30 transition-all font-semibold text-[#0F172A]"
+                                        className="flex justify-between items-center bg-[#F1F5F9] border border-[#E2E8F0] p-4 rounded-xl hover:bg-inho-gold/10 hover:border-inho-gold/30 transition-all font-semibold text-[#0F172A]"
                                     >
                                         <span>{b.name}</span>
                                         <ArrowRight size={16} className="opacity-50" />
@@ -127,8 +127,8 @@ export default function OnboardingPage() {
                     </div>
 
                     {/* Card 2: Hotelaria (Breve) */}
-                    <div className="glassmorphism outline-none p-8 rounded-3xl border border-[#E5DEC9] opacity-50 cursor-not-allowed group text-left relative overflow-hidden flex flex-col">
-                        <div className="w-14 h-14 rounded-2xl bg-[#FAF8F2] flex items-center justify-center mb-6 text-[#64748B] border border-[#E5DEC9]">
+                    <div className="glassmorphism outline-none p-8 rounded-3xl border border-[#E2E8F0] opacity-50 cursor-not-allowed group text-left relative overflow-hidden flex flex-col">
+                        <div className="w-14 h-14 rounded-2xl bg-[#F1F5F9] flex items-center justify-center mb-6 text-[#64748B] border border-[#E2E8F0]">
                             <Hotel size={28} />
                         </div>
 
@@ -137,7 +137,7 @@ export default function OnboardingPage() {
                             Módulo de gestão de reservas, tarifação diária e check-ins temporários. Este módulo ainda não foi implementado.
                         </p>
 
-                        <button disabled className="mt-auto w-full py-4 text-sm font-semibold rounded-xl bg-[#FAF8F2] text-[#64748B] border border-[#E5DEC9] uppercase tracking-widest text-[10px]">
+                        <button disabled className="mt-auto w-full py-4 text-sm font-semibold rounded-xl bg-[#F1F5F9] text-[#64748B] border border-[#E2E8F0] uppercase tracking-widest text-[10px]">
                             Em Breve
                         </button>
                     </div>

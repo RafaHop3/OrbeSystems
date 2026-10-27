@@ -67,7 +67,7 @@ export default function NfsePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F6F4EE] p-6 lg:p-8 font-sans text-[#0F172A]">
+    <div className="min-h-screen bg-[#F8FAFC] p-6 lg:p-8 font-sans text-[#0F172A]">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-terminal-border pb-5">
           <div>
@@ -79,7 +79,7 @@ export default function NfsePage() {
               Notas Fiscais de Serviço (NFS-e)
               <FileText size={22} className="text-neon-green" />
             </h1>
-            <p className="text-xs text-[#57606A] mt-1">
+            <p className="text-xs text-[#64748B] mt-1">
               Emissão de RPS/NFS-e vinculada às faturas com cálculo automático de retenção fiscal (ISS 5% e IRRF 1,5%).
             </p>
           </div>
@@ -90,7 +90,7 @@ export default function NfsePage() {
 
         <div className="bg-white shadow-sm border border-terminal-border rounded-2xl overflow-hidden">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAF8F2] border-b border-terminal-border text-[#57606A] uppercase tracking-wider">
+            <thead className="bg-[#F1F5F9] border-b border-terminal-border text-[#64748B] uppercase tracking-wider">
               <tr>
                 <th className="px-6 py-4">Tomador</th>
                 <th className="px-6 py-4">Competência</th>
@@ -104,13 +104,13 @@ export default function NfsePage() {
             <tbody className="divide-y divide-terminal-border">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-10 text-center text-[#57606A]">
+                  <td colSpan={7} className="px-6 py-10 text-center text-[#64748B]">
                     <Loader2 className="animate-spin mx-auto mb-2" size={20} /> Carregando faturas...
                   </td>
                 </tr>
               ) : invoices.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-[#57606A]">
+                  <td colSpan={7} className="px-6 py-12 text-center text-[#64748B]">
                     Nenhuma fatura disponível para emissão de NFS-e.
                   </td>
                 </tr>
@@ -121,10 +121,10 @@ export default function NfsePage() {
                   const net = gross - ret;
                   const rps = emittedIds[inv.id];
                   return (
-                    <tr key={inv.id} className="hover:bg-[#FAF8F2] transition-colors">
+                    <tr key={inv.id} className="hover:bg-[#F1F5F9] transition-colors">
                       <td className="px-6 py-4">
                         <div className="font-bold text-[#0F172A]">{inv.customer_name}</div>
-                        <div className="text-[10px] text-[#57606A]">{inv.customer_doc || 'CPF/CNPJ sob consulta'}</div>
+                        <div className="text-[10px] text-[#64748B]">{inv.customer_doc || 'CPF/CNPJ sob consulta'}</div>
                       </td>
                       <td className="px-6 py-4">{new Date(inv.due_date).toLocaleDateString('pt-BR')}</td>
                       <td className="px-6 py-4 text-right font-bold">
@@ -142,7 +142,7 @@ export default function NfsePage() {
                             <CheckCircle2 size={11} /> {rps}
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded bg-[#FAF8F2] text-[#57606A] border border-terminal-border font-bold text-[10px]">
+                          <span className="px-2 py-0.5 rounded bg-[#F1F5F9] text-[#64748B] border border-terminal-border font-bold text-[10px]">
                             AGUARDANDO RPS
                           </span>
                         )}

@@ -34,7 +34,7 @@ export function PlasmaBackground({ className }: { className?: string }) {
                 transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
                 className="absolute -bottom-[20%] left-[10%] w-[70%] h-[70%] bg-inho-green/20 mix-blend-screen blur-[100px]"
             />
-            <div className="absolute inset-0 bg-[#F6F4EE]/80 backdrop-blur-[60px] z-10" />
+            <div className="absolute inset-0 bg-[#F8FAFC]/80 backdrop-blur-[60px] z-10" />
             <div
                 className="absolute inset-0 z-20 opacity-20"
                 style={{

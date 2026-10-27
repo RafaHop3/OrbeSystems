@@ -267,7 +267,7 @@ export default function ContractsPage() {
                               Suspender
                             </button>
                           )}
-                          <button className="p-1.5 text-inho-muted hover:text-inho-text hover:bg-[#FAF8F2] rounded-lg transition-colors">
+                          <button className="p-1.5 text-inho-muted hover:text-inho-text hover:bg-[#F1F5F9] rounded-lg transition-colors">
                             <MoreVertical size={16} />
                           </button>
                         </div>
@@ -371,7 +371,7 @@ export default function ContractsPage() {
                 </div>
 
                 <div className="pt-6 border-t border-inho-border flex justify-end gap-3">
-                  <button type="button" onClick={() => setIsModalOpen(false)} disabled={submitting} className="px-6 py-3 rounded-xl font-bold text-sm text-inho-muted hover:text-inho-text hover:bg-[#FAF8F2] transition-colors">
+                  <button type="button" onClick={() => setIsModalOpen(false)} disabled={submitting} className="px-6 py-3 rounded-xl font-bold text-sm text-inho-muted hover:text-inho-text hover:bg-[#F1F5F9] transition-colors">
                     Cancelar
                   </button>
                   <button type="submit" disabled={submitting} className="group flex items-center gap-2 px-8 py-3 bg-purple-500 text-[#0F172A] rounded-xl font-bold text-sm hover:bg-purple-400 hover:shadow-lg hover:shadow-purple-500/20 transition-all disabled:opacity-50">
