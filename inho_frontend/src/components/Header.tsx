@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { Menu, X, Globe, Shield, TrendingUp } from 'lucide-react';
+import { Menu, X, Globe, Shield, TrendingUp, MessageSquare } from 'lucide-react';
 import clsx from 'clsx';
 import OrbeLogo from './OrbeLogo';
 
@@ -69,13 +69,16 @@ export default function Header() {
             >
               Entrar
             </Link>
-            <Link
-              href="https://orbesystems.com.br"
+            <a
+              href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa."
+              target="_blank"
+              rel="noopener noreferrer"
               id="header-register"
-              className="px-5 py-2.5 bg-inho-gold-gradient text-white font-bold text-sm rounded-xl hover:shadow-inho-gold transition-all duration-300 hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-sm hover:shadow transition-all duration-300 hover:-translate-y-0.5"
             >
-              Assinar Premium
-            </Link>
+              <MessageSquare size={15} />
+              Assinar no WhatsApp
+            </a>
           </div>
 
           {/* ── Mobile Toggle ── */}
@@ -115,11 +118,12 @@ export default function Header() {
             >
               Entrar
             </Link>
-            <Link href="https://orbesystems.com.br" id="mobile-register"
-              className="px-4 py-3 text-center bg-inho-gold-gradient text-white font-bold text-sm rounded-xl"
+            <a href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa." target="_blank" rel="noopener noreferrer" id="mobile-register"
+              className="px-4 py-3 text-center bg-emerald-600 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-sm"
             >
-              Assinar Premium
-            </Link>
+              <MessageSquare size={15} />
+              Assinar no WhatsApp (OrBrick)
+            </a>
           </div>
         </div>
       </div>

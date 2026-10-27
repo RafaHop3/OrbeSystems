@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ShieldCheck, ArrowRight, Users, Crown } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Users, Crown, MessageSquare } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { addLoginLog } from '@/lib/loginLog';
 
@@ -208,6 +208,23 @@ function LoginContent() {
               </form>
             </div>
           )}
+        </div>
+
+        {/* OrBrick WhatsApp Direct Onboarding Banner */}
+        <div className="mt-6 text-center animate-fade-in">
+          <p className="text-xs text-[#64748B] mb-2 font-medium">
+            Deseja credenciar sua cooperativa ou assinar o INHO?
+          </p>
+          <a
+            href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 text-xs font-bold text-slate-800 hover:text-emerald-700 shadow-sm transition-all"
+          >
+            <MessageSquare size={15} className="text-emerald-600" />
+            <span>Falar com o OrBrick no WhatsApp</span>
+            <ArrowRight size={13} className="text-slate-400" />
+          </a>
         </div>
 
         {/* Security Footer */}

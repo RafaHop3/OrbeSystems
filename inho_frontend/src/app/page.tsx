@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import {
-  ArrowRight, Globe2, ShieldCheck, TrendingUp, Users,
+  ArrowRight, Globe2, ShieldCheck, TrendingUp, Users, MessageSquare,
   Zap, Lock, BarChart3, CheckCircle2, ChevronRight, Layers,
 } from 'lucide-react';
 import Header from '@/components/Header';
@@ -123,9 +123,13 @@ export default function HomePage() {
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up">
-            <GlassButton glowColor="gold" onClick={() => window.location.href = 'https://orbesystems.com.br'} className="w-full sm:w-auto min-w-[200px] justify-center">
-              Assinatura Premium
-              <ArrowRight size={18} />
+            <GlassButton
+              glowColor="green"
+              onClick={() => window.open('https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa.', '_blank')}
+              className="w-full sm:w-auto min-w-[220px] justify-center bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-sm flex items-center gap-2"
+            >
+              <MessageSquare size={18} />
+              Assinar no WhatsApp (OrBrick)
             </GlassButton>
             <GlassButton glowColor="blue" onClick={() => window.location.href = '#about'} className="w-full sm:w-auto min-w-[200px] justify-center text-[#0F172A] border-[#E2E8F0]">
               Conhecer a visão
@@ -312,9 +316,18 @@ export default function HomePage() {
             Junte-se à plataforma que une alta performance empresarial, conformidade e impacto social.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <GlassButton glowColor="gold" onClick={() => window.location.href = '/login'} className="px-10 py-5 text-lg font-black animate-glow-pulse">
+            <a
+              href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-base rounded-2xl shadow-sm hover:shadow transition-all inline-flex items-center gap-2"
+            >
+              <MessageSquare size={18} />
+              Falar com OrBrick no WhatsApp
+            </a>
+            <GlassButton glowColor="gold" onClick={() => window.location.href = '/login'} className="px-8 py-4 text-base font-black">
               Acessar a Plataforma
-              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </GlassButton>
           </div>
         </div>
