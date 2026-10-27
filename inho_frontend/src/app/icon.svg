@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <!-- Gradiente azul neon para o núcleo -->
+    <linearGradient id="neonGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4da6ff" />
+      <stop offset="100%" stop-color="#0055ff" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Fundo escuro orbital (combina com o dark mode do seu site) -->
+  <circle cx="32" cy="32" r="30" fill="#0A0F1C" stroke="#4da6ff" stroke-width="2" opacity="0.9"/>
+  
+  <!-- Anéis Orbitais -->
+  <ellipse cx="32" cy="32" rx="10" ry="24" fill="none" stroke="#4da6ff" stroke-width="3" transform="rotate(45 32 32)" opacity="0.8"/>
+  <ellipse cx="32" cy="32" rx="10" ry="24" fill="none" stroke="#4da6ff" stroke-width="3" transform="rotate(-45 32 32)" opacity="0.8"/>
+  
+  <!-- Núcleo da Orbe -->
+  <circle cx="32" cy="32" r="6" fill="url(#neonGlow)"/>
+</svg>

@@ -1,128 +1,326 @@
 'use client';
-import React from 'react';
-import Sidebar from '@/components/Sidebar';
-import { Users, Building, ArrowRight, Store, Home, LogOut } from 'lucide-react';
+
 import Link from 'next/link';
+import {
+  ArrowRight, Globe2, ShieldCheck, TrendingUp, Users,
+  Zap, Lock, BarChart3, CheckCircle2, ChevronRight, Layers,
+} from 'lucide-react';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import Counter from '@/components/Counter';
+import { PlasmaBackground } from '@/components/ui/plasma-background';
+import { Particles } from '@/components/ui/particles';
+import { GlassButton } from '@/components/ui/glass-button';
+import { AuroraText } from '@/components/ui/aurora-text';
+import { MagicCard } from '@/components/ui/magic-card';
+import { FeatureCarousel } from '@/components/ui/feature-carousel';
 
-export default function AppLayout() {
+// ── Data ─────────────────────────────────────────────────────────
+const stats = [
+  { value: 5, suffix: '', label: 'Níveis de RBAC', icon: Users },
+  { value: 7, suffix: '', label: 'Eventos de Auditoria', icon: BarChart3 },
+  { value: 3, suffix: '', label: 'Camadas de Segurança', icon: Zap },
+  { value: 100, suffix: '%', label: 'Operações Auditadas', icon: Globe2 },
+];
+
+const features = [
+  {
+    icon: ShieldCheck,
+    title: 'Segurança por Design',
+    description: 'Arquitetura Zero-Trust com JWT rotativo, RBAC granular e logs de auditoria imutáveis. Cada operação é rastreada em tempo real.',
+    color: 'gold',
+    tag: 'Security by Design',
+  },
+  {
+    icon: TrendingUp,
+    title: 'Impacto Mensurável',
+    description: 'Cada transação é vinculada a métricas de impacto social verificáveis. Transparência total, da origem ao destino.',
+    color: 'green',
+    tag: 'ESG Compliance',
+  },
+  {
+    icon: Zap,
+    title: 'Alta Disponibilidade',
+    description: 'FastAPI assíncrono com conexões em pool ao PostgreSQL. Latência de milissegundos, mesmo sob alta carga.',
+    color: 'blue',
+    tag: '99.9% SLA',
+  },
+  {
+    icon: Globe2,
+    title: 'Alcance Global',
+    description: 'Suporte a múltiplas moedas, integração com Open Finance e gateways internacionais. Sem fronteiras financeiras.',
+    color: 'gold',
+    tag: 'Multi-Currency',
+  },
+  {
+    icon: Layers,
+    title: 'RBAC Granular',
+    description: 'Controle de acesso baseado em funções com 5 níveis de permissão. Do Super Admin ao Cliente — cada dado protegido.',
+    color: 'green',
+    tag: 'Role-Based Access',
+  },
+  {
+    icon: Lock,
+    title: 'Open Finance Ready',
+    description: 'Infraestrutura preparada para integração com Banco Central, PIX e APIs de Open Finance. Conformidade regulatória nativa.',
+    color: 'blue',
+    tag: 'LGPD & Open Finance',
+  },
+];
+
+const principles = [
+  'Auditoria imutável de 100% das operações',
+  'Criptografia end-to-end em repouso e em trânsito',
+  'Rate limiting e proteção contra brute-force',
+  'Migrações de banco versionadas com Alembic',
+  'Conformidade LGPD desde a fundação',
+  'Monitoramento de anomalias em tempo real',
+];
+
+// ── Color Map ─────────────────────────────────────────────────────
+const colorMap = {
+  gold: { bg: 'bg-inho-gold/10', border: 'border-inho-gold/20', text: 'text-inho-gold', glow: 'hover:shadow-inho-gold' },
+  green: { bg: 'bg-inho-green/10', border: 'border-inho-green/20', text: 'text-inho-green', glow: 'hover:shadow-inho-green' },
+  blue: { bg: 'bg-inho-blue/10', border: 'border-inho-blue/20', text: 'text-inho-blue', glow: 'hover:glow-green' },
+};
+
+export default function HomePage() {
   return (
-    <div className="flex h-screen bg-[#06080A] text-[#e6edf3] font-mono selection:bg-teal-500/30 overflow-hidden relative">
-      <Sidebar />
+    <div className="min-h-screen bg-inho-black overflow-x-hidden">
+      <Header />
 
-      {/* Viewport content */}
-      <main className="flex-1 flex flex-col h-full bg-[#030406] shadow-[-10px_0_30px_rgba(0,0,0,0.5)] z-10 relative overflow-hidden p-10 lg:p-16">
+      {/* ══ HERO ═════════════════════════════════════════════════ */}
+      <section
+        id="hero"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+        aria-label="Hero Section"
+      >
+        <PlasmaBackground />
+        <Particles className="opacity-80 mix-blend-screen" />
 
-        {/* Background glow just for aesthetic */}
-        <div className="absolute top-[-20%] left-[20%] w-[500px] h-[500px] bg-teal-900/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-32 text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 glassmorphism rounded-full px-5 py-2.5 mb-8 animate-fade-in border border-inho-gold/30 shadow-[0_0_20px_rgba(245,166,35,0.2)]">
+            <div className="w-2 h-2 bg-inho-green rounded-full animate-pulse" />
+            <span className="font-mono text-xs text-inho-text uppercase tracking-widest font-semibold">
+              Fase 2 — Orbe Platform Otimizada
+            </span>
+          </div>
 
-        <div className="max-w-[1100px] z-10 relative mt-4">
-          <h1 className="text-3xl md:text-[34px] font-bold text-white mb-6">
-            Hub de <span className="text-teal-400">Modelos de Negócios</span>
+          {/* Headline */}
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black leading-tight mb-8 animate-slide-up drop-shadow-2xl">
+            <span className="text-[#0F172A]">Finanças com</span>
+            <br />
+            <AuroraText text="Propósito Global" />
           </h1>
-          <p className="text-[#8b949e] font-mono text-sm max-w-2xl mb-12 leading-relaxed">
-            O Portal INHO é adaptável. Selecione o modelo de negócio abaixo para operar a interface e as lógicas de negócio específicas da sua instituição.
+
+          {/* Sub */}
+          <p className="max-w-2xl mx-auto text-lg sm:text-xl text-[#0F172A] leading-relaxed mb-12 animate-fade-in drop-shadow-md">
+            Uma plataforma de gestão financeira construída para <strong className="text-[#0F172A]">alta disponibilidade</strong>,
+            <strong className="text-inho-gold"> máxima segurança</strong> e impacto social
+            <strong className="text-inho-green"> mensurável e global</strong>.
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up">
+            <GlassButton glowColor="gold" onClick={() => window.location.href = 'https://orbesystems.com.br'} className="w-full sm:w-auto min-w-[200px] justify-center">
+              Assinatura Premium
+              <ArrowRight size={18} />
+            </GlassButton>
+            <GlassButton glowColor="blue" onClick={() => window.location.href = '#about'} className="w-full sm:w-auto min-w-[200px] justify-center text-[#0F172A] border-[#E5DEC9]">
+              Conhecer a visão
+              <ChevronRight size={18} />
+            </GlassButton>
+          </div>
 
-            {/* Cooperativismo Card */}
-            <div className="group relative rounded-2xl bg-[#0A1820] border border-teal-500/30 p-8 flex flex-col justify-between overflow-hidden shadow-[0_0_25px_rgba(20,184,166,0.05)] hover:shadow-[0_0_35px_rgba(20,184,166,0.15)] transition-all h-[280px]">
-              <Users className="absolute -right-6 -bottom-6 w-56 h-56 text-teal-900/20 transform group-hover:scale-105 transition-transform duration-500" />
-
-              <div className="relative z-10">
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-[#0F222D] border border-teal-500/40 flex items-center justify-center">
-                    <Users className="text-teal-400" size={20} />
-                  </div>
-                  <span className="bg-[#0F222D] border border-teal-500/30 text-teal-400 text-xs font-bold px-3 py-1 rounded-full flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-teal-400"></span>
-                    DISPONÍVEL
-                  </span>
-                </div>
-
-                <h2 className="text-2xl font-bold text-white mb-2">Cooperativismo</h2>
-                <p className="text-[#6e7681] text-sm leading-relaxed max-w-sm">
-                  Gestão completa para Cooperativas com módulos B2B e B2C integrados.
-                </p>
-              </div>
-
-              <div className="relative z-10 mt-auto pt-6">
-                <Link
-                  href="/socios"
-                  className="text-teal-400 text-sm font-bold uppercase tracking-wider flex items-center gap-2 hover:text-teal-300 transition-colors cursor-pointer"
-                >
-                  ACESSAR MÓDULO <ArrowRight size={16} />
-                </Link>
-              </div>
-            </div>
-
-            {/* Redes de Hotelaria Card */}
-            <div className="relative rounded-2xl bg-[#0A0D12] border border-[#1a1f26] p-8 flex flex-col justify-between overflow-hidden opacity-90 h-[280px]">
-              <Building className="absolute -right-6 -bottom-6 w-56 h-56 text-[#1a1f26] opacity-30" />
-
-              <div className="relative z-10">
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-[#12161c] border border-[#1a1f26] flex items-center justify-center">
-                    <Building className="text-[#6e7681]" size={20} />
-                  </div>
-                  <span className="bg-[#12161c] border border-[#1a1f26] text-[#6e7681] text-xs font-bold px-3 py-1 rounded-full flex items-center gap-2">
-                    <LogOut size={12} className="rotate-180" />
-                    EM BREVE
-                  </span>
-                </div>
-
-                <h2 className="text-2xl font-bold text-[#b3b9c5] mb-2">Redes de Hotelaria</h2>
-                <p className="text-[#6e7681] text-sm leading-relaxed max-w-sm">
-                  Módulo unificado para controle de hospedagem, consumo e gestão tarifária.
-                </p>
-              </div>
-
-              <div className="relative z-10 mt-auto pt-6">
-                <span className="text-[#6e7681] text-sm font-bold uppercase tracking-wider">
-                  INDISPONÍVEL
-                </span>
-              </div>
-            </div>
-
-            {/* Varejo Card (Placeholder) */}
-            <div className="relative rounded-2xl bg-[#0A0D12] border border-[#1a1f26] p-8 flex flex-col justify-between overflow-hidden opacity-50 h-[280px]">
-              <Store className="absolute -right-6 -bottom-6 w-56 h-56 text-[#1a1f26] opacity-30" />
-
-              <div className="relative z-10">
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-[#12161c] border border-[#1a1f26] flex items-center justify-center">
-                    <Store className="text-[#6e7681]" size={20} />
-                  </div>
-                  <span className="bg-[#12161c] border border-[#1a1f26] text-[#6e7681] text-xs font-bold px-3 py-1 rounded-full flex items-center gap-2">
-                    <LogOut size={12} className="rotate-180" />
-                    EM BREVE
-                  </span>
-                </div>
-                <h2 className="text-2xl font-bold text-[#b3b9c5] mb-2">Varejo & PDV</h2>
-              </div>
-            </div>
-
-            {/* Real Estate Card (Placeholder) */}
-            <div className="relative rounded-2xl bg-[#0A0D12] border border-[#1a1f26] p-8 flex flex-col justify-between overflow-hidden opacity-50 h-[280px]">
-              <Home className="absolute -right-6 -bottom-6 w-56 h-56 text-[#1a1f26] opacity-30" />
-
-              <div className="relative z-10">
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 rounded-xl bg-[#12161c] border border-[#1a1f26] flex items-center justify-center">
-                    <Home className="text-[#6e7681]" size={20} />
-                  </div>
-                  <span className="bg-[#12161c] border border-[#1a1f26] text-[#6e7681] text-xs font-bold px-3 py-1 rounded-full flex items-center gap-2">
-                    <LogOut size={12} className="rotate-180" />
-                    EM BREVE
-                  </span>
-                </div>
-                <h2 className="text-2xl font-bold text-[#b3b9c5] mb-2">Imobiliárias (Imobverse)</h2>
-              </div>
-            </div>
-
+          {/* Trust row */}
+          <div className="flex flex-wrap items-center justify-center gap-6 mt-14 text-inho-muted text-sm animate-fade-in">
+            {['LGPD Compliant', 'Open Finance Ready', '99.9% SLA', 'Auditoria Imutável'].map(t => (
+              <span key={t} className="flex items-center gap-2">
+                <CheckCircle2 size={14} className="text-inho-green flex-shrink-0" />
+                {t}
+              </span>
+            ))}
           </div>
         </div>
-      </main>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-float" aria-hidden="true">
+          <div className="w-px h-12 bg-gradient-to-b from-transparent to-inho-gold/50" />
+          <div className="w-1.5 h-1.5 bg-inho-gold rounded-full" />
+        </div>
+      </section>
+
+      {/* ══ STATS ════════════════════════════════════════════════ */}
+      <section id="stats" aria-label="Estatísticas" className="py-20 border-y border-inho-border bg-inho-dark/50">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {stats.map(({ value, suffix, label, icon: Icon }) => (
+              <div key={label} className="text-center flex flex-col items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-inho-gold/10 border border-inho-gold/20 flex items-center justify-center">
+                  <Icon size={20} className="text-inho-gold" />
+                </div>
+                <div className="text-3xl sm:text-4xl font-black text-shimmer">
+                  <Counter end={value} suffix={suffix} />
+                </div>
+                <p className="text-inho-muted text-sm font-medium">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ ABOUT ════════════════════════════════════════════════ */}
+      <section id="about" aria-label="Sobre o INHO" className="py-28 max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="flex flex-col gap-6">
+            <div className="inline-flex items-center gap-2 glassmorphism rounded-full px-4 py-2 w-fit">
+              <Globe2 size={14} className="text-inho-gold" />
+              <span className="font-mono text-xs text-inho-muted uppercase tracking-widest">Missão e Visão</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-black text-inho-text leading-tight">
+              Tecnologia que <span className="text-shimmer">transforma</span> realidades
+            </h2>
+            <p className="text-inho-muted text-lg leading-relaxed">
+              O INHO nasceu da convicção de que ferramentas financeiras de classe institucional devem estar acessíveis a organizações que geram impacto social real. Nossa missão é democratizar a gestão financeira de alta performance.
+            </p>
+            <p className="text-inho-muted leading-relaxed">
+              Construído sobre uma infraestrutura assíncrona de alta disponibilidade — FastAPI, PostgreSQL e Next.js — o INHO oferece processamento financeiro seguro, auditável e escalável, do primeiro centavo ao bilionésimo.
+            </p>
+            <GlassButton glowColor="gold" onClick={() => window.location.href = '/login'} className="w-fit">
+              Acessar a Plataforma <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+            </GlassButton>
+          </div>
+
+          {/* Visual card */}
+          <div className="relative">
+            <div className="glassmorphism rounded-3xl p-8 border border-inho-gold/10 hover:border-inho-gold/30 transition-all duration-500">
+              <div className="font-mono text-xs text-inho-muted mb-6 uppercase tracking-widest flex items-center gap-2">
+                <div className="w-2 h-2 bg-inho-green rounded-full animate-pulse" />
+                Sistema Operacional · API v1.0.0
+              </div>
+              {[
+                { label: 'Throughput', value: '12.4k req/s', color: 'text-inho-gold' },
+                { label: 'Latência P99', value: '18ms', color: 'text-inho-green' },
+                { label: 'DB Pool', value: '10/10 conn', color: 'text-inho-blue' },
+                { label: 'Audit Events', value: '99.98% cap', color: 'text-inho-gold' },
+                { label: 'Auth Success', value: '99.7%', color: 'text-inho-green' },
+              ].map(({ label, value, color }) => (
+                <div key={label} className="flex items-center justify-between py-3 border-b border-inho-border last:border-0">
+                  <span className="text-inho-muted text-sm font-mono">{label}</span>
+                  <span className={`text-sm font-bold font-mono ${color}`}>{value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="absolute -inset-4 bg-inho-gold/5 rounded-3xl blur-2xl -z-10" aria-hidden="true" />
+          </div>
+        </div>
+      </section>
+
+      {/* ══ FEATURES ═════════════════════════════════════════════ */}
+      <section id="impact" aria-label="Funcionalidades" className="py-28 bg-inho-dark/30">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 glassmorphism rounded-full px-4 py-2 mb-6">
+              <Layers size={14} className="text-inho-gold" />
+              <span className="font-mono text-xs text-inho-muted uppercase tracking-widest">Plataforma Completa</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-black text-inho-text mb-4">
+              Tudo que você precisa, <span className="text-shimmer">sem compromissos</span>
+            </h2>
+            <p className="text-inho-muted text-lg max-w-2xl mx-auto">
+              Uma stack moderna construída para resistir ao tempo, escalar sem dor e auditável por design desde o primeiro commit.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {features.map(({ icon: Icon, title, description, color, tag }) => {
+              const c = colorMap[color as keyof typeof colorMap];
+              return (
+                <article
+                  key={title}
+                  className={`glassmorphism rounded-2xl p-7 border ${c.border} ${c.glow} hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col gap-5 group cursor-default`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className={`w-12 h-12 rounded-xl ${c.bg} border ${c.border} flex items-center justify-center flex-shrink-0`}>
+                      <Icon size={22} className={c.text} />
+                    </div>
+                    <span className={`font-mono text-[10px] ${c.text} bg-opacity-10 ${c.bg} border ${c.border} px-2.5 py-1 rounded-full uppercase tracking-widest`}>
+                      {tag}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <h3 className="text-inho-text font-bold text-lg">{title}</h3>
+                    <p className="text-inho-muted text-sm leading-relaxed">{description}</p>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ══ SECURITY ═════════════════════════════════════════════ */}
+      <section id="security" aria-label="Segurança" className="py-28 max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Checklist */}
+          <div className="glassmorphism rounded-3xl p-8 border border-inho-green/10 hover:border-inho-green/30 transition-all duration-500">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 rounded-xl bg-inho-green/10 border border-inho-green/20 flex items-center justify-center">
+                <ShieldCheck size={20} className="text-inho-green" />
+              </div>
+              <div>
+                <div className="font-bold text-inho-text">Security Checklist</div>
+                <div className="font-mono text-xs text-inho-muted">Fase 1 — Cyber Safety Base</div>
+              </div>
+            </div>
+            <div className="flex flex-col gap-3">
+              {principles.map(p => (
+                <div key={p} className="flex items-start gap-3">
+                  <CheckCircle2 size={16} className="text-inho-green flex-shrink-0 mt-0.5" />
+                  <span className="text-inho-muted text-sm">{p}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <div className="inline-flex items-center gap-2 glassmorphism rounded-full px-4 py-2 w-fit">
+              <ShieldCheck size={14} className="text-inho-green" />
+              <span className="font-mono text-xs text-inho-muted uppercase tracking-widest">Security by Design</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl font-black text-inho-text leading-tight">
+              Segurança não é <span className="text-inho-green">uma feature</span> — é a base
+            </h2>
+            <p className="text-inho-muted text-lg leading-relaxed">
+              Toda ação na plataforma gera um registro imutável de auditoria com timestamp, IP, entidade afetada e contexto completo. LGPD e conformidade regulatória não são afterthoughts — são o ponto de partida.
+            </p>
+            <p className="text-inho-muted leading-relaxed">
+              Com RBAC de 5 níveis, rate limiting nas rotas de autenticação, middlewares CORS e rotação automática de tokens JWT, o INHO é blindado em todas as camadas.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ CTA FINAL ════════════════════════════════════════════ */}
+      <section id="cta" aria-label="Call to Action" className="py-28 bg-inho-dark/50 border-y border-inho-border">
+        <div className="max-w-4xl mx-auto px-6 lg:px-8 text-center">
+          <h2 className="text-4xl sm:text-5xl font-black text-inho-text mb-6 leading-tight">
+            Pronto para financiar <span className="text-shimmer">o futuro</span>?
+          </h2>
+          <p className="text-inho-muted text-lg mb-10 max-w-xl mx-auto">
+            Junte-se à plataforma que une alta performance empresarial, conformidade e impacto social.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <GlassButton glowColor="gold" onClick={() => window.location.href = '/login'} className="px-10 py-5 text-lg font-black animate-glow-pulse">
+              Acessar a Plataforma
+              <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+            </GlassButton>
+          </div>
+        </div>
+      </section>
+
+      <Footer />
     </div>
   );
 }

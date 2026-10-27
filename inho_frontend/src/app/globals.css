@@ -1,70 +1,206 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* ── Google Fonts (Plus Jakarta Sans + Outfit + JetBrains Mono) ──── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ── CSS Custom Properties — Padrão Executivo Ouro Claro ─────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-outfit: 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-jetbrains: 'JetBrains Mono', monospace;
+
+  /* ── Orbe INHO Sovereign Executive Gold Light Tokens ────────── */
+  --terminal-bg: #F6F4EE;
+  --terminal-surface: #FFFFFF;
+  --terminal-border: #E5DEC9;
+  --neon-cyan: #B8860B;
+  --neon-green: #059669;
+  --neon-purple: #7C3AED;
+  --terminal-text: #0F172A;
+  --terminal-muted: #57606A;
+
+  /* Brand Tokens */
+  --inho-gold: #B8860B;
+  --inho-gold-light: #D4AF37;
+  --inho-gold-dark: #8B6508;
+  --inho-green: #059669;
+  --inho-blue: #1D4ED8;
+  --inho-black: #F6F4EE;
+  --inho-dark: #FFFFFF;
+  --inho-surface: #FAF8F2;
+  --inho-card: #FFFFFF;
+  --inho-border: #E5DEC9;
+  --inho-text: #0F172A;
+  --inho-muted: #57606A;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Base Reset & Typography ───────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-outfit);
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), sans-serif;
+  background-color: var(--terminal-bg);
+  color: var(--terminal-text);
+  font-family: var(--font-outfit);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
-/* Cyberpunk Terminal Scrollbar (Orbe Standard) */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+/* ── Selection ─────────────────────────────────────────────────── */
+::selection {
+  background: rgba(212, 175, 55, 0.25);
+  color: #785604;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(0, 255, 245, 0.2);
-  /* Neon Cyan Muted */
-  border-radius: 4px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 255, 245, 0.5);
-  /* Neon Cyan active glow */
-  box-shadow: 0 0 8px rgba(0, 255, 245, 0.8);
-}
-
-/* General app-wide scrollbar adjustments */
+/* ── Scrollbar Executiva ───────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #020406;
-  /* Terminal Bg */
-  border-left: 1px solid #1a1f26;
+  background: #F3EFE4;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #00fff5;
-  border-radius: 2px;
+  background: #D5CBB0;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #39ff14;
-  /* Swaps to neon green on hover globally */
+  background: #B8860B;
+}
+
+/* ── Padronização Executiva de Inputs, Selects e Tabelas ───────── */
+input:not([type="checkbox"]):not([type="radio"]),
+select,
+textarea {
+  background-color: #FFFFFF;
+  color: #0F172A;
+  border-color: #DED6C1;
+  font-family: var(--font-outfit);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8C959F !important;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #B8860B !important;
+  box-shadow: 0 0 0 3px rgba(184, 134, 11, 0.14);
+}
+
+table thead {
+  background-color: #FAF7EE !important;
+  border-bottom: 1px solid #E5DEC9 !important;
+}
+
+table thead th {
+  color: #57606A !important;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+table tbody tr {
+  border-color: #EFEAD9 !important;
+  transition: background-color 0.15s ease;
+}
+
+table tbody tr:hover {
+  background-color: #FDFBF5 !important;
+}
+
+/* ── Utility Layer ─────────────────────────────────────────────── */
+@layer utilities {
+  .text-shimmer {
+    background: linear-gradient(90deg, #8B6508 0%, #D4AF37 50%, #8B6508 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+  }
+
+  .glassmorphism {
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid #E5DEC9;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 8px 24px -4px rgba(184, 134, 11, 0.07);
+  }
+
+  .executive-card {
+    background: #FFFFFF;
+    border: 1px solid #E5DEC9;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 10px 25px -5px rgba(184, 134, 11, 0.06);
+  }
+
+  .executive-gold-btn {
+    background: linear-gradient(135deg, #9A6F0B 0%, #C59B27 50%, #9A6F0B 100%);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(184, 134, 11, 0.28);
+  }
+
+  .glow-gold {
+    box-shadow: 0 6px 20px rgba(184, 134, 11, 0.25), 0 2px 6px rgba(184, 134, 11, 0.12);
+  }
+
+  .glow-green {
+    box-shadow: 0 6px 20px rgba(5, 150, 105, 0.22), 0 2px 6px rgba(5, 150, 105, 0.1);
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(184, 134, 11, 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(184, 134, 11, 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .border-gradient {
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+  }
+
+  .border-gradient::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(135deg, var(--inho-gold), transparent, var(--inho-green));
+    z-index: -1;
+  }
+
+  .calendar-picker-indicator-white::-webkit-calendar-picker-indicator {
+    filter: none;
+    cursor: pointer;
+    opacity: 0.75;
+  }
+
+  .calendar-picker-indicator-white::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+}
+
+/* ── Focus Visible ─────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--inho-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
