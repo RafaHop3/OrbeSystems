@@ -914,9 +914,7 @@ async def proxy_omnichannel_message(
             header = f"*{sender_name} | {biz_name}*"
 
         if not raw_msg.startswith("*"):
-            final_message = f"{header}
-
-{raw_msg}"
+            final_message = f"{header}\n\n" + raw_msg
         else:
             final_message = raw_msg
 
