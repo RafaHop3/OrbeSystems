@@ -7,9 +7,9 @@ commands = [
     "sudo -u ubuntu sh -c 'cd /home/ubuntu/OrbeSystems && git fetch origin main && git reset --hard origin/main'",
     "cd /home/ubuntu/OrbeSystems",
     "sudo docker-compose -f ec2_compose.yml build inho_backend",
-    "sudo docker-compose -f ec2_compose.yml up -d --force-recreate inho_backend",
-    "sleep 3",
-    "curl -I http://localhost:8001/api/health"
+    "sudo docker-compose -f ec2_compose.yml up -d --force-recreate backend inho_backend",
+    "sleep 5",
+    "curl -I http://localhost:8000/health && curl -I http://localhost:8001/api/health"
 ]
 
 response = ssm.send_command(

@@ -21,7 +21,7 @@ if "supabase" in INHO_DB_URL and "sslmode=require" not in INHO_DB_URL:
     separator = "&" if "?" in INHO_DB_URL else "?"
     INHO_DB_URL += f"{separator}sslmode=require"
 
-connect_args = {"check_same_thread": False, "timeout": 30} if INHO_DB_URL.startswith("sqlite") else {}
+connect_args = {"check_same_thread": False, "timeout": 30} if INHO_DB_URL.startswith("sqlite") else {"connect_timeout": 10}
 
 # Use NullPool for supabase pooler if needed, similar to master DB
 from sqlalchemy.pool import NullPool
