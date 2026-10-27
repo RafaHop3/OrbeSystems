@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/AuthContext';
 import {
     Users2, Building, Store, Utensils,
-    PlusCircle, Lock, ArrowRight, LayoutTemplate, Crown, ShieldCheck, Landmark
+    PlusCircle, Lock, ArrowRight, ArrowUpRight, LayoutTemplate, Crown, ShieldCheck, Landmark
 } from 'lucide-react';
 
 export default function DashboardHub() {
@@ -91,35 +91,58 @@ export default function DashboardHub() {
                         )}
                     </div>
 
-                    {/* Executive Pillars Strip */}
+                    {/* Executive Pillars Strip (Navegação Interativa e Fácil de Usar) */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-6 border-t border-[#E2E8F0]">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-slate-200 flex items-center justify-center text-[#8B6508]">
-                                <Landmark size={18} />
+                        <Link
+                            href="/dashboard/cooperativa"
+                            className="flex items-center justify-between p-3 rounded-2xl bg-[#F8FAFC] hover:bg-slate-100 border border-slate-200/80 hover:border-slate-300 transition-all group cursor-pointer shadow-sm"
+                            title="Acessar Open Finance e Quadro Societário"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-amber-700 shadow-sm group-hover:scale-105 transition-transform">
+                                    <Landmark size={18} />
+                                </div>
+                                <div>
+                                    <p className="text-xs font-extrabold text-[#0F172A] uppercase tracking-wider group-hover:text-amber-700 transition-colors">Open Finance BACEN</p>
+                                    <p className="text-[11px] text-[#64748B]">Conciliação automática de cotas e PIX</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-xs font-extrabold text-[#0F172A] uppercase tracking-wider">Open Finance BACEN</p>
-                                <p className="text-[11px] text-[#64748B]">Conciliação automática de cotas e PIX</p>
+                            <ArrowUpRight size={15} className="text-slate-400 group-hover:text-amber-700 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        </Link>
+
+                        <Link
+                            href="/dashboard/audit"
+                            className="flex items-center justify-between p-3 rounded-2xl bg-[#F8FAFC] hover:bg-slate-100 border border-slate-200/80 hover:border-slate-300 transition-all group cursor-pointer shadow-sm"
+                            title="Acessar Trilha de Auditoria e Governança"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 shadow-sm group-hover:scale-105 transition-transform">
+                                    <ShieldCheck size={18} />
+                                </div>
+                                <div>
+                                    <p className="text-xs font-extrabold text-[#0F172A] uppercase tracking-wider group-hover:text-emerald-700 transition-colors">Isolamento Multi-Tenant</p>
+                                    <p className="text-[11px] text-[#64748B]">Segregação criptográfica e auditoria</p>
+                                </div>
                             </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
-                                <ShieldCheck size={18} />
+                            <ArrowUpRight size={15} className="text-slate-400 group-hover:text-emerald-700 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        </Link>
+
+                        <Link
+                            href="/dashboard/whatsapp"
+                            className="flex items-center justify-between p-3 rounded-2xl bg-[#F8FAFC] hover:bg-slate-100 border border-slate-200/80 hover:border-slate-300 transition-all group cursor-pointer shadow-sm"
+                            title="Acessar Central WhatsApp Omnichannel"
+                        >
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-amber-700 shadow-sm group-hover:scale-105 transition-transform">
+                                    <Crown size={18} />
+                                </div>
+                                <div>
+                                    <p className="text-xs font-extrabold text-[#0F172A] uppercase tracking-wider group-hover:text-amber-700 transition-colors">OrBrick Omnichannel</p>
+                                    <p className="text-[11px] text-[#64748B]">Régua D-3, D0 e D+3 no WhatsApp</p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-xs font-extrabold text-[#0F172A] uppercase tracking-wider">Isolamento Multi-Tenant</p>
-                                <p className="text-[11px] text-[#64748B]">Segregação criptográfica e trilha de auditoria</p>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-[#F1F5F9] border border-slate-200 flex items-center justify-center text-[#8B6508]">
-                                <Crown size={18} />
-                            </div>
-                            <div>
-                                <p className="text-xs font-extrabold text-[#0F172A] uppercase tracking-wider">OrBrick Omnichannel</p>
-                                <p className="text-[11px] text-[#64748B]">Régua automática D-3, D0 e D+3 no WhatsApp</p>
-                            </div>
-                        </div>
+                            <ArrowUpRight size={15} className="text-slate-400 group-hover:text-amber-700 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                        </Link>
                     </div>
                 </div>
 

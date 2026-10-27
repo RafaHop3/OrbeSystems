@@ -144,20 +144,21 @@ export default function WhatsAppCentralPage() {
         const namePart = activeContact.name ? activeContact.name.split(' ')[0] : "Cliente";
         console.log("Inserting template:", type, "for contact:", namePart);
         
+        if (type === 'boas_vindas') {
+            const boasVindasTemplate = `Olá, ${namePart}! Seja muito bem-vindo(a) à nossa instituição. Seu cadastro foi concluído com sucesso e seus serviços e cotas já estão ativos na plataforma.`;
+            setMessageInput((prev) => (prev ? prev + "\n\n" : "") + boasVindasTemplate);
+        }
         if (type === 'pix') {
-            const pixTemplate = `Olá ${namePart}, segue a chave PIX para liquidar a parcela.\nChave: 45.455.513/0001-99\nEmpresa: INHO SaaS`;
-            setMessageInput((prev) => prev + pixTemplate);
-            console.log("PIX template inserted");
+            const pixTemplate = `Olá, ${namePart}! Segue a nossa chave PIX institucional para liquidação:\n\nChave PIX: financeiro@orbesystems.com.br\nIdentificação: Cota / Fatura`;
+            setMessageInput((prev) => (prev ? prev + "\n\n" : "") + pixTemplate);
         }
         if (type === 'proposta') {
-            const propostaTemplate = `Bom dia ${namePart}, a nossa proposta comercial consolidada está no ar. Clique no painel para aceitar.`;
-            setMessageInput((prev) => prev + propostaTemplate);
-            console.log("Proposta template inserted");
+            const propostaTemplate = `Olá, ${namePart}! O seu cronograma e propostas já estão disponíveis no sistema para conferência e validação. Ficamos à disposição!`;
+            setMessageInput((prev) => (prev ? prev + "\n\n" : "") + propostaTemplate);
         }
         if (type === 'cobranca') {
-            const cobrancaTemplate = `🚨 *AVISO DE COBRANÇA*\n\nIdentificamos uma fatura pendente no seu sistema, pronta para regularização. Em caso de dúvidas, nos responda aqui!`;
-            setMessageInput((prev) => prev + cobrancaTemplate);
-            console.log("Cobrança template inserted");
+            const cobrancaTemplate = `Lembrete de Vencimento:\n\nOlá, ${namePart}! Identificamos uma fatura com vencimento próximo para regularização. Caso já tenha realizado o pagamento, por favor desconsidere. Em caso de dúvidas, responda por aqui!`;
+            setMessageInput((prev) => (prev ? prev + "\n\n" : "") + cobrancaTemplate);
         }
     };
 
@@ -286,15 +287,18 @@ export default function WhatsAppCentralPage() {
 
                     {/* Chat Input & Fast Actions */}
                     <div className="bg-[#F1F5F9] border-t border-[#E2E8F0] p-4 flex flex-col gap-3">
-                        <div className="flex items-center gap-2">
-                            <button onClick={() => insertTemplate('pix')} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-[10px] font-bold uppercase rounded-md border border-emerald-300 transition-colors">
-                                <Zap size={12} /> Chave Pix
+                        <div className="flex flex-wrap items-center gap-2">
+                            <button onClick={() => insertTemplate('boas_vindas')} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-[10px] font-bold uppercase rounded-lg border border-slate-300 transition-colors shadow-sm">
+                                <UserCheck size={12} className="text-emerald-600" /> Boas-vindas
                             </button>
-                            <button onClick={() => insertTemplate('proposta')} className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 text-[10px] font-bold uppercase rounded-md border border-purple-300 transition-colors">
-                                <FileText size={12} /> Link Proposta
+                            <button onClick={() => insertTemplate('pix')} className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[10px] font-bold uppercase rounded-lg border border-emerald-300 transition-colors shadow-sm">
+                                <Zap size={12} className="text-emerald-600" /> Chave Pix
                             </button>
-                            <button onClick={() => insertTemplate('cobranca')} className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[10px] font-bold uppercase rounded-md border border-amber-300 transition-colors">
-                                <Clock size={12} /> Lembrete Régua
+                            <button onClick={() => insertTemplate('cobranca')} className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[10px] font-bold uppercase rounded-lg border border-amber-300 transition-colors shadow-sm">
+                                <Clock size={12} className="text-amber-600" /> Lembrete Régua
+                            </button>
+                            <button onClick={() => insertTemplate('proposta')} className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-800 text-[10px] font-bold uppercase rounded-lg border border-purple-300 transition-colors shadow-sm">
+                                <FileText size={12} className="text-purple-600" /> Proposta
                             </button>
                         </div>
                         <div className="flex items-end gap-3">

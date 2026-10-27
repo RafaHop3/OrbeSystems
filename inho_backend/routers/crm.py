@@ -904,9 +904,19 @@ async def proxy_omnichannel_message(
             or getattr(current_user, "full_name", None)
             or (current_user.email.split("@")[0] if getattr(current_user, "email", None) else "Operador")
         ).strip()
+        biz_name = getattr(business, "name", "Orbe Systems").strip()
         raw_msg = payload.message.strip()
-        if ">orbrick>" not in raw_msg.lower():
-            final_message = f"*{sender_name}>Orbrick>* {raw_msg}"
+
+        # Formatação Executiva Humanizada (Padrão Ouro — Sem termos técnicos confusos)
+        if sender_name.lower() == biz_name.lower():
+            header = f"*{biz_name}*"
+        else:
+            header = f"*{sender_name} | {biz_name}*"
+
+        if not raw_msg.startswith("*"):
+            final_message = f"{header}
+
+{raw_msg}"
         else:
             final_message = raw_msg
 
@@ -945,7 +955,7 @@ async def proxy_omnichannel_message(
             resend_key = os.environ.get("RESEND_API_KEY", "")
             if payload.email and resend_key:
                 try:
-                    html_msg = f"<div style='font-family: Arial, sans-serif; padding: 20px; color: #333;'><h2 style='color: #00fff5; background: #020406; padding: 15px; border-radius: 8px;'>Orbe Systems - Central B2B</h2><p>Ola,</p><p><strong>{sender_name}&gt;Orbrick&gt;</strong> {raw_msg}</p><hr style='border: top: 1px solid #eee; margin: 20px 0;'><p style='font-size: 11px; color: #888;'>Orbe Systems Central Omnichannel.</p></div>"
+                    html_msg = f"<div style='font-family: Arial, sans-serif; padding: 20px; color: #333;'><h2 style='color: #00fff5; background: #020406; padding: 15px; border-radius: 8px;'>Orbe Systems - Central B2B</h2><p>Ola,</p><p><strong>{sender_name} ({biz_name})</strong><br/><br/>{raw_msg}</p><hr style='border: top: 1px solid #eee; margin: 20px 0;'><p style='font-size: 11px; color: #888;'>Orbe Systems Central Omnichannel.</p></div>"
                     em_res = await client.post(
                         "https://api.resend.com/emails",
                         headers={"Authorization": f"Bearer {resend_key}"},
