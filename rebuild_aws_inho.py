@@ -9,10 +9,10 @@ instance_id = "i-058e26140671b3254"
 commands = [
     "sudo -u ubuntu sh -c 'cd /home/ubuntu/OrbeSystems && git fetch origin main && git reset --hard origin/main'",
     "cd /home/ubuntu/OrbeSystems",
-    "sudo docker start orbe_backend inho_backend whatsapp_service || sudo docker-compose -f ec2_compose.yml up -d",
+    "sudo docker start orbe_backend inho_backend orbe_whatsapp || sudo docker-compose -f ec2_compose.yml up -d",
     "sudo docker cp inho_backend/. inho_backend:/app/",
     "sudo docker restart orbe_backend inho_backend",
-    "sleep 5",
+    "sleep 10",
     "curl -I http://localhost:8000/health && curl -I http://localhost:8001/api/health"
 ]
 
