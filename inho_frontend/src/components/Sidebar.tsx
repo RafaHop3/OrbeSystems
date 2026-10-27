@@ -85,7 +85,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
         </div>
       </div>
 
-      {/* Navigation (Arquitetura Nimbus Elevada ao Padrão Ouro) */}
+      {/* Navigation (Arquitetura Executiva Orbe) */}
       <div className="flex-1 overflow-y-auto px-3.5 py-4 space-y-5 custom-scrollbar">
         {/* Hub Principal */}
         <Link
@@ -101,7 +101,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
           <span className="uppercase tracking-wider">Hub Executivo</span>
         </Link>
 
-        {/* SESSÃO 1: CRM & ENTIDADES (Estilo NIMBUS + SÓCIOS Cooperativismo) */}
+        {/* SESSÃO 1: CRM & ENTIDADES (CRM & Sócios Cooperativismo) */}
         <div className="space-y-1">
           <button
             onClick={() => setCrmOpen(!crmOpen)}
@@ -148,7 +148,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
           )}
         </div>
 
-        {/* SESSÃO 2: RECEBIMENTOS (Indicador Esmeralda Executivo estilo NIMBUS) */}
+        {/* SESSÃO 2: RECEBIMENTOS (Indicador Executivo de Recebimentos) */}
         <div className="space-y-1">
           <button
             onClick={() => setRecOpen(!recOpen)}

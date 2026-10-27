@@ -66,7 +66,7 @@ export default function DashboardHub() {
                         <div>
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F1F5F9] border border-slate-200 text-[#8B6508] text-[11px] font-extrabold uppercase tracking-widest mb-3">
                                 <Crown size={13} className="text-[#B8860B]" />
-                                Arquitetura Executiva Ouro • Nimbus Enterprise Edition
+                                Arquitetura Executiva • Orbe Enterprise Edition
                             </div>
                             <h1 className="text-3xl lg:text-4xl font-black text-[#0F172A] mb-2 tracking-tight">
                                 Hub de <span className="text-shimmer">Modelos de Negócios</span>
