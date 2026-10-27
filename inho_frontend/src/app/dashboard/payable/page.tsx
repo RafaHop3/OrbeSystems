@@ -130,6 +130,15 @@ export default function PayablePage() {
     }
   };
 
+  const handleApprove = async (id: string) => {
+    try {
+      await crmApi.approvePayable(id);
+      await loadData();
+    } catch (err: any) {
+      alert(err?.message || 'Erro ao aprovar alçada da despesa.');
+    }
+  };
+
   const handleMarkPaid = async (id: string) => {
     try {
       await crmApi.updatePayable(id, { status: 'PAID' });
@@ -371,12 +380,36 @@ export default function PayablePage() {
                         {new Date(p.due_date).toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                       </td>
                       <td className="px-6 py-4 font-bold font-mono text-[#0F172A]">{fmtCurrency(p.amount)}</td>
-                      <td className="px-6 py-4">{getStatusBadge(p)}</td>
+                      <td className="px-6 py-4">
+                        <div className="space-y-1">
+                          {getStatusBadge(p)}
+                          {Number(p.amount) >= 5000 && p.status !== 'PAID' && (
+                            p.payment_account?.includes('APPROVED') ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-700 border border-blue-500/20">
+                                <ShieldCheck size={10} /> Alçada Aprovada
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/15 text-amber-800 border border-amber-500/30">
+                                <ShieldCheck size={10} /> Exige Alçada
+                              </span>
+                            )
+                          )}
+                        </div>
+                      </td>
                       <td className="px-6 py-4 text-right space-x-2">
+                        {p.status !== 'PAID' && Number(p.amount) >= 5000 && !p.payment_account?.includes('APPROVED') && (
+                          <button
+                            onClick={() => handleApprove(p.id)}
+                            className="text-xs font-bold bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-800 px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 shadow-sm"
+                            title="Aprovar Alçada (> R$ 5.000,00)"
+                          >
+                            <ShieldCheck size={13} /> Aprovar
+                          </button>
+                        )}
                         {p.status !== 'PAID' && (
                           <button
                             onClick={() => handleMarkPaid(p.id)}
-                            className="text-xs font-bold bg-green-500/15 border border-green-500/30 hover:bg-green-500/25 text-green-300 px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1"
+                            className="text-xs font-bold bg-emerald-500/15 border border-emerald-500/30 hover:bg-emerald-500/25 text-emerald-800 px-3 py-1.5 rounded-lg transition-colors inline-flex items-center gap-1 shadow-sm"
                           >
                             <CheckCircle2 size={13} /> Dar Baixa
                           </button>
@@ -399,8 +432,8 @@ export default function PayablePage() {
 
         {/* Modal Nova Despesa */}
         {showModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white backdrop-blur-sm p-4">
-            <div className="bg-[#FAF8F2] border border-purple-500/30 rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <div className="bg-[#FFFFFF] border border-[#E5DEC9] rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl">
               <div className="flex items-center justify-between border-b border-[#E5DEC9] pb-3">
                 <h2 className="text-lg font-bold text-[#0F172A] flex items-center gap-2">
                   <FileText size={18} className="text-purple-700" />

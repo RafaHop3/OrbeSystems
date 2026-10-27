@@ -8,6 +8,7 @@ import {
     MoreVertical
 } from 'lucide-react';
 import { auth } from '@/lib/auth';
+import { crmApi } from '@/lib/api';
 
 export default function WhatsAppCentralPage() {
     const [messageInput, setMessageInput] = useState("");
@@ -24,25 +25,9 @@ export default function WhatsAppCentralPage() {
     React.useEffect(() => {
         const fetchAllContacts = async () => {
             try {
-                const token = auth.getAccessToken() || (typeof window !== "undefined" ? localStorage.getItem("token") || "" : "");
-                console.log("Fetching contacts with token:", token ? "Token exists" : "No token");
-                const res = await fetch(`https://inho-api.orbesystems.com.br/api/v1/crm/contacts/?limit=100`, {
-                    credentials: "include",
-                    headers: { "Authorization": `Bearer ${token}` }
-                });
-                console.log("Contacts API response status:", res.status);
-                if (res.ok) {
-                    const data = await res.json();
-                    console.log("Contacts data received:", data);
-                    if (data && data.length > 0) {
-                        setAllContacts(data); // Overrides mocks with real DB if available
-                    } else {
-                        console.log("No contacts found in response");
-                    }
-                } else {
-                    console.error("Failed to fetch contacts:", res.status, res.statusText);
-                    const errorText = await res.text();
-                    console.error("Error response:", errorText);
+                const data = await crmApi.getContacts();
+                if (data && data.length > 0) {
+                    setAllContacts(data);
                 }
             } catch (error) {
                 console.error("Failed to load contacts:", error);
@@ -59,14 +44,8 @@ export default function WhatsAppCentralPage() {
         const digits = String(contact.phone).replace(/\D/g, "");
         if (digits.length < 8) return;
         try {
-            const token = auth.getAccessToken() || localStorage.getItem("token") || "";
-            const res = await fetch(`https://inho-api.orbesystems.com.br/api/v1/crm/whatsapp/history?recipient=${digits.slice(-8)}&limit=100`, {
-                credentials: "include",
-                    headers: { "Authorization": `Bearer ${token}` }
-            });
-            if (!res.ok) return;
-            const logs: any[] = await res.json();
-            setMessages(logs.reverse().map(l => ({
+            const logs: any[] = await crmApi.getWhatsappHistory(digits.slice(-8));
+            setMessages(logs.reverse().map((l: any) => ({
                 id: l.id as any,
                 sender: "Você (Omnichannel)",
                 text: l.message,
@@ -87,12 +66,8 @@ export default function WhatsAppCentralPage() {
     React.useEffect(() => {
         const loadQueue = async () => {
             try {
-                const token = auth.getAccessToken() || localStorage.getItem("token") || "";
-                const res = await fetch(`https://inho-api.orbesystems.com.br/api/v1/crm/whatsapp/queue`, {
-                    credentials: "include",
-                    headers: { "Authorization": `Bearer ${token}` }
-                });
-                if (res.ok) setQueue((await res.json()).filter((q: any) => q.state !== 'SENT').slice(0, 8));
+                const qData: any[] = await crmApi.getWhatsappQueue();
+                if (qData) setQueue(qData.filter((q: any) => q.state !== 'SENT').slice(0, 8));
             } catch (e) { console.error("Falha ao carregar fila:", e); }
         };
         loadQueue();
@@ -128,45 +103,32 @@ export default function WhatsAppCentralPage() {
         setMessages((prev) => [...prev, newMsg]);
 
         try {
-            const token = auth.getAccessToken() || (typeof window !== "undefined" ? localStorage.getItem("token") || "" : "");
             console.log("Sending WhatsApp message to:", activeContact.phone);
             console.log("Message content:", outMsg);
             
-            const response = await fetch("https://inho-api.orbesystems.com.br/api/v1/crm/whatsapp/send", {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    phone: activeContact.phone,
-                    email: activeContact.email || null,
-                    message: outMsg
-                })
+            const data = await crmApi.sendWhatsapp({
+                phone: activeContact.phone,
+                email: activeContact.email || null,
+                message: outMsg
             });
-            
-            console.log("WhatsApp API response status:", response.status);
-            
-            const data = await response.json();
             console.log("WhatsApp API response:", data);
 
             // Sucesso se ao menos uma variação (com ou sem 9º dígito) retornou 200
-            const codes: string[] = Array.isArray(data.whatsapp_delivery_code) ? data.whatsapp_delivery_code : [];
+            const codes: string[] = Array.isArray(data?.whatsapp_delivery_code) ? data.whatsapp_delivery_code : [];
             const anyDelivered = codes.some((code: string) => code.endsWith(":200"));
             const waStatusAlert = codes.length === 0 || !anyDelivered;
 
-            if (waStatusAlert || !response.ok) {
-                alert(`⚠️ Falha no disparo E2E:\nO Container do WhatsApp Bot (Baileys) parece estar indisponível ou em crash loop no servidor.\n\nLogs API: ${JSON.stringify(data.whatsapp_delivery_code)}`);
+            if (waStatusAlert) {
+                alert(`⚠️ Falha no disparo E2E:\nO Container do WhatsApp Bot (Baileys) parece estar indisponível ou em crash loop no servidor.\n\nLogs API: ${JSON.stringify(data?.whatsapp_delivery_code)}`);
                 // Erase the optimistic bubble
                 setMessages((prev) => prev.filter(m => m.id !== newMsg.id));
             } else {
                 console.log("Message sent successfully");
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("Erro no envio omnichannel:", error);
-            alert("Erro Ominchannel Proxy: " + error);
+            alert("Erro Omnichannel Proxy: " + (error?.message || error));
             // Erase the optimistic bubble on error
             setMessages((prev) => prev.filter(m => m.id !== newMsg.id));
         } finally {

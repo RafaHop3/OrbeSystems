@@ -17,7 +17,7 @@ from core.deps import get_current_user
 from db.session import get_db
 from models.models import (
     AccountPayable, BillingInvoice, BillingStatus, CRMContact, ContactCategory,
-    PayableStatus, User, Business
+    PayableStatus, User, Business, AuditLog, AuditAction
 )
 from routers.billing import _get_user_business
 from schemas.crm_schemas import (
@@ -368,11 +368,75 @@ async def update_payable(
         raise HTTPException(404, "Conta a pagar não encontrada")
 
     dump = payload.model_dump(exclude_unset=True)
+    new_status = dump.get("status")
+
+    # ── Trava de Alçada Dual-Control (> R$ 5.000,00) ──────────────────
+    if new_status in (PayableStatus.PAID, "PAID") and float(payable.amount or 0) >= 5000.0:
+        is_approved = "APPROVED" in str(payable.payment_account or "") or "APPROVED" in str(dump.get("payment_account") or "")
+        if not is_approved:
+            raise HTTPException(
+                status_code=403,
+                detail="Trava de Alçada Dual-Control: Despesas a partir de R$ 5.000,00 exigem aprovação prévia de alçada antes da liquidação."
+            )
+
     for field, value in dump.items():
         setattr(payable, field, value)
 
     if payable.status == PayableStatus.PAID and not payable.paid_date:
         payable.paid_date = datetime.now(timezone.utc)
+        try:
+            audit = AuditLog(
+                business_id=get_uuid(business.id),
+                user_id=get_uuid(current_user.id) if current_user.id else None,
+                user_name=getattr(current_user, "full_name", current_user.email),
+                user_role=str(getattr(current_user, "role", "operator")),
+                action=AuditAction.UPDATE,
+                entity="accounts_payable",
+                entity_id=get_uuid(payable.id),
+                detail=f"Liquidação de despesa R$ {float(payable.amount):.2f} - {payable.description}"
+            )
+            db.add(audit)
+        except Exception:
+            pass
+
+    await db.commit()
+    await db.refresh(payable)
+    return payable
+
+
+@router.post("/payable/{payable_id}/approve", response_model=AccountPayableOut)
+async def approve_payable(
+    payable_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """Aprovação de alçada prévia para Contas a Pagar >= R$ 5.000,00."""
+    business = await _biz(db, current_user)
+    result = await db.execute(
+        select(AccountPayable).where(
+            AccountPayable.id == get_uuid(payable_id),
+            AccountPayable.business_id == get_uuid(business.id)
+        )
+    )
+    payable = result.scalar_one_or_none()
+    if not payable:
+        raise HTTPException(404, "Conta a pagar não encontrada")
+
+    payable.payment_account = f"APPROVED_BY:{current_user.email}"
+    try:
+        audit = AuditLog(
+            business_id=get_uuid(business.id),
+            user_id=get_uuid(current_user.id) if current_user.id else None,
+            user_name=getattr(current_user, "full_name", current_user.email),
+            user_role=str(getattr(current_user, "role", "admin")),
+            action=AuditAction.UPDATE,
+            entity="accounts_payable",
+            entity_id=get_uuid(payable.id),
+            detail=f"Aprovação de Alçada para despesa R$ {float(payable.amount):.2f} por {current_user.email}"
+        )
+        db.add(audit)
+    except Exception:
+        pass
 
     await db.commit()
     await db.refresh(payable)

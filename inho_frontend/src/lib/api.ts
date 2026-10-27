@@ -87,7 +87,7 @@ async function silentRefresh(): Promise<boolean> {
 }
 
 // ── Core Fetch Interceptor ─────────────────────────────────────────
-async function apiFetch<T>(
+export async function apiFetch<T>(
   path: string,
   options: RequestInit = {},
   _retry = false
@@ -497,6 +497,7 @@ export interface AccountPayableCreate {
   due_date: string;
   description?: string;
   payment_method?: string;
+  payment_account?: string;
   notes?: string;
   status?: 'PENDING' | 'PAID' | 'CANCELLED' | 'OVERDUE';
 }
@@ -513,6 +514,7 @@ export interface AccountPayableOut {
   due_date: string;
   paid_date?: string;
   payment_method?: string;
+  payment_account?: string;
   notes?: string;
   status: 'PENDING' | 'PAID' | 'CANCELLED' | 'OVERDUE';
   created_at?: string;
@@ -555,6 +557,12 @@ export const crmApi = {
       `/api/v1/crm/whatsapp/history${recipient ? `?recipient=${encodeURIComponent(recipient)}` : ''}`
     ),
 
+  sendWhatsapp: (payload: { phone: string; email?: string | null; message: string }) =>
+    apiFetch<any>('/api/v1/crm/whatsapp/send', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
   getWhatsappQueue: () =>
     apiFetch<{ invoice_id: string; customer_name: string; customer_phone?: string; amount: number; due_date: string;
       step: string; scheduled_for: string; sent_at?: string; state: 'QUEUED' | 'SENT' | 'NO_PHONE' }[]>(
@@ -592,6 +600,11 @@ export const crmApi = {
     apiFetch<AccountPayableOut>(`/api/v1/crm/payable/${id}`, {
       method: 'PUT',
       body: JSON.stringify(payload),
+    }),
+
+  approvePayable: (id: string) =>
+    apiFetch<AccountPayableOut>(`/api/v1/crm/payable/${id}/approve`, {
+      method: 'POST',
     }),
 
   deletePayable: (id: string) =>
