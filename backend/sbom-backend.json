@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:15abae8e-0b14-414f-97ad-ff02b96e9037",
+  "serialNumber": "urn:uuid:15e26e86-70b0-4510-867a-b7e35f3c0625",
   "metadata": {
-    "timestamp": "2026-10-26T23:35:37.374888+00:00",
+    "timestamp": "2026-10-27T14:16:51.616417+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -1230,8 +1230,8 @@
     {
       "type": "library",
       "name": "pyasn1",
-      "version": "0.6.4",
-      "purl": "pkg:pypi/pyasn1@0.6.4",
+      "version": "0.6.5",
+      "purl": "pkg:pypi/pyasn1@0.6.5",
       "licenses": [
         {
           "license": {
@@ -1248,7 +1248,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "9422bc151b58a9f6cf49c77152c32913831f360364b09b563dd858c1a240d398"
+          "content": "ddd0dc022f97aa290808ec7fe290a7c0dff1a59526590014bc102128c8c00ce2"
         }
       ]
     },
@@ -1835,8 +1835,8 @@
     {
       "type": "library",
       "name": "stripe",
-      "version": "16.0.0",
-      "purl": "pkg:pypi/stripe@16.0.0",
+      "version": "16.0.1",
+      "purl": "pkg:pypi/stripe@16.0.1",
       "licenses": [
         {
           "license": {
@@ -1853,7 +1853,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "8f654ae9bfe0b1f1f2c645443d9fc75915502b392ed83db65a6f4f5b5a005514"
+          "content": "a28c9774327099cc6f353dbe1ca43e62653c9a2bd6f51b8b00b2a7d2471f76fc"
         }
       ]
     },
