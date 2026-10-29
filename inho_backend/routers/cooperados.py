@@ -562,8 +562,6 @@ async def get_cooperado_informe_rendimentos(
     # Recupera cooperado por id ou por busca no tenant
     all_tenant_coops = (await db.execute(select(Cooperado).where(Cooperado.business_id == b_id))).scalars().all()
     coop = next((c for c in all_tenant_coops if str(c.id) == str(c_id)), None)
-    if not coop and all_tenant_coops:
-        coop = all_tenant_coops[0]
     if not coop:
         raise HTTPException(status_code=404, detail="Cooperado não encontrado")
 
