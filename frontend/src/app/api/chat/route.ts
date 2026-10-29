@@ -1,42 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { retrieveKnowledge, synthesizeRagResponse } from '@/lib/rag/ragEngine';
 
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const HUGGINGFACE_API_KEY = process.env.HUGGINGFACE_API_KEY;
 const HF_ROUTER_URL = "https://router.huggingface.co/v1/chat/completions";
-
-// Contingência inteligente da Orbe Systems (Knowledge Fallback Engine)
-function generateOrbeFallbackResponse(userMessage: string, currentDateTime: string): string {
-  const msg = userMessage.toLowerCase();
-
-  if (msg.includes('hora') || msg.includes('hoje') || msg.includes('dia') || msg.includes('data')) {
-    return `Olá! Hoje é ${currentDateTime}. Como posso auxiliar na arquitetura dos seus sistemas ou ferramentas Orbe?`;
-  }
-
-  if (msg.includes('imortal') || msg.includes('z3') || msg.includes('reversa') || msg.includes('prova')) {
-    return `O **IMORTAL** é o motor de verificação formal da Orbe Systems. Ele combina descompilação de bytecode, análise de invariantes com o provador de teoremas Z3 (SMT) e provas matemáticas para assegurar que nenhum edge case de segurança passe desapercebido. Acesse o menu Ferramentas Premium para mais detalhes.`;
-  }
-
-  if (msg.includes('ghost') || msg.includes('lgpd') || msg.includes('remover') || msg.includes('optout') || msg.includes('opt-out')) {
-    return `O **Ghost Engine** automatiza requisições de opt-out e exclusão de dados pessoais com base nos Artigos 7º e 18º da LGPD em databrokers e birôs de crédito com chaves de criptografia simétrica MultiFernet KMS de ponta a ponta.`;
-  }
-
-  if (msg.includes('cleaner') || msg.includes('otimiz') || msg.includes('hardware') || msg.includes('nvme')) {
-    return `O **Orbe Cleaner V4** é nossa suíte de higienização de cache e otimização profunda para armazenamento NVMe/SSD, eliminando fragmentação de arquivos temporários e liberando throughput no sistema operacional.`;
-  }
-
-  if (msg.includes('inho') || msg.includes('erp') || msg.includes('pix') || msg.includes('fiscal') || msg.includes('dre')) {
-    return `O **INHO Business Engine** é o ERP corporativo multi-tenant da Orbe Systems. Ele provê conciliação PIX instantânea (< 1s), emissão fiscal automatizada, relatórios DRE em tempo real e automação de cobrança integrada com a Central WhatsApp OrBrick. Acesse https://inho.orbesystems.com.br para conhecer.`;
-  }
-
-  if (msg.includes('preço') || msg.includes('valor') || msg.includes('assin') || msg.includes('plano')) {
-    return `Nossos produtos contam com camadas gratuitas de demonstração técnica e planos corporativos dedicados. Para consultar os planos ativos ou assinar uma licença, acesse a página de Assinaturas (/assinar) ou fale diretamente com a equipe técnica da Orbe Systems.`;
-  }
-
-  if (msg.includes('contato') || msg.includes('suporte') || msg.includes('email') || msg.includes('falar')) {
-    return `Você pode entrar em contato com o time de engenharia da Orbe Systems através do e-mail oficial: suporte@orbesystems.com.br ou pelo portal administrativo.`;
-  }
-
-  return `Sou o **Orbe Assistant**, o assistente técnico da Orbe Systems. Posso orientá-lo sobre nossa infraestrutura de cibersegurança, produtos premium (IMORTAL, Ghost Engine, Orbe Cleaner, INHO ERP) e arquitetura de sistemas de alta performance. Como posso ajudar com sua demanda hoje?`;
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,14 +13,6 @@ export async function POST(request: NextRequest) {
       timeZone: 'America/Sao_Paulo'
     }).format(new Date());
 
-    const dynamicSystemContext = `Você é o Orbe Assistant, um assistente de IA hiper-inteligente da Orbe Systems (uma empresa de engenharia de software de alto nível e cibersegurança).
-Fale de forma estritamente profissional, técnica, direta e em português do Brasil. Sem rodeios.
-⚠️ INFORMAÇÃO CRÍTICA DE TEMPO: A data/hora exata de hoje é ${currentDateTime}. Use essa data se o usuário perguntar o dia atual; NUNCA alucine datas passadas.
-Sobre a Orbe Systems: Nós operamos os produtos premium IMORTAL (Engenharia Reversa e Provas Formais Z3), Ghost Engine (LGPD), INHO ERP, Orbe Cleaner e PowerShell Shield Bot.
-Diretrizes: 
-- Forneça respostas concisas e certeiras.
-- Não invente preços ou invente regras de negócios falsas.`;
-
     const body = await request.json();
     const { messages } = body as { messages: Array<{ role: string; content: string }> };
 
@@ -62,18 +21,76 @@ Diretrizes:
     }
 
     const lastUserMessage = messages[messages.length - 1]?.content || '';
+
+    // =========================================================================
+    // ETAPA 1: RAG RETRIEVAL (Recuperação Semântica dos Manuais e Produtos)
+    // =========================================================================
+    const searchResults = retrieveKnowledge(lastUserMessage, 3);
+    const retrievedDocsText = searchResults
+      .map(r => `[DOCUMENTO: ${r.chunk.title}]\n${r.chunk.content}\n`)
+      .join('\n');
+
+    const sources = searchResults.map(r => ({
+      title: r.chunk.title,
+      id: r.chunk.id
+    }));
+
+    const ragSystemContext = `Você é o Orbe Assistant, o assistente sênior de IA hiper-inteligente da Orbe Systems (empresa brasileira de alta engenharia de software e cibersegurança).
+Fale de forma técnica, fluida, direta e estritamente profissional em português do Brasil.
+⚠️ INFORMAÇÃO TEMPORAL: Data/hora atual: ${currentDateTime}.
+DIRETRIZES DE RAG:
+Abaixo estão os trechos oficiais recuperados diretamente da Base de Conhecimento e Manuais de Arquitetura da Orbe Systems.
+Use estas informações como fonte primária de verdade para responder à dúvida do usuário.
+Nunca invente preços ou regras divergentes da documentação.
+
+--- INÍCIO DOS DOCUMENTOS OFICIAIS RECUPERADOS VIA RAG ---
+${retrievedDocsText}
+--- FIM DOS DOCUMENTOS OFICIAIS RECUPERADOS VIA RAG ---`;
+
     let aiResponseText = '';
 
-    // Se houver chave Hugging Face, tenta a chamada com timeout defensivo
-    if (HUGGINGFACE_API_KEY) {
+    // =========================================================================
+    // ETAPA 2: PROVEDOR 1 - GOOGLE GEMINI FLASH (Se configurado)
+    // =========================================================================
+    if (GEMINI_API_KEY && !aiResponseText) {
       try {
-        const payloadMessages = [
-          { role: 'system', content: dynamicSystemContext },
-          ...messages
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+        const contents = [
+          { role: 'user', parts: [{ text: ragSystemContext + `\n\nPergunta do Usuário:\n${lastUserMessage}` }] }
         ];
 
+        const resp = await fetch(geminiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ contents }),
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        if (resp.ok) {
+          const geminiData = await resp.json();
+          aiResponseText = geminiData.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        }
+      } catch (e) {
+        console.warn('[Orbe RAG] Gemini provider skipped:', e);
+      }
+    }
+
+    // =========================================================================
+    // ETAPA 3: PROVEDOR 2 - HUGGING FACE ROUTER (Se configurado e com créditos)
+    // =========================================================================
+    if (HUGGINGFACE_API_KEY && !aiResponseText) {
+      try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 9000);
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+        const payloadMessages = [
+          { role: 'system', content: ragSystemContext },
+          ...messages
+        ];
 
         const response = await fetch(HF_ROUTER_URL, {
           method: 'POST',
@@ -84,8 +101,8 @@ Diretrizes:
           body: JSON.stringify({
             model: "Qwen/Qwen2.5-72B-Instruct",
             messages: payloadMessages,
-            max_tokens: 350,
-            temperature: 0.7
+            max_tokens: 450,
+            temperature: 0.6
           }),
           signal: controller.signal
         });
@@ -94,20 +111,21 @@ Diretrizes:
         if (response.ok) {
           const data = await response.json();
           aiResponseText = data.choices?.[0]?.message?.content || '';
-        } else {
-          console.warn(`[Orbe Chat] HF Router responded with status ${response.status}. Falling back to internal engine.`);
         }
       } catch (err) {
-        console.warn('[Orbe Chat] HF request failed or timed out:', err);
+        console.warn('[Orbe RAG] HF Router skipped or timed out:', err);
       }
     }
 
-    // Se a API externa falhou, ficou sem créditos ou deu timeout, usa o Fallback Engine local
+    // =========================================================================
+    // ETAPA 4: PROVEDOR 3 - SÍNTESE RAG AUTÔNOMA DETERMINÍSTICA (Zero Latência)
+    // =========================================================================
     if (!aiResponseText) {
-      aiResponseText = generateOrbeFallbackResponse(lastUserMessage, currentDateTime);
+      const synthesized = synthesizeRagResponse(lastUserMessage, searchResults, currentDateTime);
+      aiResponseText = synthesized.text;
     }
 
-    // Firebase/Backend fire-and-forget log sync for /admin dashboard
+    // Fire-and-forget log sync para o painel /admin
     const BACKEND_URL = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
     if (BACKEND_URL) {
       fetch(`${BACKEND_URL}/api/admin/chat-logs`, {
@@ -115,16 +133,21 @@ Diretrizes:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user_message: lastUserMessage,
-          ai_response: aiResponseText
+          ai_response: aiResponseText,
+          sources_count: sources.length
         })
-      }).catch(e => console.error("Failed to push chat log:", e));
+      }).catch(e => console.error("[Orbe RAG] Failed to push chat log:", e));
     }
 
-    return NextResponse.json({ response: aiResponseText });
+    return NextResponse.json({
+      response: aiResponseText,
+      sources: sources
+    });
   } catch (err) {
-    console.error('[Orbe Chat] Unexpected error:', err);
+    console.error('[Orbe RAG] Unexpected error in chat route:', err);
     return NextResponse.json({ 
-      response: 'Olá! O Orbe Assistant está ativo. Em que podemos auxiliar sua empresa hoje?' 
+      response: 'O **Orbe Assistant** está ativo com RAG integrado. Em que podemos auxiliar sua empresa hoje?',
+      sources: []
     });
   }
 }
