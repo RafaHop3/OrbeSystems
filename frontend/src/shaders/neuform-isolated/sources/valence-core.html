@@ -12,7 +12,42 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      *, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body { background-color: #0a0a0a; color: #fafafa; height: 100vh; width: 100vw; overflow: hidden; font-family: 'Inter', system-ui, sans-serif; display: flex; flex-direction: column; position: relative; }
+      .absolute { position: absolute; }
+      .relative { position: relative; }
+      .inset-0 { inset: 0; }
+      .w-full { width: 100%; }
+      .h-full { height: 100%; }
+      .z-0 { z-index: 0; }
+      .z-10 { z-index: 10; }
+      .z-20 { z-index: 20; }
+      .opacity-60 { opacity: 0.6; }
+      .pointer-events-none { pointer-events: none; }
+      .flex { display: flex; }
+      .hidden { display: none; }
+      .flex-col { flex-direction: column; }
+      .items-center { align-items: center; }
+      .justify-center { justify-content: center; }
+      .justify-between { justify-content: space-between; }
+      .px-4 { padding-left: 1rem; padding-right: 1rem; }
+      .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+      .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+      .text-center { text-align: center; }
+      .rounded-full { border-radius: 9999px; }
+      .rounded-\[18px\] { border-radius: 18px; }
+      .text-xs { font-size: 0.75rem; }
+      .text-sm { font-size: 0.875rem; }
+      .text-cyan-500 { color: #06b6d4; }
+      .text-neutral-200 { color: #e5e5e5; }
+      .text-neutral-400 { color: #a3a3a3; }
+      .text-neutral-500 { color: #737373; }
+      .bg-transparent { background-color: transparent; }
+      .cursor-pointer { cursor: pointer; }
+      .w-\[280px\] { width: 280px; }
+      .h-\[96px\] { height: 96px; }
+    </style>
 
     <!-- Scripts -->
     <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
@@ -392,7 +427,9 @@
                 requestAnimationFrame(frame);
             }
 
-            initBackgroundGL();
+            if (window.innerWidth > 320 && window.innerHeight > 150) {
+                initBackgroundGL();
+            }
             initButtonGL();
         })();
     </script>
