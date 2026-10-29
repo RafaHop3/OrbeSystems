@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI):
     logger.info("INHO API iniciando...")
 
     is_sqlite = str(settings.DATABASE_URL).startswith("sqlite")
-    for stmt in [
+    startup_stmts = [
         "ALTER TABLE public.users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255)",
         "UPDATE public.users SET full_name = 'rafael_admin', role = 'ADMIN', subscription_status = 'active' WHERE LOWER(email) = 'rafael@orbesystems.com.br'",
         "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS bank_details TEXT",
@@ -43,7 +43,12 @@ async def lifespan(app: FastAPI):
         "CREATE INDEX IF NOT EXISTS ix_billing_invoices_biz_comp ON inho.billing_invoices (business_id, data_competencia)",
         "CREATE INDEX IF NOT EXISTS ix_accounts_payable_biz_status_due ON inho.accounts_payable (business_id, status, due_date)",
         "CREATE INDEX IF NOT EXISTS ix_accounts_payable_biz_paid ON inho.accounts_payable (business_id, status, paid_date)",
-    ]:
+    ]
+    if not is_sqlite:
+        startup_stmts.append(
+            "CREATE UNIQUE INDEX IF NOT EXISTS ux_cooperados_business_doc ON inho.cooperados (business_id, regexp_replace(document, '\\D', '', 'g'))"
+        )
+    for stmt in startup_stmts:
         try:
             async with engine.begin() as ddl_conn:
                 if not is_sqlite:
@@ -51,6 +56,40 @@ async def lifespan(app: FastAPI):
                 await ddl_conn.execute(text(stmt))
         except Exception as ddl_err:
             logger.warning(f"DDL startup warning: {ddl_err}")
+
+    # INFRA-01: Hardening automatico de RLS no schema public
+    if not is_sqlite:
+        rls_sql = """
+        DO $$
+        DECLARE
+            r RECORD;
+        BEGIN
+            FOR r IN
+                SELECT tablename
+                FROM pg_tables
+                WHERE schemaname = 'public'
+            LOOP
+                EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY;', r.tablename);
+                IF NOT EXISTS (
+                    SELECT 1 FROM pg_policies
+                    WHERE schemaname = 'public'
+                    AND tablename = r.tablename
+                    AND policyname = 'deny_postgrest_access'
+                ) THEN
+                    EXECUTE format(
+                        'CREATE POLICY deny_postgrest_access ON public.%I FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);',
+                        r.tablename
+                    );
+                END IF;
+            END LOOP;
+        END $$;
+        """
+        try:
+            async with engine.begin() as rls_conn:
+                await rls_conn.execute(text("SET LOCAL lock_timeout = '3s'"))
+                await rls_conn.execute(text(rls_sql))
+        except Exception as rls_err:
+            logger.warning(f"RLS hardening startup warning: {rls_err}")
 
     try:
         async with engine.begin() as conn:

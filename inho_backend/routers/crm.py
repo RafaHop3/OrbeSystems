@@ -294,6 +294,9 @@ async def create_payable(
         data["supplier_id"] = get_uuid(data["supplier_id"])
     if data.get("category_id") and isinstance(data["category_id"], str):
         data["category_id"] = get_uuid(data["category_id"])
+
+    if float(data.get("amount") or 0) > 5000.0:
+        data["status"] = PayableStatus.PENDING_APPROVAL
         
     db_payable = AccountPayable(**data, business_id=b_id)
     db.add(db_payable)
@@ -350,6 +353,7 @@ async def get_payable(
 
 
 @router.put("/payable/{payable_id}", response_model=AccountPayableOut)
+@router.patch("/payable/{payable_id}", response_model=AccountPayableOut)
 async def update_payable(
     payable_id: str,
     payload: AccountPayableUpdate,
@@ -371,12 +375,16 @@ async def update_payable(
     new_status = dump.get("status")
 
     # ── Trava de Alçada Dual-Control (> R$ 5.000,00) ──────────────────
-    if new_status in (PayableStatus.PAID, "PAID") and float(payable.amount or 0) >= 5000.0:
-        is_approved = "APPROVED" in str(payable.payment_account or "") or "APPROVED" in str(dump.get("payment_account") or "")
-        if not is_approved:
+    if new_status in (PayableStatus.PAID, "PAID"):
+        is_approved = (
+            payable.status in ("APPROVED", PayableStatus.APPROVED)
+            or "APPROVED" in str(payable.payment_account or "")
+            or "APPROVED" in str(dump.get("payment_account") or "")
+        )
+        if float(payable.amount or 0) > 5000.0 and not is_approved:
             raise HTTPException(
-                status_code=403,
-                detail="Trava de Alçada Dual-Control: Despesas a partir de R$ 5.000,00 exigem aprovação prévia de alçada antes da liquidação."
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="DUAL_CONTROL_REQUIRED: Despesas acima de R$ 5.000,00 exigem aprovação de alçada antes da baixa."
             )
 
     for field, value in dump.items():
@@ -411,6 +419,12 @@ async def approve_payable(
     current_user: User = Depends(get_current_user)
 ):
     """Aprovação de alçada prévia para Contas a Pagar >= R$ 5.000,00."""
+    user_role = (getattr(current_user, "role", "") or "").lower()
+    if user_role not in ("admin", "super_admin", "superadmin"):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Apenas administradores (admin / super_admin) podem aprovar despesas em alçada."
+        )
     business = await _biz(db, current_user)
     result = await db.execute(
         select(AccountPayable).where(
@@ -422,17 +436,18 @@ async def approve_payable(
     if not payable:
         raise HTTPException(404, "Conta a pagar não encontrada")
 
+    payable.status = PayableStatus.APPROVED
     payable.payment_account = f"APPROVED_BY:{current_user.email}"
     try:
         audit = AuditLog(
             business_id=get_uuid(business.id),
             user_id=get_uuid(current_user.id) if current_user.id else None,
             user_name=getattr(current_user, "full_name", current_user.email),
-            user_role=str(getattr(current_user, "role", "admin")),
+            user_role=user_role,
             action=AuditAction.UPDATE,
             entity="accounts_payable",
             entity_id=get_uuid(payable.id),
-            detail=f"Aprovação de Alçada para despesa R$ {float(payable.amount):.2f} por {current_user.email}"
+            detail=f"APPROVE_PAYABLE_DUAL_CONTROL: Aprovação de Alçada para despesa R$ {float(payable.amount):.2f} por {current_user.email}"
         )
         db.add(audit)
     except Exception:
@@ -602,6 +617,15 @@ async def batch_settle_payables(
             if p.status == PayableStatus.PAID:
                 skipped_ids.append(str(p.id))
                 continue
+            is_approved = (
+                p.status in ("APPROVED", PayableStatus.APPROVED)
+                or "APPROVED" in str(p.payment_account or "")
+            )
+            if float(p.amount or 0) > 5000.0 and not is_approved:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="DUAL_CONTROL_REQUIRED: Despesas acima de R$ 5.000,00 exigem aprovação de alçada antes da baixa."
+                )
             p.status = PayableStatus.PAID
             if not p.paid_date:
                 p.paid_date = now_dt

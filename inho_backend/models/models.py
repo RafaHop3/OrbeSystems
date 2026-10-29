@@ -505,9 +505,11 @@ class BillingInvoice(Base):
 
 
 class PayableStatus(str, enum.Enum):
-    PENDING   = "PENDING"
-    PAID      = "PAID"
-    CANCELLED = "CANCELLED"
+    PENDING          = "PENDING"
+    PENDING_APPROVAL = "PENDING_APPROVAL"
+    APPROVED         = "APPROVED"
+    PAID             = "PAID"
+    CANCELLED        = "CANCELLED"
 
 class AccountPayable(Base):
     __tablename__ = "accounts_payable"

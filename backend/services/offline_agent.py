@@ -383,7 +383,6 @@ def start_offline_agent():
 
 def stop_offline_agent():
     """Para o daemon do agente offline."""
-    global _loop
     if _loop and _loop.is_running():
         _loop.call_soon_threadsafe(_loop.stop)
         logger.info("[OfflineAgent] Agente Proativo Offline de Background Parado.")

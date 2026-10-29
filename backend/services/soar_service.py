@@ -40,7 +40,6 @@ _CACHE_TTL_SECONDS = 60
 def _refresh_cache_if_stale(db: Session) -> None:
     """Reload all active blocks from DB into the in-process cache."""
     global _block_cache, _cache_built_at
-
     now = time.time()
     if now - _cache_built_at < _CACHE_TTL_SECONDS:
         return  # Cache still fresh
@@ -102,7 +101,6 @@ def block_ip(
         logger.info(f"[SOAR] Safe-listed IP skipped from blocklist: {ip}")
         return None
 
-    global _block_cache, _cache_built_at
 
     expiry = datetime.now(timezone.utc) + timedelta(hours=hours)
 
@@ -143,7 +141,6 @@ def block_ip(
 
 def unblock_ip(db: Session, ip: str, admin: str) -> bool:
     """Manually remove a block (admin action)."""
-    global _block_cache
     entry = db.query(IpBlocklist).filter(IpBlocklist.ip == ip).first()
     if entry:
         db.delete(entry)

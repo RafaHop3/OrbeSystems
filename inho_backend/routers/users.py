@@ -52,58 +52,93 @@ async def create_user(
     from routers.billing import _get_user_business
     from routers.crm import get_uuid
     from models.models import BusinessOperator
-
+    from sqlalchemy.exc import IntegrityError
     from sqlalchemy import func
-    clean_email = body.email.strip().lower()
-    existing = await db.execute(select(User).where(func.lower(User.email) == clean_email))
-    if existing.scalar_one_or_none():
-        raise HTTPException(status_code=400, detail="Já existe um usuário cadastrado com este e-mail")
 
     role_input = (body.role.value if hasattr(body.role, "value") else str(body.role or "operator")).strip().lower()
 
-    user = User(
-        email=body.email.strip().lower(),
-        full_name_db=body.full_name.strip() if getattr(body, "full_name", None) else None,
-        password_hash=hash_password(body.password),
-        role=role_input,
-        is_email_verified=True,
-        subscription_status="active",
-    )
-    db.add(user)
-    await db.flush()
+    # Determina o target_biz_id do operador/usuário
+    target_biz_id = body.business_id
+    if not target_biz_id:
+        admin_biz = await _get_user_business(db, current_user)
+        target_biz_id = admin_biz.id if admin_biz else None
+    target_b_uuid = get_uuid(target_biz_id) if target_biz_id else None
 
-    # Manual 06 §3 & §4: Comparar sempre em lowercase e vincular Operador ao Business da cooperativa
-    if role_input == "operator":
-        target_biz_id = body.business_id
-        if not target_biz_id:
-            admin_biz = await _get_user_business(db, current_user)
-            target_biz_id = admin_biz.id if admin_biz else None
-        if target_biz_id:
+    # BUG-04: Tratamento idempotente e prevenção de HTTP 500 por e-mail duplicado
+    clean_email = body.email.strip().lower()
+    existing_user = (await db.execute(select(User).where(func.lower(User.email) == clean_email))).scalar_one_or_none()
+
+    if existing_user:
+        # Verifica se o operador já pertence à mesma organização
+        biz_op = (await db.execute(select(BusinessOperator).where(BusinessOperator.user_id == get_uuid(existing_user.id)))).scalar_one_or_none()
+        if (biz_op and str(biz_op.business_id) == str(target_b_uuid)) or (target_b_uuid is None):
+            if getattr(body, "full_name", None):
+                existing_user.full_name_db = body.full_name.strip()
+            existing_user.role = role_input
+            if body.password:
+                existing_user.password_hash = hash_password(body.password)
+            existing_user.subscription_status = "active"
+            existing_user.is_email_verified = True
+            await db.commit()
+            await db.refresh(existing_user)
+            existing_user.business_id = target_biz_id
+            _USER_CACHE.pop(str(existing_user.id), None)
+            return existing_user
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="E-mail já vinculado a outra organização"
+            )
+
+    try:
+        user = User(
+            email=clean_email,
+            full_name_db=body.full_name.strip() if getattr(body, "full_name", None) else None,
+            password_hash=hash_password(body.password),
+            role=role_input,
+            is_email_verified=True,
+            subscription_status="active",
+        )
+        db.add(user)
+        await db.flush()
+
+        # Manual 06 §3 & §4: Comparar sempre em lowercase e vincular Operador ao Business da cooperativa
+        if role_input == "operator" and target_b_uuid:
             biz_op = BusinessOperator(
-                business_id=get_uuid(target_biz_id),
+                business_id=target_b_uuid,
                 user_id=get_uuid(user.id),
             )
             db.add(biz_op)
             user.business_id = target_biz_id
 
-    await write_audit(
-        db, AuditAction.CREATE, "User",
-        user_id=current_user.id, entity_id=str(user.id),
-        detail={
-            "created_user_email": user.email,
-            "created_user_name": user.full_name,
-            "role": role_input,
-            "created_by": current_user.email
-        },
-        request=request,
-    )
-    uid_str = str(user.id)
-    saved_biz_id = getattr(user, 'business_id', None)
-    await db.commit()
-    user = (await db.execute(select(User).where(cast(User.id, String) == uid_str))).scalar_one()
-    if saved_biz_id:
-        user.business_id = saved_biz_id
-    return user
+        await write_audit(
+            db, AuditAction.CREATE, "User",
+            user_id=current_user.id, entity_id=str(user.id),
+            detail={
+                "created_user_email": user.email,
+                "created_user_name": user.full_name,
+                "role": role_input,
+                "created_by": current_user.email
+            },
+            request=request,
+        )
+        uid_str = str(user.id)
+        saved_biz_id = getattr(user, 'business_id', None)
+        await db.commit()
+        user = (await db.execute(select(User).where(cast(User.id, String) == uid_str))).scalar_one()
+        if saved_biz_id:
+            user.business_id = saved_biz_id
+        return user
+    except IntegrityError:
+        await db.rollback()
+        recheck = (await db.execute(select(User).where(func.lower(User.email) == clean_email))).scalar_one_or_none()
+        if recheck:
+            recheck.business_id = target_biz_id
+            return recheck
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="E-mail já vinculado a outra organização"
+        )
 
 
 @router.patch("/{user_id}", response_model=UserOut)

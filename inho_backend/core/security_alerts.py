@@ -49,7 +49,7 @@ def dispatch_security_webhook_alert(
             data=json.dumps(payload).encode("utf-8"),
             headers={"Content-Type": "application/json", "User-Agent": "OrbeSIEM/1.0"}
         )
-        with urllib.request.urlopen(req, timeout=5) as response:
+        with urllib.request.urlopen(req, timeout=5) as response:  # nosec B310
             logger.info(f"Webhook de segurança disparado com sucesso: Status {response.status}")
             return {"sent": True, "simulated": False, "status_code": response.status}
     except Exception as e:

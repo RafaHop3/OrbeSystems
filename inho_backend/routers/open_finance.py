@@ -431,18 +431,18 @@ async def sync_open_finance_statement(
     # Se nenhuma transação explícita foi enviada e auto_reconcile_pending_cotas=True,
     # simula o pull do feed Open Finance para faturas vinculadas a cooperados do tenant
     if not tx_list and payload.auto_reconcile_pending_cotas:
+        import time as _t
         for inv in pending_invoices:
-            if inv.cooperado_id or inv.customer_doc:
-                tx_list.append(
-                    OpenFinanceTransactionItem(
-                        external_tx_id=f"of-sync-{inv.id}",
-                        invoice_id=str(inv.id),
-                        cooperado_id=str(inv.cooperado_id) if inv.cooperado_id else None,
-                        document=inv.customer_doc,
-                        amount=float(inv.amount),
-                        description=inv.description or "Integralização Cota-Parte Open Finance",
-                    )
+            tx_list.append(
+                OpenFinanceTransactionItem(
+                    external_tx_id=f"of-sync-{inv.id}-{_t.time()}",
+                    invoice_id=str(inv.id),
+                    cooperado_id=str(inv.cooperado_id) if inv.cooperado_id else None,
+                    document=inv.customer_doc,
+                    amount=float(inv.amount),
+                    description=inv.description or "Integralização Cota-Parte Open Finance",
                 )
+            )
 
     for tx in tx_list:
         idem_key = tx.external_tx_id or f"of-tx-{b_id}-{tx.invoice_id or tx.document}-{tx.amount:.2f}"
@@ -489,6 +489,7 @@ async def sync_open_finance_statement(
             continue
 
         matched_inv.status = BillingStatus.PAID
+        matched_inv.paid_date = datetime.now(timezone.utc)
         matched_inv.remaining_balance = Decimal("0.00")
         matched_inv.updated_by_id = get_uuid(current_user.id)
         matched_inv.updated_by_name = f"Open Finance Auto-Clear ({current_user.full_name})"
@@ -545,6 +546,7 @@ async def sync_open_finance_statement(
     return {
         "status": "synced",
         "business_id": str(b_id),
+        "reconciled": len(reconciled_invoices),
         "reconciled_count": len(reconciled_invoices),
         "reconciled_invoice_ids": reconciled_invoices,
         "upgraded_cooperado_ids": upgraded_cooperados,

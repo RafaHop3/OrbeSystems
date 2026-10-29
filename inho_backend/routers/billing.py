@@ -861,7 +861,7 @@ async def webhook_reconcile_billing(
     """
     INTERNAL USE ONLY: Chamado pelo Webhook do Orbe Hub após pagamento no Stripe para limpeza de faturas e disparo de recibos via Zap/Email.
     """
-    expected_secret = os.getenv("INHO_SYSTEM_SECRET", "super_secret_inho_provisioning_key_change_me")
+    expected_secret = os.getenv("INHO_SYSTEM_SECRET", "")
     if not x_inho_system_secret or x_inho_system_secret != expected_secret:
         raise HTTPException(status_code=403, detail="Acesso negado: Secret de sistema inválido.")
 

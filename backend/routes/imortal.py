@@ -1,3 +1,4 @@
+from imortal.ai import call_ollama_json
 import logging
 import asyncio
 import urllib.request

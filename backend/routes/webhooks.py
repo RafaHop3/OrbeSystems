@@ -131,7 +131,7 @@ async def stripe_webhook(
 
                 async def provision_inho_admin(user_email, user_fullname, user_hash):
                     inho_api_url = os.getenv("INHO_API_INTERNAL_URL", "https://inho-api.orbesystems.com.br/api/v1")
-                    sys_secret = os.getenv("INHO_SYSTEM_SECRET", "super_secret_inho_provisioning_key_change_me")
+                    sys_secret = os.getenv("INHO_SYSTEM_SECRET", "")
                     prov_payload = {
                         "email": user_email,
                         "full_name": user_fullname or "Administrador INHO",
@@ -166,7 +166,12 @@ async def stripe_webhook(
                     except Exception as ex:
                         webhook_logger.error(f"Failed to call INHO bridging API: {ex}")
 
-                asyncio.create_task(provision_inho_admin(user.email, user.full_name, user.hashed_password))
+                try:
+                    p_pwd = getattr(user, "password_hash", getattr(user, "hashed_password", None))
+                    p_name = getattr(user, "full_name", None) or "Administrador INHO"
+                    asyncio.create_task(provision_inho_admin(user.email, p_name, p_pwd))
+                except Exception as p_err:
+                    webhook_logger.error(f"Erro ao agendar provision_inho_admin para {user.email}: {p_err}")
 
     elif event_type in ("customer.subscription.deleted", "customer.subscription.paused"):
         customer_id = data.get("customer")

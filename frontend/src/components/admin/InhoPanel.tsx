@@ -9,7 +9,7 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
     const [error, setError] = useState<string | null>(null);
 
     const [showCreateForm, setShowCreateForm] = useState(false);
-    const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'admin' });
+    const [form, setForm] = useState({ email: '', full_name: '', password: '', role: 'operator' });
     const [creating, setCreating] = useState(false);
 
     const [passwordTarget, setPasswordTarget] = useState<string | null>(null);
@@ -269,9 +269,9 @@ export default function InhoPanel({ currentUserRole }: { currentUserRole?: strin
                                             <p className="text-[9px] text-green-500/50 mt-1 uppercase">{u.email}</p>
                                         </div>
                                     </div>
-                                    {(u.role === 'admin' || u.role === 'super_admin') ? (
+                                    {['admin', 'super_admin', 'superadmin'].includes((u.role || '').toLowerCase()) ? (
                                         <span className="text-[9px] text-green-400 border border-green-400/40 bg-green-400/10 px-2 py-0.5 rounded flex items-center gap-1">
-                                            <Crown size={8} /> {u.role === 'super_admin' ? 'SUPER ADMIN' : 'MASTER ADMIN'}
+                                            <Crown size={8} /> {(u.role || '').toLowerCase().includes('super') ? 'SUPER ADMIN' : 'MASTER ADMIN'}
                                         </span>
                                     ) : (
                                         <span className="text-[9px] text-green-500/50 border border-green-500/20 px-2 py-0.5 rounded uppercase">
