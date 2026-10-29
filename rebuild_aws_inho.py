@@ -12,8 +12,8 @@ commands = [
     "sudo docker start orbe_backend inho_backend orbe_whatsapp || sudo docker-compose -f ec2_compose.yml up -d",
     "sudo docker cp inho_backend/. inho_backend:/app/",
     "sudo docker restart orbe_backend inho_backend",
-    "sleep 10",
-    "curl -I http://localhost:8000/health && curl -I http://localhost:8001/health"
+    "sleep 15",
+    "curl -s http://localhost:8000/health && echo '' && curl -s http://localhost:8001/health"
 ]
 
 response = ssm.send_command(
