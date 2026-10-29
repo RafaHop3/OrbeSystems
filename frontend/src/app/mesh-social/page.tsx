@@ -644,27 +644,38 @@ export default function MeshSocialApp() {
               
               {/* Feed Preview */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-800 text-xs font-mono text-neon-cyan">
-                <span className="font-bold">MESH SOCIAL</span>
+                <span className="font-bold">MESH SOCIAL BOOKS · V2.0</span>
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               </div>
 
-              {/* Story Rings */}
-              <div className="flex gap-2 py-3 overflow-hidden">
-                {[1, 2, 3, 4].map(idx => (
-                  <div key={idx} className="w-11 h-11 rounded-full p-0.5 border-2 border-neon-cyan/70 shrink-0">
-                    <div className="w-full h-full rounded-full bg-slate-800" />
-                  </div>
-                ))}
+              {/* Tags de Destaque do Sistema */}
+              <div className="flex gap-1.5 py-3 overflow-hidden text-[9px] font-mono">
+                <span className="px-2 py-1 rounded bg-neon-cyan/10 border border-neon-cyan/40 text-neon-cyan font-bold shrink-0">ESTANTE P2P</span>
+                <span className="px-2 py-1 rounded bg-emerald-950/70 border border-emerald-500/30 text-emerald-300 font-bold shrink-0">QR HANDSHAKE</span>
+                <span className="px-2 py-1 rounded bg-purple-950/70 border border-purple-500/30 text-purple-300 font-bold shrink-0">ANTI-SPOILER</span>
               </div>
 
               {/* Card Preview */}
-              <div className="flex-1 rounded-2xl bg-slate-900/60 border border-slate-800 p-3 space-y-2">
-                <div className="w-full h-40 rounded-xl bg-slate-800/80 animate-pulse" />
-                <div className="h-3 w-3/4 bg-slate-800 rounded" />
-                <div className="h-2 w-1/2 bg-slate-800/60 rounded" />
-                <div className="pt-2 flex justify-between text-slate-400 text-xs font-mono">
-                  <span>Amigos Reais</span>
-                  <span className="text-neon-cyan">100% Grátis</span>
+              <div className="flex-1 rounded-2xl bg-slate-900/70 border border-slate-800 p-3.5 space-y-2.5">
+                <div className="flex items-center justify-between text-[10px] text-slate-400 border-b border-slate-800/80 pb-2">
+                  <span className="text-emerald-400 font-bold flex items-center gap-1">● Dom Casmurro</span>
+                  <span className="text-neon-cyan font-mono">H3: Bom Fim</span>
+                </div>
+                <div className="w-full h-28 rounded-xl bg-gradient-to-br from-slate-900 to-[#0c1424] border border-neon-cyan/20 p-3 flex flex-col justify-between">
+                  <div className="text-[11px] font-bold text-white">Machado de Assis</div>
+                  <div className="text-[9px] text-slate-300 italic">&ldquo;QR Code validado entre @marina e @lucas&rdquo;</div>
+                  <div className="flex justify-between items-center text-[9px] text-neon-cyan font-mono">
+                    <span>Passaporte #LIV-8824</span>
+                    <span className="text-emerald-400">Karma 100/100</span>
+                  </div>
+                </div>
+                <div className="p-2 rounded-lg bg-rose-950/30 border border-rose-500/30 text-[9px] text-rose-300 flex items-center justify-between">
+                  <span>Trava Anti-Spoiler (Cap. 29)</span>
+                  <span className="font-bold font-mono">Oculto</span>
+                </div>
+                <div className="pt-1 flex justify-between text-slate-400 text-[10px] font-mono">
+                  <span>Circulação P2P</span>
+                  <span className="text-emerald-400">Offline-First CRDT</span>
                 </div>
               </div>
 
@@ -683,13 +694,13 @@ export default function MeshSocialApp() {
               <div className="text-center space-y-2">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan text-xs font-semibold">
                   <Sparkles className="w-3.5 h-3.5" />
-                  Rede Social 100% Gratuita
+                  Malha Literária 100% Autônoma
                 </div>
                 <h1 className="text-3xl font-tilt-neon font-bold text-white tracking-tight">
-                  Mesh Social
+                  Mesh Social Books
                 </h1>
                 <p className="text-xs text-slate-400 leading-relaxed">
-                  Fotos, vídeos e histórias com amigos de verdade. Sem algoritmos tóxicos e sem anúncios.
+                  Estante descentralizada P2P, acervo digital aberto e marginalia coletiva com bloqueio anti-spoiler. Totalmente isolada e sem anúncios.
                 </p>
               </div>
 

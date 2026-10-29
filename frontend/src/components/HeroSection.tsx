@@ -1,14 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { Code2, Database, Shield, Zap, Sparkles, Users, Lock, ArrowRight, Heart } from 'lucide-react';
+import { Code2, Database, Shield, Zap, Sparkles, Users, Lock, ArrowRight, Heart, BookOpen } from 'lucide-react';
 import { MagicCard } from '@/components/ui/magic-card';
 import { AuroraText } from '@/components/ui/aurora-text';
 import ToolVoidPanel from '@/components/ToolVoidPanel';
 import ProductMetrics from '@/components/ProductMetrics';
 
 const highlightKeywords = [
-  { icon: Users, label: 'Mesh Social (Rede Social)', color: 'cyan', href: '/mesh-social' },
+  { icon: BookOpen, label: 'Mesh Social Books (Malha Cultural)', color: 'cyan', href: '/mesh-social' },
   { icon: Shield, label: 'Privacidade Digital LGPD', color: 'green', href: '/ferramentas-premium/databroker-optout' },
   { icon: Code2, label: 'Engenharia de Software', color: 'cyan', href: '/software-engineering' },
   { icon: Zap, label: 'Automação & IA', color: 'purple', href: '/automation' },
@@ -47,7 +47,7 @@ export default function HeroSection() {
                 aproximar pessoas, proteger a sua privacidade e acelerar ideias criativas.
               </p>
               <p className="text-sm sm:text-base text-slate-400">
-                Conheça a <strong className="text-neon-cyan">Mesh Social</strong> — a nova rede social autêntica, 100% gratuita e livre de anúncios invasivos —, além de soluções de ponta em <strong className="text-white">Engenharia de Software, Cyber Segurança, Proteção de Dados LGPD e Inteligência Artificial</strong>.
+                Conheça a <strong className="text-neon-cyan">Mesh Social Books</strong> — a nova rede social e estante descentralizada P2P, 100% gratuita, sem anúncios, com empréstimo presencial validado via QR Code, acervo digital aberto e bloqueio anti-spoiler —, além de soluções de ponta em <strong className="text-white">Engenharia de Software, Cyber Segurança, Proteção de Dados LGPD e Inteligência Artificial</strong>.
               </p>
             </div>
 
@@ -66,9 +66,9 @@ export default function HeroSection() {
             <div className="flex justify-center my-4">
               <ProductMetrics
                 metrics={[
-                  { label: 'Rede Social Mesh', value: '100% Gratuita' },
-                  { label: 'Privacidade de Dados', value: 'Conforme LGPD' },
-                  { label: 'Segurança & Criptografia', value: 'Ponta a Ponta' },
+                  { label: 'Mesh Social Books', value: '100% Autônoma' },
+                  { label: 'Empréstimos P2P', value: 'QR Code Dinâmico' },
+                  { label: 'Privacidade & Dados', value: 'Zero-Cross LGPD' },
                 ]}
               />
             </div>
@@ -98,8 +98,8 @@ export default function HeroSection() {
             href="/mesh-social"
             className="inline-flex items-center gap-2.5 font-bold text-xs sm:text-sm uppercase tracking-wider bg-neon-cyan hover:bg-cyan-300 text-black px-7 py-3.5 rounded-xl shadow-[0_0_25px_rgba(0,255,245,0.4)] transition-all duration-300 hover:scale-105"
           >
-            <Sparkles size={16} />
-            <span>Acessar Mesh Social (Grátis)</span>
+            <BookOpen size={16} />
+            <span>Acessar Mesh Social Books (Grátis)</span>
             <ArrowRight size={16} />
           </Link>
 
