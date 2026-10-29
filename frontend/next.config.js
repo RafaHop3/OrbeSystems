@@ -1,5 +1,29 @@
 /** @type {import('next').NextConfig} */
 
+const isDev = process.env.NODE_ENV !== 'production';
+
+// Strict Production CSP vs Development CSP
+const connectSrc = [
+  "'self'",
+  "https://api.orbesystems.com.br",
+  "https://inho-api.orbesystems.com.br",
+  "https://ipapi.co",
+  "https://ipinfo.io",
+  "https://api.iconify.design",
+  "https://api.unisvg.com",
+  "https://api.simplesvg.com",
+  ...(isDev ? ['http://localhost:8000', 'http://127.0.0.1:8000'] : [])
+].join(' ');
+
+const scriptSrc = [
+  "'self'",
+  "'unsafe-inline'",
+  ...(isDev ? ["'unsafe-eval'"] : []),
+  "https://cdnjs.cloudflare.com",
+  "https://code.iconify.design",
+  ...(isDev ? ["https://vercel.live"] : [])
+].join(' ');
+
 const securityHeaders = [
   // [M3] HSTS — force HTTPS for 1 year, include subdomains
   {
@@ -26,25 +50,21 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
   },
-  // [M3] Content Security Policy
-  // - Scripts: self + Vercel live-feedback (dev) + inline nonces handled by Next.js
-  // - Styles: self + Google Fonts
-  // - Fonts: self + Google Fonts CDN
-  // - Connect: self + /api/proxy/* (our own proxy) — backend domain is NOT listed
-  // - Frame: none (matches X-Frame-Options: DENY)
+  // [M3] Content Security Policy (Hardened Red-Team Compliant)
   {
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://cdnjs.cloudflare.com https://cdn.tailwindcss.com https://code.iconify.design",
+      `script-src ${scriptSrc}`,
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https: https://picsum.photos https://fastly.picsum.photos",
-      "connect-src 'self' data: http://localhost:8000 http://127.0.0.1:8000 http://52.20.22.241 https://api.orbesystems.com.br https://inho-api.orbesystems.com.br https://ipapi.co https://ipinfo.io https://*.vercel.app https://api.iconify.design https://api.unisvg.com https://api.simplesvg.com",
+      `connect-src ${connectSrc}`,
       "frame-src 'none'",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
+      "upgrade-insecure-requests",
     ].join('; '),
   },
 ];
