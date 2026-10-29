@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:27331315-cf7c-439d-9e36-a0b3f67a3213",
+  "serialNumber": "urn:uuid:b4431ba0-30ab-4d35-99e5-8167a3c0c945",
   "metadata": {
-    "timestamp": "2026-10-29T18:37:20.259935+00:00",
+    "timestamp": "2026-10-29T20:37:12.362982+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -1835,8 +1835,8 @@
     {
       "type": "library",
       "name": "stripe",
-      "version": "16.0.1",
-      "purl": "pkg:pypi/stripe@16.0.1",
+      "version": "16.1.0",
+      "purl": "pkg:pypi/stripe@16.1.0",
       "licenses": [
         {
           "license": {
@@ -1853,7 +1853,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "a28c9774327099cc6f353dbe1ca43e62653c9a2bd6f51b8b00b2a7d2471f76fc"
+          "content": "8647fba55ea1d5ef3dce6bac71ce7897431d7bc227d7106c13df84d64aba74ec"
         }
       ]
     },
