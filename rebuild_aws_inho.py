@@ -13,7 +13,7 @@ commands = [
     "sudo docker cp inho_backend/. inho_backend:/app/",
     "sudo docker restart orbe_backend inho_backend",
     "sleep 10",
-    "curl -I http://localhost:8000/health && curl -I http://localhost:8001/api/health"
+    "curl -I http://localhost:8000/health && curl -I http://localhost:8001/health"
 ]
 
 response = ssm.send_command(
