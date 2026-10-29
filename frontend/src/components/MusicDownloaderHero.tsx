@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { DownloadCloud, Activity } from 'lucide-react';
 import Link from 'next/link';
 import * as THREE from 'three';
+import WebGLErrorBoundary from '@/components/WebGLErrorBoundary';
 
 function NeonRings() {
     const ref = useRef<THREE.Group>(null);
@@ -38,19 +39,30 @@ export default function MusicDownloaderHero() {
     return (
         <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden border-b border-purple-500/10">
 
-            {/* R3F WebGL Background Canvas */}
+            {/* R3F WebGL Background Canvas com Error Boundary blindado */}
             <div className="absolute inset-0 z-0 pointer-events-none">
-                <Canvas gl={{ antialias: false }}>
-                    <color attach="background" args={['#05020a']} />
-                    <ambientLight intensity={0.5} />
-                    <Suspense fallback={null}>
-                        <Stars radius={100} depth={50} count={3000} factor={4} saturation={1} fade speed={1} />
-                        <NeonRings />
-                        <EffectComposer multisampling={4}>
-                            <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} intensity={2.0} />
-                        </EffectComposer>
-                    </Suspense>
-                </Canvas>
+                <WebGLErrorBoundary
+                    fallback={
+                        <div 
+                            className="absolute inset-0 bg-[#05020a] pointer-events-none"
+                            style={{
+                                backgroundImage: 'radial-gradient(circle at 70% 30%, rgba(188, 19, 254, 0.08) 0%, transparent 60%)'
+                            }}
+                        />
+                    }
+                >
+                    <Canvas gl={{ antialias: false, powerPreference: 'low-power' }} dpr={[1, 1.5]}>
+                        <color attach="background" args={['#05020a']} />
+                        <ambientLight intensity={0.5} />
+                        <Suspense fallback={null}>
+                            <Stars radius={100} depth={50} count={3000} factor={4} saturation={1} fade speed={1} />
+                            <NeonRings />
+                            <EffectComposer multisampling={4}>
+                                <Bloom luminanceThreshold={0.5} luminanceSmoothing={0.9} intensity={2.0} />
+                            </EffectComposer>
+                        </Suspense>
+                    </Canvas>
+                </WebGLErrorBoundary>
             </div>
 
             {/* Foreground UI */}

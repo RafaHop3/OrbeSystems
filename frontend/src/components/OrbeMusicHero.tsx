@@ -11,6 +11,7 @@ import { Play, Activity, Cpu, Disc3 } from 'lucide-react';
 import * as THREE from 'three';
 import ToolVoidCanvas from '@/components/ToolVoidCanvas';
 import ProductMetrics from '@/components/ProductMetrics';
+import WebGLErrorBoundary from '@/components/WebGLErrorBoundary';
 
 // --------------------------------------------------------
 // Audio Visualizer / Isometric Grid Scene in Three.js
@@ -121,32 +122,43 @@ export default function OrbeMusicHero() {
     return (
         <section className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden border-b border-blue-500/10">
 
-            {/* R3F WebGL Background Canvas */}
+            {/* R3F WebGL Background Canvas com Error Boundary blindado */}
             <div className="absolute inset-0 z-0 pointer-events-none">
-                <Canvas gl={{ antialias: false, powerPreference: "default", preserveDrawingBuffer: false }} dpr={[1, 1.5]}>
-                    <color attach="background" args={['#030712']} />
-                    <ambientLight intensity={0.5} />
-                    <spotLight position={[10, 10, 10]} penumbra={1} intensity={2} color="#0ea5e9" />
-                    <spotLight position={[-10, 10, -10]} penumbra={1} intensity={2} color="#4f46e5" />
+                <WebGLErrorBoundary
+                    fallback={
+                        <div 
+                            className="absolute inset-0 bg-[#030712] pointer-events-none"
+                            style={{
+                                backgroundImage: 'radial-gradient(circle at 60% 40%, rgba(14, 165, 233, 0.1) 0%, transparent 70%)'
+                            }}
+                        />
+                    }
+                >
+                    <Canvas gl={{ antialias: false, powerPreference: "default", preserveDrawingBuffer: false }} dpr={[1, 1.5]}>
+                        <color attach="background" args={['#030712']} />
+                        <ambientLight intensity={0.5} />
+                        <spotLight position={[10, 10, 10]} penumbra={1} intensity={2} color="#0ea5e9" />
+                        <spotLight position={[-10, 10, -10]} penumbra={1} intensity={2} color="#4f46e5" />
 
-                    <OrthographicCamera makeDefault position={[20, 15, 20]} zoom={25} near={-100} far={100} />
+                        <OrthographicCamera makeDefault position={[20, 15, 20]} zoom={25} near={-100} far={100} />
 
-                    <Suspense fallback={null}>
-                        <Stars radius={100} depth={50} count={5000} factor={4} saturation={1} fade speed={1} />
-                        <InteractiveAudioGrid />
-                        <SynthNodes />
+                        <Suspense fallback={null}>
+                            <Stars radius={100} depth={50} count={5000} factor={4} saturation={1} fade speed={1} />
+                            <InteractiveAudioGrid />
+                            <SynthNodes />
 
-                        {/* Ground shadows and reflection illusion */}
-                        <ContactShadows position={[0, -4, 0]} opacity={0.5} scale={50} blur={2.5} far={10} color="#0ea5e9" />
+                            {/* Ground shadows and reflection illusion */}
+                            <ContactShadows position={[0, -4, 0]} opacity={0.5} scale={50} blur={2.5} far={10} color="#0ea5e9" />
 
-                        {/* Cyberpunk Post-Processing */}
-                        <EffectComposer multisampling={4}>
-                            <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} intensity={2.0} />
-                            <Noise opacity={0.04} blendFunction={BlendFunction.OVERLAY} />
-                            <Vignette eskil={false} offset={0.1} darkness={1.1} />
-                        </EffectComposer>
-                    </Suspense>
-                </Canvas>
+                            {/* Cyberpunk Post-Processing */}
+                            <EffectComposer multisampling={4}>
+                                <Bloom luminanceThreshold={0.2} luminanceSmoothing={0.9} intensity={2.0} />
+                                <Noise opacity={0.04} blendFunction={BlendFunction.OVERLAY} />
+                                <Vignette eskil={false} offset={0.1} darkness={1.1} />
+                            </EffectComposer>
+                        </Suspense>
+                    </Canvas>
+                </WebGLErrorBoundary>
             </div>
 
             {/* Foreground Hero UI */}

@@ -337,7 +337,7 @@ const FRAGMENT_SHADER = `
 
 /**
  * Void WebGL (Three.js puro): nuvem de partículas amostrada sobre a geometria
- * da ferramenta, com reação ao ponteiro e pausa quando fora da tela.
+ * da ferramenta, com reação ao ponteiro, economia de GPU e blindagem anti-crash.
  */
 export default function ToolVoidCanvas({
   activeShape,
@@ -357,12 +357,24 @@ export default function ToolVoidCanvas({
       renderer = new THREE.WebGLRenderer({
         antialias: false,
         alpha: true,
-        powerPreference: 'high-performance',
+        powerPreference: 'low-power',
+        failIfMajorPerformanceCaveat: false,
       });
     } catch {
-      // WebGL indisponível: o contêiner permanece vazio sem quebrar a página.
+      // WebGL indisponível ou contexto estourado: contêiner silencioso e seguro
       return;
     }
+
+    let isContextLost = false;
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      isContextLost = true;
+    };
+    const handleContextRestored = () => {
+      isContextLost = false;
+    };
+    renderer.domElement.addEventListener('webglcontextlost', handleContextLost, false);
+    renderer.domElement.addEventListener('webglcontextrestored', handleContextRestored, false);
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(
@@ -429,7 +441,13 @@ export default function ToolVoidCanvas({
       const h = Math.max(container.clientHeight, 1);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
+      if (!isContextLost) {
+        try {
+          renderer.setSize(w, h);
+        } catch {
+          // ignore transient resize error
+        }
+      }
     });
     resizeObserver.observe(container);
 
@@ -437,7 +455,7 @@ export default function ToolVoidCanvas({
     const clock = new THREE.Clock();
     const animate = () => {
       frameId = requestAnimationFrame(animate);
-      if (!isVisible || document.hidden) return;
+      if (!isVisible || document.hidden || isContextLost) return;
 
       const elapsed = clock.getElapsedTime();
       material.uniforms.uTime.value = elapsed;
@@ -446,7 +464,11 @@ export default function ToolVoidCanvas({
       points.rotation.y = Math.sin(elapsed * 0.35) * 0.28;
       points.rotation.x = Math.cos(elapsed * 0.25) * 0.08;
 
-      renderer.render(scene, camera);
+      try {
+        renderer.render(scene, camera);
+      } catch {
+        // Safe catch on GPU context recovery
+      }
     };
     animate();
 
@@ -456,6 +478,8 @@ export default function ToolVoidCanvas({
       resizeObserver.disconnect();
       container.removeEventListener('pointermove', handlePointerMove);
       container.removeEventListener('pointerleave', handlePointerLeave);
+      renderer.domElement.removeEventListener('webglcontextlost', handleContextLost);
+      renderer.domElement.removeEventListener('webglcontextrestored', handleContextRestored);
       geometry.dispose();
       material.dispose();
       renderer.dispose();

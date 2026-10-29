@@ -21,6 +21,7 @@ const scriptSrc = [
   ...(isDev ? ["'unsafe-eval'"] : []),
   "https://cdnjs.cloudflare.com",
   "https://code.iconify.design",
+  "https://cdn.tailwindcss.com",
   ...(isDev ? ["https://vercel.live"] : [])
 ].join(' ');
 
@@ -48,7 +49,7 @@ const securityHeaders = [
   // [M3] Disable unused browser features
   {
     key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+    value: 'camera=(), microphone=(), geolocation=()',
   },
   // [M3] Content Security Policy (Hardened Red-Team Compliant)
   {
@@ -60,7 +61,7 @@ const securityHeaders = [
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https: https://picsum.photos https://fastly.picsum.photos",
       `connect-src ${connectSrc}`,
-      "frame-src 'none'",
+      "frame-src 'self' data: blob:",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -171,4 +172,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-
