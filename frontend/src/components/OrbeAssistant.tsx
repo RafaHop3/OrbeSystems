@@ -15,10 +15,10 @@ interface ChatMessage {
 }
 
 const QUICK_PROMPTS = [
-  "O que é o IMORTAL e o Z3?",
-  "Como a LGPD é aplicada no Ghost Engine?",
-  "Qual a arquitetura de portas na AWS EC2?",
-  "Como funciona o ERP INHO e o PIX?"
+  "Como o IMORTAL evita que sistemas travem?",
+  "Como o Ghost Engine protege minha privacidade?",
+  "Como funciona o ERP INHO com PIX?",
+  "Como funciona o login seguro da Orbe?"
 ];
 
 // ── Ultra-Stable CSS Cyberpunk Core ──
@@ -58,7 +58,7 @@ export default function OrbeAssistant() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { 
       role: 'bot', 
-      text: 'Olá. Eu sou o Orbe Assistant com RAG de alta fidelidade. Como posso auxiliar na arquitetura de seus sistemas ou produtos hoje?' 
+      text: 'Olá! Eu sou o **Orbe Assistant**. 😊\n\nEstou aqui para tirar suas dúvidas sobre tecnologia, segurança ou qualquer uma das nossas ferramentas de um jeito simples e direto. Como posso te ajudar hoje?' 
     }
   ]);
   const [input, setInput] = useState('');
@@ -93,12 +93,12 @@ export default function OrbeAssistant() {
         body: JSON.stringify({ messages: [{ role: 'user', content: userMessage }] })
       });
 
-      let errorMessage = "⚠ Falha de comunicação com o Núcleo principal.";
+      let errorMessage = "⚠ Não consegui me conectar no momento. Por favor, tente novamente em instantes.";
       if (!res.ok) {
         try {
           const errorData = await res.json();
           if (errorData.error) {
-            errorMessage = `⚠️ Erro do Sistema: ${errorData.error}`;
+            errorMessage = `⚠️ ${errorData.error}`;
           }
         } catch (e) { }
         throw new Error(errorMessage);
@@ -109,12 +109,12 @@ export default function OrbeAssistant() {
         ...prev, 
         { 
           role: 'bot', 
-          text: data.response || "Resposta gerada.",
+          text: data.response || "Tudo certo! Como posso te ajudar mais?",
           sources: data.sources || []
         }
       ]);
     } catch (error: any) {
-      setMessages(prev => [...prev, { role: 'bot', text: error.message || "⚠ Falha de comunicação." }]);
+      setMessages(prev => [...prev, { role: 'bot', text: error.message || "⚠ Tive um problema de conexão. Tente novamente." }]);
     } finally {
       setIsThinking(false);
     }
@@ -135,43 +135,43 @@ export default function OrbeAssistant() {
             <div className="flex items-center gap-2">
               <Bot className="text-neon-cyan animate-pulse" size={18} />
               <div className="flex flex-col">
-                <span className="text-neon-cyan font-mono text-xs uppercase tracking-widest font-bold drop-shadow-[0_0_5px_rgba(0,255,204,0.8)]">
-                  Orbe Assistant · RAG Core
+                <span className="text-neon-cyan font-sans text-xs uppercase tracking-wider font-bold drop-shadow-[0_0_5px_rgba(0,255,204,0.8)]">
+                  Orbe Assistant
                 </span>
-                <span className="text-[9px] text-cyan-400/60 font-mono">
-                  Sincronizado aos Manuais 01-10
+                <span className="text-[10px] text-cyan-400/80 font-sans">
+                  Atendimento Inteligente &amp; Segurança
                 </span>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="text-neon-cyan/50 hover:text-neon-cyan transition-colors">
+            <button onClick={() => setIsOpen(false)} className="text-neon-cyan/50 hover:text-neon-cyan transition-colors" title="Fechar">
               <X size={18} />
             </button>
           </div>
 
           {/* Chat Area */}
-          <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto font-mono text-xs space-y-4 scrollbar-thin scrollbar-thumb-neon-cyan/20" style={{ background: 'radial-gradient(circle at center, rgba(0,255,204,0.03) 0%, rgba(0,0,0,1) 100%)' }}>
+          <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto font-sans text-xs space-y-4 scrollbar-thin scrollbar-thumb-neon-cyan/20" style={{ background: 'radial-gradient(circle at center, rgba(0,255,204,0.03) 0%, rgba(0,0,0,1) 100%)' }}>
             {messages.map((m, i) => (
               <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
-                <div className={`max-w-[90%] p-3 rounded-md leading-relaxed whitespace-pre-wrap ${m.role === 'user'
-                  ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30 shadow-[0_0_10px_rgba(0,255,204,0.1)]'
-                  : 'bg-white/5 text-gray-200 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.02)]'
+                <div className={`max-w-[90%] p-3.5 rounded-xl leading-relaxed whitespace-pre-wrap ${m.role === 'user'
+                  ? 'bg-neon-cyan/20 text-neon-cyan border border-neon-cyan/30 shadow-[0_0_10px_rgba(0,255,204,0.1)] rounded-br-none'
+                  : 'bg-white/5 text-slate-100 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.02)] rounded-bl-none'
                   }`}>
                   {m.text}
 
                   {/* Fontes Oficiais RAG */}
                   {m.sources && m.sources.length > 0 && (
                     <div className="mt-3 pt-2.5 border-t border-white/10 flex flex-col gap-1">
-                      <span className="text-[10px] text-neon-cyan/80 font-bold flex items-center gap-1">
-                        <BookOpen size={11} /> Referências Oficiais (RAG):
+                      <span className="text-[10px] text-neon-cyan/80 font-semibold flex items-center gap-1">
+                        <BookOpen size={11} /> Base Oficial Consultada:
                       </span>
                       <div className="flex flex-wrap gap-1 mt-0.5">
                         {m.sources.map((s, idx) => (
                           <span 
                             key={idx} 
                             title={s.title}
-                            className="text-[9px] bg-neon-cyan/10 border border-neon-cyan/30 text-neon-cyan/90 px-1.5 py-0.5 rounded cursor-default"
+                            className="text-[9px] bg-neon-cyan/10 border border-neon-cyan/20 text-neon-cyan/90 px-1.5 py-0.5 rounded cursor-default"
                           >
-                            {s.title.length > 32 ? s.title.substring(0, 32) + '...' : s.title}
+                            {s.title.split(':')[0]}
                           </span>
                         ))}
                       </div>
@@ -183,27 +183,27 @@ export default function OrbeAssistant() {
 
             {isThinking && (
               <div className="flex justify-start">
-                <div className="max-w-[85%] p-3 rounded-md bg-white/5 text-neon-blue border border-neon-blue/30 flex items-center gap-2 italic">
+                <div className="max-w-[85%] p-3 rounded-xl bg-white/5 text-neon-cyan border border-neon-cyan/30 flex items-center gap-2 italic">
                   <Sparkles size={14} className="animate-spin text-neon-cyan" />
-                  <span className="animate-pulse">Consultando Manuais & RAG</span>
+                  <span className="animate-pulse">Pensando em uma resposta clara...</span>
                   <span className="flex gap-0.5 mt-1">
-                    <div className="w-1 h-1 bg-neon-blue rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                    <div className="w-1 h-1 bg-neon-blue rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                    <div className="w-1 h-1 bg-neon-blue rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    <div className="w-1 h-1 bg-neon-cyan rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                    <div className="w-1 h-1 bg-neon-cyan rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                    <div className="w-1 h-1 bg-neon-cyan rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
                   </span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Quick Prompts Bar (Quando mensagens < 3) */}
+          {/* Quick Prompts Bar */}
           {messages.length <= 2 && (
-            <div className="px-3 py-1.5 bg-black/60 border-t border-white/5 flex gap-1.5 overflow-x-auto scrollbar-none">
+            <div className="px-3 py-2 bg-black/70 border-t border-white/5 flex gap-1.5 overflow-x-auto scrollbar-none">
               {QUICK_PROMPTS.map((prompt, idx) => (
                 <button
                   key={idx}
                   onClick={() => sendMessage(prompt)}
-                  className="whitespace-nowrap text-[9px] font-mono bg-neon-cyan/10 hover:bg-neon-cyan/20 border border-neon-cyan/20 text-neon-cyan px-2 py-1 rounded transition-colors"
+                  className="whitespace-nowrap text-[10px] font-sans bg-neon-cyan/10 hover:bg-neon-cyan/25 border border-neon-cyan/25 text-neon-cyan px-2.5 py-1 rounded-full transition-colors"
                 >
                   {prompt}
                 </button>
@@ -212,22 +212,23 @@ export default function OrbeAssistant() {
           )}
 
           {/* Input Area */}
-          <div className="p-3 border-t border-neon-cyan/30 bg-black/80 flex gap-2">
+          <div className="p-3 border-t border-neon-cyan/30 bg-black/85 flex gap-2">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Pergunte sobre Z3, LGPD, EC2, Manuais..."
+              placeholder="Digite sua dúvida de forma simples..."
               disabled={isThinking}
-              className="flex-1 bg-white/5 border border-neon-cyan/40 p-2 text-neon-cyan text-xs font-mono focus:outline-none focus:border-neon-cyan focus:shadow-[0_0_10px_rgba(0,255,204,0.2)] placeholder:text-neon-cyan/30 disabled:opacity-50 transition-all rounded-sm"
+              className="flex-1 bg-white/5 border border-neon-cyan/40 p-2.5 text-slate-100 text-xs font-sans focus:outline-none focus:border-neon-cyan focus:shadow-[0_0_10px_rgba(0,255,204,0.2)] placeholder:text-slate-400 disabled:opacity-50 transition-all rounded-md"
             />
             <button
               onClick={handleSend}
               disabled={isThinking || !input.trim()}
-              className="bg-neon-cyan/20 border border-neon-cyan/50 text-neon-cyan p-2 hover:bg-neon-cyan hover:text-black transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-sm"
+              className="bg-neon-cyan/20 border border-neon-cyan/50 text-neon-cyan px-3 py-2 hover:bg-neon-cyan hover:text-black transition-all disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+              title="Enviar mensagem"
             >
-              <Send size={16} />
+              <Send size={15} />
             </button>
           </div>
         </div>

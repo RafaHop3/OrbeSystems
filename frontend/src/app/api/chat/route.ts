@@ -35,17 +35,20 @@ export async function POST(request: NextRequest) {
       id: r.chunk.id
     }));
 
-    const ragSystemContext = `Você é o Orbe Assistant, o assistente sênior de IA hiper-inteligente da Orbe Systems (empresa brasileira de alta engenharia de software e cibersegurança).
-Fale de forma técnica, fluida, direta e estritamente profissional em português do Brasil.
-⚠️ INFORMAÇÃO TEMPORAL: Data/hora atual: ${currentDateTime}.
-DIRETRIZES DE RAG:
-Abaixo estão os trechos oficiais recuperados diretamente da Base de Conhecimento e Manuais de Arquitetura da Orbe Systems.
-Use estas informações como fonte primária de verdade para responder à dúvida do usuário.
-Nunca invente preços ou regras divergentes da documentação.
+    const ragSystemContext = `Você é o Orbe Assistant, o assistente inteligente, empático e amigável da Orbe Systems.
+Sua missão principal é explicar os produtos, arquitetura e segurança da empresa de forma TOTALMENTE HUMANIZADA, SIMPLES E ACESSÍVEL PARA LEIGOS.
 
---- INÍCIO DOS DOCUMENTOS OFICIAIS RECUPERADOS VIA RAG ---
+REGRAS DE OURO DE COMUNICAÇÃO:
+1. Tom de voz: Simpático, acolhedor, profissional e direto (em português do Brasil).
+2. Proibido jargões áridos: NUNCA responda como um terminal, dump de log ou trecho bruto de código com nomes de colunas ou erros de banco (evite termos como 'asyncpg', 'public.users', 'operator does not exist').
+3. Use analogias do cotidiano: Por exemplo, explique login como um crachá digital único, UUIDs como identidades ou CPFs digitais exclusivos, servidores na nuvem como cofres seguros, e o Z3 como um corretor matemático que não deixa o programa travar.
+4. Foque no benefício real para o cliente ou empresário: Como isso economiza tempo, traz segurança e evita dor de cabeça.
+5. Formatação: Parágrafos curtos, boa pontuação, leitura agradável e emojis elegantes.
+⚠️ Data/hora atual: ${currentDateTime}.
+
+--- BASE DE CONHECIMENTO OFICIAL (RAG) ---
 ${retrievedDocsText}
---- FIM DOS DOCUMENTOS OFICIAIS RECUPERADOS VIA RAG ---`;
+--- FIM DA BASE DE CONHECIMENTO ---`;
 
     let aiResponseText = '';
 
@@ -59,7 +62,7 @@ ${retrievedDocsText}
 
         const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
         const contents = [
-          { role: 'user', parts: [{ text: ragSystemContext + `\n\nPergunta do Usuário:\n${lastUserMessage}` }] }
+          { role: 'user', parts: [{ text: ragSystemContext + `\n\nPergunta do Visitante:\n${lastUserMessage}` }] }
         ];
 
         const resp = await fetch(geminiUrl, {
@@ -80,7 +83,7 @@ ${retrievedDocsText}
     }
 
     // =========================================================================
-    // ETAPA 3: PROVEDOR 2 - HUGGING FACE ROUTER (Se configurado e com créditos)
+    // ETAPA 3: PROVEDOR 2 - HUGGING FACE ROUTER (Se configurado)
     // =========================================================================
     if (HUGGINGFACE_API_KEY && !aiResponseText) {
       try {
@@ -118,14 +121,14 @@ ${retrievedDocsText}
     }
 
     // =========================================================================
-    // ETAPA 4: PROVEDOR 3 - SÍNTESE RAG AUTÔNOMA DETERMINÍSTICA (Zero Latência)
+    // ETAPA 4: SÍNTESE RAG HUMANIZADA AUTÔNOMA (Zero Latência)
     // =========================================================================
     if (!aiResponseText) {
       const synthesized = synthesizeRagResponse(lastUserMessage, searchResults, currentDateTime);
       aiResponseText = synthesized.text;
     }
 
-    // Fire-and-forget log sync para o painel /admin
+    // Log assíncrono para o dashboard
     const BACKEND_URL = (process.env.BACKEND_URL || process.env.NEXT_PUBLIC_API_URL || '').replace(/\/$/, '');
     if (BACKEND_URL) {
       fetch(`${BACKEND_URL}/api/admin/chat-logs`, {
@@ -146,7 +149,7 @@ ${retrievedDocsText}
   } catch (err) {
     console.error('[Orbe RAG] Unexpected error in chat route:', err);
     return NextResponse.json({ 
-      response: 'O **Orbe Assistant** está ativo com RAG integrado. Em que podemos auxiliar sua empresa hoje?',
+      response: 'Olá! Eu sou o **Orbe Assistant**. Estou à disposição para tirar qualquer dúvida sobre nossas ferramentas de um jeito simples e prático. Como posso te ajudar?',
       sources: []
     });
   }
