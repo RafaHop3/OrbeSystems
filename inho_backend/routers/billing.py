@@ -190,7 +190,7 @@ async def list_invoices(
     now = datetime.now(timezone.utc)
     updated = False
     for inv in invoices:
-        if inv.status == BillingStatus.PENDING and inv.due_date < now:
+        if inv.status == BillingStatus.PENDING and inv.due_date and (inv.due_date.replace(tzinfo=timezone.utc) if inv.due_date.tzinfo is None else inv.due_date) < now:
             inv.status = BillingStatus.OVERDUE
             updated = True
     if updated:

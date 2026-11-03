@@ -111,6 +111,22 @@ async function connectToWhatsApp() {
             if (!sentMessagesStore[jid]) sentMessagesStore[jid] = [];
             sentMessagesStore[jid].push(m);
             if (sentMessagesStore[jid].length > 50) sentMessagesStore[jid].shift();
+
+            // 🤖 Orbe INHO OrBrick-IA: Encaminha mensagem recebida do cliente para triagem contextual segura
+            if (type === 'notify' && !m.key.fromMe && jid && !jid.endsWith('@g.us')) {
+                const incomingText = m.message.conversation || (m.message.extendedTextMessage && m.message.extendedTextMessage.text) || '';
+                if (incomingText && !incomingText.startsWith('*')) {
+                    const phoneDigits = jid.split('@')[0].replace(/\D/g, '');
+                    const webhookUrl = process.env.INHO_API_WEBHOOK_URL || 'http://inho_backend:8000/api/v1/crm/whatsapp/webhook-inbound';
+                    const bodyStr = JSON.stringify({ phone: phoneDigits, incoming_message: incomingText });
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (process.env.WHATSAPP_WEBHOOK_SECRET) {
+                        const crypto = require('crypto');
+                        headers['X-Orbe-Signature'] = 'sha256=' + crypto.createHmac('sha256', process.env.WHATSAPP_WEBHOOK_SECRET).update(bodyStr).digest('hex');
+                    }
+                    fetch(webhookUrl, { method: 'POST', headers, body: bodyStr }).catch(() => {});
+                }
+            }
         }
     });
 

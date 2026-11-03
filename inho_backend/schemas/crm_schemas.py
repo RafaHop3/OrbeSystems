@@ -64,6 +64,11 @@ class CRMContactBase(BaseModel):
     admission_date:      Optional[datetime] = None
     vacation_start_date: Optional[datetime] = None
 
+    # OrBrick AI Attendance & LGPD Consent Flags
+    ai_attendance_enabled: Optional[bool] = True
+    ai_handoff_until:      Optional[datetime] = None
+    opt_in_marketing:      Optional[bool] = True
+
     @field_validator('phone', mode='before')
     @classmethod
     def sanitize_whatsapp(cls, v: Optional[str]) -> Optional[str]:
@@ -103,6 +108,11 @@ class CRMContactUpdate(BaseModel):
     role_title:          Optional[str]      = None
     admission_date:      Optional[datetime] = None
     vacation_start_date: Optional[datetime] = None
+
+    # OrBrick AI Attendance & LGPD Consent Flags
+    ai_attendance_enabled: Optional[bool] = True
+    ai_handoff_until:      Optional[datetime] = None
+    opt_in_marketing:      Optional[bool] = True
 
 
 class CRMContactOut(CRMContactBase):
@@ -307,3 +317,53 @@ class CRMDealOut(CRMDealBase):
 
     class Config:
         from_attributes = True
+
+
+
+# ── CBM (Consumer Behavior Management) Schemas ────────────────────
+class CBMCustomerProfileOut(BaseModel):
+    id:                           UUID
+    business_id:                  UUID
+    contact_id:                   UUID
+    contact_name:                 Optional[str] = None
+    contact_phone:                Optional[str] = None
+    contact_email:                Optional[str] = None
+    contact_category:             Optional[str] = None
+    ai_attendance_enabled:        bool = True
+    ai_handoff_until:             Optional[datetime] = None
+    rfm_recency_days:             int = 0
+    rfm_frequency_score:          float = 0.0
+    rfm_monetary_total:           float = 0.0
+    churn_risk_score:             float = 0.0
+    churn_risk_level:             str = "LOW"
+    seasonality_cluster:          Optional[str] = "RECORRENTE_MENSAL"
+    ai_recommended_offer:         Optional[str] = None
+    predicted_next_purchase_date: Optional[datetime] = None
+    opt_in_campaigns:             bool = True
+    updated_at:                   datetime
+
+    class Config:
+        from_attributes = True
+
+
+class CBMCampaignCreate(BaseModel):
+    name:               str
+    trigger_type:       str = "CHURN_ALERT"  # CHURN_ALERT, INACTIVITY_30D, SEASONAL, BILLING_D3
+    channels:           List[str] = ["WHATSAPP", "EMAIL"]
+    ai_prompt_template: Optional[str] = None
+    is_active:          bool = True
+    auto_dispatch:      bool = False
+
+
+class CBMCampaignOut(BaseModel):
+    id:                 UUID
+    business_id:        UUID
+    name:               str
+    trigger_type:       str
+    channels:           List[str]
+    ai_prompt_template: Optional[str] = None
+    is_active:          bool
+    dispatched_count:   int = 0
+    last_dispatched_at: Optional[datetime] = None
+    created_at:         datetime
+    updated_at:         datetime

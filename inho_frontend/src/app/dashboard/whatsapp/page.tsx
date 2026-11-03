@@ -5,9 +5,8 @@ import React, { useState } from 'react';
 import {
     Search, MessageSquare, Phone, Send, Zap,
     FileText, Clock, UserCheck, CheckCircle2,
-    MoreVertical
+    MoreVertical, Bot, ShieldAlert, ShieldCheck, User
 } from 'lucide-react';
-import { auth } from '@/lib/auth';
 import { crmApi } from '@/lib/api';
 
 export default function WhatsAppCentralPage() {
@@ -22,6 +21,25 @@ export default function WhatsAppCentralPage() {
     const [allContacts, setAllContacts] = useState<any[]>([]);
     const [activeContact, setActiveContact] = useState<any>(null);
 
+    // --- ORBRICK AI STATUS, HANDOFF & KILL-SWITCH ---
+    const [killSwitchActive, setKillSwitchActive] = useState<boolean>(false);
+    const [contactHumanActive, setContactHumanActive] = useState<boolean>(false);
+    const [aiStatusBanner, setAiStatusBanner] = useState<string | null>(null);
+
+    const loadAiStatus = React.useCallback(async (contactId?: string) => {
+        try {
+            const st = await crmApi.getWhatsappAiStatus(contactId);
+            setKillSwitchActive(Boolean(st.kill_switch_active));
+            if (st.contact_session) {
+                setContactHumanActive(Boolean(st.contact_session.human_operator_active));
+            } else {
+                setContactHumanActive(false);
+            }
+        } catch (err) {
+            console.error("Falha ao consultar status da IA OrBrick:", err);
+        }
+    }, []);
+
     React.useEffect(() => {
         const fetchAllContacts = async () => {
             try {
@@ -34,7 +52,8 @@ export default function WhatsAppCentralPage() {
             }
         };
         fetchAllContacts();
-    }, []);
+        loadAiStatus();
+    }, [loadAiStatus]);
 
     // --- HISTÓRICO REAL + FILA DE LEMBRETES ---
     const [queue, setQueue] = useState<any[]>([]);
@@ -47,7 +66,7 @@ export default function WhatsAppCentralPage() {
             const logs: any[] = await crmApi.getWhatsappHistory(digits.slice(-8));
             setMessages(logs.reverse().map((l: any) => ({
                 id: l.id as any,
-                sender: "Você (Omnichannel)",
+                sender: String(l.message || "").includes(">OrBrick-IA>*") ? "OrBrick-IA" : "Você (Omnichannel)",
                 text: l.message,
                 time: new Date(l.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 isOut: true
@@ -58,7 +77,11 @@ export default function WhatsAppCentralPage() {
     React.useEffect(() => {
         if (!activeContact) return;
         loadHistory(activeContact);
-        const t = setInterval(() => loadHistory(activeContact), 8000);
+        loadAiStatus(activeContact.id);
+        const t = setInterval(() => {
+            loadHistory(activeContact);
+            loadAiStatus(activeContact.id);
+        }, 8000);
         return () => clearInterval(t);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeContact?.id]);
@@ -82,6 +105,82 @@ export default function WhatsAppCentralPage() {
         (c.document && c.document.includes(searchQuery))
     );
 
+    const handleToggleKillSwitch = async () => {
+        try {
+            const nextState = !killSwitchActive;
+            const res = await crmApi.toggleWhatsappKillSwitch(
+                nextState,
+                nextState ? "Botão de Pânico acionado na Central WhatsApp" : "IA OrBrick reativada na Central WhatsApp"
+            );
+            setKillSwitchActive(Boolean(res.kill_switch_active));
+            setAiStatusBanner(
+                res.kill_switch_active
+                    ? "🚨 Kill-Switch Acionado: IA OrBrick desligada imediatamente para toda a instituição."
+                    : "✅ IA OrBrick Reativada para atendimento inteligente na régua."
+            );
+            setTimeout(() => setAiStatusBanner(null), 5000);
+        } catch (err: any) {
+            alert("Erro ao acionar Kill-Switch: " + (err?.message || err));
+        }
+    };
+
+    const handleToggleHandoff = async () => {
+        if (!activeContact?.id) return;
+        try {
+            const assumeHuman = !contactHumanActive;
+            const res = await crmApi.toggleWhatsappHandoff(activeContact.id, assumeHuman, 24);
+            setContactHumanActive(!res.ai_attendance_enabled);
+            setAiStatusBanner(
+                assumeHuman
+                    ? `👤 Atendimento Humano assumido para ${activeContact.name} (IA pausada por 24h).`
+                    : `🤖 Atendimento devolvido para a IA OrBrick em ${activeContact.name}.`
+            );
+            setTimeout(() => setAiStatusBanner(null), 5000);
+        } catch (err: any) {
+            alert("Erro ao alternar Handoff: " + (err?.message || err));
+        }
+    };
+
+    const handleTriggerAiReply = async () => {
+        if (!activeContact || !activeContact.phone) {
+            alert("Selecione um contato com telefone WhatsApp para acionar a resposta contextual da IA.");
+            return;
+        }
+        const promptOrQuestion = messageInput.trim() || "Solicito segunda via do código PIX da minha fatura em aberto";
+        setIsSending(true);
+        try {
+            const res = await crmApi.triggerWhatsappAiReply({
+                phone: activeContact.phone,
+                contact_id: activeContact.id,
+                incoming_message: promptOrQuestion,
+            });
+            if (!res.ai_responded) {
+                setAiStatusBanner(`⚠️ IA não respondeu: ${res.reason}`);
+            } else {
+                setMessageInput("");
+                if (res.formatted_message) {
+                    setMessages((prev) => [
+                        ...prev,
+                        {
+                            id: Date.now(),
+                            sender: "OrBrick-IA",
+                            text: res.formatted_message || "",
+                            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                            isOut: true,
+                        },
+                    ]);
+                }
+                if (res.requires_human_handoff) {
+                    setContactHumanActive(true);
+                }
+            }
+        } catch (err: any) {
+            alert("Erro na resposta assistida IA: " + (err?.message || err));
+        } finally {
+            setIsSending(false);
+        }
+    };
+
     const handleSendMessage = async () => {
         if (!messageInput.trim() || isSending) return;
         if (!activeContact || !activeContact.phone) {
@@ -103,15 +202,11 @@ export default function WhatsAppCentralPage() {
         setMessages((prev) => [...prev, newMsg]);
 
         try {
-            console.log("Sending WhatsApp message to:", activeContact.phone);
-            console.log("Message content:", outMsg);
-            
             const data = await crmApi.sendWhatsapp({
                 phone: activeContact.phone,
                 email: activeContact.email || null,
                 message: outMsg
             });
-            console.log("WhatsApp API response:", data);
 
             // Sucesso se ao menos uma variação (com ou sem 9º dígito) retornou 200
             const codes: string[] = Array.isArray(data?.whatsapp_delivery_code) ? data.whatsapp_delivery_code : [];
@@ -120,16 +215,11 @@ export default function WhatsAppCentralPage() {
 
             if (waStatusAlert) {
                 alert(`⚠️ Falha no disparo E2E:\nO Container do WhatsApp Bot (Baileys) parece estar indisponível ou em crash loop no servidor.\n\nLogs API: ${JSON.stringify(data?.whatsapp_delivery_code)}`);
-                // Erase the optimistic bubble
                 setMessages((prev) => prev.filter(m => m.id !== newMsg.id));
-            } else {
-                console.log("Message sent successfully");
             }
-
         } catch (error: any) {
             console.error("Erro no envio omnichannel:", error);
             alert("Erro Omnichannel Proxy: " + (error?.message || error));
-            // Erase the optimistic bubble on error
             setMessages((prev) => prev.filter(m => m.id !== newMsg.id));
         } finally {
             setIsSending(false);
@@ -142,7 +232,6 @@ export default function WhatsAppCentralPage() {
             return;
         }
         const namePart = activeContact.name ? activeContact.name.split(' ')[0] : "Cliente";
-        console.log("Inserting template:", type, "for contact:", namePart);
         
         if (type === 'boas_vindas') {
             const boasVindasTemplate = `Olá, ${namePart}! Seja muito bem-vindo(a) à nossa instituição. Seu cadastro foi concluído com sucesso e seus serviços e cotas já estão ativos na plataforma.`;
@@ -162,22 +251,74 @@ export default function WhatsAppCentralPage() {
         }
     };
 
+    const effectiveAiActive = !killSwitchActive && !contactHumanActive;
+
     return (
         <main className="flex-1 flex flex-col p-6 relative bg-transparent overflow-hidden h-[calc(100vh-80px)]">
-            <div className="flex items-center justify-between mb-4 border-b border-[#E2E8F0] pb-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-4 border-b border-[#E2E8F0] pb-4">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-[#F1F5F9] border border-slate-200 rounded-lg flex items-center justify-center">
                         <MessageSquare className="text-[#8B6508]" size={20} />
                     </div>
                     <div>
-                        <h1 className="text-2xl font-bold text-[#0F172A] tracking-wide uppercase">Central WhatsApp</h1>
+                        <h1 className="text-2xl font-bold text-[#0F172A] tracking-wide uppercase">Central WhatsApp (OrBrick)</h1>
                         <p className="text-[#64748B] text-xs mt-0.5 flex items-center gap-2">
                             <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full animate-pulse"></span>
-                            Online via Orbe Bot (AWS Baileys Proxy)
+                            Online via Orbe Bot (AWS Baileys Proxy) · Guardrails Anti-Prompt Injection Ativos
                         </p>
                     </div>
                 </div>
+
+                {/* Status da IA em Tempo Real + Botão de Pânico (Kill-Switch) */}
+                <div className="flex flex-wrap items-center gap-2.5">
+                    <div
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider border ${
+                            killSwitchActive
+                                ? 'bg-red-100 text-red-800 border-red-300'
+                                : contactHumanActive
+                                  ? 'bg-amber-100 text-amber-900 border-amber-300'
+                                  : 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                        }`}
+                    >
+                        {killSwitchActive ? (
+                            <>
+                                <ShieldAlert size={14} className="text-red-700" />
+                                <span>Kill-Switch Acionado (IA Desligada)</span>
+                            </>
+                        ) : contactHumanActive ? (
+                            <>
+                                <User size={14} className="text-amber-800" />
+                                <span>Atendimento Humano Assumido</span>
+                            </>
+                        ) : (
+                            <>
+                                <Bot size={14} className="text-emerald-700" />
+                                <span>IA Orbe Ativa (*&gt;OrBrick-IA&gt;*)</span>
+                            </>
+                        )}
+                    </div>
+
+                    <button
+                        onClick={handleToggleKillSwitch}
+                        className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider border transition-all shadow-sm ${
+                            killSwitchActive
+                                ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-700'
+                                : 'bg-red-600 hover:bg-red-700 text-white border-red-700'
+                        }`}
+                        title="Botão de Pânico: Desliga ou religa imediatamente todas as respostas automáticas da IA no OrBrick para esta empresa"
+                    >
+                        <ShieldAlert size={14} />
+                        {killSwitchActive ? 'Religar IA OrBrick' : 'Botão de Pânico (Kill-Switch)'}
+                    </button>
+                </div>
             </div>
+
+            {aiStatusBanner && (
+                <div className="mb-3 px-4 py-2.5 rounded-xl bg-[#F1F5F9] border border-[#B8860B] text-xs font-bold text-[#0F172A] flex items-center justify-between">
+                    <span>{aiStatusBanner}</span>
+                    <button onClick={() => setAiStatusBanner(null)} className="text-[#8B6508] underline ml-4">OK</button>
+                </div>
+            )}
 
             {/* 3-Column Layout */}
             <div className="flex-1 flex gap-4 h-[calc(100vh-140px)]">
@@ -251,6 +392,26 @@ export default function WhatsAppCentralPage() {
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
+                            {activeContact && (
+                                <button
+                                    onClick={handleToggleHandoff}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold uppercase border transition-colors shadow-sm ${
+                                        contactHumanActive
+                                            ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300'
+                                            : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-300'
+                                    }`}
+                                >
+                                    {contactHumanActive ? (
+                                        <>
+                                            <Bot size={14} /> Devolver p/ IA
+                                        </>
+                                    ) : (
+                                        <>
+                                            <UserCheck size={14} /> Assumir Atendimento
+                                        </>
+                                    )}
+                                </button>
+                            )}
                             <button className="p-2 text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A] rounded-md transition-colors">
                                 <Phone size={16} />
                             </button>
@@ -264,8 +425,14 @@ export default function WhatsAppCentralPage() {
                     <div className="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar bg-[#F1F5F9] relative">
                         {activeContact && (
                             <div className="flex justify-center mb-6">
-                                <div className="flex items-center gap-2 bg-[#F1F5F9] px-4 py-1.5 rounded-lg text-xs font-semibold text-[#64748B] shadow-sm">
-                                    <Zap size={14} className="text-emerald-700" /> Canal Sincronizado: WhatsApp E2E
+                                <div className="flex items-center gap-2 bg-white px-4 py-1.5 rounded-lg text-xs font-semibold text-[#64748B] border border-[#E2E8F0] shadow-sm">
+                                    <ShieldCheck size={14} className="text-emerald-700" />
+                                    <span>
+                                        Canal Sincronizado: WhatsApp E2E · Modo:{' '}
+                                        <strong className="text-[#0F172A]">
+                                            {effectiveAiActive ? 'IA Orbe Ativa' : 'Operador Humano'}
+                                        </strong>
+                                    </span>
                                 </div>
                             </div>
                         )}
@@ -299,6 +466,14 @@ export default function WhatsAppCentralPage() {
                             </button>
                             <button onClick={() => insertTemplate('proposta')} className="flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-800 text-[10px] font-bold uppercase rounded-lg border border-purple-300 transition-colors shadow-sm">
                                 <FileText size={12} className="text-purple-600" /> Proposta
+                            </button>
+                            <button
+                                onClick={handleTriggerAiReply}
+                                disabled={!activeContact || isSending}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-[#B8860B]/15 hover:bg-[#B8860B]/25 text-[#8B6508] text-[10px] font-extrabold uppercase rounded-lg border border-[#B8860B]/40 transition-colors shadow-sm disabled:opacity-50"
+                                title="Aciona a resposta contextual da IA OrBrick para a régua D-3/D0/D+3 ou triagem de comprovante PIX"
+                            >
+                                <Bot size={12} className="text-[#8B6508]" /> Resposta Assistida IA
                             </button>
                         </div>
                         <div className="flex items-end gap-3">
@@ -373,9 +548,11 @@ export default function WhatsAppCentralPage() {
                                         </div>
                                     </div>
                                     <div>
-                                        <span className="text-[10px] text-[#64748B] uppercase block mb-1">Endereço</span>
+                                        <span className="text-[10px] text-[#64748B] uppercase block mb-1">Status Sessão IA</span>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-xs font-semibold text-[#0F172A]">{activeContact.address || '---'}</span>
+                                            <span className="text-xs font-bold text-[#0F172A]">
+                                                {effectiveAiActive ? '🤖 IA OrBrick Ativa' : '👤 Operador Humano'}
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

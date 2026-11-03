@@ -657,6 +657,140 @@ export const crmApi = {
       provider: string;
       cached: boolean;
     }>(`/api/v1/crm/lookup/cep/${encodeURIComponent(cep.replace(/\D/g, ''))}`),
+
+  // ── Módulo CBM (Consumer Behavior Management) & IA no OrBrick ──────
+  getCbmInsights: () =>
+    apiFetch<{
+      business_id: string;
+      business_name: string;
+      total_monitored_contacts: number;
+      avg_churn_risk_score: number;
+      revenue_at_risk: number;
+      total_ltv_monetary: number;
+      lgpd_opt_in_rate_pct: number;
+      risk_distribution: Record<string, number>;
+      seasonality_clusters: Record<string, number>;
+      active_campaigns_count: number;
+      ai_orbrick_status: {
+        business_id: string;
+        kill_switch_active: boolean;
+        ai_global_status: string;
+        reason?: string | null;
+        updated_at?: string | null;
+        updated_by?: string | null;
+      };
+      top_priority_alerts: any[];
+    }>('/api/v1/crm/cbm/insights'),
+
+  getCbmChurnRisk: (riskLevel?: string) =>
+    apiFetch<any[]>(
+      `/api/v1/crm/cbm/churn-risk${riskLevel ? `?risk_level=${encodeURIComponent(riskLevel)}` : ''}`
+    ),
+
+  getCbmCampaigns: () =>
+    apiFetch<any[]>('/api/v1/crm/cbm/campaigns'),
+
+  createCbmCampaign: (payload: {
+    name: string;
+    trigger_type: string;
+    channels: string[];
+    ai_prompt_template?: string;
+    is_active?: boolean;
+    auto_dispatch?: boolean;
+  }) =>
+    apiFetch<any>('/api/v1/crm/cbm/campaigns', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  dispatchCbmCampaign: (campaignId: string) =>
+    apiFetch<{
+      campaign_id: string;
+      campaign_name: string;
+      eligible_contacts: number;
+      dispatched_messages: number;
+      channels: string[];
+      whatsapp_delivery_code: string[];
+      dispatched_at: string;
+    }>(`/api/v1/crm/cbm/campaigns/${encodeURIComponent(campaignId)}/dispatch`, {
+      method: 'POST',
+    }),
+
+  lgpdForgetContact: (contactId: string) =>
+    apiFetch<{
+      found: boolean;
+      contact_id: string;
+      business_id: string;
+      opt_in_marketing: boolean;
+      purged_cbm_profiles: number;
+      anonymized_omnichannel_logs: number;
+      status: string;
+    }>(`/api/v1/crm/cbm/lgpd-forget/${encodeURIComponent(contactId)}`, {
+      method: 'POST',
+    }),
+
+  getWhatsappAiStatus: (contactId?: string) =>
+    apiFetch<{
+      business_id: string;
+      kill_switch_active: boolean;
+      ai_global_status: string;
+      reason?: string | null;
+      contact_session?: {
+        contact_id: string;
+        contact_name: string;
+        ai_attendance_enabled: boolean;
+        human_operator_active: boolean;
+        ai_handoff_until?: string | null;
+      } | null;
+    }>(`/api/v1/crm/whatsapp/ai-status${contactId ? `?contact_id=${encodeURIComponent(contactId)}` : ''}`),
+
+  toggleWhatsappHandoff: (contactId: string, assumeHuman: boolean, durationHours: number = 24) =>
+    apiFetch<{
+      status: string;
+      contact_id: string;
+      contact_name: string;
+      mode: string;
+      ai_attendance_enabled: boolean;
+      ai_handoff_until?: string | null;
+    }>(`/api/v1/crm/whatsapp/handoff/${encodeURIComponent(contactId)}`, {
+      method: 'POST',
+      body: JSON.stringify({ assume_human: assumeHuman, duration_hours: durationHours }),
+    }),
+
+  toggleWhatsappKillSwitch: (active: boolean, reason?: string) =>
+    apiFetch<{
+      business_id: string;
+      kill_switch_active: boolean;
+      ai_global_status: string;
+      reason?: string | null;
+    }>('/api/v1/crm/whatsapp/kill-switch', {
+      method: 'POST',
+      body: JSON.stringify({ active, reason }),
+    }),
+
+  triggerWhatsappAiReply: (payload: {
+    phone: string;
+    incoming_message: string;
+    contact_id?: string;
+    simulate_ai_offline?: boolean;
+  }) =>
+    apiFetch<{
+      status: string;
+      ai_responded: boolean;
+      intent?: string;
+      blocked_injection?: boolean;
+      injection_reason?: string | null;
+      formatted_message?: string;
+      requires_human_handoff?: boolean;
+      receipt_triage_status?: string | null;
+      invoice_status_mutated?: boolean;
+      ai_engine_mode?: string;
+      whatsapp_delivery_code: string[];
+      reason?: string;
+    }>('/api/v1/crm/whatsapp/ai-reply', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 };
 
 // ── Cooperados (Módulo Cooperativismo) ───────────────────────────────

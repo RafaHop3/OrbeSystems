@@ -43,6 +43,17 @@ async def lifespan(app: FastAPI):
         "CREATE INDEX IF NOT EXISTS ix_billing_invoices_biz_comp ON inho.billing_invoices (business_id, data_competencia)",
         "CREATE INDEX IF NOT EXISTS ix_accounts_payable_biz_status_due ON inho.accounts_payable (business_id, status, due_date)",
         "CREATE INDEX IF NOT EXISTS ix_accounts_payable_biz_paid ON inho.accounts_payable (business_id, status, paid_date)",
+        "ALTER TABLE inho.crm_contacts ADD COLUMN IF NOT EXISTS ai_attendance_enabled BOOLEAN NOT NULL DEFAULT TRUE",
+        "ALTER TABLE inho.crm_contacts ADD COLUMN IF NOT EXISTS ai_handoff_until TIMESTAMPTZ",
+        "ALTER TABLE inho.crm_contacts ADD COLUMN IF NOT EXISTS opt_in_marketing BOOLEAN NOT NULL DEFAULT TRUE",
+        "CREATE TABLE IF NOT EXISTS inho.cbm_customer_profiles (id UUID PRIMARY KEY, business_id UUID NOT NULL, contact_id UUID NOT NULL, rfm_recency_days INTEGER NOT NULL DEFAULT 0, rfm_frequency_score NUMERIC(5,2) NOT NULL DEFAULT 0, rfm_monetary_total NUMERIC(15,2) NOT NULL DEFAULT 0, churn_risk_score NUMERIC(5,2) NOT NULL DEFAULT 0, churn_risk_level VARCHAR(20) NOT NULL DEFAULT 'LOW', seasonality_cluster VARCHAR(50) DEFAULT 'RECORRENTE_MENSAL', ai_recommended_offer TEXT, encrypted_behavioral_notes TEXT, predicted_next_purchase_date TIMESTAMPTZ, opt_in_campaigns BOOLEAN NOT NULL DEFAULT TRUE, updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
+        "CREATE INDEX IF NOT EXISTS ix_cbm_profiles_business_risk ON inho.cbm_customer_profiles (business_id, churn_risk_level)",
+        "CREATE UNIQUE INDEX IF NOT EXISTS ix_cbm_profiles_business_contact ON inho.cbm_customer_profiles (business_id, contact_id)",
+        "CREATE TABLE IF NOT EXISTS inho.cbm_campaigns (id UUID PRIMARY KEY, business_id UUID NOT NULL, name VARCHAR(120) NOT NULL, trigger_type VARCHAR(40) NOT NULL, channels TEXT NOT NULL DEFAULT '[\"WHATSAPP\", \"EMAIL\"]', ai_prompt_template TEXT, is_active BOOLEAN NOT NULL DEFAULT TRUE, dispatched_count INTEGER NOT NULL DEFAULT 0, last_dispatched_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
+        "CREATE INDEX IF NOT EXISTS ix_cbm_campaigns_business ON inho.cbm_campaigns (business_id)",
+        "CREATE INDEX IF NOT EXISTS ix_cbm_campaigns_trigger ON inho.cbm_campaigns (business_id, trigger_type)",
+        "ALTER TABLE inho.cbm_customer_profiles ENABLE ROW LEVEL SECURITY",
+        "ALTER TABLE inho.cbm_campaigns ENABLE ROW LEVEL SECURITY",
     ]
     if not is_sqlite:
         startup_stmts.append(

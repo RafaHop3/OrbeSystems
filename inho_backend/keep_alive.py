@@ -70,6 +70,17 @@ def start_keep_alive() -> None:
             replace_existing=True,
         )
         
+        # 🧠 Orbe INHO: Motor Preditivo Diário CBM (RFM, Sazonalidade e Risco de Churn)
+        from jobs.cbm_job import run_daily_cbm_job
+        _scheduler.add_job(
+            run_daily_cbm_job,
+            trigger="cron",
+            hour=8,  # Todos os dias às 08:30 AM UTC (30 min antes da Régua de Cobrança)
+            minute=30,
+            id="cbm_daily_predictive_cron",
+            replace_existing=True,
+        )
+
         # 🤖 Orbe INHO: Régua de Cobrança Automática B2B2C (WhatsApp)
         from jobs.notification_job import process_billing_reminders
         _scheduler.add_job(

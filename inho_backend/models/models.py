@@ -408,6 +408,11 @@ class CRMContact(Base):
     admission_date      = Column(DateTime(timezone=True), nullable=True)
     vacation_start_date = Column(DateTime(timezone=True), nullable=True)
 
+    # ── OrBrick AI Attendance & LGPD Consent Flags ──
+    ai_attendance_enabled = Column(Boolean, default=True, nullable=False)
+    ai_handoff_until      = Column(DateTime(timezone=True), nullable=True)
+    opt_in_marketing      = Column(Boolean, default=True, nullable=False)
+
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc), nullable=False)
@@ -837,5 +842,75 @@ class OmnichannelLog(Base):
         Index("ix_omnichannel_logs_business", "business_id"),
         Index("ix_omnichannel_logs_channel", "channel"),
         Index("ix_omnichannel_logs_sender", "sender_id"),
+    )
+
+
+# ── Módulo CBM (Consumer Behavior Management) & Risco de Churn ────
+class ChurnRiskLevel(str, enum.Enum):
+    LOW      = "LOW"
+    MEDIUM   = "MEDIUM"
+    HIGH     = "HIGH"
+    CRITICAL = "CRITICAL"
+
+
+class CBMCustomerProfile(Base):
+    """
+    Perfis Comportamentais (RFM), Sazonalidade e Risco de Churn por Contato.
+    Isolamento estrito Multi-Tenant (business_id) e chaves UUID nativas (Manual 02).
+    """
+    __tablename__ = "cbm_customer_profiles"
+
+    id                           = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id                  = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    contact_id                   = Column(DB_UUID, ForeignKey("crm_contacts.id", ondelete="CASCADE"), nullable=False)
+    rfm_recency_days             = Column(Integer, nullable=False, default=0)
+    rfm_frequency_score          = Column(Numeric(precision=5, scale=2), nullable=False, default=0.0)
+    rfm_monetary_total           = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    churn_risk_score             = Column(Numeric(precision=5, scale=2), nullable=False, default=0.0)
+    churn_risk_level             = Column(String(20), nullable=False, default="LOW")  # LOW, MEDIUM, HIGH, CRITICAL
+    seasonality_cluster          = Column(String(50), nullable=True, default="RECORRENTE_MENSAL")
+    ai_recommended_offer         = Column(Text, nullable=True)
+    encrypted_behavioral_notes   = Column(Text, nullable=True)  # MultiFernet AES-256 at rest
+    predicted_next_purchase_date = Column(DateTime(timezone=True), nullable=True)
+    opt_in_campaigns             = Column(Boolean, default=True, nullable=False)
+    updated_at                   = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        Index("ix_cbm_profiles_business_risk", "business_id", "churn_risk_level"),
+        Index("ix_cbm_profiles_business_contact", "business_id", "contact_id", unique=True),
+    )
+
+
+class CBMCampaign(Base):
+    """
+    Campanhas Automatizadas Multicanal do Módulo CBM (WhatsApp OrBrick, E-mail Resend, SMS).
+    """
+    __tablename__ = "cbm_campaigns"
+
+    id                 = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id        = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    name               = Column(String(120), nullable=False)
+    trigger_type       = Column(String(40), nullable=False)  # CHURN_ALERT, INACTIVITY_30D, SEASONAL, BILLING_D3
+    channels           = Column(Text, nullable=False, default='["WHATSAPP", "EMAIL"]')  # JSON array
+    ai_prompt_template = Column(Text, nullable=True)
+    is_active          = Column(Boolean, default=True, nullable=False)
+    dispatched_count   = Column(Integer, nullable=False, default=0)
+    last_dispatched_at = Column(DateTime(timezone=True), nullable=True)
+    created_at         = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at         = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        Index("ix_cbm_campaigns_business", "business_id"),
+        Index("ix_cbm_campaigns_trigger", "business_id", "trigger_type"),
     )
 
