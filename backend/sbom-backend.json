@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:9bc798c9-ceb9-42c4-bfdf-f483eed2be32",
+  "serialNumber": "urn:uuid:9751c929-1d91-46db-894b-68c7f24a46e2",
   "metadata": {
-    "timestamp": "2026-10-29T22:19:54.717979+00:00",
+    "timestamp": "2026-11-03T15:54:23.990791+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -140,8 +140,8 @@
     {
       "type": "library",
       "name": "anyio",
-      "version": "4.15.1",
-      "purl": "pkg:pypi/anyio@4.15.1",
+      "version": "4.16.0",
+      "purl": "pkg:pypi/anyio@4.16.0",
       "licenses": [
         {
           "license": {
@@ -153,7 +153,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "555274d62998d9151f9499ad307d679609039eb5c6e4f72ae6d80508b8948127"
+          "content": "763bcc43e42ab91cb96cef23b94602ea87d11b6d335bbbf503cc817769dd36ea"
         }
       ]
     },
@@ -1155,8 +1155,8 @@
     {
       "type": "library",
       "name": "psycopg",
-      "version": "3.3.6",
-      "purl": "pkg:pypi/psycopg@3.3.6",
+      "version": "3.3.7",
+      "purl": "pkg:pypi/psycopg@3.3.7",
       "licenses": [
         {
           "license": {
@@ -1173,15 +1173,15 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "7c0b8da12596d61d0ff0aee69248d97009b404a904c2925c01d7f4f24c668f37"
+          "content": "34df1b82e236c1719641eff9e564c959d93a7853585f2fe47dc80be781cdf5d3"
         }
       ]
     },
     {
       "type": "library",
       "name": "psycopg-binary",
-      "version": "3.3.6",
-      "purl": "pkg:pypi/psycopg-binary@3.3.6",
+      "version": "3.3.7",
+      "purl": "pkg:pypi/psycopg-binary@3.3.7",
       "licenses": [
         {
           "license": {
@@ -1198,7 +1198,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "b16e366f5bc02f5ba6b6f6e03390e2e8fc00de6e062d9ff65742dec8d7e6dace"
+          "content": "60ba57e82b40a14c2ed0a749cba790a2674208f14620076e71250486b04180c0"
         }
       ]
     },
@@ -1925,8 +1925,8 @@
     {
       "type": "library",
       "name": "ujson",
-      "version": "6.0.0",
-      "purl": "pkg:pypi/ujson@6.0.0",
+      "version": "6.1.0",
+      "purl": "pkg:pypi/ujson@6.1.0",
       "licenses": [
         {
           "license": {
@@ -1943,7 +1943,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "8161bb8b8fa02d6941d78b4f9d199fe830736e50d09d20dffcb396f88f7c017c"
+          "content": "1e518d6c9a5490da0fe0dd72354d4828a75927f515b0847aaedc9fc1fd2f3321"
         }
       ]
     },
@@ -2040,8 +2040,8 @@
     {
       "type": "library",
       "name": "websockets",
-      "version": "17.3",
-      "purl": "pkg:pypi/websockets@17.3",
+      "version": "17.4",
+      "purl": "pkg:pypi/websockets@17.4",
       "licenses": [
         {
           "license": {
@@ -2058,15 +2058,15 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "1faa4c4b8a6833649ae0d7a98524cebfe14c897964bdf50bce5c15eae8408900"
+          "content": "e2df9edff3199bf414616840d01865cf46f05757227ef92d7e9b5818f813de5f"
         }
       ]
     },
     {
       "type": "library",
       "name": "wrapt",
-      "version": "2.5.1",
-      "purl": "pkg:pypi/wrapt@2.5.1",
+      "version": "2.5.2",
+      "purl": "pkg:pypi/wrapt@2.5.2",
       "licenses": [
         {
           "license": {
@@ -2083,7 +2083,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "fffb8177def602da5b19322007795616517241f97d33bc9fecb814d57ab136ef"
+          "content": "d411403a0457532a6bbd3bc0144c5256169059d7df8721b8435d4748a5ea01ec"
         }
       ]
     },
