@@ -20,6 +20,7 @@ interface ToolVoidCanvasProps {
   accentColor?: string;
   secondaryColor?: string;
   particleCount?: number;
+  highlightBand?: [number, number] | null;
   className?: string;
 }
 
@@ -791,15 +792,34 @@ const BUILDERS: Record<VoidToolShape, (count: number) => Float32Array> = {
 const VERTEX_SHADER = `
   uniform float uTime;
   uniform vec2 uPointer;
+  uniform vec2 uHighlightBand;
+  uniform float uHighlightActive;
 
   attribute float aRandomSeed;
 
   varying float vElevation;
   varying float vDistToPointer;
+  varying float vBandFocus;
+  varying float vWavePulse;
 
   void main() {
     vec3 mixedPos = position;
     mixedPos.y += sin(uTime * 1.6 + aRandomSeed * 6.28) * 0.018;
+
+    // Onda de seiva/energia ascendente contínua
+    float waveY = mod(uTime * 0.78, 3.3) - 1.55;
+    float wavePulse = smoothstep(0.38, 0.0, abs(mixedPos.y - waveY));
+    vWavePulse = wavePulse;
+
+    // Destaque anatômico por faixa de elevação (quando usuário interage com as 8 estações)
+    float inBand = step(uHighlightBand.x, mixedPos.y) * step(mixedPos.y, uHighlightBand.y);
+    float bandMargin = smoothstep(uHighlightBand.x - 0.18, uHighlightBand.x + 0.06, mixedPos.y) *
+                       (1.0 - smoothstep(uHighlightBand.y - 0.06, uHighlightBand.y + 0.18, mixedPos.y));
+    vBandFocus = mix(inBand, bandMargin, 0.5) * uHighlightActive;
+
+    if (vBandFocus > 0.1) {
+      mixedPos.xz *= 1.0 + sin(uTime * 5.0 + aRandomSeed * 6.28) * 0.035 * vBandFocus;
+    }
 
     vec2 pointerWorld = uPointer * 2.2;
     float dist = distance(mixedPos.xy, pointerWorld);
@@ -815,31 +835,36 @@ const VERTEX_SHADER = `
     vec4 mvPosition = modelViewMatrix * vec4(mixedPos, 1.0);
     gl_Position = projectionMatrix * mvPosition;
 
-    float highlightBoost = smoothstep(0.85, 0.0, dist) * 2.2;
-    gl_PointSize = (3.3 + highlightBoost) * (4.2 / -mvPosition.z);
+    float highlightBoost = smoothstep(0.85, 0.0, dist) * 2.2 + wavePulse * 1.15 + vBandFocus * 2.6;
+    gl_PointSize = (3.4 + highlightBoost) * (4.2 / -mvPosition.z);
   }
 `;
 
 const FRAGMENT_SHADER = `
   uniform vec3 uPrimaryColor;
   uniform vec3 uSecondaryColor;
+  uniform float uHighlightActive;
 
   varying float vElevation;
   varying float vDistToPointer;
+  varying float vBandFocus;
+  varying float vWavePulse;
 
   void main() {
     float d = length(gl_PointCoord - vec2(0.5));
     if (d > 0.5) discard;
 
-    float coreGlow = smoothstep(0.5, 0.08, d);
+    float coreGlow = smoothstep(0.5, 0.06, d);
     float mixFactor = clamp((vElevation + 1.5) / 3.0, 0.0, 1.0);
     vec3 baseColor = mix(uPrimaryColor, uSecondaryColor, mixFactor);
 
     float cursorHighlight = smoothstep(0.85, 0.0, vDistToPointer);
-    vec3 finalColor = mix(baseColor, vec3(0.95, 0.99, 1.0), cursorHighlight * 0.55);
+    float energyGlow = clamp(cursorHighlight * 0.55 + vWavePulse * 0.35 + vBandFocus * 0.65, 0.0, 1.0);
+    vec3 finalColor = mix(baseColor, vec3(0.96, 1.0, 1.0), energyGlow);
 
-    float alpha = coreGlow * (0.68 + cursorHighlight * 0.32);
-    gl_FragColor = vec4(finalColor, alpha);
+    float dimFactor = uHighlightActive > 0.5 ? mix(0.32, 1.0, vBandFocus) : 1.0;
+    float alpha = coreGlow * (0.68 + cursorHighlight * 0.32 + vWavePulse * 0.22 + vBandFocus * 0.30) * dimFactor;
+    gl_FragColor = vec4(finalColor, clamp(alpha, 0.0, 1.0));
   }
 `;
 
@@ -852,9 +877,12 @@ export default function ToolVoidCanvas({
   accentColor = '#00fff5',
   secondaryColor = '#3b82f6',
   particleCount = PARTICLE_COUNT_DEFAULT,
+  highlightBand = null,
   className = '',
 }: ToolVoidCanvasProps) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const highlightBandRef = useRef<[number, number] | null>(highlightBand);
+  highlightBandRef.current = highlightBand;
 
   useEffect(() => {
     const container = mountRef.current;
@@ -917,6 +945,8 @@ export default function ToolVoidCanvas({
         uPointer: { value: new THREE.Vector2(99, 99) },
         uPrimaryColor: { value: new THREE.Color(accentColor) },
         uSecondaryColor: { value: new THREE.Color(secondaryColor) },
+        uHighlightBand: { value: new THREE.Vector2(-1.6, 1.7) },
+        uHighlightActive: { value: 0.0 },
       },
     });
 
@@ -968,6 +998,14 @@ export default function ToolVoidCanvas({
       const elapsed = clock.getElapsedTime();
       material.uniforms.uTime.value = elapsed;
       material.uniforms.uPointer.value.lerp(targetPointer, 0.12);
+
+      const hb = highlightBandRef.current;
+      if (hb) {
+        material.uniforms.uHighlightBand.value.set(hb[0], hb[1]);
+        material.uniforms.uHighlightActive.value += (1.0 - material.uniforms.uHighlightActive.value) * 0.15;
+      } else {
+        material.uniforms.uHighlightActive.value += (0.0 - material.uniforms.uHighlightActive.value) * 0.15;
+      }
 
       points.rotation.y = elapsed * 0.22;
       points.rotation.x = Math.cos(elapsed * 0.25) * 0.08;

@@ -570,8 +570,26 @@ function hexToRgb(hex: string): [number, number, number] {
     return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
 }
 
+function createGlowOrbSprite(r: number, g: number, b: number): HTMLCanvasElement {
+    const size = 32;
+    const off = document.createElement("canvas");
+    off.width = size;
+    off.height = size;
+    const octx = off.getContext("2d");
+    if (!octx) return off;
+    const half = size / 2;
+    const grad = octx.createRadialGradient(half, half, 0.5, half, half, half);
+    grad.addColorStop(0.0, "rgba(255,255,255,1)");
+    grad.addColorStop(0.24, `rgba(${r},${g},${b},0.92)`);
+    grad.addColorStop(0.58, `rgba(${r},${g},${b},0.32)`);
+    grad.addColorStop(1.0, `rgba(${r},${g},${b},0)`);
+    octx.fillStyle = grad;
+    octx.fillRect(0, 0, size, size);
+    return off;
+}
+
 // ============================================================================
-// MOTOR DE PARTÍCULAS 3D POR CARD (Zero Limite de Contexto WebGL + 60 FPS)
+// MOTOR DE PARTÍCULAS 3D POR CARD (Sprites Radial-Glow + Pulso + Plexus 60 FPS)
 // ============================================================================
 function CardParticleVoidCanvas({
     type,
@@ -597,6 +615,13 @@ function CardParticleVoidCanvas({
 
         const [r1, g1, b1] = hexToRgb(accentColor);
         const [r2, g2, b2] = hexToRgb(secondaryColor);
+        const spriteLow = createGlowOrbSprite(r1, g1, b1);
+        const spriteMid = createGlowOrbSprite(
+            Math.round((r1 + r2) * 0.5),
+            Math.round((g1 + g2) * 0.5),
+            Math.round((b1 + b2) * 0.5)
+        );
+        const spriteHigh = createGlowOrbSprite(r2, g2, b2);
 
         let width = 1;
         let height = 1;
@@ -622,20 +647,24 @@ function CardParticleVoidCanvas({
         );
         io.observe(canvas);
 
-        const pointer = { x: 99, y: 99, tx: 99, ty: 99 };
+        const pointer = { x: 99, y: 99, tx: 99, ty: 99, hovered: false };
         const parentCard = canvas.parentElement?.parentElement;
         const onMove = (e: PointerEvent) => {
             const rect = canvas.getBoundingClientRect();
             pointer.tx = (((e.clientX - rect.left) / rect.width) * 2 - 1) * 1.8;
             pointer.ty = (-((e.clientY - rect.top) / rect.height) * 2 + 1) * 1.8;
+            pointer.hovered = true;
         };
         const onLeave = () => {
             pointer.tx = 99;
             pointer.ty = 99;
+            pointer.hovered = false;
         };
         parentCard?.addEventListener("pointermove", onMove);
         parentCard?.addEventListener("pointerleave", onLeave);
 
+        const anchorSx = new Float32Array(42);
+        const anchorSy = new Float32Array(42);
         let rafId = 0;
         const t0 = performance.now();
 
@@ -659,27 +688,33 @@ function CardParticleVoidCanvas({
             const cy = height * 0.42;
             const scaleBase = Math.min(width, height) * 0.42;
             const fov = 3.8;
+            const waveY = ((elapsed * 0.85) % 3.2) - 1.5;
+
+            let anchorCount = 0;
 
             for (let i = 0; i < PARTICLE_COUNT; i++) {
                 const px = positions[i * 3];
                 const py = positions[i * 3 + 1] + Math.sin(elapsed * 1.6 + seeds[i]) * 0.022;
                 const pz = positions[i * 3 + 2];
 
-                // Rotação 3D no eixo Y e X
                 const x1 = px * cosY - pz * sinY;
                 const z1 = px * sinY + pz * cosY;
                 const y2 = py * cosX - z1 * sinX;
                 let z2 = py * sinX + z1 * cosX;
 
-                // Reação magnética ao ponteiro do mouse
+                // Onda de pulso ascendente + reação magnética ao ponteiro
+                const waveDist = Math.abs(py - waveY);
+                const wavePulse = waveDist < 0.34 ? (0.34 - waveDist) / 0.34 : 0;
+
                 const dx = x1 - pointer.x;
                 const dy = y2 - pointer.y;
                 const distSq = dx * dx + dy * dy;
-                let boost = 0;
+                let boost = wavePulse * 0.55;
                 if (distSq < 0.72) {
                     const dist = Math.sqrt(distSq);
-                    boost = (0.85 - dist) / 0.85;
-                    z2 += boost * 0.32;
+                    const pForce = (0.85 - dist) / 0.85;
+                    boost += pForce;
+                    z2 += pForce * 0.32;
                 }
 
                 const depth = fov - z2;
@@ -688,19 +723,39 @@ function CardParticleVoidCanvas({
 
                 const sx = cx + x1 * persp * 1.35;
                 const sy = cy - y2 * persp * 1.35;
-                if (sx < -10 || sx > width + 10 || sy < -10 || sy > height + 10) continue;
+                if (sx < -12 || sx > width + 12 || sy < -12 || sy > height + 12) continue;
 
-                // Interpolação de cor por elevação (idêntica ao FRAGMENT_SHADER do ToolVoidCanvas)
+                if (i % 54 === 0 && anchorCount < 42) {
+                    anchorSx[anchorCount] = sx;
+                    anchorSy[anchorCount] = sy;
+                    anchorCount++;
+                }
+
                 const mix = Math.max(0, Math.min(1, (py + 1.35) / 2.7));
-                const cr = Math.round(r1 + (r2 - r1) * mix + boost * 75);
-                const cg = Math.round(g1 + (g2 - g1) * mix + boost * 75);
-                const cb = Math.round(b1 + (b2 - b1) * mix + boost * 75);
-                const alpha = Math.min(0.95, (0.48 + boost * 0.42) * (2.8 / depth));
-                const size = Math.max(1.1, (2.2 + boost * 1.8) * (2.6 / depth));
-
-                ctx.fillStyle = `rgba(${cr},${cg},${cb},${alpha.toFixed(2)})`;
-                ctx.fillRect(sx - size * 0.5, sy - size * 0.5, size, size);
+                const sprite = mix < 0.36 ? spriteLow : mix < 0.72 ? spriteMid : spriteHigh;
+                const radius = Math.max(2.2, (3.8 + boost * 2.8) * (2.6 / depth));
+                ctx.globalAlpha = Math.min(1.0, (0.52 + boost * 0.42) * (2.8 / depth));
+                ctx.drawImage(sprite, sx - radius, sy - radius, radius * 2, radius * 2);
             }
+
+            // Feixes Sinápticos (Plexus 3D) conectando os nós estruturais próximos
+            ctx.globalAlpha = pointer.hovered ? 0.28 : 0.14;
+            ctx.strokeStyle = accentColor;
+            ctx.lineWidth = 0.75;
+            ctx.beginPath();
+            for (let a = 0; a < anchorCount; a++) {
+                const ax = anchorSx[a], ay = anchorSy[a];
+                for (let b = a + 1; b < anchorCount; b++) {
+                    const ddx = ax - anchorSx[b];
+                    const ddy = ay - anchorSy[b];
+                    if (ddx * ddx + ddy * ddy < 2600) {
+                        ctx.moveTo(ax, ay);
+                        ctx.lineTo(anchorSx[b], anchorSy[b]);
+                    }
+                }
+            }
+            ctx.stroke();
+            ctx.globalAlpha = 1.0;
         };
 
         rafId = requestAnimationFrame(render);

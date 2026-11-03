@@ -1,19 +1,22 @@
 'use client';
 
 import Image from 'next/image';
-import { 
-    ExternalLink, 
-    Sparkles, 
-    ShieldCheck, 
-    Boxes, 
-    Orbit, 
-    Gamepad2, 
-    FileText, 
-    Newspaper, 
-    Cpu, 
-    ShieldAlert, 
-    Clock, 
-    type LucideIcon 
+import {
+    ExternalLink,
+    Sparkles,
+    ShieldCheck,
+    Boxes,
+    Orbit,
+    Gamepad2,
+    FileText,
+    Newspaper,
+    Cpu,
+    ShieldAlert,
+    BookOpen,
+    Sprout,
+    Terminal,
+    Layers,
+    type LucideIcon
 } from 'lucide-react';
 
 interface SiteCard {
@@ -30,6 +33,42 @@ interface SiteCard {
 }
 
 const sites: SiteCard[] = [
+    {
+        name: 'Mesh Social Books',
+        tagline: 'Estante P2P Física & Acervo Digital · Anti-Spoiler',
+        url: '/mesh-social',
+        image: '/featured-workspace.png',
+        accent: '#00fff5',
+        accentBg: 'rgba(0, 255, 245, 0.08)',
+        accentBorder: 'rgba(0, 255, 245, 0.4)',
+        badgeLabel: 'MALHA CULTURAL P2P',
+        badgeIcon: BookOpen,
+        isAnimated: true,
+    },
+    {
+        name: 'INHO Business',
+        tagline: 'ERP Enterprise · Gestão, CBM & Cobranças PIX + IA',
+        url: 'https://inho.orbesystems.com.br',
+        image: '/hero_inho_business.png',
+        accent: '#a78bfa',
+        accentBg: 'rgba(167, 139, 250, 0.08)',
+        accentBorder: 'rgba(167, 139, 250, 0.35)',
+        badgeLabel: 'ERP & IA SEGURA',
+        badgeIcon: Boxes,
+        isAnimated: true,
+    },
+    {
+        name: 'INHO Manifesto',
+        tagline: 'Arquitetura Viva · Da Raiz Financeira à Colheita',
+        url: '/inho',
+        image: '/featured-inho.png',
+        accent: '#10b981',
+        accentBg: 'rgba(16, 185, 129, 0.08)',
+        accentBorder: 'rgba(16, 185, 129, 0.35)',
+        badgeLabel: 'MANIFESTO OFICIAL',
+        badgeIcon: Sprout,
+        isAnimated: true,
+    },
     {
         name: 'Orbe Visual Studio',
         tagline: 'Audio-Reatividade · Computação Gráfica WebGL',
@@ -55,15 +94,27 @@ const sites: SiteCard[] = [
         isAnimated: true,
     },
     {
-        name: 'INHO Business',
-        tagline: 'ERP Enterprise · Gestão & Cobranças PIX + WhatsApp',
-        url: 'https://inho.orbesystems.com.br',
-        image: '/hero_inho_business.png',
-        accent: '#a78bfa',
-        accentBg: 'rgba(167, 139, 250, 0.08)',
-        accentBorder: 'rgba(167, 139, 250, 0.35)',
-        badgeLabel: 'ERP & PIX ENGINE',
-        badgeIcon: Boxes,
+        name: 'Orbe Cleaner V4',
+        tagline: 'Otimização de Disco · Limpeza NVMe + SHA-256',
+        url: '/orbe-cleaner',
+        image: '/featured-orbecleaner.png',
+        accent: '#ff9900',
+        accentBg: 'rgba(255, 153, 0, 0.08)',
+        accentBorder: 'rgba(255, 153, 0, 0.35)',
+        badgeLabel: 'OTIMIZAÇÃO NVME',
+        badgeIcon: Cpu,
+        isAnimated: true,
+    },
+    {
+        name: 'Orbe Knight',
+        tagline: 'Segurança Cibernética · Monitoramento 24/7',
+        url: '/ferramentas-premium/orbe-knight',
+        image: '/featured-orbeknight.png',
+        accent: '#3b82f6',
+        accentBg: 'rgba(59, 130, 246, 0.08)',
+        accentBorder: 'rgba(59, 130, 246, 0.35)',
+        badgeLabel: 'CYBER SECURITY',
+        badgeIcon: ShieldAlert,
         isAnimated: true,
     },
     {
@@ -112,72 +163,52 @@ const sites: SiteCard[] = [
         badgeIcon: Newspaper,
     },
     {
-        name: 'Orbe Cleaner',
-        tagline: 'Otimização de Disco · Limpeza 3D',
-        url: '/orbe-cleaner',
-        image: '/featured-orbecleaner.png',
-        accent: '#ff9900',
-        accentBg: 'rgba(255, 153, 0, 0.08)',
-        accentBorder: 'rgba(255, 153, 0, 0.35)',
-        badgeLabel: 'OTIMIZAÇÃO NVME',
-        badgeIcon: Cpu,
-        isAnimated: true,
-    },
-    {
-        name: 'Orbe Knight',
-        tagline: 'Segurança Cibernética · Monitoramento 24/7',
-        url: '/ferramentas-premium/orbe-knight',
-        image: '/featured-orbeknight.png',
-        accent: '#3b82f6',
-        accentBg: 'rgba(59, 130, 246, 0.08)',
-        accentBorder: 'rgba(59, 130, 246, 0.35)',
-        badgeLabel: 'CYBER SECURITY',
-        badgeIcon: ShieldAlert,
-        isAnimated: true,
-    },
-    {
         name: 'Orbe Workspace',
-        tagline: 'Comando Central · Produtividade',
-        url: '#',
+        tagline: 'Comando Central · Produtividade & VDE HUD',
+        url: '/workspace',
         image: '/featured-workspace.png',
-        accent: '#3b82f6',
-        accentBg: 'rgba(59, 130, 246, 0.08)',
-        accentBorder: 'rgba(59, 130, 246, 0.25)',
-        badgeLabel: 'EM CONSTRUÇÃO',
-        badgeIcon: Clock,
+        accent: '#6366f1',
+        accentBg: 'rgba(99, 102, 241, 0.08)',
+        accentBorder: 'rgba(99, 102, 241, 0.35)',
+        badgeLabel: 'WORKSPACE HUD',
+        badgeIcon: Layers,
+        isAnimated: true,
     },
     {
         name: 'Imortal (Logic Engine)',
         tagline: 'Verificação Formal · Solucionador Z3',
-        url: '#',
+        url: '/imortal',
         image: '/featured-imortal.png',
         accent: '#9333ea',
         accentBg: 'rgba(147, 51, 234, 0.08)',
-        accentBorder: 'rgba(147, 51, 234, 0.25)',
-        badgeLabel: 'EM CONSTRUÇÃO',
-        badgeIcon: Clock,
+        accentBorder: 'rgba(147, 51, 234, 0.35)',
+        badgeLabel: 'PROVA FORMAL Z3',
+        badgeIcon: Cpu,
+        isAnimated: true,
     },
     {
-        name: 'Imobverse',
-        tagline: 'Proptech · Motor de Reputação',
-        url: '#',
-        image: '/featured-imobverse.png',
-        accent: '#6366f1',
-        accentBg: 'rgba(99, 102, 241, 0.08)',
-        accentBorder: 'rgba(99, 102, 241, 0.25)',
-        badgeLabel: 'EM CONSTRUÇÃO',
-        badgeIcon: Clock,
-    },
-    {
-        name: 'PowerShell Bot',
-        tagline: 'SecDevOps · Auditor SAST',
-        url: '#',
+        name: 'PowerShell Bot SAST',
+        tagline: 'SecDevOps · Auditoria Estática & Auto-Patch',
+        url: '/software-engineering',
         image: '/featured-powershellbot.png',
         accent: '#10b981',
         accentBg: 'rgba(16, 185, 129, 0.08)',
-        accentBorder: 'rgba(16, 185, 129, 0.25)',
-        badgeLabel: 'EM CONSTRUÇÃO',
-        badgeIcon: Clock,
+        accentBorder: 'rgba(16, 185, 129, 0.35)',
+        badgeLabel: 'SECDEVOPS SAST',
+        badgeIcon: Terminal,
+        isAnimated: true,
+    },
+    {
+        name: 'Orbe Music Studio',
+        tagline: 'DAW 48kHz · Sequenciador & Sintetizador Web',
+        url: '/studio',
+        image: '/hero_orbe_studio.png',
+        accent: '#a855f7',
+        accentBg: 'rgba(168, 85, 247, 0.08)',
+        accentBorder: 'rgba(168, 85, 247, 0.35)',
+        badgeLabel: 'STUDIO DAW 48KHZ',
+        badgeIcon: Sparkles,
+        isAnimated: true,
     },
 ];
 
@@ -190,7 +221,7 @@ export default function FeaturedSitesSection() {
                     ◈ Ecossistema Orbe
                 </p>
                 <h2 className="font-tilt-neon text-2xl md:text-3xl font-semibold text-white/90 uppercase mb-3 text-shimmer">
-                    Sites em Destaque
+                    Sites &amp; Plataformas em Destaque
                 </h2>
                 <div className="w-24 h-px bg-gradient-to-r from-transparent via-neon-cyan/50 to-transparent mx-auto" />
             </div>
@@ -199,15 +230,14 @@ export default function FeaturedSitesSection() {
             <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
                 {sites.map((site) => {
                     const BadgeIcon = site.badgeIcon;
+                    const isExternal = site.url.startsWith('http');
                     return (
                         <a
                             key={site.name}
                             href={site.url}
-                            target={site.url === '#' ? undefined : '_blank'}
-                            rel={site.url === '#' ? undefined : 'noopener noreferrer'}
-                            aria-disabled={site.url === '#' ? true : undefined}
-                            onClick={site.url === '#' ? (e) => e.preventDefault() : undefined}
-                            className={`group relative flex flex-col overflow-hidden rounded-lg border transition-all duration-500 ${site.isAnimated ? 'hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(57,255,20,0.5)]' : ''}`}
+                            target={isExternal ? '_blank' : undefined}
+                            rel={isExternal ? 'noopener noreferrer' : undefined}
+                            className={`group relative flex flex-col overflow-hidden rounded-lg border transition-all duration-500 ${site.isAnimated ? 'hover:-translate-y-2 hover:shadow-[0_0_20px_rgba(0,255,245,0.35)]' : ''}`}
                             style={{
                                 borderColor: site.accentBorder,
                                 background: `linear-gradient(165deg, ${site.accentBg}, rgba(0,0,0,0.7))`,
@@ -235,7 +265,7 @@ export default function FeaturedSitesSection() {
                                 <div
                                     className="absolute inset-0"
                                     style={{
-                                        background: `linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)`,
+                                        background: 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%)',
                                     }}
                                 />
 
@@ -295,7 +325,7 @@ export default function FeaturedSitesSection() {
                                             background: `${site.accentBg}`,
                                         }}
                                     >
-                                        {site.url === '#' ? 'Em breve' : 'Acesse aqui'}
+                                        Acesse aqui
                                         <ExternalLink size={10} className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                                     </span>
                                 </div>

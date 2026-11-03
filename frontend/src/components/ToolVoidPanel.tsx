@@ -11,6 +11,7 @@ interface ToolVoidPanelProps {
   accentColor: string;
   secondaryColor: string;
   label: string;
+  highlightBand?: [number, number] | null;
   className?: string;
 }
 
@@ -20,6 +21,7 @@ export default function ToolVoidPanel({
   accentColor,
   secondaryColor,
   label,
+  highlightBand = null,
   className = '',
 }: ToolVoidPanelProps) {
   return (
@@ -28,7 +30,7 @@ export default function ToolVoidPanel({
     >
       <div
         aria-hidden="true"
-        className="absolute top-3 left-4 z-10 flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-slate-300 bg-black/60 px-2.5 py-1 rounded border border-white/10"
+        className="absolute top-3 left-4 z-10 flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-slate-300 bg-black/60 px-2.5 py-1 rounded border border-white/10 transition-all duration-300"
       >
         <span
           className="w-2 h-2 rounded-full animate-pulse"
@@ -40,6 +42,7 @@ export default function ToolVoidPanel({
         activeShape={shape}
         accentColor={accentColor}
         secondaryColor={secondaryColor}
+        highlightBand={highlightBand}
       />
     </div>
   );
