@@ -29,6 +29,9 @@ from services.ai_agent import encrypt_conversation_metadata
 
 logger = logging.getLogger("inho.cbm_engine")
 
+_CBM_PROD_CACHE: Dict[str, Any] = {}
+
+
 
 def _norm_uuid(val: Any) -> Any:
     if not val:
@@ -161,6 +164,12 @@ async def refresh_cbm_profiles_for_business(
     """
     b_id = _norm_uuid(business_id)
     now_utc = datetime.now(timezone.utc)
+    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+    cache_key = str(b_id)
+    if not is_sqlite and cache_key in _CBM_PROD_CACHE:
+        cached_ts, cached_res = _CBM_PROD_CACHE[cache_key]
+        if (now_utc - cached_ts).total_seconds() < 30.0:
+            return cached_res
     cutoff_180d = now_utc - timedelta(days=180)
 
     # 1. Buscar contatos elegíveis (CUSTOMER e PARTNER) do tenant
@@ -355,6 +364,8 @@ async def refresh_cbm_profiles_for_business(
         })
 
     results.sort(key=lambda x: x["churn_risk_score"], reverse=True)
+    if not is_sqlite:
+        _CBM_PROD_CACHE[cache_key] = (now_utc, results)
     return results
 
 
@@ -371,6 +382,7 @@ async def anonymize_or_purge_cbm_profile(
     """
     b_id = _norm_uuid(business_id)
     c_id = _norm_uuid(contact_id)
+    _CBM_PROD_CACHE.pop(str(b_id), None)
 
     contact_res = await db.execute(
         select(CRMContact).where(
