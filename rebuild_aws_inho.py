@@ -11,7 +11,8 @@ commands = [
     "cd /home/ubuntu/OrbeSystems",
     "sudo docker start orbe_backend inho_backend orbe_whatsapp || sudo docker-compose -f ec2_compose.yml up -d",
     "sudo docker cp inho_backend/. inho_backend:/app/",
-    "sudo docker restart orbe_backend inho_backend",
+    "sudo docker cp whatsapp_bot/index.js orbe_whatsapp:/app/index.js || true",
+    "sudo docker restart orbe_backend inho_backend orbe_whatsapp",
     "sleep 15",
     "curl -s http://localhost:8000/health && echo '' && curl -s http://localhost:8001/health"
 ]
