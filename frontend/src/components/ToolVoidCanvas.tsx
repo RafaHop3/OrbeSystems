@@ -273,72 +273,172 @@ function buildLgpdShieldPositions(count: number): Float32Array {
   return sampleGeometriesSurface(geos, count);
 }
 
-/** 6. INHO Manifesto: árvore (raiz, tronco, galhos, folhas de chat e frutos CBM) */
+/** 6. INHO Manifesto: Árvore Neural 3D (raízes orgânicas, tronco espiralado, galhos fractais, copa volumétrica e frutos CBM) */
 function buildInhoGrowthTreePositions(count: number): Float32Array {
-  const geos: THREE.BufferGeometry[] = [];
+  const positions = new Float32Array(count * 3);
+  let idx = 0;
 
-  // Raízes
-  [-0.9, -0.45, 0, 0.45, 0.9].forEach((dx) => {
-    const root = new THREE.CylinderGeometry(0.04, 0.07, 0.9, 8);
-    root.rotateZ(dx * 0.7);
-    root.translate(dx * 0.55, -1.55, 0);
-    geos.push(root);
-  });
+  const put = (x: number, y: number, z: number) => {
+    if (idx >= count) return;
+    positions[idx * 3] = x;
+    positions[idx * 3 + 1] = y;
+    positions[idx * 3 + 2] = z;
+    idx++;
+  };
 
-  // Tronco
-  const trunk = new THREE.CylinderGeometry(0.16, 0.26, 2.0, 12);
-  trunk.translate(0, -0.35, 0);
-  geos.push(trunk);
+  // 1. Terra & Raízes Orgânicas (18% das partículas)
+  const rootBudget = Math.floor(count * 0.18);
+  const ringBudget = Math.floor(rootBudget * 0.28);
+  for (let i = 0; i < ringBudget; i++) {
+    const ringRadius = i % 2 === 0 ? 0.92 : 1.42;
+    const theta = (i / ringBudget) * Math.PI * 2 + (Math.random() - 0.5) * 0.08;
+    const r = ringRadius + (Math.random() - 0.5) * 0.09;
+    const ripple = Math.sin(theta * 6) * 0.025;
+    put(
+      Math.cos(theta) * r,
+      -1.36 + ripple + (Math.random() - 0.5) * 0.02,
+      Math.sin(theta) * r * 0.78
+    );
+  }
 
-  // Galhos
-  [
-    { x: -0.75, y: 0.55, rz: Math.PI / 3.2 },
-    { x: 0.75, y: 0.55, rz: -Math.PI / 3.2 },
-    { x: -0.45, y: 0.95, rz: Math.PI / 5 },
-    { x: 0.45, y: 0.95, rz: -Math.PI / 5 },
-  ].forEach(({ x, y, rz }) => {
-    const branch = new THREE.CylinderGeometry(0.05, 0.1, 1.15, 8);
-    branch.rotateZ(rz);
-    branch.translate(x, y, 0);
-    geos.push(branch);
-  });
+  const rootCount = 8;
+  const tendrilBudget = rootBudget - ringBudget;
+  for (let i = 0; i < tendrilBudget; i++) {
+    const rootIdx = i % rootCount;
+    const t = Math.random();
+    const baseAngle = (rootIdx / rootCount) * Math.PI * 2 + 0.25;
+    const curl = Math.sin(t * Math.PI * 1.5 + rootIdx) * 0.18;
+    const angle = baseAngle + curl;
+    const radialDist = 0.14 + Math.pow(t, 0.85) * 1.22;
+    const y = -0.92 - Math.pow(t, 0.65) * 0.45 + Math.sin(t * Math.PI) * 0.05;
+    const thickness = (1 - t * 0.78) * 0.095;
+    const phi = Math.random() * Math.PI * 2;
+    put(
+      Math.cos(angle) * radialDist + Math.cos(phi) * thickness,
+      y + Math.sin(phi) * thickness * 0.6,
+      Math.sin(angle) * radialDist * 0.82 + Math.sin(phi) * thickness
+    );
+  }
 
-  // Folhas: balões de chat (OrBrick)
-  [
-    [-1.35, 1.05],
-    [-0.85, 1.55],
-    [-0.25, 1.85],
-    [0.35, 1.7],
-    [0.95, 1.5],
-    [1.4, 1.0],
-  ].forEach(([x, y]) => {
-    const bubble = new THREE.BoxGeometry(0.46, 0.28, 0.1);
-    bubble.translate(x, y, 0);
-    geos.push(bubble);
-    const tail = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-    tail.translate(x - 0.14, y - 0.2, 0);
-    geos.push(tail);
-  });
+  // 2. Tronco Esculpido em Feixes Torcidos + Dupla Hélice de Seiva (22% das partículas)
+  const trunkBudget = Math.floor(count * 0.22);
+  const strandCount = 7;
+  for (let i = 0; i < trunkBudget; i++) {
+    const hNorm = Math.random(); // 0 na base (-1.02), 1 no topo do tronco (+0.26)
+    const y = -1.02 + hNorm * 1.28;
+    const waist = 0.135 + Math.pow(Math.abs(hNorm - 0.58), 1.7) * 0.42;
+    const isSapSpiral = i % 6 === 0;
+    if (isSapSpiral) {
+      const spiralAngle = hNorm * Math.PI * 4.5 + (i % 2) * Math.PI;
+      const sr = waist * 1.08;
+      put(
+        Math.cos(spiralAngle) * sr + (Math.random() - 0.5) * 0.025,
+        y,
+        Math.sin(spiralAngle) * sr + (Math.random() - 0.5) * 0.025
+      );
+    } else {
+      const strand = i % strandCount;
+      const angle = (strand / strandCount) * Math.PI * 2 + hNorm * 1.55;
+      const r = waist * (0.78 + 0.28 * Math.random());
+      const jitter = (Math.random() - 0.5) * 0.04;
+      put(Math.cos(angle) * r + jitter, y, Math.sin(angle) * r + jitter);
+    }
+  }
 
-  // Frutos: esferas (perfis RFM do CBM)
-  [
-    [-1.05, 0.55],
-    [-0.5, 1.2],
-    [0.55, 1.15],
-    [1.1, 0.6],
-    [0.0, 0.8],
-  ].forEach(([x, y]) => {
-    const fruit = new THREE.SphereGeometry(0.17, 12, 10);
-    fruit.translate(x, y, 0.12);
-    geos.push(fruit);
-  });
+  // 3. Galhos Fractais Primários e Secundários em 3D (22% das partículas)
+  const branchTargets = [
+    [-1.18, 0.84, -0.16],
+    [1.18, 0.84, 0.16],
+    [-0.72, 1.22, 0.22],
+    [0.72, 1.22, -0.18],
+    [-0.38, 0.98, 0.52],
+    [0.42, 0.98, -0.48],
+    [0.0, 1.38, 0.0],
+    [-0.95, 0.52, 0.30],
+    [0.95, 0.52, -0.28],
+  ];
+  const branchBudget = Math.floor(count * 0.22);
+  for (let i = 0; i < branchBudget; i++) {
+    const bIdx = i % branchTargets.length;
+    const [tx, ty, tz] = branchTargets[bIdx];
+    const t = Math.random();
+    const startY = 0.08 + (bIdx % 3) * 0.07;
+    // Curva Bézier quadrática suave do topo do tronco até o domo da copa
+    const cx = tx * 0.48;
+    const cy = startY + (ty - startY) * 0.68 + 0.14;
+    const cz = tz * 0.48;
+    const omt = 1 - t;
+    const bx = omt * omt * 0 + 2 * omt * t * cx + t * t * tx;
+    const by = omt * omt * startY + 2 * omt * t * cy + t * t * ty;
+    const bz = omt * omt * 0 + 2 * omt * t * cz + t * t * tz;
+    const radius = (1 - t * 0.72) * 0.085;
+    const a = Math.random() * Math.PI * 2;
+    put(
+      bx + Math.cos(a) * radius,
+      by + (Math.random() - 0.5) * radius,
+      bz + Math.sin(a) * radius
+    );
+  }
 
-  // Solo
-  const ground = new THREE.BoxGeometry(3.6, 0.07, 1.0);
-  ground.translate(0, -1.2, 0);
-  geos.push(ground);
+  // 4. Copa Volumétrica (Domos de Folhagem Filotática) + Frutos Luminosos CBM (38% restantes)
+  const canopyDomes = [
+    { x: 0.0, y: 1.42, z: 0.0, rx: 0.64, ry: 0.42, rz: 0.58 },
+    { x: -0.72, y: 1.22, z: 0.18, rx: 0.56, ry: 0.36, rz: 0.50 },
+    { x: 0.72, y: 1.22, z: -0.16, rx: 0.56, ry: 0.36, rz: 0.50 },
+    { x: -1.20, y: 0.84, z: -0.14, rx: 0.52, ry: 0.34, rz: 0.46 },
+    { x: 1.20, y: 0.84, z: 0.14, rx: 0.52, ry: 0.34, rz: 0.46 },
+    { x: -0.40, y: 1.00, z: 0.48, rx: 0.48, ry: 0.32, rz: 0.44 },
+    { x: 0.42, y: 1.00, z: -0.46, rx: 0.48, ry: 0.32, rz: 0.44 },
+    { x: -0.96, y: 0.54, z: 0.28, rx: 0.42, ry: 0.28, rz: 0.38 },
+    { x: 0.96, y: 0.54, z: -0.26, rx: 0.42, ry: 0.28, rz: 0.38 },
+  ];
 
-  return sampleGeometriesSurface(geos, count);
+  const fruitNodes = [
+    [-1.12, 0.58, 0.18],
+    [-0.64, 0.94, 0.34],
+    [0.0, 1.12, 0.42],
+    [0.64, 0.92, 0.30],
+    [1.12, 0.60, -0.12],
+    [-0.36, 1.34, 0.24],
+    [0.38, 1.32, -0.22],
+    [0.0, 0.74, -0.38],
+  ];
+
+  const remaining = count - idx;
+  const fruitBudget = Math.floor(remaining * 0.22);
+  for (let i = 0; i < fruitBudget; i++) {
+    const [fx, fy, fz] = fruitNodes[i % fruitNodes.length];
+    // Esfera densa brilhante (Fruto CBM / Nó OrBrick)
+    const u = Math.random();
+    const v = Math.random();
+    const theta = u * 2.0 * Math.PI;
+    const phi = Math.acos(2.0 * v - 1.0);
+    const r = 0.115 * Math.pow(Math.random(), 0.35);
+    put(
+      fx + r * Math.sin(phi) * Math.cos(theta),
+      fy + r * Math.sin(phi) * Math.sin(theta),
+      fz + r * Math.cos(phi)
+    );
+  }
+
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  let foliageIdx = 0;
+  while (idx < count) {
+    const dome = canopyDomes[foliageIdx % canopyDomes.length];
+    foliageIdx++;
+    const u = Math.random();
+    const v = Math.random();
+    const theta = foliageIdx * goldenAngle + (Math.random() - 0.5) * 0.2;
+    const phi = Math.acos(2.0 * v - 1.0);
+    const shellBias = 0.55 + 0.45 * Math.pow(u, 0.35);
+    put(
+      dome.x + dome.rx * shellBias * Math.sin(phi) * Math.cos(theta),
+      dome.y + dome.ry * shellBias * Math.cos(phi),
+      dome.z + dome.rz * shellBias * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+
+  return positions;
 }
 
 const BUILDERS: Record<VoidToolShape, (count: number) => Float32Array> = {
@@ -531,7 +631,7 @@ export default function ToolVoidCanvas({
       material.uniforms.uTime.value = elapsed;
       material.uniforms.uPointer.value.lerp(targetPointer, 0.12);
 
-      points.rotation.y = Math.sin(elapsed * 0.35) * 0.28;
+      points.rotation.y = activeShape === 'inho-growth-tree' ? elapsed * 0.22 : Math.sin(elapsed * 0.35) * 0.28;
       points.rotation.x = Math.cos(elapsed * 0.25) * 0.08;
 
       try {
