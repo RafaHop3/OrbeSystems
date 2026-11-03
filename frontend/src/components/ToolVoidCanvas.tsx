@@ -87,190 +87,528 @@ function sampleGeometriesSurface(geometries: THREE.BufferGeometry[], count: numb
   return positions;
 }
 
-/** 1. Cluster de servidores blade (infraestrutura Orbe) */
+/** 1. Infraestrutura Orbe Cloud & Mesh P2P: Núcleo Quântico, 3 Anéis de Racks Blade e Constelação P2P em 3D */
 function buildServerClusterPositions(count: number): Float32Array {
-  const geos: THREE.BufferGeometry[] = [];
-  [-1.05, 0.0, 1.05].forEach((y) => {
-    const blade = new THREE.BoxGeometry(3.1, 0.42, 2.0);
-    blade.translate(0, y, 0);
-    geos.push(blade);
+  const positions = new Float32Array(count * 3);
+  let idx = 0;
 
-    for (let b = -1.2; b <= 1.2; b += 0.6) {
-      const bay = new THREE.BoxGeometry(0.4, 0.26, 0.14);
-      bay.translate(b, y, 1.05);
-      geos.push(bay);
-    }
-  });
-
-  const busLeft = new THREE.CylinderGeometry(0.08, 0.08, 2.6, 12);
-  busLeft.translate(-1.65, 0, -0.75);
-  geos.push(busLeft);
-
-  const busRight = new THREE.CylinderGeometry(0.08, 0.08, 2.6, 12);
-  busRight.translate(1.65, 0, -0.75);
-  geos.push(busRight);
-
-  return sampleGeometriesSurface(geos, count);
-}
-
-/** 2. INHO: 3 marcadores de QR Code PIX + 4 barras DRE */
-function buildInhoPixDrePositions(count: number): Float32Array {
-  const geos: THREE.BufferGeometry[] = [];
-
-  const addQrFinderPattern = (cx: number, cy: number) => {
-    const size = 0.76;
-    const thickness = 0.12;
-    const depth = 0.16;
-
-    const top = new THREE.BoxGeometry(size, thickness, depth);
-    top.translate(cx, cy + size / 2 - thickness / 2, 0);
-    const bottom = new THREE.BoxGeometry(size, thickness, depth);
-    bottom.translate(cx, cy - size / 2 + thickness / 2, 0);
-    const left = new THREE.BoxGeometry(thickness, size, depth);
-    left.translate(cx - size / 2 + thickness / 2, cy, 0);
-    const right = new THREE.BoxGeometry(thickness, size, depth);
-    right.translate(cx + size / 2 - thickness / 2, cy, 0);
-    const center = new THREE.BoxGeometry(0.3, 0.3, depth * 1.2);
-    center.translate(cx, cy, 0);
-
-    geos.push(top, bottom, left, right, center);
+  const put = (x: number, y: number, z: number) => {
+    if (idx >= count) return;
+    positions[idx * 3] = x;
+    positions[idx * 3 + 1] = y;
+    positions[idx * 3 + 2] = z;
+    idx++;
   };
 
-  addQrFinderPattern(-1.4, 0.8);
-  addQrFinderPattern(-0.35, 0.8);
-  addQrFinderPattern(-1.4, -0.25);
+  // 1. Três Anéis Cilíndricos de Racks Blade + Baias Luminosas (40% das partículas)
+  const rackBudget = Math.floor(count * 0.40);
+  const tiers = [-0.92, 0.0, 0.92];
+  const baysPerTier = 12;
+  for (let i = 0; i < rackBudget; i++) {
+    const tierY = tiers[i % tiers.length];
+    const bayIdx = Math.floor(i / 3) % baysPerTier;
+    const bayCenterAngle = (bayIdx / baysPerTier) * Math.PI * 2;
+    const angle = bayCenterAngle + (Math.random() - 0.5) * 0.36;
+    const isOuterRing = i % 5 === 0;
+    const r = isOuterRing ? 1.12 + (Math.random() - 0.5) * 0.05 : 0.72 + Math.random() * 0.36;
+    const y = tierY + (Math.random() - 0.5) * 0.28;
+    put(Math.cos(angle) * r, y, Math.sin(angle) * r);
+  }
 
-  const cells = [
-    [-0.45, -0.15],
-    [-0.2, -0.35],
-    [-0.65, -0.45],
-    [-0.9, 0.3],
-    [-0.35, 0.25],
-    [-1.4, -0.9],
-    [-0.9, -0.9],
-    [-0.4, -0.9],
+  // 2. Coluna Central de Fibra Óptica & Dupla Hélice de Barramento (24% das partículas)
+  const coreBudget = Math.floor(count * 0.24);
+  for (let i = 0; i < coreBudget; i++) {
+    const hNorm = Math.random();
+    const y = -1.35 + hNorm * 2.70;
+    if (i % 3 === 0) {
+      const helixAngle = hNorm * Math.PI * 6.0 + (i % 2) * Math.PI;
+      const hr = 0.34;
+      put(
+        Math.cos(helixAngle) * hr + (Math.random() - 0.5) * 0.03,
+        y,
+        Math.sin(helixAngle) * hr + (Math.random() - 0.5) * 0.03
+      );
+    } else {
+      const angle = Math.random() * Math.PI * 2;
+      const r = 0.18 * Math.pow(Math.random(), 0.45);
+      put(Math.cos(angle) * r, y, Math.sin(angle) * r);
+    }
+  }
+
+  // 3. Constelação de Satélites P2P Mesh + Arcos de Telemetria 3D (36% restantes)
+  const satellites = [
+    [-1.52, 0.75, 0.45],
+    [1.52, 0.75, -0.45],
+    [-1.48, -0.65, -0.52],
+    [1.48, -0.65, 0.52],
+    [0.0, 1.48, 0.65],
+    [0.0, -1.42, -0.65],
+    [-1.15, 1.25, -0.55],
+    [1.15, 1.25, 0.55],
   ];
-  cells.forEach(([x, y]) => {
-    const cell = new THREE.BoxGeometry(0.2, 0.2, 0.14);
-    cell.translate(x, y, 0);
-    geos.push(cell);
-  });
 
-  [0.85, 1.35, 1.9, 2.5].forEach((h, idx) => {
-    const bar = new THREE.BoxGeometry(0.35, h, 0.35);
-    bar.translate(0.42 + idx * 0.5, -1.2 + h / 2, 0);
-    geos.push(bar);
-  });
+  const remaining = count - idx;
+  const nodeBudget = Math.floor(remaining * 0.48);
+  for (let i = 0; i < nodeBudget; i++) {
+    const [sx, sy, sz] = satellites[i % satellites.length];
+    const u = Math.random();
+    const v = Math.random();
+    const theta = u * Math.PI * 2;
+    const phi = Math.acos(2 * v - 1);
+    const r = 0.15 * Math.pow(Math.random(), 0.35);
+    put(
+      sx + r * Math.sin(phi) * Math.cos(theta),
+      sy + r * Math.sin(phi) * Math.sin(theta),
+      sz + r * Math.cos(phi)
+    );
+  }
 
-  const basePlate = new THREE.BoxGeometry(4.0, 0.08, 1.1);
-  basePlate.translate(0.1, -1.28, 0);
-  geos.push(basePlate);
+  while (idx < count) {
+    const sIdx = idx % satellites.length;
+    const [sx, sy, sz] = satellites[sIdx];
+    const tierY = tiers[sIdx % tiers.length];
+    const t = Math.random();
+    const omt = 1 - t;
+    const cx = sx * 0.65;
+    const cy = (tierY + sy) * 0.5 + 0.35;
+    const cz = sz * 0.65;
+    put(
+      omt * omt * (sx * 0.45) + 2 * omt * t * cx + t * t * sx + (Math.random() - 0.5) * 0.04,
+      omt * omt * tierY + 2 * omt * t * cy + t * t * sy + (Math.random() - 0.5) * 0.04,
+      omt * omt * (sz * 0.45) + 2 * omt * t * cz + t * t * sz + (Math.random() - 0.5) * 0.04
+    );
+  }
 
-  return sampleGeometriesSurface(geos, count);
+  return positions;
 }
 
-/** 3. Orbe Cleaner: SSD M.2 NVMe com blocos de cache ejetados */
+/** 2. INHO PIX + DRE: Cubo Holográfico QR PIX em 3D + Torres Cilíndricas DRE & Espiral de Crescimento */
+function buildInhoPixDrePositions(count: number): Float32Array {
+  const positions = new Float32Array(count * 3);
+  let idx = 0;
+
+  const put = (x: number, y: number, z: number) => {
+    if (idx >= count) return;
+    positions[idx * 3] = x;
+    positions[idx * 3 + 1] = y;
+    positions[idx * 3 + 2] = z;
+    idx++;
+  };
+
+  // 1. Três Finder Patterns QR PIX Volumétricos em 3D + Matriz de Voxels (38% das partículas)
+  const qrFinders = [
+    { cx: -1.28, cy: 0.72, cz: 0.18 },
+    { cx: -0.32, cy: 0.72, cz: -0.12 },
+    { cx: -1.28, cy: -0.24, cz: -0.12 },
+  ];
+  const finderBudget = Math.floor(count * 0.26);
+  for (let i = 0; i < finderBudget; i++) {
+    const f = qrFinders[i % qrFinders.length];
+    const isInnerCore = i % 3 === 0;
+    if (isInnerCore) {
+      // Núcleo cúbico denso 3D do finder QR
+      put(
+        f.cx + (Math.random() - 0.5) * 0.26,
+        f.cy + (Math.random() - 0.5) * 0.26,
+        f.cz + (Math.random() - 0.5) * 0.26
+      );
+    } else {
+      // Moldura quadrada externa 3D do finder QR
+      const side = i % 4;
+      const span = (Math.random() - 0.5) * 0.68;
+      const thick = (Math.random() - 0.5) * 0.08;
+      const depth = (Math.random() - 0.5) * 0.22;
+      const dx = side < 2 ? span : (side === 2 ? -0.34 : 0.34) + thick;
+      const dy = side >= 2 ? span : (side === 0 ? 0.34 : -0.34) + thick;
+      put(f.cx + dx, f.cy + dy, f.cz + depth);
+    }
+  }
+
+  const qrVoxels = [
+    [-0.38, -0.18, 0.15],
+    [-0.12, -0.38, -0.10],
+    [-0.68, -0.45, 0.22],
+    [-0.82, 0.24, 0.12],
+    [-0.32, 0.20, -0.18],
+    [-1.28, -0.82, 0.10],
+    [-0.82, -0.82, -0.14],
+    [-0.36, -0.82, 0.18],
+  ];
+  const voxelBudget = Math.floor(count * 0.12);
+  for (let i = 0; i < voxelBudget; i++) {
+    const [vx, vy, vz] = qrVoxels[i % qrVoxels.length];
+    const r = 0.11 * Math.pow(Math.random(), 0.4);
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    put(
+      vx + r * Math.sin(phi) * Math.cos(theta),
+      vy + r * Math.sin(phi) * Math.sin(theta),
+      vz + r * Math.cos(phi)
+    );
+  }
+
+  // 2. Cinco Torres Financeiras DRE 3D + Esferas de Topo (42% das partículas)
+  const dreBars = [
+    { x: 0.18, h: 0.78, z: 0.22 },
+    { x: 0.56, h: 1.18, z: 0.10 },
+    { x: 0.94, h: 1.62, z: -0.04 },
+    { x: 1.32, h: 2.08, z: -0.16 },
+    { x: 1.68, h: 2.52, z: -0.28 },
+  ];
+  const baseY = -1.22;
+  const barBudget = Math.floor(count * 0.42);
+  for (let i = 0; i < barBudget; i++) {
+    const bar = dreBars[i % dreBars.length];
+    const isPeakNode = i % 5 === 0;
+    if (isPeakNode) {
+      // Esfera luminosa de meta/KPI no topo da barra DRE
+      const u = Math.random();
+      const v = Math.random();
+      const theta = u * Math.PI * 2;
+      const phi = Math.acos(2 * v - 1);
+      const r = 0.13 * Math.pow(Math.random(), 0.35);
+      put(
+        bar.x + r * Math.sin(phi) * Math.cos(theta),
+        baseY + bar.h + 0.12 + r * Math.sin(phi) * Math.sin(theta),
+        bar.z + r * Math.cos(phi)
+      );
+    } else {
+      // Coluna cilíndrica/hexagonal estriada
+      const hNorm = Math.random();
+      const y = baseY + hNorm * bar.h;
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 0.145 * (0.82 + 0.18 * Math.sin(hNorm * Math.PI * 8));
+      put(bar.x + Math.cos(angle) * radius, y, bar.z + Math.sin(angle) * radius);
+    }
+  }
+
+  // 3. Fita Ascendente de Fluxo de Caixa + Anel Base Concêntrico (20% restantes)
+  const remaining = count - idx;
+  const curveBudget = Math.floor(remaining * 0.55);
+  for (let i = 0; i < curveBudget; i++) {
+    const t = Math.random();
+    const x = -1.45 + t * 3.20;
+    const y = -0.95 + Math.pow(t, 1.35) * 2.35 + Math.sin(t * Math.PI * 3) * 0.08;
+    const z = Math.cos(t * Math.PI * 2) * 0.38;
+    put(
+      x + (Math.random() - 0.5) * 0.05,
+      y + (Math.random() - 0.5) * 0.05,
+      z + (Math.random() - 0.5) * 0.05
+    );
+  }
+
+  while (idx < count) {
+    const theta = Math.random() * Math.PI * 2;
+    const ringR = idx % 2 === 0 ? 1.55 : 1.05;
+    put(
+      Math.cos(theta) * ringR + (Math.random() - 0.5) * 0.06,
+      -1.26 + (Math.random() - 0.5) * 0.03,
+      Math.sin(theta) * ringR * 0.55 + (Math.random() - 0.5) * 0.06
+    );
+  }
+
+  return positions;
+}
+
+/** 3. Orbe Cleaner V4: Arquitetura M.2 NVMe 3D + Vórtice Ciclônico de Ejeção de Cache */
 function buildNvmeCleanerPositions(count: number): Float32Array {
-  const geos: THREE.BufferGeometry[] = [];
+  const positions = new Float32Array(count * 3);
+  let idx = 0;
 
-  const pcb = new THREE.BoxGeometry(3.7, 0.1, 1.3);
-  pcb.translate(0, -0.25, 0);
-  geos.push(pcb);
+  const put = (x: number, y: number, z: number) => {
+    if (idx >= count) return;
+    positions[idx * 3] = x;
+    positions[idx * 3 + 1] = y;
+    positions[idx * 3 + 2] = z;
+    idx++;
+  };
 
-  for (let z = -0.45; z <= 0.45; z += 0.18) {
-    const pin = new THREE.BoxGeometry(0.32, 0.14, 0.09);
-    pin.translate(-2.0, -0.25, z);
-    geos.push(pin);
+  // 1. Chassi Perimetral M.2 NVMe + Pinos Gold-Finger + Trilhas de Circuito (26% das partículas)
+  const boardBudget = Math.floor(count * 0.26);
+  for (let i = 0; i < boardBudget; i++) {
+    const mode = i % 3;
+    if (mode === 0) {
+      // Moldura perimetral dupla do SSD M.2 (sem desperdiçar partículas em placa sólida)
+      const t = Math.random();
+      const isLongEdge = i % 2 === 0;
+      const x = isLongEdge ? (t - 0.5) * 3.4 : (i % 4 === 0 ? -1.7 : 1.7) + (Math.random() - 0.5) * 0.06;
+      const z = isLongEdge ? (i % 4 === 0 ? -0.58 : 0.58) + (Math.random() - 0.5) * 0.06 : (t - 0.5) * 1.16;
+      put(x, -0.52 + (Math.random() - 0.5) * 0.05, z);
+    } else if (mode === 1) {
+      // Pinos conectores M-Key à esquerda
+      const pinIdx = i % 10;
+      const z = -0.45 + (pinIdx / 9) * 0.90;
+      put(-1.82 + (Math.random() - 0.5) * 0.22, -0.52 + (Math.random() - 0.5) * 0.06, z);
+    } else {
+      // Trilhas condutoras longitudinais de alta velocidade
+      const lane = (i % 7) - 3;
+      const x = -1.65 + Math.random() * 3.30;
+      const z = lane * 0.14 + Math.sin(x * 3.0) * 0.03;
+      put(x, -0.50, z);
+    }
   }
 
-  const controller = new THREE.BoxGeometry(0.62, 0.22, 0.62);
-  controller.translate(-1.05, -0.1, 0);
-  geos.push(controller);
+  // 2. Controlador Neural Multicadas + 4 Stacks 3D V-NAND em Camadas (30% das partículas)
+  const chipBudget = Math.floor(count * 0.30);
+  const nandCenters = [
+    [-0.25, -0.28],
+    [-0.25, 0.28],
+    [0.65, -0.28],
+    [0.65, 0.28],
+  ];
+  for (let i = 0; i < chipBudget; i++) {
+    if (i % 4 === 0) {
+      // Núcleo do controlador NVMe com anel dissipador
+      const angle = Math.random() * Math.PI * 2;
+      const r = 0.28 * Math.pow(Math.random(), 0.45);
+      put(-1.12 + Math.cos(angle) * r, -0.34 + (Math.random() - 0.5) * 0.18, Math.sin(angle) * r);
+    } else {
+      // Wafers empilhados em 3D (6 camadas de memória V-NAND)
+      const [nx, nz] = nandCenters[i % nandCenters.length];
+      const layer = i % 6;
+      const y = -0.44 + layer * 0.048;
+      put(
+        nx + (Math.random() - 0.5) * 0.62,
+        y,
+        nz + (Math.random() - 0.5) * 0.38
+      );
+    }
+  }
 
-  [
-    [-0.1, -0.3],
-    [-0.1, 0.3],
-    [0.85, -0.3],
-    [0.85, 0.3],
-  ].forEach(([x, z]) => {
-    const nand = new THREE.BoxGeometry(0.72, 0.18, 0.46);
-    nand.translate(x, -0.11, z);
-    geos.push(nand);
-  });
+  // 3. Vórtice Ciclônico de Limpeza + Cubos de Cache Ejetados em Espiral (44% restantes)
+  const ejectedCubes = [
+    [-0.55, 0.42, 0.28, 0.16],
+    [0.12, 0.68, -0.24, 0.18],
+    [0.72, 0.92, 0.26, 0.17],
+    [-0.28, 1.08, -0.20, 0.15],
+    [1.18, 0.62, -0.18, 0.19],
+    [0.32, 1.32, 0.14, 0.15],
+    [1.38, 1.18, 0.20, 0.14],
+    [-0.85, 0.88, -0.22, 0.14],
+  ];
 
-  [
-    [0.1, 0.65, -0.2, 0.26],
-    [0.65, 0.95, 0.25, 0.22],
-    [1.3, 0.55, -0.15, 0.28],
-    [-0.45, 0.85, 0.3, 0.22],
-    [1.5, 1.1, 0.1, 0.2],
-    [0.35, 1.25, -0.1, 0.18],
-  ].forEach(([x, y, z, s]) => {
-    const cube = new THREE.BoxGeometry(s, s, s);
-    cube.rotateX(0.4);
-    cube.rotateZ(0.6);
-    cube.translate(x, y, z);
-    geos.push(cube);
-  });
+  const remaining = count - idx;
+  const cubeBudget = Math.floor(remaining * 0.42);
+  for (let i = 0; i < cubeBudget; i++) {
+    const [cx, cy, cz, size] = ejectedCubes[i % ejectedCubes.length];
+    // Arestas octaedrais/cúbicas nítidas de blocos de cache ejetados
+    const edge = i % 12;
+    const t = (Math.random() - 0.5) * size * 1.4;
+    const s = size * 0.7;
+    let dx = 0, dy = 0, dz = 0;
+    if (edge < 4) { dx = t; dy = (edge & 1 ? s : -s); dz = (edge & 2 ? s : -s); }
+    else if (edge < 8) { dy = t; dx = (edge & 1 ? s : -s); dz = (edge & 2 ? s : -s); }
+    else { dz = t; dx = (edge & 1 ? s : -s); dy = (edge & 2 ? s : -s); }
+    put(cx + dx, cy + dy, cz + dz);
+  }
 
-  return sampleGeometriesSurface(geos, count);
+  // Dupla espiral ciclônica ascendente varrendo os resíduos
+  while (idx < count) {
+    const hNorm = Math.random();
+    const y = -0.35 + hNorm * 1.78;
+    const arm = idx % 3;
+    const spiralAngle = hNorm * Math.PI * 5.2 + (arm * Math.PI * 2) / 3;
+    const radius = 0.28 + Math.pow(hNorm, 0.85) * 1.18;
+    const spread = (Math.random() - 0.5) * 0.09;
+    put(
+      0.15 + Math.cos(spiralAngle) * radius + spread,
+      y + (Math.random() - 0.5) * 0.05,
+      Math.sin(spiralAngle) * radius * 0.72 + spread
+    );
+  }
+
+  return positions;
 }
 
-/** 4. Orbe Music: mesa de mixagem com 6 faders + analisador FFT de 12 bandas */
+/** 4. Orbe Music Studio: Anfiteatro FFT 3D de 16 Bandas + Console Curvo & Ondas Harmônicas */
 function buildDawSpectrumPositions(count: number): Float32Array {
-  const geos: THREE.BufferGeometry[] = [];
+  const positions = new Float32Array(count * 3);
+  let idx = 0;
 
-  const consoleBase = new THREE.BoxGeometry(3.7, 0.14, 1.65);
-  consoleBase.rotateX(0.32);
-  consoleBase.translate(0, -0.72, 0.2);
-  geos.push(consoleBase);
+  const put = (x: number, y: number, z: number) => {
+    if (idx >= count) return;
+    positions[idx * 3] = x;
+    positions[idx * 3 + 1] = y;
+    positions[idx * 3 + 2] = z;
+    idx++;
+  };
 
-  const faderPositions = [-1.35, -0.81, -0.27, 0.27, 0.81, 1.35];
-  const faderValues = [0.2, 0.55, -0.1, 0.45, 0.15, 0.65];
+  // 1. Analisador de Espectro FFT de 16 Bandas em Arco Semicircular 3D (44% das partículas)
+  const spectrumHeights = [
+    0.52, 0.88, 1.32, 1.78, 2.15, 1.82, 1.38, 1.64,
+    2.08, 2.38, 1.92, 1.48, 1.15, 0.86, 0.62, 0.44,
+  ];
+  const fftBudget = Math.floor(count * 0.44);
+  const bandCount = spectrumHeights.length;
+  for (let i = 0; i < fftBudget; i++) {
+    const bIdx = i % bandCount;
+    const h = spectrumHeights[bIdx];
+    const arcAngle = ((bIdx / (bandCount - 1)) - 0.5) * Math.PI * 0.78;
+    const arcRadius = 1.45;
+    const bx = Math.sin(arcAngle) * arcRadius * 1.15;
+    const bz = -Math.cos(arcAngle) * arcRadius * 0.55 - 0.15;
+    const baseY = -0.58;
 
-  faderPositions.forEach((x, idx) => {
-    const track = new THREE.BoxGeometry(0.06, 0.08, 1.2);
-    track.rotateX(0.32);
-    track.translate(x, -0.65, 0.2);
-    geos.push(track);
-
-    const zOffset = faderValues[idx] * 0.42;
-    const cap = new THREE.BoxGeometry(0.26, 0.18, 0.2);
-    cap.rotateX(0.32);
-    cap.translate(x, -0.55 - zOffset * 0.32, 0.2 + zOffset);
-    geos.push(cap);
-  });
-
-  [0.5, 0.95, 1.5, 2.05, 1.65, 1.2, 1.8, 2.3, 1.55, 1.1, 0.8, 0.45].forEach((h, i) => {
-    const bar = new THREE.BoxGeometry(0.18, h, 0.18);
-    bar.translate(-1.6 + i * 0.29, -0.35 + h / 2, -0.65);
-    geos.push(bar);
-  });
-
-  return sampleGeometriesSurface(geos, count);
-}
-
-/** 5. Escudo Zero Trust protegendo um registro de dados (LGPD / Ghost Engine) */
-function buildLgpdShieldPositions(count: number): Float32Array {
-  const geos: THREE.BufferGeometry[] = [];
-
-  const shieldRing = new THREE.TorusGeometry(1.4, 0.12, 12, 8);
-  shieldRing.rotateZ(Math.PI / 8);
-  geos.push(shieldRing);
-
-  geos.push(new THREE.BoxGeometry(1.35, 1.8, 0.12));
-
-  for (let row = -0.6; row <= 0.6; row += 0.3) {
-    const dataLine = new THREE.BoxGeometry(0.92, 0.09, 0.2);
-    dataLine.translate(0, row, 0);
-    geos.push(dataLine);
+    const isPeakDot = i % 7 === 0;
+    if (isPeakDot) {
+      // Ponto Peak-Hold flutuando acima da coluna de frequência
+      const r = 0.08 * Math.pow(Math.random(), 0.4);
+      const a = Math.random() * Math.PI * 2;
+      put(bx + Math.cos(a) * r, baseY + h + 0.16 + (Math.random() - 0.5) * 0.05, bz + Math.sin(a) * r);
+    } else {
+      // Coluna segmentada de LEDs/partículas
+      const seg = Math.floor(Math.random() * 14) / 14;
+      const y = baseY + seg * h + (Math.random() - 0.5) * 0.04;
+      const r = 0.085;
+      const a = Math.random() * Math.PI * 2;
+      put(bx + Math.cos(a) * r, y, bz + Math.sin(a) * r);
+    }
   }
 
-  const scannerBar = new THREE.BoxGeometry(2.4, 0.12, 0.34);
-  scannerBar.translate(0, 0.15, 0.15);
-  geos.push(scannerBar);
+  // 2. Console de Mixagem Curvo com 8 Faders Motorizados e Knobs (30% das partículas)
+  const faderCount = 8;
+  const faderLevels = [0.25, 0.62, 0.48, 0.82, 0.74, 0.38, 0.58, 0.70];
+  const consoleBudget = Math.floor(count * 0.30);
+  for (let i = 0; i < consoleBudget; i++) {
+    const ch = i % faderCount;
+    const normX = (ch / (faderCount - 1)) * 2 - 1;
+    const x = normX * 1.38;
+    const t = Math.random(); // ao longo do curso do fader
+    const y = -1.25 + (1 - t) * 0.48;
+    const z = 0.85 - (1 - t) * 0.65;
 
-  return sampleGeometriesSurface(geos, count);
+    const isCap = i % 3 === 0;
+    if (isCap) {
+      const lvl = faderLevels[ch];
+      const capY = -1.25 + lvl * 0.48 + 0.05;
+      const capZ = 0.85 - lvl * 0.65;
+      put(
+        x + (Math.random() - 0.5) * 0.18,
+        capY + (Math.random() - 0.5) * 0.06,
+        capZ + (Math.random() - 0.5) * 0.10
+      );
+    } else {
+      put(x + (Math.random() - 0.5) * 0.03, y, z + (Math.random() - 0.5) * 0.03);
+    }
+  }
+
+  // 3. Onda Sonora Harmônica 3D (Senoide Dupla Envolvente) (26% restantes)
+  while (idx < count) {
+    const theta = Math.random() * Math.PI * 2;
+    const waveArm = idx % 2 === 0 ? 1 : -1;
+    const r = 1.52 + Math.sin(theta * 5) * 0.12;
+    const x = Math.cos(theta) * r;
+    const z = Math.sin(theta) * r * 0.62;
+    const y = 0.15 + waveArm * Math.sin(theta * 4) * 0.36 + (Math.random() - 0.5) * 0.04;
+    put(x, y, z);
+  }
+
+  return positions;
+}
+
+/** 5. Void Telemetry & Ghost Engine: Domo Geodésico Zero-Trust 3D, Cofre Criptográfico & Scanner Orbital */
+function buildLgpdShieldPositions(count: number): Float32Array {
+  const positions = new Float32Array(count * 3);
+  let idx = 0;
+
+  const put = (x: number, y: number, z: number) => {
+    if (idx >= count) return;
+    positions[idx * 3] = x;
+    positions[idx * 3 + 1] = y;
+    positions[idx * 3 + 2] = z;
+    idx++;
+  };
+
+  // 1. Escudo Geodésico Esférico em Meridianos + Casca Fibonacci (42% das partículas)
+  const shieldBudget = Math.floor(count * 0.42);
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < shieldBudget; i++) {
+    if (i % 3 === 0) {
+      // Meridianos e paralelos do domo Zero-Trust
+      const ringIdx = i % 6;
+      const theta = Math.random() * Math.PI * 2;
+      const r = 1.42;
+      if (ringIdx < 3) {
+        const meridAngle = (ringIdx / 3) * Math.PI;
+        put(
+          Math.sin(theta) * Math.cos(meridAngle) * r,
+          Math.cos(theta) * r,
+          Math.sin(theta) * Math.sin(meridAngle) * r
+        );
+      } else {
+        const lat = ((ringIdx - 3) - 1) * 0.62;
+        const latR = Math.sqrt(Math.max(0.1, r * r - lat * lat));
+        put(Math.cos(theta) * latR, lat, Math.sin(theta) * latR);
+      }
+    } else {
+      // Pontos geodésicos de Fibonacci sobre a esfera protetora
+      const k = i / shieldBudget;
+      const phi = Math.acos(1 - 2 * k);
+      const theta = i * goldenAngle;
+      const r = 1.40 + (Math.random() - 0.5) * 0.04;
+      put(
+        r * Math.sin(phi) * Math.cos(theta),
+        r * Math.cos(phi),
+        r * Math.sin(phi) * Math.sin(theta)
+      );
+    }
+  }
+
+  // 2. Cofre Criptográfico Central (Dupla Hélice MultiFernet + Registros Protegidos) (36% das partículas)
+  const vaultBudget = Math.floor(count * 0.36);
+  for (let i = 0; i < vaultBudget; i++) {
+    const hNorm = Math.random();
+    const y = -0.88 + hNorm * 1.76;
+    if (i % 2 === 0) {
+      // Dupla Hélice KMS MultiFernet protegendo o núcleo
+      const arm = i % 4 === 0 ? 0 : Math.PI;
+      const angle = hNorm * Math.PI * 5.0 + arm;
+      const r = 0.54;
+      put(
+        Math.cos(angle) * r + (Math.random() - 0.5) * 0.03,
+        y,
+        Math.sin(angle) * r + (Math.random() - 0.5) * 0.03
+      );
+    } else {
+      // 5 anéis internos de registros LGPD anonimizados
+      const row = ((i % 5) - 2) * 0.34;
+      const a = Math.random() * Math.PI * 2;
+      const r = 0.36 * Math.pow(Math.random(), 0.5);
+      put(Math.cos(a) * r, row + (Math.random() - 0.5) * 0.04, Math.sin(a) * r);
+    }
+  }
+
+  // 3. Anel Scanner Orbital Inclinado + 6 Sentinelas Zero-Trust (22% restantes)
+  const sentinels = 6;
+  while (idx < count) {
+    const isSentinel = idx % 4 === 0;
+    const tilt = 0.42;
+    if (isSentinel) {
+      const sIdx = idx % sentinels;
+      const baseA = (sIdx / sentinels) * Math.PI * 2;
+      const ox = Math.cos(baseA) * 1.62;
+      const oy = Math.sin(baseA) * Math.sin(tilt) * 1.62;
+      const oz = Math.sin(baseA) * Math.cos(tilt) * 1.62;
+      const r = 0.11 * Math.pow(Math.random(), 0.35);
+      const u = Math.random() * Math.PI * 2;
+      const v = Math.acos(2 * Math.random() - 1);
+      put(
+        ox + r * Math.sin(v) * Math.cos(u),
+        oy + r * Math.sin(v) * Math.sin(u),
+        oz + r * Math.cos(v)
+      );
+    } else {
+      const a = Math.random() * Math.PI * 2;
+      const r = 1.62 + (Math.random() - 0.5) * 0.06;
+      put(
+        Math.cos(a) * r,
+        Math.sin(a) * Math.sin(tilt) * r + (Math.random() - 0.5) * 0.03,
+        Math.sin(a) * Math.cos(tilt) * r
+      );
+    }
+  }
+
+  return positions;
 }
 
 /** 6. INHO Manifesto: Árvore Neural 3D (raízes orgânicas, tronco espiralado, galhos fractais, copa volumétrica e frutos CBM) */
@@ -631,7 +969,7 @@ export default function ToolVoidCanvas({
       material.uniforms.uTime.value = elapsed;
       material.uniforms.uPointer.value.lerp(targetPointer, 0.12);
 
-      points.rotation.y = activeShape === 'inho-growth-tree' ? elapsed * 0.22 : Math.sin(elapsed * 0.35) * 0.28;
+      points.rotation.y = elapsed * 0.22;
       points.rotation.x = Math.cos(elapsed * 0.25) * 0.08;
 
       try {
