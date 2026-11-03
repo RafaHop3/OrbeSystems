@@ -10,6 +10,7 @@ import * as THREE from 'three';
 export type VoidToolShape =
   | 'server-cluster' // Infraestrutura: cluster de servidores blade
   | 'inho-pix-dre' // INHO Business: marcadores de QR Code PIX + barras DRE
+  | 'inho-growth-tree' // INHO Manifesto: árvore com folhas de chat e frutos CBM
   | 'lgpd-shield' // Void Telemetry / Ghost Engine: escudo Zero Trust + documento
   | 'nvme-cleaner' // Orbe Cleaner: SSD M.2 NVMe com blocos de cache ejetados
   | 'daw-spectrum'; // Orbe Music / Visual Studio: mesa de mixagem + FFT
@@ -272,9 +273,78 @@ function buildLgpdShieldPositions(count: number): Float32Array {
   return sampleGeometriesSurface(geos, count);
 }
 
+/** 6. INHO Manifesto: árvore (raiz, tronco, galhos, folhas de chat e frutos CBM) */
+function buildInhoGrowthTreePositions(count: number): Float32Array {
+  const geos: THREE.BufferGeometry[] = [];
+
+  // Raízes
+  [-0.9, -0.45, 0, 0.45, 0.9].forEach((dx) => {
+    const root = new THREE.CylinderGeometry(0.04, 0.07, 0.9, 8);
+    root.rotateZ(dx * 0.7);
+    root.translate(dx * 0.55, -1.55, 0);
+    geos.push(root);
+  });
+
+  // Tronco
+  const trunk = new THREE.CylinderGeometry(0.16, 0.26, 2.0, 12);
+  trunk.translate(0, -0.35, 0);
+  geos.push(trunk);
+
+  // Galhos
+  [
+    { x: -0.75, y: 0.55, rz: Math.PI / 3.2 },
+    { x: 0.75, y: 0.55, rz: -Math.PI / 3.2 },
+    { x: -0.45, y: 0.95, rz: Math.PI / 5 },
+    { x: 0.45, y: 0.95, rz: -Math.PI / 5 },
+  ].forEach(({ x, y, rz }) => {
+    const branch = new THREE.CylinderGeometry(0.05, 0.1, 1.15, 8);
+    branch.rotateZ(rz);
+    branch.translate(x, y, 0);
+    geos.push(branch);
+  });
+
+  // Folhas: balões de chat (OrBrick)
+  [
+    [-1.35, 1.05],
+    [-0.85, 1.55],
+    [-0.25, 1.85],
+    [0.35, 1.7],
+    [0.95, 1.5],
+    [1.4, 1.0],
+  ].forEach(([x, y]) => {
+    const bubble = new THREE.BoxGeometry(0.46, 0.28, 0.1);
+    bubble.translate(x, y, 0);
+    geos.push(bubble);
+    const tail = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+    tail.translate(x - 0.14, y - 0.2, 0);
+    geos.push(tail);
+  });
+
+  // Frutos: esferas (perfis RFM do CBM)
+  [
+    [-1.05, 0.55],
+    [-0.5, 1.2],
+    [0.55, 1.15],
+    [1.1, 0.6],
+    [0.0, 0.8],
+  ].forEach(([x, y]) => {
+    const fruit = new THREE.SphereGeometry(0.17, 12, 10);
+    fruit.translate(x, y, 0.12);
+    geos.push(fruit);
+  });
+
+  // Solo
+  const ground = new THREE.BoxGeometry(3.6, 0.07, 1.0);
+  ground.translate(0, -1.2, 0);
+  geos.push(ground);
+
+  return sampleGeometriesSurface(geos, count);
+}
+
 const BUILDERS: Record<VoidToolShape, (count: number) => Float32Array> = {
   'server-cluster': buildServerClusterPositions,
   'inho-pix-dre': buildInhoPixDrePositions,
+  'inho-growth-tree': buildInhoGrowthTreePositions,
   'nvme-cleaner': buildNvmeCleanerPositions,
   'daw-spectrum': buildDawSpectrumPositions,
   'lgpd-shield': buildLgpdShieldPositions,

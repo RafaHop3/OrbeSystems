@@ -10,6 +10,7 @@ import OrbeMusicHero from '@/components/OrbeMusicHero';
 import MusicDownloaderHero from '@/components/MusicDownloaderHero';
 import OrbeCleanerPromo from '@/components/OrbeCleanerPromo';
 import InhoPromo from '@/components/InhoPromo';
+import InhoManifestoHero from '@/components/InhoManifestoHero';
 import EloProtocolHero from '@/components/EloProtocolHero';
 import dynamic from 'next/dynamic';
 
@@ -30,6 +31,7 @@ export default function HomePage() {
       <OrbeCleanerPromo />
       <VoidFieldPromo />
       <InhoPromo />
+      <InhoManifestoHero />
       <ScrollNarrativeEngine>
         <HeroSection />
       </ScrollNarrativeEngine>

@@ -51,10 +51,10 @@ export default function InhoPromo() {
                             Acessar INHO via Orbe SSO <ArrowRight size={18} />
                         </a>
                         <a
-                            href="/database-architecture"
+                            href="#inho-manifesto"
                             className="inline-flex items-center gap-3 border border-[#8b5cf6]/50 text-[#c4b5fd] hover:bg-[#8b5cf6]/20 font-bold uppercase tracking-widest text-sm px-8 py-4 transition-all duration-300"
                         >
-                            Arquitetura de Dados
+                            Conheça o INHO
                         </a>
                     </div>
                     <p className="text-[11px] text-slate-500 max-w-xl">Acesso restrito a contas provisionadas por assinatura ativa ou homologação administrativa. Não há cadastro público.</p>
