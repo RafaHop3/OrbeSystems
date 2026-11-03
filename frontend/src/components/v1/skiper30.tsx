@@ -758,9 +758,26 @@ function CardParticleVoidCanvas({
             ctx.globalAlpha = 1.0;
         };
 
-        rafId = requestAnimationFrame(render);
+        let idleHandle: number | null = null;
+        let usedIdleCallback = false;
+        const startLoop = () => {
+            idleHandle = null;
+            rafId = requestAnimationFrame(render);
+        };
+        const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
+        const cic = (window as unknown as { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
+        if (typeof ric === "function") {
+            usedIdleCallback = true;
+            idleHandle = ric(startLoop, { timeout: 400 });
+        } else {
+            idleHandle = window.setTimeout(startLoop, 120);
+        }
 
         return () => {
+            if (idleHandle !== null) {
+                if (usedIdleCallback && typeof cic === "function") cic(idleHandle);
+                else window.clearTimeout(idleHandle);
+            }
             cancelAnimationFrame(rafId);
             resizeObserver.disconnect();
             io.disconnect();
@@ -949,24 +966,27 @@ function MiniVoidMicroUi({ type }: { type: ToolProject["miniVoidType"]; accent?:
 // ============================================================================
 function ParallaxToolCard({ tool }: { tool: ToolProject }) {
     const cardRef = useRef<HTMLDivElement>(null);
-    const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
-    const [tilt, setTilt] = useState({ rotateX: 0, rotateY: 0 });
+    const spotlightRef = useRef<HTMLDivElement>(null);
 
     const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-        if (!cardRef.current) return;
-        const rect = cardRef.current.getBoundingClientRect();
+        const card = cardRef.current;
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
-        setMousePos({ x, y });
-
         const rotX = ((e.clientY - rect.top) / rect.height - 0.5) * -10;
         const rotY = ((e.clientX - rect.left) / rect.width - 0.5) * 10;
-        setTilt({ rotateX: rotX, rotateY: rotY });
-    }, []);
+
+        card.style.transform = `perspective(1000px) rotateX(${rotX.toFixed(2)}deg) rotateY(${rotY.toFixed(2)}deg)`;
+        if (spotlightRef.current) {
+            spotlightRef.current.style.background = `radial-gradient(380px circle at ${x.toFixed(1)}% ${y.toFixed(1)}%, ${tool.accentColor}28, transparent 60%)`;
+        }
+    }, [tool.accentColor]);
 
     const handleMouseLeave = useCallback(() => {
-        setMousePos({ x: 50, y: 50 });
-        setTilt({ rotateX: 0, rotateY: 0 });
+        if (cardRef.current) {
+            cardRef.current.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+        }
     }, []);
 
     return (
@@ -976,16 +996,17 @@ function ParallaxToolCard({ tool }: { tool: ToolProject }) {
             onMouseLeave={handleMouseLeave}
             className="group relative flex-1 min-h-[340px] md:min-h-[380px] rounded-2xl overflow-hidden border border-white/10 hover:border-white/25 transition-all duration-700 ease-out flex flex-col justify-end"
             style={{
-                transform: `perspective(1000px) rotateX(${tilt.rotateX}deg) rotateY(${tilt.rotateY}deg)`,
+                transform: "perspective(1000px) rotateX(0deg) rotateY(0deg)",
                 backgroundColor: "#04060A",
                 boxShadow: `0 20px 50px rgba(0, 0, 0, 0.85), 0 0 35px ${tool.accentColor}1f`,
             }}
         >
             {/* 1. CURSOR SPOTLIGHT BORDER */}
             <div
+                ref={spotlightRef}
                 className="pointer-events-none absolute inset-0 z-30 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
                 style={{
-                    background: `radial-gradient(380px circle at ${mousePos.x}% ${mousePos.y}%, ${tool.accentColor}28, transparent 60%)`,
+                    background: `radial-gradient(380px circle at 50% 50%, ${tool.accentColor}28, transparent 60%)`,
                 }}
             />
 

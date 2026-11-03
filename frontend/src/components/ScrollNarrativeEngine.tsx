@@ -15,6 +15,13 @@ type Props = {
 export default function ScrollNarrativeEngine({ children }: Props) {
   const narrativeRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+  const hudRef = useRef<HTMLDivElement>(null);
+  const hudLocRef = useRef<HTMLSpanElement>(null);
+  const hudModRef = useRef<HTMLSpanElement>(null);
+  const hudTelRef = useRef<HTMLSpanElement>(null);
+  const hudPctRef = useRef<HTMLSpanElement>(null);
+  const hudBarRef = useRef<HTMLDivElement>(null);
+  const hudLogsRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     const narrative = narrativeRef.current;
@@ -38,13 +45,13 @@ export default function ScrollNarrativeEngine({ children }: Props) {
           const progress = self.progress;
           updateNarrativeFromScroll(progress);
           
-          // Direct HUD update (no React state re-render for high performance)
-          const hud = document.getElementById('scroll-hud');
-          const hudLoc = document.getElementById('hud-location');
-          const hudMod = document.getElementById('hud-module');
-          const hudTel = document.getElementById('hud-telemetry');
-          const hudPct = document.getElementById('hud-progress-pct');
-          const hudBar = document.getElementById('hud-progress-bar');
+          // Direct HUD update via cached refs (zero DOM query overhead on scroll)
+          const hud = hudRef.current;
+          const hudLoc = hudLocRef.current;
+          const hudMod = hudModRef.current;
+          const hudTel = hudTelRef.current;
+          const hudPct = hudPctRef.current;
+          const hudBar = hudBarRef.current;
           
           if (hud) {
             if (progress > 0.02 && progress < 0.96) {
@@ -56,33 +63,33 @@ export default function ScrollNarrativeEngine({ children }: Props) {
             }
           }
           
-          if (hudPct) hudPct.innerText = `${(progress * 100).toFixed(1)}%`;
+          if (hudPct) hudPct.textContent = `${(progress * 100).toFixed(1)}%`;
           if (hudBar) hudBar.style.width = `${progress * 100}%`;
           
           if (progress < 0.28) {
-            if (hudLoc) hudLoc.innerText = 'CH_01';
+            if (hudLoc) hudLoc.textContent = 'CH_01';
             if (hudMod) {
-              hudMod.innerText = 'INGRESSO';
+              hudMod.textContent = 'INGRESSO';
               hudMod.style.color = '#7eb8e0';
             }
-            if (hudTel) hudTel.innerText = `COHESION: ${(Math.min(100, progress * 4.5 * 100)).toFixed(0)}%`;
+            if (hudTel) hudTel.textContent = `COHESION: ${(Math.min(100, progress * 4.5 * 100)).toFixed(0)}%`;
           } else if (progress < 0.65) {
-            if (hudLoc) hudLoc.innerText = 'CH_02';
+            if (hudLoc) hudLoc.textContent = 'CH_02';
             if (hudMod) {
-              hudMod.innerText = 'WORKSPACE';
+              hudMod.textContent = 'WORKSPACE';
               hudMod.style.color = '#7eb8e0';
             }
-            if (hudTel) hudTel.innerText = `SYNC: ${(Math.min(100, (progress - 0.28) / (0.65 - 0.28) * 100)).toFixed(0)}%`;
+            if (hudTel) hudTel.textContent = `SYNC: ${(Math.min(100, (progress - 0.28) / (0.65 - 0.28) * 100)).toFixed(0)}%`;
           } else {
-            if (hudLoc) hudLoc.innerText = 'CH_03';
+            if (hudLoc) hudLoc.textContent = 'CH_03';
             if (hudMod) {
-              hudMod.innerText = 'PROJECTS';
+              hudMod.textContent = 'PROJECTS';
               hudMod.style.color = '#5a8fb5';
             }
-            if (hudTel) hudTel.innerText = `EXPOSE: READY`;
+            if (hudTel) hudTel.textContent = `EXPOSE: READY`;
           }
 
-          const container = document.getElementById('hud-logs-container');
+          const container = hudLogsRef.current;
           if (container) {
             const currentScrollPos = window.scrollY;
             const lastScrollPos = (container as HTMLElement & { lastScrollPos?: number }).lastScrollPos || 0;
@@ -102,7 +109,7 @@ export default function ScrollNarrativeEngine({ children }: Props) {
               const randomLog = logPool[Math.floor(Math.random() * logPool.length)];
 
               const newLine = document.createElement('span');
-              newLine.innerText = `> ${randomLog}`;
+              newLine.textContent = `> ${randomLog}`;
               newLine.className = 'text-navy-glow/80 text-[8px] font-mono truncate';
 
               container.appendChild(newLine);
@@ -278,6 +285,7 @@ export default function ScrollNarrativeEngine({ children }: Props) {
 
       {/* Floating HUD: Codex Orbe Scroll diary */}
       <div
+        ref={hudRef}
         id="scroll-hud"
         className="fixed right-6 top-[35%] -translate-y-1/2 z-[40] hidden xl:flex flex-col w-56 glass-navy rounded-lg p-4 font-mono text-[10px] text-navy-mist space-y-3 opacity-0 transition-opacity duration-300 pointer-events-none"
       >
@@ -288,27 +296,28 @@ export default function ScrollNarrativeEngine({ children }: Props) {
         <div className="space-y-1.5 text-navy-mist/80">
           <div className="flex justify-between">
             <span>CH:</span>
-            <span id="hud-location" className="text-white/90 font-medium">CH_01</span>
+            <span ref={hudLocRef} id="hud-location" className="text-white/90 font-medium">CH_01</span>
           </div>
           <div className="flex justify-between">
             <span>MOD:</span>
-            <span id="hud-module" className="text-navy-glow font-medium">INGRESSO</span>
+            <span ref={hudModRef} id="hud-module" className="text-navy-glow font-medium">INGRESSO</span>
           </div>
           <div className="flex justify-between">
             <span>TELEM:</span>
-            <span id="hud-telemetry" className="text-navy-shine">—</span>
+            <span ref={hudTelRef} id="hud-telemetry" className="text-navy-shine">—</span>
           </div>
         </div>
         <div className="space-y-1">
           <div className="flex justify-between text-[9px] opacity-60">
             <span>SCROLL</span>
-            <span id="hud-progress-pct">0.0%</span>
+            <span ref={hudPctRef} id="hud-progress-pct">0.0%</span>
           </div>
           <div className="h-0.5 w-full bg-navy-steel/40 rounded-full overflow-hidden">
-            <div id="hud-progress-bar" className="h-full bg-navy-glow transition-all duration-75" style={{ width: '0%' }} />
+            <div ref={hudBarRef} id="hud-progress-bar" className="h-full bg-navy-glow transition-all duration-75" style={{ width: '0%' }} />
           </div>
         </div>
         <div
+          ref={hudLogsRef}
           id="hud-logs-container"
           className="border-t border-navy-metallic/25 pt-2 text-[8px] flex flex-col gap-0.5 h-16 overflow-hidden"
         >

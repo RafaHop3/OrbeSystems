@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 
 import aetherisLabsSource from "./sources/aetheris-labs.html?raw";
 import audioWordmarkSource from "./sources/audio-wordmark.html?raw";
@@ -1802,9 +1802,11 @@ function NeuformIsolatedEffect({
   trackPointerHover?: boolean;
 }) {
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   const safeMode: EffectMode = mode === "light" ? "light" : "dark";
   const background = effectBackground(definition, safeMode);
-  const source = useMemo(() => buildFocusedDocument(definition, safeMode), [definition, safeMode]);
+  const source = useMemo(() => (mounted ? buildFocusedDocument(definition, safeMode) : undefined), [mounted, definition, safeMode]);
   const safeHue = clamp(hue, -180, 180);
   const safeSaturation = clamp(saturation, 0, 2);
   const safeBrightness = clamp(brightness, 0.35, 1.65);

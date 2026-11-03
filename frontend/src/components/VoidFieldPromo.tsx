@@ -1,7 +1,8 @@
 "use client";
 import React from 'react';
 import Link from 'next/link';
-import ToolVoidCanvas from '@/components/ToolVoidCanvas';
+import dynamic from 'next/dynamic';
+const ToolVoidCanvas = dynamic(() => import('@/components/ToolVoidCanvas'), { ssr: false });
 
 const METRICS = [
     { label: 'Criptografia de Chaves', value: 'MultiFernet KMS' },

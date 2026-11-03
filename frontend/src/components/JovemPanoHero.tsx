@@ -12,7 +12,7 @@ export default function JovemPanoHero() {
                 alt="New York Cyberpunk Night"
                 fill
                 className="object-cover object-[center_30%]"
-                priority
+                loading="lazy"
             />
 
             {/* Cinematic Gradient Overlays */}

@@ -22,6 +22,21 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Ancoras (#contact etc.) nao ficam sob o header fixo translucido */
+section[id] {
+  scroll-margin-top: 6rem;
+}
+
+/* Acessibilidade: respeita a preferencia do SO por menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 body {
   background-color: #050505;
   color: #e2e8f0;
@@ -144,4 +159,9 @@ body {
 
 .animate-pulse-neon {
   animation: pulse-neon 2s ease-in-out infinite;
+}
+/* Progressive CSS rendering for below-the-fold sections (Zero-Break) */
+.below-fold-section {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 720px;
 }

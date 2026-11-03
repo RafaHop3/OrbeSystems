@@ -1,6 +1,7 @@
 'use client';
 
-import { Suspense, useRef, useMemo } from 'react';
+import { Suspense, useRef, useMemo, useState, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Bloom, EffectComposer, Noise, Vignette } from '@react-three/postprocessing';
 import { BlendFunction } from 'postprocessing';
@@ -9,9 +10,9 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { Play, Activity, Cpu, Disc3 } from 'lucide-react';
 import * as THREE from 'three';
-import ToolVoidCanvas from '@/components/ToolVoidCanvas';
+const ToolVoidCanvas = dynamic(() => import('@/components/ToolVoidCanvas'), { ssr: false });
 import ProductMetrics from '@/components/ProductMetrics';
-import WebGLErrorBoundary from '@/components/WebGLErrorBoundary';
+import WebGLErrorBoundary, { isWebGLAvailable } from '@/components/WebGLErrorBoundary';
 
 // --------------------------------------------------------
 // Audio Visualizer / Isometric Grid Scene in Three.js
@@ -119,11 +120,38 @@ function SynthNodes() {
 // --------------------------------------------------------
 
 export default function OrbeMusicHero() {
+    const sectionRef = useRef<HTMLElement>(null);
+    const [canRenderWebGL, setCanRenderWebGL] = useState(false);
+
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const obs = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setCanRenderWebGL(isWebGLAvailable());
+                    obs.disconnect();
+                }
+            },
+            { rootMargin: '200px' }
+        );
+        obs.observe(el);
+        return () => obs.disconnect();
+    }, []);
+
     return (
-        <section className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden border-b border-blue-500/10">
+        <section ref={sectionRef} className="relative w-full min-h-[90vh] flex items-center justify-center overflow-hidden border-b border-blue-500/10">
 
             {/* R3F WebGL Background Canvas com Error Boundary blindado */}
             <div className="absolute inset-0 z-0 pointer-events-none">
+                {!canRenderWebGL ? (
+                    <div
+                        className="absolute inset-0 bg-[#030712] pointer-events-none"
+                        style={{
+                            backgroundImage: 'radial-gradient(circle at 60% 40%, rgba(14, 165, 233, 0.1) 0%, transparent 70%)'
+                        }}
+                    />
+                ) : (
                 <WebGLErrorBoundary
                     fallback={
                         <div 
@@ -159,6 +187,7 @@ export default function OrbeMusicHero() {
                         </Suspense>
                     </Canvas>
                 </WebGLErrorBoundary>
+                )}
             </div>
 
             {/* Foreground Hero UI */}

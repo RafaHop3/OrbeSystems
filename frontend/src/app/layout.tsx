@@ -2,8 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 import "@/shaders/threeui.css";
 import AnalyticsTracker from '@/components/AnalyticsTracker';
-import MouseAtomTrail from '@/components/MouseAtomTrail';
 import dynamic from 'next/dynamic';
+
+const MouseAtomTrail = dynamic(() => import('@/components/MouseAtomTrail'), { ssr: false });
 import LgpdBanner from '@/components/LgpdBanner';
 import WhatsappButton from '@/components/WhatsappButton';
 
@@ -51,6 +52,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
+      <head>
+        <link rel="dns-prefetch" href="https://api.orbesystems.com.br" />
+        <link rel="dns-prefetch" href="https://inho-api.orbesystems.com.br" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body suppressHydrationWarning className="bg-terminal-bg text-[#c8d6e3] antialiased selection:bg-neon-cyan selection:text-black bg-cyber-grid bg-fixed font-sans">
         <AnalyticsTracker />
         <MouseAtomTrail />

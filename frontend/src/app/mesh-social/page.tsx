@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import {
+import BooksShelf from '@/components/mesh/BooksShelf';
+import { BookOpen,
   Heart,
   MessageCircle,
   Send,
@@ -359,7 +360,7 @@ export default function MeshSocialApp() {
   const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
 
   // Tabs: 'feed' | 'explore' | 'vault' | 'profile'
-  const [activeTab, setActiveTab] = useState<'feed' | 'explore' | 'vault' | 'profile'>('feed');
+  const [activeTab, setActiveTab] = useState<'feed' | 'explore' | 'vault' | 'books' | 'profile'>('feed');
 
   // Stories
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
@@ -756,8 +757,7 @@ export default function MeshSocialApp() {
                     <img
                       src={DEMO_ACCOUNTS.lucas.avatar}
                       alt="Lucas"
-                      className="w-6 h-6 rounded-full object-cover"
-                    />
+                      className="w-6 h-6 rounded-full object-cover" loading="lazy" decoding="async" />
                     <span>Entrar como <strong>Lucas Amaral</strong></span>
                   </div>
                   <span className="text-[10px] font-mono text-neon-cyan">Engenheiro</span>
@@ -772,8 +772,7 @@ export default function MeshSocialApp() {
                     <img
                       src={DEMO_ACCOUNTS.marina.avatar}
                       alt="Marina"
-                      className="w-6 h-6 rounded-full object-cover"
-                    />
+                      className="w-6 h-6 rounded-full object-cover" loading="lazy" decoding="async" />
                     <span>Entrar como <strong>Marina Costa</strong></span>
                   </div>
                   <span className="text-[10px] font-mono text-purple-300">Fotógrafa</span>
@@ -829,8 +828,7 @@ export default function MeshSocialApp() {
                       <img
                         src={DEFAULT_GOOGLE_USER.avatar}
                         alt="Rafael"
-                        className="w-10 h-10 rounded-full object-cover border border-neon-cyan"
-                      />
+                        className="w-10 h-10 rounded-full object-cover border border-neon-cyan" loading="lazy" decoding="async" />
                       <div>
                         <div className="text-xs font-bold text-white group-hover:text-neon-cyan transition-colors">
                           {DEFAULT_GOOGLE_USER.name}
@@ -938,8 +936,7 @@ export default function MeshSocialApp() {
               <img
                 src={currentUser.avatar}
                 alt={currentUser.name}
-                className="w-6 h-6 rounded-full object-cover border border-neon-cyan"
-              />
+                className="w-6 h-6 rounded-full object-cover border border-neon-cyan" loading="lazy" decoding="async" />
               <span className="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 border border-black" />
             </div>
             <span className="text-xs font-semibold text-white max-w-[90px] truncate">{currentUser.name}</span>
@@ -980,8 +977,7 @@ export default function MeshSocialApp() {
                 <img
                   src={currentUser.avatar}
                   alt={currentUser.name}
-                  className="w-11 h-11 rounded-full object-cover border-2 border-neon-cyan shadow-[0_0_10px_rgba(0,255,245,0.3)]"
-                />
+                  className="w-11 h-11 rounded-full object-cover border-2 border-neon-cyan shadow-[0_0_10px_rgba(0,255,245,0.3)]" loading="lazy" decoding="async" />
                 <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-400 border-2 border-black" />
               </div>
               <div className="min-w-0 flex-1">
@@ -1132,8 +1128,7 @@ export default function MeshSocialApp() {
                 <img
                   src={currentUser.avatar}
                   alt={currentUser.name}
-                  className="w-10 h-10 rounded-full object-cover border border-neon-cyan"
-                />
+                  className="w-10 h-10 rounded-full object-cover border border-neon-cyan" loading="lazy" decoding="async" />
                 <div className="flex-1">
                   <input
                     type="text"
@@ -1187,8 +1182,7 @@ export default function MeshSocialApp() {
                   <img
                     src={currentUser.avatar}
                     alt="Você"
-                    className="w-14 h-14 rounded-full object-cover"
-                  />
+                    className="w-14 h-14 rounded-full object-cover" loading="lazy" decoding="async" />
                   <div className="absolute bottom-0 right-0 w-5 h-5 rounded-full bg-neon-cyan text-black flex items-center justify-center text-xs font-bold shadow-md">
                     +
                   </div>
@@ -1215,8 +1209,7 @@ export default function MeshSocialApp() {
                     <img
                       src={story.avatar}
                       alt={story.name}
-                      className="w-full h-full rounded-full object-cover group-hover:scale-105 transition-transform"
-                    />
+                      className="w-full h-full rounded-full object-cover group-hover:scale-105 transition-transform" loading="lazy" decoding="async" />
                   </div>
                   <span className="text-[11px] text-slate-300 truncate max-w-[64px]">{story.name}</span>
                 </button>
@@ -1236,8 +1229,7 @@ export default function MeshSocialApp() {
                       <img
                         src={post.avatar}
                         alt={post.author}
-                        className="w-10 h-10 rounded-full object-cover border border-slate-700"
-                      />
+                        className="w-10 h-10 rounded-full object-cover border border-slate-700" loading="lazy" decoding="async" />
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-bold text-white">{post.author}</span>
@@ -1284,8 +1276,7 @@ export default function MeshSocialApp() {
                     <img
                       src={post.image}
                       alt={post.caption}
-                      className="w-full h-full object-cover"
-                    />
+                      className="w-full h-full object-cover" loading="lazy" decoding="async" />
 
                     {/* Tag de Formato */}
                     <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] text-slate-200 font-medium">
@@ -1440,8 +1431,7 @@ export default function MeshSocialApp() {
                   <img
                     src={post.image}
                     alt={post.caption}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" decoding="async" />
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3 text-white">
                     <span className="text-[10px] text-neon-cyan font-bold">{post.author}</span>
                     <p className="text-xs line-clamp-2">{post.caption}</p>
@@ -1508,6 +1498,16 @@ export default function MeshSocialApp() {
         {/* =================================================================== */}
         {/* ABA: MEU PERFIL */}
         {/* =================================================================== */}
+                {/* =================================================================== */}
+        {/* ABA: MESH SOCIAL BOOKS (ESTANTE P2P) */}
+        {/* =================================================================== */}
+        {activeTab === 'books' && (
+          <BooksShelf />
+        )}
+
+        {/* =================================================================== */}
+        {/* ABA: MEU PERFIL */}
+        {/* =================================================================== */}
         {activeTab === 'profile' && (
           <div className="space-y-8">
             {/* Cabeçalho do Perfil */}
@@ -1517,8 +1517,7 @@ export default function MeshSocialApp() {
                   <img
                     src={currentUser.avatar}
                     alt={currentUser.name}
-                    className="w-24 h-24 rounded-full object-cover border-2 border-neon-cyan shadow-[0_0_20px_rgba(0,255,245,0.3)]"
-                  />
+                    className="w-24 h-24 rounded-full object-cover border-2 border-neon-cyan shadow-[0_0_20px_rgba(0,255,245,0.3)]" loading="lazy" decoding="async" />
                   <span className="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-emerald-400 border-2 border-black" />
                 </div>
 
@@ -1576,8 +1575,7 @@ export default function MeshSocialApp() {
                     <img
                       src={post.image}
                       alt={post.caption}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                    />
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform" loading="lazy" decoding="async" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white text-xs font-bold">
                       <span>♥ {post.likes}</span>
                       <span>💬 {post.comments.length}</span>
@@ -1629,8 +1627,7 @@ export default function MeshSocialApp() {
           <img
             src={currentUser.avatar}
             alt={currentUser.name}
-            className="w-6 h-6 rounded-full object-cover border border-neon-cyan"
-          />
+            className="w-6 h-6 rounded-full object-cover border border-neon-cyan" loading="lazy" decoding="async" />
         </button>
       </nav>
 
@@ -1721,8 +1718,7 @@ export default function MeshSocialApp() {
                   <img
                     src={selectedStory.avatar}
                     alt={selectedStory.name}
-                    className="w-8 h-8 rounded-full object-cover border border-neon-cyan"
-                  />
+                    className="w-8 h-8 rounded-full object-cover border border-neon-cyan" loading="lazy" decoding="async" />
                   <div>
                     <div className="text-xs font-bold">{selectedStory.name}</div>
                     <div className="text-[10px] text-neon-cyan">{selectedStory.handle}</div>

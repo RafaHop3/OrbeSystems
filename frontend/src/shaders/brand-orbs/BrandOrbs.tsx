@@ -198,7 +198,9 @@ export function BrandOrbs({
   const safeSize = BRAND_ORB_SIZES.includes(size) ? size : BRAND_ORBS_DEFAULTS.size;
   const safeSpeed = clamp(speed, 0.1, 3);
   const effectivePaused = paused || !hostVisible || !documentVisible;
-  const source = useMemo(() => buildFocusedDocument(safeVariant, safeSize, resolvedMode), [resolvedMode, safeSize, safeVariant]);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const source = useMemo(() => (mounted ? buildFocusedDocument(safeVariant, safeSize, resolvedMode) : undefined), [mounted, resolvedMode, safeSize, safeVariant]);
   const background = resolvedMode === "light" ? "#dad7cc" : "#050608";
 
   const postControls = useCallback(() => {

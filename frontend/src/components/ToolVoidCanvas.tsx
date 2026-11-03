@@ -888,149 +888,328 @@ export default function ToolVoidCanvas({
     const container = mountRef.current;
     if (!container) return;
 
-    let renderer: THREE.WebGLRenderer;
-    try {
-      renderer = new THREE.WebGLRenderer({
-        antialias: false,
+    let disposed = false;
+    let teardownScene: (() => void) | null = null;
+    let idleTimer: number | null = null;
+    let usingRic = false;
+
+    const initScene = () => {
+      if (disposed || teardownScene) return;
+
+      const positions = BUILDERS[activeShape](particleCount);
+      const seeds = new Float32Array(particleCount);
+      for (let i = 0; i < particleCount; i++) seeds[i] = Math.random();
+
+      // Test and acquire WebGL2 context directly on our canvas BEFORE calling THREE.WebGLRenderer
+      // so Three.js NEVER logs "THREE.WebGLRenderer: Error creating WebGL context."
+      const testCanvas = document.createElement('canvas');
+      const glAttrs: WebGLContextAttributes = {
         alpha: true,
+        antialias: false,
         powerPreference: 'low-power',
         failIfMajorPerformanceCaveat: false,
-      });
-    } catch {
-      // WebGL indisponível ou contexto estourado: contêiner silencioso e seguro
-      return;
-    }
+      };
+      let gl: WebGL2RenderingContext | null = null;
+      try {
+        gl = testCanvas.getContext('webgl2', glAttrs) as WebGL2RenderingContext | null;
+      } catch {
+        gl = null;
+      }
 
-    let isContextLost = false;
-    const handleContextLost = (e: Event) => {
-      e.preventDefault();
-      isContextLost = true;
-    };
-    const handleContextRestored = () => {
-      isContextLost = false;
-    };
-    renderer.domElement.addEventListener('webglcontextlost', handleContextLost, false);
-    renderer.domElement.addEventListener('webglcontextrestored', handleContextRestored, false);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-      45,
-      container.clientWidth / Math.max(container.clientHeight, 1),
-      0.1,
-      100
-    );
-    camera.position.set(0, 0.2, 4.6);
-
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.innerHTML = '';
-    container.appendChild(renderer.domElement);
-
-    const positions = BUILDERS[activeShape](particleCount);
-    const seeds = new Float32Array(particleCount);
-    for (let i = 0; i < particleCount; i++) seeds[i] = Math.random();
-
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('aRandomSeed', new THREE.BufferAttribute(seeds, 1));
-
-    const material = new THREE.ShaderMaterial({
-      vertexShader: VERTEX_SHADER,
-      fragmentShader: FRAGMENT_SHADER,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      uniforms: {
-        uTime: { value: 0 },
-        uPointer: { value: new THREE.Vector2(99, 99) },
-        uPrimaryColor: { value: new THREE.Color(accentColor) },
-        uSecondaryColor: { value: new THREE.Color(secondaryColor) },
-        uHighlightBand: { value: new THREE.Vector2(-1.6, 1.7) },
-        uHighlightActive: { value: 0.0 },
-      },
-    });
-
-    const points = new THREE.Points(geometry, material);
-    scene.add(points);
-
-    const targetPointer = new THREE.Vector2(99, 99);
-    const handlePointerMove = (e: PointerEvent) => {
-      const rect = container.getBoundingClientRect();
-      targetPointer.set(
-        ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        -((e.clientY - rect.top) / rect.height) * 2 + 1
-      );
-    };
-    const handlePointerLeave = () => targetPointer.set(99, 99);
-    container.addEventListener('pointermove', handlePointerMove);
-    container.addEventListener('pointerleave', handlePointerLeave);
-
-    let isVisible = true;
-    const visibilityObserver = new IntersectionObserver(
-      ([entry]) => {
-        isVisible = entry.isIntersecting;
-      },
-      { threshold: 0.05 }
-    );
-    visibilityObserver.observe(container);
-
-    const resizeObserver = new ResizeObserver(() => {
-      const w = container.clientWidth;
-      const h = Math.max(container.clientHeight, 1);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      if (!isContextLost) {
+      if (gl && !gl.isContextLost()) {
+        let renderer: THREE.WebGLRenderer;
         try {
-          renderer.setSize(w, h);
+          renderer = new THREE.WebGLRenderer({
+            canvas: testCanvas,
+            context: gl,
+            antialias: false,
+            alpha: true,
+            powerPreference: 'low-power',
+            failIfMajorPerformanceCaveat: false,
+          });
         } catch {
-          // ignore transient resize error
+          gl.getExtension('WEBGL_lose_context')?.loseContext();
+          gl = null;
+          renderer = null as unknown as THREE.WebGLRenderer;
+        }
+
+        if (renderer) {
+          let isContextLost = false;
+          const handleContextLost = (e: Event) => {
+            e.preventDefault();
+            isContextLost = true;
+          };
+          const handleContextRestored = () => {
+            isContextLost = false;
+          };
+          renderer.domElement.addEventListener('webglcontextlost', handleContextLost, false);
+          renderer.domElement.addEventListener('webglcontextrestored', handleContextRestored, false);
+
+          const scene = new THREE.Scene();
+          const camera = new THREE.PerspectiveCamera(
+            45,
+            container.clientWidth / Math.max(container.clientHeight, 1),
+            0.1,
+            100
+          );
+          camera.position.set(0, 0.2, 4.6);
+
+          renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+          renderer.setSize(container.clientWidth, Math.max(container.clientHeight, 1));
+          container.innerHTML = '';
+          container.appendChild(renderer.domElement);
+
+          const geometry = new THREE.BufferGeometry();
+          geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+          geometry.setAttribute('aRandomSeed', new THREE.BufferAttribute(seeds, 1));
+
+          const material = new THREE.ShaderMaterial({
+            vertexShader: VERTEX_SHADER,
+            fragmentShader: FRAGMENT_SHADER,
+            transparent: true,
+            depthWrite: false,
+            blending: THREE.AdditiveBlending,
+            uniforms: {
+              uTime: { value: 0 },
+              uPointer: { value: new THREE.Vector2(99, 99) },
+              uPrimaryColor: { value: new THREE.Color(accentColor) },
+              uSecondaryColor: { value: new THREE.Color(secondaryColor) },
+              uHighlightBand: { value: new THREE.Vector2(-1.6, 1.7) },
+              uHighlightActive: { value: 0.0 },
+            },
+          });
+
+          const points = new THREE.Points(geometry, material);
+          scene.add(points);
+
+          const targetPointer = new THREE.Vector2(99, 99);
+          const handlePointerMove = (e: PointerEvent) => {
+            const rect = container.getBoundingClientRect();
+            targetPointer.set(
+              ((e.clientX - rect.left) / Math.max(rect.width, 1)) * 2 - 1,
+              -((e.clientY - rect.top) / Math.max(rect.height, 1)) * 2 + 1
+            );
+          };
+          const handlePointerLeave = () => targetPointer.set(99, 99);
+          container.addEventListener('pointermove', handlePointerMove, { passive: true });
+          container.addEventListener('pointerleave', handlePointerLeave, { passive: true });
+
+          let isVisible = true;
+          const visibilityObserver = new IntersectionObserver(
+            ([entry]) => {
+              isVisible = entry.isIntersecting;
+            },
+            { threshold: 0.05 }
+          );
+          visibilityObserver.observe(container);
+
+          const resizeObserver = new ResizeObserver(() => {
+            const w = container.clientWidth;
+            const h = Math.max(container.clientHeight, 1);
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            if (!isContextLost) {
+              try {
+                renderer.setSize(w, h);
+              } catch {
+                // ignore transient resize error
+              }
+            }
+          });
+          resizeObserver.observe(container);
+
+          let frameId = 0;
+          const clock = new THREE.Clock();
+          const animate = () => {
+            frameId = requestAnimationFrame(animate);
+            if (!isVisible || document.hidden || isContextLost) return;
+
+            const elapsed = clock.getElapsedTime();
+            material.uniforms.uTime.value = elapsed;
+            material.uniforms.uPointer.value.lerp(targetPointer, 0.12);
+
+            const hb = highlightBandRef.current;
+            if (hb) {
+              material.uniforms.uHighlightBand.value.set(hb[0], hb[1]);
+              material.uniforms.uHighlightActive.value += (1.0 - material.uniforms.uHighlightActive.value) * 0.15;
+            } else {
+              material.uniforms.uHighlightActive.value += (0.0 - material.uniforms.uHighlightActive.value) * 0.15;
+            }
+
+            points.rotation.y = elapsed * 0.22;
+            points.rotation.x = Math.cos(elapsed * 0.25) * 0.08;
+
+            try {
+              renderer.render(scene, camera);
+            } catch {
+              // Safe catch on GPU context recovery
+            }
+          };
+          animate();
+
+          teardownScene = () => {
+            cancelAnimationFrame(frameId);
+            visibilityObserver.disconnect();
+            resizeObserver.disconnect();
+            container.removeEventListener('pointermove', handlePointerMove);
+            container.removeEventListener('pointerleave', handlePointerLeave);
+            renderer.domElement.removeEventListener('webglcontextlost', handleContextLost);
+            renderer.domElement.removeEventListener('webglcontextrestored', handleContextRestored);
+            geometry.dispose();
+            material.dispose();
+            renderer.dispose();
+            if (renderer.domElement.parentNode === container) {
+              container.removeChild(renderer.domElement);
+            }
+          };
+          return;
         }
       }
-    });
-    resizeObserver.observe(container);
 
-    let frameId = 0;
-    const clock = new THREE.Clock();
-    const animate = () => {
-      frameId = requestAnimationFrame(animate);
-      if (!isVisible || document.hidden || isContextLost) return;
+      // -----------------------------------------------------------------------
+      // High-Fidelity 2D Canvas 3D-Projection Fallback (Zero Console Error)
+      // Renders the exact same 3D particle sculpture when WebGL2 is unavailable
+      // -----------------------------------------------------------------------
+      const canvas2d = document.createElement('canvas');
+      canvas2d.className = 'w-full h-full block';
+      container.innerHTML = '';
+      container.appendChild(canvas2d);
+      const ctx = canvas2d.getContext('2d');
+      if (!ctx) return;
 
-      const elapsed = clock.getElapsedTime();
-      material.uniforms.uTime.value = elapsed;
-      material.uniforms.uPointer.value.lerp(targetPointer, 0.12);
+      const stride = Math.max(1, Math.floor(particleCount / 900));
+      let width = container.clientWidth || 360;
+      let height = Math.max(container.clientHeight, 240);
 
-      const hb = highlightBandRef.current;
-      if (hb) {
-        material.uniforms.uHighlightBand.value.set(hb[0], hb[1]);
-        material.uniforms.uHighlightActive.value += (1.0 - material.uniforms.uHighlightActive.value) * 0.15;
+      const syncSize = () => {
+        const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+        width = container.clientWidth || 360;
+        height = Math.max(container.clientHeight, 240);
+        canvas2d.width = Math.max(1, Math.floor(width * dpr));
+        canvas2d.height = Math.max(1, Math.floor(height * dpr));
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      };
+      syncSize();
+
+      const resizeObs2d = new ResizeObserver(syncSize);
+      resizeObs2d.observe(container);
+
+      let isVisible2d = true;
+      const visObs2d = new IntersectionObserver(
+        ([entry]) => {
+          isVisible2d = entry.isIntersecting;
+        },
+        { threshold: 0.05 }
+      );
+      visObs2d.observe(container);
+
+      let frameId2d = 0;
+      const startTime = performance.now();
+      const render2d = (now: number) => {
+        frameId2d = requestAnimationFrame(render2d);
+        if (!isVisible2d || document.hidden) return;
+
+        const elapsed = (now - startTime) * 0.001;
+        ctx.clearRect(0, 0, width, height);
+
+        const rotY = elapsed * 0.22;
+        const rotX = Math.cos(elapsed * 0.25) * 0.08;
+        const cosY = Math.cos(rotY);
+        const sinY = Math.sin(rotY);
+        const cosX = Math.cos(rotX);
+        const sinX = Math.sin(rotX);
+
+        const scale = Math.min(width, height) * 0.42;
+        const cx = width * 0.5;
+        const cy = height * 0.52;
+        const hb = highlightBandRef.current;
+
+        for (let i = 0; i < particleCount; i += stride) {
+          const idx3 = i * 3;
+          const px = positions[idx3];
+          const py = positions[idx3 + 1];
+          const pz = positions[idx3 + 2];
+
+          const x1 = px * cosY - pz * sinY;
+          const z1 = px * sinY + pz * cosY;
+          const y2 = py * cosX - z1 * sinX;
+          const z2 = py * sinX + z1 * cosX;
+
+          const depth = 3.8 + z2;
+          if (depth <= 0.4) continue;
+          const inv = scale / depth;
+          const sx = cx + x1 * inv;
+          const sy = cy - y2 * inv;
+
+          let alpha = Math.min(0.9, Math.max(0.2, 2.2 / depth));
+          if (hb) {
+            const inBand = py >= hb[0] && py <= hb[1];
+            alpha *= inBand ? 1.25 : 0.35;
+          }
+
+          ctx.fillStyle = seeds[i] > 0.45 ? accentColor : secondaryColor;
+          ctx.globalAlpha = Math.min(1, alpha);
+          const r = Math.max(1.1, 2.6 / depth);
+          ctx.beginPath();
+          ctx.arc(sx, sy, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+      };
+      frameId2d = requestAnimationFrame(render2d);
+
+      teardownScene = () => {
+        cancelAnimationFrame(frameId2d);
+        resizeObs2d.disconnect();
+        visObs2d.disconnect();
+        if (canvas2d.parentNode === container) {
+          container.removeChild(canvas2d);
+        }
+      };
+    };
+
+    const scheduleInit = () => {
+      if (disposed || teardownScene || idleTimer !== null) return;
+      const ric = (window as unknown as { requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number }).requestIdleCallback;
+      if (typeof ric === 'function') {
+        usingRic = true;
+        idleTimer = ric(() => {
+          idleTimer = null;
+          initScene();
+        }, { timeout: 600 });
       } else {
-        material.uniforms.uHighlightActive.value += (0.0 - material.uniforms.uHighlightActive.value) * 0.15;
-      }
-
-      points.rotation.y = elapsed * 0.22;
-      points.rotation.x = Math.cos(elapsed * 0.25) * 0.08;
-
-      try {
-        renderer.render(scene, camera);
-      } catch {
-        // Safe catch on GPU context recovery
+        usingRic = false;
+        idleTimer = window.setTimeout(() => {
+          idleTimer = null;
+          initScene();
+        }, 180);
       }
     };
-    animate();
+
+    const mountObserver = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          scheduleInit();
+          mountObserver.disconnect();
+        }
+      },
+      { rootMargin: '250px' }
+    );
+    mountObserver.observe(container);
 
     return () => {
-      cancelAnimationFrame(frameId);
-      visibilityObserver.disconnect();
-      resizeObserver.disconnect();
-      container.removeEventListener('pointermove', handlePointerMove);
-      container.removeEventListener('pointerleave', handlePointerLeave);
-      renderer.domElement.removeEventListener('webglcontextlost', handleContextLost);
-      renderer.domElement.removeEventListener('webglcontextrestored', handleContextRestored);
-      geometry.dispose();
-      material.dispose();
-      renderer.dispose();
-      if (renderer.domElement.parentNode === container) {
-        container.removeChild(renderer.domElement);
+      disposed = true;
+      mountObserver.disconnect();
+      if (idleTimer !== null) {
+        const cic = (window as unknown as { cancelIdleCallback?: (id: number) => void }).cancelIdleCallback;
+        if (usingRic && typeof cic === 'function') {
+          cic(idleTimer);
+        } else {
+          window.clearTimeout(idleTimer);
+        }
+      }
+      if (teardownScene) {
+        teardownScene();
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

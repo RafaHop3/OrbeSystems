@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useRef, useState } from 'react';
+import { Suspense, useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import { Float, Stars, Torus } from '@react-three/drei';
@@ -8,7 +8,7 @@ import { motion } from 'framer-motion';
 import { DownloadCloud, Activity } from 'lucide-react';
 import Link from 'next/link';
 import * as THREE from 'three';
-import WebGLErrorBoundary from '@/components/WebGLErrorBoundary';
+import WebGLErrorBoundary, { isWebGLAvailable } from '@/components/WebGLErrorBoundary';
 
 function NeonRings() {
     const ref = useRef<THREE.Group>(null);
@@ -36,11 +36,38 @@ function NeonRings() {
 }
 
 export default function MusicDownloaderHero() {
+    const sectionRef = useRef<HTMLElement>(null);
+    const [canRenderWebGL, setCanRenderWebGL] = useState(false);
+
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el) return;
+        const obs = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setCanRenderWebGL(isWebGLAvailable());
+                    obs.disconnect();
+                }
+            },
+            { rootMargin: '200px' }
+        );
+        obs.observe(el);
+        return () => obs.disconnect();
+    }, []);
+
     return (
-        <section className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden border-b border-purple-500/10">
+        <section ref={sectionRef} className="relative w-full min-h-[85vh] flex items-center justify-center overflow-hidden border-b border-purple-500/10">
 
             {/* R3F WebGL Background Canvas com Error Boundary blindado */}
             <div className="absolute inset-0 z-0 pointer-events-none">
+                {!canRenderWebGL ? (
+                    <div
+                        className="absolute inset-0 bg-[#05020a] pointer-events-none"
+                        style={{
+                            backgroundImage: 'radial-gradient(circle at 70% 30%, rgba(188, 19, 254, 0.08) 0%, transparent 60%)'
+                        }}
+                    />
+                ) : (
                 <WebGLErrorBoundary
                     fallback={
                         <div 
@@ -63,6 +90,7 @@ export default function MusicDownloaderHero() {
                         </Suspense>
                     </Canvas>
                 </WebGLErrorBoundary>
+                )}
             </div>
 
             {/* Foreground UI */}

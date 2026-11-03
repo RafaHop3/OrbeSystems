@@ -72,8 +72,21 @@ const securityHeaders = [
 
 const nextConfig = {
   reactStrictMode: true,
+  swcMinify: true,
+  compress: true,
+  poweredByHeader: false,
   images: {
     unoptimized: true,
+    formats: ['image/avif', 'image/webp'],
+  },
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'framer-motion',
+      'three',
+      '@react-three/drei',
+      '@react-three/fiber',
+    ],
   },
   async rewrites() {
     const INHO_API_URL = "https://inho-api.orbesystems.com.br";

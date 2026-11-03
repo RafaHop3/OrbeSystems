@@ -30,6 +30,9 @@ const jsonLd = {
   url: 'https://inho.orbesystems.com.br',
 };
 
+export const dynamic = 'force-static';
+export const revalidate = 3600;
+
 export default function InhoPage() {
   return (
     <main className="min-h-screen bg-[#030305] text-slate-200 px-6 py-24">

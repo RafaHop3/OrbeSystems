@@ -1,24 +1,28 @@
 import Header from '@/components/Header';
-import HeroSection from '@/components/HeroSection';
-import Footer from '@/components/Footer';
-import ScrollNarrativeEngine from '@/components/ScrollNarrativeEngine';
-import FreedomSection from '@/components/FreedomSection';
-import FeaturedSitesSection from '@/components/FeaturedSitesSection';
-import JovemPanoHero from '@/components/JovemPanoHero';
-import VoidFieldPromo from '@/components/VoidFieldPromo';
-import OrbeMusicHero from '@/components/OrbeMusicHero';
-import MusicDownloaderHero from '@/components/MusicDownloaderHero';
-import OrbeCleanerPromo from '@/components/OrbeCleanerPromo';
-import InhoPromo from '@/components/InhoPromo';
-import InhoManifestoHero from '@/components/InhoManifestoHero';
-import EloProtocolHero from '@/components/EloProtocolHero';
-import dynamic from 'next/dynamic';
+import { Skiper30 } from '@/components/v1/skiper30';
+import dynamicImport from 'next/dynamic';
 
-const StarryBackground = dynamic(() => import('@/components/StarryBackground'), {
+export const dynamic = 'force-static';
+export const revalidate = 3600;
+
+const StarryBackground = dynamicImport(() => import('@/components/StarryBackground'), {
   ssr: false,
 });
 
-import { Skiper30 } from '@/components/v1/skiper30';
+// Below-the-fold sections: ssr: true preserves 100% SEO HTML while splitting JS hydration chunks
+const OrbeMusicHero = dynamicImport(() => import('@/components/OrbeMusicHero'), { ssr: true });
+const MusicDownloaderHero = dynamicImport(() => import('@/components/MusicDownloaderHero'), { ssr: true });
+const OrbeCleanerPromo = dynamicImport(() => import('@/components/OrbeCleanerPromo'), { ssr: true });
+const VoidFieldPromo = dynamicImport(() => import('@/components/VoidFieldPromo'), { ssr: true });
+const InhoPromo = dynamicImport(() => import('@/components/InhoPromo'), { ssr: true });
+const InhoManifestoHero = dynamicImport(() => import('@/components/InhoManifestoHero'), { ssr: true });
+const ScrollNarrativeEngine = dynamicImport(() => import('@/components/ScrollNarrativeEngine'), { ssr: true });
+const HeroSection = dynamicImport(() => import('@/components/HeroSection'), { ssr: true });
+const FeaturedSitesSection = dynamicImport(() => import('@/components/FeaturedSitesSection'), { ssr: true });
+const JovemPanoHero = dynamicImport(() => import('@/components/JovemPanoHero'), { ssr: true });
+const EloProtocolHero = dynamicImport(() => import('@/components/EloProtocolHero'), { ssr: true });
+const FreedomSection = dynamicImport(() => import('@/components/FreedomSection'), { ssr: true });
+const Footer = dynamicImport(() => import('@/components/Footer'), { ssr: true });
 
 export default function HomePage() {
   return (
@@ -26,20 +30,22 @@ export default function HomePage() {
       <StarryBackground />
       <Header />
       <Skiper30 />
-      <OrbeMusicHero />
-      <MusicDownloaderHero />
-      <OrbeCleanerPromo />
-      <VoidFieldPromo />
-      <InhoPromo />
-      <InhoManifestoHero />
-      <ScrollNarrativeEngine>
-        <HeroSection />
-      </ScrollNarrativeEngine>
-      <FeaturedSitesSection />
-      <JovemPanoHero />
-      <EloProtocolHero />
-      <FreedomSection />
-      <Footer />
+      <div className="below-fold-section"><OrbeMusicHero /></div>
+      <div className="below-fold-section"><MusicDownloaderHero /></div>
+      <div className="below-fold-section"><OrbeCleanerPromo /></div>
+      <div className="below-fold-section"><VoidFieldPromo /></div>
+      <div className="below-fold-section"><InhoPromo /></div>
+      <div className="below-fold-section"><InhoManifestoHero /></div>
+      <div className="below-fold-section">
+        <ScrollNarrativeEngine>
+          <HeroSection />
+        </ScrollNarrativeEngine>
+      </div>
+      <div className="below-fold-section"><FeaturedSitesSection /></div>
+      <div className="below-fold-section"><JovemPanoHero /></div>
+      <div className="below-fold-section"><EloProtocolHero /></div>
+      <div className="below-fold-section"><FreedomSection /></div>
+      <div className="below-fold-section"><Footer /></div>
     </main>
   );
 }
