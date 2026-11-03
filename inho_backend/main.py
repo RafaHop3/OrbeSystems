@@ -155,7 +155,7 @@ app = FastAPI(
     description="API de alta disponibilidade para gestão empresarial e impacto social global.",
     docs_url=None,
     redoc_url=None,
-    openapi_url=None,
+    openapi_url="/openapi.json",
     lifespan=lifespan,
 )
 

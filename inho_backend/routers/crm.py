@@ -1152,6 +1152,7 @@ def _parse_channels(raw_channels) -> List[str]:
 
 
 @router.get("/cbm/insights")
+@router.post("/cbm/recalculate")
 async def get_cbm_insights(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
