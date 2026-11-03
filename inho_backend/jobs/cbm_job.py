@@ -36,3 +36,7 @@ async def run_daily_cbm_analytics_job() -> dict:
         "processed_businesses": processed_businesses,
         "total_profiles_updated": total_profiles_updated,
     }
+
+
+# Alias compatível com APScheduler (keep_alive.py) e scripts de operação
+run_daily_cbm_job = run_daily_cbm_analytics_job

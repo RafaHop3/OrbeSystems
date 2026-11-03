@@ -39,7 +39,8 @@ HARDENED_SYSTEM_PROMPT = (
 _INJECTION_PATTERNS = [
     re.compile(r"ignore\s+(all\s+|previous\s+|prior\s+)?instructions", re.IGNORECASE),
     re.compile(r"esque[cç]a\s+(todas\s+as\s+|as\s+)?instru[cç][oõ]es", re.IGNORECASE),
-    re.compile(r"ignore\s+as\s+regras\s+anteriores", re.IGNORECASE),
+    re.compile(r"ignore\s+(todas\s+as\s+|as\s+)?(instru[cç][oõ]es|regras|ordens|diretrizes)", re.IGNORECASE),
+    re.compile(r"(altere|mudar|mude|atualize|marque|coloque|set)\s+.*(status|fatura|invoice|boleto).*(paid|pago|quitado|zero|0,00)", re.IGNORECASE),
     re.compile(r"(reveal|show|print|exiba|mostre|revele)\s+.*(system\s*prompt|prompt\s*interno|instru[cç][oõ]es\s*internas)", re.IGNORECASE),
     re.compile(r"(system\s*prompt|modo\s+desenvolvedor|developer\s+mode|jailbreak|dan\s+mode)", re.IGNORECASE),
     re.compile(r"(desconto|abatimento)\s+de\s+(8\d|9\d|100)\s*%", re.IGNORECASE),
