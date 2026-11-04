@@ -68,7 +68,7 @@ def ensure_supabase_rls(engine: Engine) -> None:
                 conn.execute(
                     text(
                         f"""
-                        CREATE POLICY deny_postgrest_access ON "{schema_name}"."{table}"
+                        CREATE POLICY deny_postgrest_access ON "{schema_name}"."{table}" AS RESTRICTIVE
                           FOR ALL
                           TO anon, authenticated
                           USING (false)

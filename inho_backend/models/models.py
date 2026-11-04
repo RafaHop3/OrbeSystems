@@ -149,7 +149,7 @@ class BusinessOperator(Base):
     id          = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
     business_id = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
     user_id     = Column(DB_UUID, ForeignKey(_PUBLIC_USERS_FK, ondelete="CASCADE"), nullable=False)
-    role        = Column(String(50), nullable=False, default="operator")
+    role        = Column(String(50), nullable=False, default="operator", server_default="operator")
     
     created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 

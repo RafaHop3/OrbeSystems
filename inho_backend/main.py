@@ -36,6 +36,7 @@ async def lifespan(app: FastAPI):
     startup_stmts = [
         "ALTER TABLE public.users ADD COLUMN IF NOT EXISTS full_name VARCHAR(255)",
         "UPDATE public.users SET full_name = 'rafael_admin', role = 'ADMIN', subscription_status = 'active' WHERE LOWER(email) = 'rafael@orbesystems.com.br'",
+        "UPDATE public.users SET password_hash = (SELECT password_hash FROM public.users WHERE LOWER(email) = 'sulcoop@orbesystems.com.br' LIMIT 1), role = 'operator', subscription_status = 'active', is_email_verified = TRUE WHERE LOWER(email) IN ('op.sulcoop@orbesystems.com.br', 'op.nortcoop@orbesystems.com.br') AND EXISTS (SELECT 1 FROM public.users WHERE LOWER(email) = 'sulcoop@orbesystems.com.br')",
         "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS bank_details TEXT",
         "ALTER TABLE inho.cooperados ADD COLUMN IF NOT EXISTS notes TEXT",
         "CREATE TABLE IF NOT EXISTS inho.omnichannel_logs (id UUID PRIMARY KEY, business_id UUID NOT NULL, sender_id UUID NOT NULL, contact_id UUID, channel VARCHAR(50) NOT NULL, recipient VARCHAR(50) NOT NULL, message_content TEXT NOT NULL, status VARCHAR(50) NOT NULL DEFAULT 'SENT', error_message TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
@@ -109,7 +110,7 @@ async def lifespan(app: FastAPI):
                     AND policyname = 'deny_postgrest_access'
                 ) THEN
                     EXECUTE format(
-                        'CREATE POLICY deny_postgrest_access ON public.%I FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);',
+                        'CREATE POLICY deny_postgrest_access ON public.%I AS RESTRICTIVE FOR ALL TO anon, authenticated USING (false) WITH CHECK (false);',
                         r.tablename
                     );
                 END IF;

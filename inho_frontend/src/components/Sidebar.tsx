@@ -13,11 +13,11 @@ import OrbeLogo from './OrbeLogo';
 import { useAuth } from '@/lib/AuthContext';
 
 interface SidebarProps {
-  mobileOpen: boolean;
-  setMobileOpen: (open: boolean) => void;
+  mobileOpen?: boolean;
+  setMobileOpen?: (open: boolean) => void;
 }
 
-export default function Sidebar({ mobileOpen, setMobileOpen }: SidebarProps) {
+export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();

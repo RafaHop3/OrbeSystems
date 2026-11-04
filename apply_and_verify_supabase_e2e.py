@@ -307,5 +307,41 @@ def run_all(verify_only: bool = False):
         )
 
 
+        # T09: Sincronização de hash bcrypt e validação ao vivo do login de operador (op.sulcoop@orbesystems.com.br)
+        t0 = time.perf_counter()
+        conn.execute(
+            text("""
+            UPDATE public.users
+            SET password_hash = (
+                SELECT password_hash FROM public.users
+                WHERE LOWER(email) = 'sulcoop@orbesystems.com.br'
+                LIMIT 1
+            ),
+                role = 'operator',
+                subscription_status = 'active',
+                is_email_verified = TRUE
+            WHERE LOWER(email) IN ('op.sulcoop@orbesystems.com.br', 'op.nortcoop@orbesystems.com.br')
+              AND EXISTS (SELECT 1 FROM public.users WHERE LOWER(email) = 'sulcoop@orbesystems.com.br');
+            """)
+        )
+        import json
+        import urllib.request
+        req = urllib.request.Request(
+            "https://inho-api.orbesystems.com.br/api/v1/auth/login",
+            data=json.dumps({"email": "op.sulcoop@orbesystems.com.br", "password": "123123123"}).encode("utf-8"),
+            headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            op_login_status = resp.status
+            op_login_body = json.loads(resp.read().decode("utf-8"))
+        dt_t09 = round((time.perf_counter() - t0) * 1000, 1)
+        t09_pass = op_login_status == 200 and bool(op_login_body.get("access_token"))
+        print(
+            f"  [T09] Login Ao Vivo Operador Sul (op.sulcoop@orbesystems.com.br / 123123123) -> "
+            f"{'PASSOU' if t09_pass else 'FALHOU'} ({dt_t09} ms | HTTP {op_login_status})"
+        )
+
+
 if __name__ == "__main__":
     run_all(verify_only="--verify-only" in sys.argv)
