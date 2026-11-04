@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Sparkles,
   BookOpen,
@@ -11,6 +11,12 @@ import {
   AlertCircle,
   FileText,
   ShieldCheck,
+  Upload,
+  FileUp,
+  FileSpreadsheet,
+  X,
+  Layers,
+  ArrowRight,
 } from 'lucide-react';
 import { crmApi } from '@/lib/api';
 
@@ -35,7 +41,7 @@ export default function OrBrickRagCard({ className = '', onUpdate }: OrBrickRagC
   const [seeding, setSeeding] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
 
-  // New guideline form state
+  // New guideline manual form state
   const [showForm, setShowForm] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newCategory, setNewCategory] = useState('REGULAMENTO_INTERNO');
@@ -43,9 +49,18 @@ export default function OrBrickRagCard({ className = '', onUpdate }: OrBrickRagC
   const [newKeywords, setNewKeywords] = useState('');
   const [savingDoc, setSavingDoc] = useState(false);
 
+  // Document upload state (.pdf, .docx, .txt)
+  const [showUpload, setShowUpload] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadCategory, setUploadCategory] = useState('REGULAMENTO_ESTATUTO');
+  const [replaceExisting, setReplaceExisting] = useState(false);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [uploadSummary, setUploadSummary] = useState<any | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const showBanner = (type: 'ok' | 'err', text: string) => {
     setFeedback({ type, text });
-    setTimeout(() => setFeedback(null), 6000);
+    setTimeout(() => setFeedback(null), 7000);
   };
 
   const loadKnowledge = useCallback(async () => {
@@ -121,6 +136,49 @@ export default function OrBrickRagCard({ className = '', onUpdate }: OrBrickRagC
     }
   };
 
+  // Upload handler for document parsing & auto-chunking
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (!['pdf', 'docx', 'txt'].includes(ext || '')) {
+        showBanner('err', 'Formato não suportado. Por favor anexe um arquivo .pdf, .docx ou .txt.');
+        return;
+      }
+      if (file.size > 15 * 1024 * 1024) {
+        showBanner('err', 'O arquivo excede o tamanho limite de 15MB.');
+        return;
+      }
+      setSelectedFile(file);
+      setUploadSummary(null);
+    }
+  };
+
+  const handleUploadStatute = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFile) {
+      showBanner('err', 'Selecione um arquivo .pdf, .docx ou .txt para ingestão.');
+      return;
+    }
+    setUploadingDoc(true);
+    setUploadSummary(null);
+    try {
+      const res = await crmApi.uploadAiKnowledgeDoc(selectedFile, uploadCategory, replaceExisting);
+      setUploadSummary(res);
+      showBanner(
+        'ok',
+        `🎉 Documento "${selectedFile.name}" particionado com sucesso! ${res.chunks_created} artigos/chunks foram indexados no RAG do seu negócio.`
+      );
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      await loadKnowledge();
+    } catch (err: any) {
+      showBanner('err', err?.message || 'Falha ao processar e particionar o estatuto.');
+    } finally {
+      setUploadingDoc(false);
+    }
+  };
+
   return (
     <div className={`bg-white p-6 rounded-2xl border border-[#E2E8F0] shadow-sm ${className}`}>
       {/* Banner de Feedback */}
@@ -159,8 +217,8 @@ export default function OrBrickRagCard({ className = '', onUpdate }: OrBrickRagC
             <BookOpen size={20} className="text-[#B8860B]" /> Treinamento & Regulamento da OrBrick-IA (Base RAG Multi-Tenant)
           </h2>
           <p className="text-xs text-[#64748B] mt-1 max-w-3xl">
-            Cada instituição contratante possui um cofre RAG estritamente isolado por PostgreSQL RLS. Adicione estatutos, 
-            regras de cota-parte, políticas de cobrança e horários para que a IA responda exatamente segundo o regulamento do seu negócio.
+            Cada instituição contratante possui um cofre RAG estritamente isolado por PostgreSQL RLS. Anexe estatutos integrais
+            em <strong>.PDF, .DOCX ou .TXT</strong> para extração e quebra automática de artigos, ou adicione diretrizes individuais.
           </p>
         </div>
 
@@ -174,6 +232,18 @@ export default function OrBrickRagCard({ className = '', onUpdate }: OrBrickRagC
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
           </button>
 
+          {/* Botão de Anexo de Estatuto (.pdf, .docx, .txt) */}
+          <button
+            onClick={() => {
+              setShowUpload(!showUpload);
+              if (showForm) setShowForm(false);
+            }}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-extrabold uppercase tracking-wider shadow-sm transition-all"
+            title="Anexar arquivo de estatuto para decomposição automática de artigos"
+          >
+            <Upload size={14} /> {showUpload ? 'Fechar Anexo' : 'Anexar Estatuto (.PDF/.DOCX)'}
+          </button>
+
           <button
             onClick={handleSeedDefaults}
             disabled={seeding}
@@ -185,7 +255,10 @@ export default function OrBrickRagCard({ className = '', onUpdate }: OrBrickRagC
           </button>
 
           <button
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => {
+              setShowForm(!showForm);
+              if (showUpload) setShowUpload(false);
+            }}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F1F5F9] hover:bg-slate-200 text-[#0F172A] border border-slate-300 text-xs font-bold uppercase tracking-wider transition-colors"
           >
             <Plus size={14} /> {showForm ? 'Fechar Formulário' : '+ Novo Tópico de Regulamento'}
@@ -193,7 +266,133 @@ export default function OrBrickRagCard({ className = '', onUpdate }: OrBrickRagC
         </div>
       </div>
 
-      {/* Formulário de Nova Diretriz RAG */}
+      {/* Painel de Upload de Arquivo do Estatuto Completo (RAG Chunker Automático) */}
+      {showUpload && (
+        <form onSubmit={handleUploadStatute} className="mt-5 p-5 bg-[#F0FDF4] rounded-2xl border border-emerald-300 shadow-sm space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="font-extrabold text-sm text-emerald-950 flex items-center gap-2">
+              <FileUp size={18} className="text-emerald-700" />
+              Ingestão e Particionamento Semântico de Estatutos (.PDF, .DOCX, .TXT)
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowUpload(false)}
+              className="text-slate-400 hover:text-slate-600"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          <p className="text-xs text-emerald-800 max-w-3xl leading-relaxed">
+            Faça upload do estatuto social completo, regimento interno ou manual de normas da sua instituição.
+            O motor RAG extrairá o texto e quebrará <strong>automaticamente cada artigo, capítulo e cláusula</strong> em chunks semânticos
+            isolados por RLS na tabela <code>inho.ai_knowledge_chunks</code>.
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-[11px] font-extrabold uppercase text-emerald-900 mb-1">
+                Arquivo do Documento * (.pdf, .docx, .txt até 15MB)
+              </label>
+              <div className="flex items-center gap-3 p-3 bg-white border border-emerald-200 rounded-xl">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  required
+                  accept=".pdf,.docx,.txt"
+                  onChange={handleFileChange}
+                  className="w-full text-xs text-slate-700 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-extrabold file:bg-emerald-100 file:text-emerald-800 hover:file:bg-emerald-200 cursor-pointer"
+                />
+              </div>
+              {selectedFile && (
+                <div className="mt-1.5 flex items-center gap-2 text-[11px] font-mono text-emerald-900">
+                  <FileSpreadsheet size={13} className="text-emerald-700" />
+                  <span>{selectedFile.name}</span>
+                  <span className="text-slate-500 font-sans">({(selectedFile.size / 1024).toFixed(1)} KB)</span>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-extrabold uppercase text-emerald-900 mb-1">
+                Classificação da Base
+              </label>
+              <select
+                value={uploadCategory}
+                onChange={(e) => setUploadCategory(e.target.value)}
+                className="w-full p-2.5 rounded-xl bg-white border border-emerald-200 text-xs text-[#0F172A] outline-none focus:border-emerald-600"
+              >
+                <option value="REGULAMENTO_ESTATUTO">Estatuto Social (Artigos & Governança)</option>
+                <option value="REGULAMENTO_INTERNO">Regulamento Interno & Procedimentos</option>
+                <option value="POLITICA_FINANCEIRA">Políticas de Cobrança, Prazos & PIX</option>
+                <option value="PRODUTOS_E_SERVICOS">Catálogo Geral de Produtos & Insumos</option>
+                <option value="ATENDIMENTO_FAQ">Horários & Manual de Atendimento</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t border-emerald-200">
+            <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-emerald-950 font-semibold">
+              <input
+                type="checkbox"
+                checked={replaceExisting}
+                onChange={(e) => setReplaceExisting(e.target.checked)}
+                className="rounded border-emerald-300 text-emerald-700 focus:ring-emerald-600"
+              />
+              <span>Substituir estatuto anterior desta mesma categoria no tenant</span>
+            </label>
+
+            <button
+              type="submit"
+              disabled={uploadingDoc || !selectedFile}
+              className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-800 hover:to-teal-900 text-white text-xs font-extrabold uppercase tracking-wider shadow-sm transition-all disabled:opacity-50"
+            >
+              <Upload size={14} className={uploadingDoc ? 'animate-spin' : ''} />
+              {uploadingDoc ? 'Extraindo Artigos e Indexando...' : 'Processar Estatuto & Quebrar Artigos em Chunks'}
+            </button>
+          </div>
+
+          {/* Resumo do Processamento do Documento */}
+          {uploadSummary && (
+            <div className="p-4 bg-white rounded-xl border border-emerald-300 text-xs space-y-2 animate-fadeIn">
+              <div className="flex items-center justify-between">
+                <span className="font-extrabold text-emerald-900 flex items-center gap-1.5">
+                  <CheckCircle2 size={16} className="text-emerald-600" />
+                  Estatuto Ingerido com Sucesso ({uploadSummary.filename})
+                </span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-800">
+                  {uploadSummary.chunks_created} Chunks Gerados
+                </span>
+              </div>
+              <p className="text-slate-600 text-[11px]">
+                Total de caracteres extraídos: <strong>{uploadSummary.total_characters_extracted?.toLocaleString('pt-BR')}</strong>.
+                Todos os artigos foram particionados com títulos, categoria <code>{uploadSummary.category}</code> e palavras-chave semânticas.
+              </p>
+              {Array.isArray(uploadSummary.chunks) && uploadSummary.chunks.length > 0 && (
+                <div className="mt-2 max-h-40 overflow-y-auto space-y-1.5 p-2 bg-slate-50 rounded-lg border border-slate-200">
+                  {uploadSummary.chunks.slice(0, 8).map((c: any, i: number) => (
+                    <div key={c.id || i} className="flex items-center justify-between text-[11px] text-slate-700">
+                      <span className="font-bold truncate max-w-sm flex items-center gap-1">
+                        <ArrowRight size={10} className="text-emerald-600 shrink-0" /> {c.title}
+                      </span>
+                      <span className="text-[10px] text-slate-500 font-mono shrink-0">
+                        {c.keywords ? `Tags: ${c.keywords.slice(0, 30)}...` : 'Indexado'}
+                      </span>
+                    </div>
+                  ))}
+                  {uploadSummary.chunks.length > 8 && (
+                    <div className="text-[10px] text-slate-500 italic text-center pt-1">
+                      + {uploadSummary.chunks.length - 8} artigos adicionais indexados na base abaixo.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </form>
+      )}
+
+      {/* Formulário de Nova Diretriz RAG Manual */}
       {showForm && (
         <form onSubmit={handleCreateGuideline} className="mt-5 p-5 bg-[#F8FAFC] rounded-2xl border border-amber-200/80 space-y-4">
           <div className="font-extrabold text-sm text-[#0F172A] flex items-center gap-2">
@@ -296,7 +495,7 @@ export default function OrBrickRagCard({ className = '', onUpdate }: OrBrickRagC
             <BookOpen size={32} className="mx-auto text-slate-400 mb-2" />
             <p className="text-sm font-bold text-[#0F172A]">Nenhum regulamento cadastrado para esta instituição</p>
             <p className="text-xs text-[#64748B] mt-1 max-w-md mx-auto">
-              Clique no botão <strong>"Ativar Regulamento Padrão (1-Clique)"</strong> acima para carregar o modelo oficial de Estatuto, Regras PIX e Atendimento da Orbe Systems adaptado para o seu negócio.
+              Clique em <strong>"Anexar Estatuto (.PDF/.DOCX)"</strong> acima para importar o estatuto social da empresa ou em <strong>"Ativar Regulamento Padrão (1-Clique)"</strong> para carregar o modelo oficial da Orbe Systems.
             </p>
           </div>
         ) : (

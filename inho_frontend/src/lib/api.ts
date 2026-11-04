@@ -99,6 +99,10 @@ export async function apiFetch<T>(
     ...(options.headers as Record<string, string>),
   };
 
+  if (typeof FormData !== 'undefined' && options.body instanceof FormData) {
+    delete headers['Content-Type'];
+  }
+
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
@@ -821,6 +825,25 @@ export const crmApi = {
     apiFetch<any[]>('/api/v1/crm/cbm/ai-knowledge/seed-defaults', {
       method: 'POST',
     }),
+
+  uploadAiKnowledgeDoc: (file: File, category: string = 'REGULAMENTO_ESTATUTO', replaceExisting: boolean = false) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('category', category);
+    fd.append('replace_existing', String(replaceExisting));
+    return apiFetch<{
+      status: string;
+      filename: string;
+      total_characters_extracted: number;
+      chunks_created: number;
+      business_id: string;
+      category: string;
+      chunks: any[];
+    }>('/api/v1/crm/cbm/ai-knowledge/upload-doc', {
+      method: 'POST',
+      body: fd,
+    });
+  },
 
   deleteAiKnowledge: (chunkId: string) =>
     apiFetch<{ status: string; id: string }>(`/api/v1/crm/cbm/ai-knowledge/${encodeURIComponent(chunkId)}`, {

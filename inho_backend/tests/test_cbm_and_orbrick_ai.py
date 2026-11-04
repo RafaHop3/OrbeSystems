@@ -365,3 +365,70 @@ async def test_3_chaos_resilience_and_handoff_kill_switch_lgpd(client: AsyncClie
     assert r_forget.status_code == 200
     assert r_forget.json()["status"] == "LGPD_ART18_PURGED"
     assert r_forget.json()["anonymized_omnichannel_logs"] >= 1
+
+
+@pytest.mark.asyncio
+async def test_4_statute_upload_and_auto_chunking_rag(client: AsyncClient):
+    """
+    Valida a ingestão automatizada de Estatutos em .pdf, .docx e .txt:
+    - Extrai e quebra os artigos automaticamente em chunks
+    - Persiste na tabela inho.ai_knowledge_chunks com RLS / business_id
+    - Valida rejeição de extensões não permitidas
+    - Comprova isolamento multi-tenant estrito (Cooperativa Sul vs Cooperativa Norte)
+    """
+    ctx = await _provision_two_cooperativas(client)
+    sul_headers = ctx['sul_headers']
+    norte_headers = ctx['norte_headers']
+
+    # 1. Envio de Estatuto .txt com Artigos Estruturados
+    statute_txt = (
+        "ESTATUTO SOCIAL DA COOPERATIVA SUL\n\n"
+        "CAPÍTULO I - DA DENOMINAÇÃO E SEDE\n"
+        "Art. 1º. A Cooperativa Agropecuária Sul Ltda. tem sede em Porto Alegre/RS.\n\n"
+        "Art. 2º. Seu objetivo é apoiar os produtores cooperados na compra de adubos e insumos.\n\n"
+        "CAPÍTULO II - DO QUADRO SOCIAL\n"
+        "Art. 3º - Da Admissão\n"
+        "Poderá associar-se qualquer agricultor com produção ativa.\n"
+        "§ 1º Exige-se a subscrição de no mínimo 10 cotas-partes do capital.\n\n"
+        "Art. 4º - Da Demissão e Exclusão\n"
+        "A exclusão do cooperado será decidida pelo Conselho de Administração após contraditório."
+    )
+
+    files = {"file": ("Estatuto_Social_Sul.txt", statute_txt.encode("utf-8"), "text/plain")}
+    data = {"category": "REGULAMENTO_ESTATUTO"}
+
+    r_upload = await client.post(
+        "/api/v1/crm/cbm/ai-knowledge/upload-doc",
+        headers=sul_headers,
+        files=files,
+        data=data,
+    )
+    assert r_upload.status_code == 201, r_upload.text
+    res_data = r_upload.json()
+    assert res_data["status"] == "PROCESSED"
+    assert res_data["chunks_created"] >= 4
+    assert any("Art. 1" in c["title"] for c in res_data["chunks"])
+    assert any("Art. 3" in c["title"] for c in res_data["chunks"])
+
+    # 2. Comprovar que os chunks aparecem na listagem da Cooperativa Sul
+    r_list_sul = await client.get("/api/v1/crm/cbm/ai-knowledge", headers=sul_headers)
+    assert r_list_sul.status_code == 200
+    sul_titles = [k["title"] for k in r_list_sul.json()]
+    assert any("Art. 1" in t for t in sul_titles)
+
+    # 3. Comprovar ISOLAMENTO MULTI-TENANT: Cooperativa Norte NÃO enxerga os chunks da Sul
+    r_list_norte = await client.get("/api/v1/crm/cbm/ai-knowledge", headers=norte_headers)
+    assert r_list_norte.status_code == 200
+    norte_titles = [k["title"] for k in r_list_norte.json()]
+    assert not any("Art. 1" in t for t in norte_titles)
+    assert len(norte_titles) == 0
+
+    # 4. Rejeição de formato não permitido (.exe)
+    invalid_file = {"file": ("malware.exe", b"MZfakebinarycontent", "application/octet-stream")}
+    r_invalid = await client.post(
+        "/api/v1/crm/cbm/ai-knowledge/upload-doc",
+        headers=sul_headers,
+        files=invalid_file,
+    )
+    assert r_invalid.status_code == 400
+    assert "Formato '.exe' inválido" in r_invalid.json()["detail"]

@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, status
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, status
 from sqlalchemy import select, cast, String, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -24,6 +24,8 @@ from schemas.crm_schemas import (
     AccountPayableCreate, AccountPayableOut, AccountPayableUpdate,
     CRMContactCreate, CRMContactOut, CRMContactUpdate,
 )
+
+from services.document_parser import extract_text_from_file, split_statute_into_chunks
 
 router = APIRouter(prefix="/crm", tags=["CRM & Financials"])
 
@@ -1746,6 +1748,132 @@ async def delete_tenant_ai_knowledge(
     await db.delete(chunk)
     await db.commit()
     return {"status": "deleted", "id": chunk_id}
+
+
+@router.post("/cbm/ai-knowledge/upload-doc", status_code=status.HTTP_201_CREATED)
+async def upload_statute_document(
+    file: UploadFile = File(..., description="Arquivo de estatuto ou regulamento (.pdf, .docx ou .txt)"),
+    category: Optional[str] = Form("REGULAMENTO_ESTATUTO"),
+    replace_existing: Optional[bool] = Form(False),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Ingestão e Particionamento Semântico de Estatutos/Regulamentos Completos (RAG Chunker):
+    - Extrai texto integral de arquivos .pdf, .docx ou .txt (até 15MB)
+    - Decompõe automaticamente artigos, capítulos e cláusulas em chunks semânticos
+    - Persiste os chunks na tabela inho.ai_knowledge_chunks com isolamento estrito por business_id / RLS
+    - Registra auditoria completa em inho.audit_logs
+    """
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+
+    filename = (file.filename or "estatuto.txt").strip()
+    ext = (filename.rsplit(".", 1)[-1] if "." in filename else "").lower()
+    if ext not in ("pdf", "docx", "txt"):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Formato '.{ext}' inválido. Anexe um arquivo nos formatos .pdf, .docx ou .txt.",
+        )
+
+    content_bytes = await file.read()
+    if not content_bytes or len(content_bytes) < 10:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="O arquivo enviado está vazio ou corrompido.",
+        )
+
+    if len(content_bytes) > 15 * 1024 * 1024:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail="O arquivo excede o limite máximo permitido de 15MB.",
+        )
+
+    try:
+        raw_text = extract_text_from_file(filename, content_bytes)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Falha ao extrair texto do documento: {str(e)}",
+        )
+
+    if not raw_text or len(raw_text.strip()) < 30:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Não foi possível identificar conteúdo legível de texto no arquivo anexado.",
+        )
+
+    cat_clean = (category or "REGULAMENTO_ESTATUTO").strip().upper()
+    chunks_data = split_statute_into_chunks(raw_text, filename=filename, default_category=cat_clean)
+    if not chunks_data:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="Nenhuma diretriz ou artigo pôde ser particionado a partir deste documento.",
+        )
+
+    if replace_existing:
+        old_stmt = select(AIKnowledgeChunk).where(
+            AIKnowledgeChunk.business_id == b_id,
+            AIKnowledgeChunk.category == cat_clean,
+        )
+        old_res = await db.execute(old_stmt)
+        for old_chunk in old_res.scalars().all():
+            await db.delete(old_chunk)
+
+    created_records = []
+    for c in chunks_data:
+        enc_digest = encrypt_conversation_metadata(f"{c['title']}::{c['content'][:200]}")
+        chunk = AIKnowledgeChunk(
+            business_id=b_id,
+            title=c["title"],
+            category=cat_clean,
+            content=c["content"],
+            keywords=c.get("keywords"),
+            encrypted_digest=enc_digest,
+            is_active=True,
+            created_by_id=get_uuid(current_user.id),
+        )
+        db.add(chunk)
+        created_records.append(chunk)
+
+    try:
+        db.add(
+            AuditLog(
+                business_id=b_id,
+                user_id=get_uuid(current_user.id),
+                user_name=current_user.full_name,
+                user_role=str(getattr(current_user, "role", "admin")),
+                action=AuditAction.CREATE,
+                entity="ai_knowledge_chunks",
+                entity_id=b_id,
+                detail=f"UPLOAD_ESTATUTO: Arquivo '{filename}' particionado em {len(created_records)} artigos/chunks para {business.name}",
+            )
+        )
+    except Exception:
+        pass
+
+    await db.commit()
+    for rec in created_records:
+        await db.refresh(rec)
+
+    return {
+        "status": "PROCESSED",
+        "filename": filename,
+        "total_characters_extracted": len(raw_text),
+        "chunks_created": len(created_records),
+        "business_id": str(b_id),
+        "category": cat_clean,
+        "chunks": [
+            {
+                "id": str(ch.id),
+                "title": ch.title,
+                "category": ch.category,
+                "keywords": ch.keywords,
+                "content_preview": ch.content[:160] + "..." if len(ch.content) > 160 else ch.content,
+            }
+            for ch in created_records
+        ],
+    }
 
 
 # ── CONTROLE DE SESSÃO IA NO ORBRICK (HANDOFF HUMANO, KILL-SWITCH & RÉGUA IA) ──
