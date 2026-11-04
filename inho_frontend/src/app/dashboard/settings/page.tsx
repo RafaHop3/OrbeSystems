@@ -18,6 +18,9 @@ import {
   Activity,
   RotateCw,
 } from 'lucide-react';
+import OrBrickRagCard from '@/components/OrBrickRagCard';
+import OrBrickSimulatorCard from '@/components/OrBrickSimulatorCard';
+import { BookOpen, ShieldAlert } from 'lucide-react';
 import {
   businessesApi,
   settingsApi,
@@ -27,7 +30,7 @@ import {
 } from '@/lib/api';
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'COMPANY' | 'BANKS' | 'API' | 'TELEMETRY'>('COMPANY');
+  const [activeTab, setActiveTab] = useState<'COMPANY' | 'BANKS' | 'API' | 'TELEMETRY' | 'ORBRICK_RAG' | 'ORBRICK_SIMULATOR'>('COMPANY');
   const [loading, setLoading] = useState(true);
 
   // Company / Tenant
@@ -215,6 +218,26 @@ export default function SettingsPage() {
               }`}
             >
               <Key size={16} /> Chaves de API ({tokens.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('ORBRICK_RAG')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'ORBRICK_RAG'
+                  ? 'bg-amber-500/10 text-[#8B6508] border border-amber-500/30 font-extrabold'
+                  : 'text-inho-muted hover:bg-[#F1F5F9] hover:text-[#0F172A]'
+              }`}
+            >
+              <BookOpen size={16} className="text-[#B8860B]" /> Base RAG (Treinamento IA)
+            </button>
+            <button
+              onClick={() => setActiveTab('ORBRICK_SIMULATOR')}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                activeTab === 'ORBRICK_SIMULATOR'
+                  ? 'bg-red-500/10 text-red-600 border border-red-500/30 font-extrabold'
+                  : 'text-inho-muted hover:bg-[#F1F5F9] hover:text-[#0F172A]'
+              }`}
+            >
+              <ShieldAlert size={16} className="text-red-600" /> Simulador Cyber Safety
             </button>
             <button
               onClick={() => setActiveTab('TELEMETRY')}
@@ -460,6 +483,18 @@ export default function SettingsPage() {
                     </tbody>
                   </table>
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'ORBRICK_RAG' && (
+              <div className="space-y-4 animate-fade-in">
+                <OrBrickRagCard />
+              </div>
+            )}
+
+            {activeTab === 'ORBRICK_SIMULATOR' && (
+              <div className="space-y-4 animate-fade-in">
+                <OrBrickSimulatorCard />
               </div>
             )}
 

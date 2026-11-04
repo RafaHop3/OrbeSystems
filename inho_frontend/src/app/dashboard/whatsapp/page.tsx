@@ -8,8 +8,12 @@ import {
     MoreVertical, Bot, ShieldAlert, ShieldCheck, User
 } from 'lucide-react';
 import { crmApi } from '@/lib/api';
+import OrBrickRagCard from '@/components/OrBrickRagCard';
+import OrBrickSimulatorCard from '@/components/OrBrickSimulatorCard';
+import { BookOpen } from 'lucide-react';
 
 export default function WhatsAppCentralPage() {
+    const [activeTab, setActiveTab] = useState<'CHAT' | 'RAG' | 'SIMULATOR'>('CHAT');
     const [messageInput, setMessageInput] = useState("");
     const [messages, setMessages] = useState([
         { id: 1, sender: "Sistema", text: "Você entrou no canal Omnichannel. Faça uma busca para iniciar uma comunicação (Orbe Baileys WhatsApp Proxy).", time: "--:--", isOut: false }
@@ -280,6 +284,40 @@ export default function WhatsAppCentralPage() {
                     </div>
                 </div>
 
+                {/* Abas Rápidas de Navegação */}
+                <div className="flex items-center gap-1.5 bg-[#F1F5F9] p-1 rounded-xl border border-slate-200">
+                    <button
+                        onClick={() => setActiveTab('CHAT')}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-extrabold uppercase transition-all ${
+                            activeTab === 'CHAT'
+                                ? 'bg-white text-[#0F172A] shadow-sm'
+                                : 'text-[#64748B] hover:text-[#0F172A]'
+                        }`}
+                    >
+                        <MessageSquare size={13} /> Chat WhatsApp
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('RAG')}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-extrabold uppercase transition-all ${
+                            activeTab === 'RAG'
+                                ? 'bg-amber-100 text-[#8B6508] shadow-sm'
+                                : 'text-[#64748B] hover:text-[#0F172A]'
+                        }`}
+                    >
+                        <BookOpen size={13} /> Base RAG (Treinamento)
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('SIMULATOR')}
+                        className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-extrabold uppercase transition-all ${
+                            activeTab === 'SIMULATOR'
+                                ? 'bg-red-100 text-red-800 shadow-sm'
+                                : 'text-[#64748B] hover:text-[#0F172A]'
+                        }`}
+                    >
+                        <ShieldAlert size={13} /> Simulador Cyber Safety
+                    </button>
+                </div>
+
                 {/* Status da IA em Tempo Real + Botão de Pânico (Kill-Switch) */}
                 <div className="flex flex-wrap items-center gap-2.5">
                     <div
@@ -331,7 +369,21 @@ export default function WhatsAppCentralPage() {
                 </div>
             )}
 
+            {/* Visualização de Abas Alternativas */}
+            {activeTab === 'RAG' && (
+                <div className="flex-1 overflow-y-auto max-w-6xl w-full mx-auto space-y-6 pb-8">
+                    <OrBrickRagCard />
+                </div>
+            )}
+
+            {activeTab === 'SIMULATOR' && (
+                <div className="flex-1 overflow-y-auto max-w-6xl w-full mx-auto space-y-6 pb-8">
+                    <OrBrickSimulatorCard />
+                </div>
+            )}
+
             {/* 3-Column Layout */}
+            {activeTab === 'CHAT' && (
             <div className="flex-1 flex gap-4 h-[calc(100vh-140px)]">
 
                 {/* COLUMN 1: CONVERSATIONS */}
@@ -608,6 +660,7 @@ export default function WhatsAppCentralPage() {
                 </div>
 
             </div>
+            )}
         </main>
     );
 }
