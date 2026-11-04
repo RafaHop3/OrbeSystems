@@ -2183,7 +2183,12 @@ async def process_baileys_inbound_webhook(
     except Exception:
         pass
 
-
+    rag_cbm_ctx = await _load_tenant_rag_and_cbm_context(
+        db,
+        b_id,
+        contact_id=str(contact.id),
+        phone_digits=phone_digits,
+    )
 
     ai_result = await classify_and_respond_orbrick(
         business_id=str(business.id),
