@@ -64,13 +64,24 @@ export default function WhatsAppCentralPage() {
         if (digits.length < 8) return;
         try {
             const logs: any[] = await crmApi.getWhatsappHistory(digits.slice(-8));
-            setMessages(logs.reverse().map((l: any) => ({
-                id: l.id as any,
-                sender: String(l.message || "").includes(">OrBrick-IA>*") ? "OrBrick-IA" : "Você (Omnichannel)",
-                text: l.message,
-                time: new Date(l.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                isOut: true
-            })));
+            setMessages(logs.reverse().map((l: any) => {
+                const rawMsg = String(l.message || "");
+                const isClient = rawMsg.startsWith("[CLIENTE]");
+                const cleanText = isClient ? rawMsg.replace("[CLIENTE]", "").trim() : rawMsg;
+                const isAi = rawMsg.includes(">OrBrick-IA>*");
+                const senderName = isClient
+                    ? (contact?.name || "Cliente / Cooperado")
+                    : (isAi ? "OrBrick-IA" : "Você (Operador)");
+                return {
+                    id: l.id as any,
+                    sender: senderName,
+                    text: cleanText,
+                    time: new Date(l.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    isOut: !isClient,
+                    isAi: isAi,
+                    isClient: isClient,
+                };
+            }));
         } catch (e) { console.error("Falha ao carregar histórico:", e); }
     }, []);
 
@@ -437,15 +448,32 @@ export default function WhatsAppCentralPage() {
                             </div>
                         )}
 
-                        {messages.map((msg) => (
-                            <div key={msg.id} className={`flex flex-col ${msg.isOut ? 'items-end' : 'items-start'} mb-2`}>
-                                <div className={`relative px-3 py-2 rounded-lg max-w-[85%] shadow-sm ${msg.isOut
-                                    ? 'bg-[#F1F5F9] border border-slate-200 text-[#0F172A] rounded-tr-none'
-                                    : 'bg-white text-[#0F172A] rounded-tl-none'}`}>
-                                    <p className="text-[14.5px] leading-snug whitespace-pre-wrap pr-12">{msg.text}</p>
+                        {messages.map((msg: any) => (
+                            <div key={msg.id} className={`flex flex-col ${msg.isOut ? 'items-end' : 'items-start'} mb-3`}>
+                                <div className="flex items-center gap-1.5 mb-1 px-1">
+                                    {msg.isClient ? (
+                                        <span className="text-[10.5px] font-bold text-slate-700 flex items-center gap-1">
+                                            <User size={11} className="text-slate-500" /> {msg.sender}
+                                        </span>
+                                    ) : msg.isAi ? (
+                                        <span className="text-[10.5px] font-extrabold text-[#8B6508] bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 flex items-center gap-1 shadow-xs">
+                                            <Bot size={11} className="text-[#8B6508]" /> OrBrick-IA
+                                        </span>
+                                    ) : (
+                                        <span className="text-[10.5px] font-bold text-slate-600">
+                                            {msg.sender}
+                                        </span>
+                                    )}
+                                </div>
+                                <div className={`relative px-3.5 py-2.5 rounded-xl max-w-[85%] shadow-sm ${msg.isOut
+                                    ? msg.isAi
+                                        ? 'bg-gradient-to-br from-amber-50/90 to-emerald-50/70 border border-amber-200/90 text-[#0F172A] rounded-tr-none'
+                                        : 'bg-white border border-slate-200 text-[#0F172A] rounded-tr-none'
+                                    : 'bg-white border border-slate-200 text-[#0F172A] rounded-tl-none'}`}>
+                                    <p className="text-[14px] leading-relaxed whitespace-pre-wrap pr-12 text-[#0F172A]">{msg.text}</p>
                                     <div className="absolute bottom-1 right-2 flex items-center gap-1">
                                         <span className="text-[10px] text-[#64748B] font-medium">{msg.time}</span>
-                                        {msg.isOut && <CheckCircle2 size={12} className="text-[#B8860B]" />}
+                                        {msg.isOut && <CheckCircle2 size={12} className={msg.isAi ? "text-emerald-700" : "text-[#B8860B]"} />}
                                     </div>
                                 </div>
                             </div>

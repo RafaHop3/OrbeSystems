@@ -1120,7 +1120,7 @@ async def proxy_whatsapp_qr(current_user: User = Depends(get_current_user)):
 import json as _json
 from datetime import timedelta as _timedelta
 from fastapi import Request as _Request
-from models.models import CBMCampaign, OmnichannelLog, OmnichannelStatus
+from models.models import AIKnowledgeChunk, CBMCampaign, CBMCustomerProfile, OmnichannelLog, OmnichannelStatus
 from schemas.crm_schemas import CBMCampaignCreate
 from services.cbm_engine import (
     refresh_cbm_profiles_for_business,
@@ -1135,6 +1135,7 @@ from services.ai_agent import (
     set_ai_kill_switch,
     verify_whatsapp_webhook_signature,
     encrypt_conversation_metadata,
+    get_default_tenant_knowledge_templates,
 )
 
 
@@ -1500,6 +1501,253 @@ async def lgpd_forget_contact_cbm(
     return res
 
 
+# ── TREINAMENTO RAG POR CONTRATANTE (ISOLAMENTO LATERAL MULTI-TENANT) ─────────
+class AIKnowledgeCreatePayload(BaseModel):
+    title: str
+    category: str = "REGULAMENTO_INTERNO"
+    content: str
+    keywords: Optional[str] = None
+    is_active: bool = True
+
+
+async def _load_tenant_rag_and_cbm_context(
+    db: AsyncSession,
+    b_id,
+    contact_id: Optional[str] = None,
+    phone_digits: Optional[str] = None,
+) -> dict:
+    """
+    Carrega de forma estritamente isolada pelo business_id:
+    1. A Base de Conhecimento RAG (regulamento, estatuto, regras, FAQ) do contratante;
+    2. O Perfil Comportamental Preditivo CBM (RFM / Risco de Churn) do contato;
+    3. As últimas mensagens trocadas com o contato para memória de conversa Multi-Turn.
+    """
+    rag_chunks_data: List[dict] = []
+    try:
+        rag_res = await db.execute(
+            select(AIKnowledgeChunk)
+            .where(
+                AIKnowledgeChunk.business_id == b_id,
+                AIKnowledgeChunk.is_active.is_(True),
+            )
+            .order_by(AIKnowledgeChunk.updated_at.desc())
+            .limit(40)
+        )
+        for ch in rag_res.scalars().all():
+            rag_chunks_data.append({
+                "id": str(ch.id),
+                "title": ch.title,
+                "category": ch.category,
+                "content": ch.content,
+                "keywords": ch.keywords or "",
+            })
+    except Exception:
+        pass
+
+    churn_risk_level = "LOW"
+    cbm_summary = ""
+    if contact_id:
+        try:
+            prof_res = await db.execute(
+                select(CBMCustomerProfile).where(
+                    CBMCustomerProfile.business_id == b_id,
+                    CBMCustomerProfile.contact_id == get_uuid(contact_id),
+                )
+            )
+            prof = prof_res.scalar_one_or_none()
+            if prof:
+                churn_risk_level = str(prof.churn_risk_level or "LOW")
+                cbm_summary = (
+                    f"(Recência: {int(prof.rfm_recency_days or 0)}d | "
+                    f"FreqScore: {float(prof.rfm_frequency_score or 0):.1f} | "
+                    f"LTV: R$ {float(prof.rfm_monetary_total or 0):.2f})"
+                )
+        except Exception:
+            pass
+
+    recent_history: List[dict] = []
+    try:
+        hist_stmt = select(OmnichannelLog).where(OmnichannelLog.business_id == b_id)
+        if contact_id:
+            hist_stmt = hist_stmt.where(OmnichannelLog.contact_id == get_uuid(contact_id))
+        elif phone_digits and len(phone_digits) >= 8:
+            hist_stmt = hist_stmt.where(OmnichannelLog.recipient.ilike(f"%{phone_digits[-8:]}%"))
+        else:
+            hist_stmt = None
+
+        if hist_stmt is not None:
+            hist_res = await db.execute(hist_stmt.order_by(OmnichannelLog.created_at.desc()).limit(6))
+            rows = list(reversed(hist_res.scalars().all()))
+            for r in rows:
+                msg_txt = (r.message_content or "").strip()
+                role_label = "user" if msg_txt.startswith("[CLIENTE]") else "assistant"
+                recent_history.append({"role": role_label, "content": msg_txt[:400]})
+    except Exception:
+        pass
+
+    return {
+        "tenant_knowledge_chunks": rag_chunks_data,
+        "churn_risk_level": churn_risk_level,
+        "cbm_predictive_summary": cbm_summary,
+        "recent_history": recent_history,
+    }
+
+
+@router.get("/cbm/ai-knowledge")
+async def list_tenant_ai_knowledge(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Lista todos os documentos RAG (Regulamento, Estatuto, Política de Cobrança, FAQ)
+    exclusivos do contratante autenticado (business_id). Isolamento lateral absoluto.
+    """
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    res = await db.execute(
+        select(AIKnowledgeChunk)
+        .where(AIKnowledgeChunk.business_id == b_id)
+        .order_by(AIKnowledgeChunk.created_at.desc())
+    )
+    items = []
+    for k in res.scalars().all():
+        items.append({
+            "id": str(k.id),
+            "business_id": str(k.business_id),
+            "title": k.title,
+            "category": k.category,
+            "content": k.content,
+            "keywords": k.keywords,
+            "is_active": bool(k.is_active),
+            "created_at": k.created_at.isoformat() if k.created_at else None,
+            "updated_at": k.updated_at.isoformat() if k.updated_at else None,
+        })
+    return items
+
+
+@router.post("/cbm/ai-knowledge", status_code=status.HTTP_201_CREATED)
+async def create_tenant_ai_knowledge(
+    payload: AIKnowledgeCreatePayload,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Adiciona uma nova diretriz/regulamento à Base RAG exclusiva da instituição (business_id).
+    """
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    title_clean = (payload.title or "").strip()
+    content_clean = (payload.content or "").strip()
+    if not title_clean or not content_clean:
+        raise HTTPException(status_code=400, detail="Título e conteúdo do regulamento são obrigatórios.")
+
+    enc_digest = encrypt_conversation_metadata(f"{title_clean}::{content_clean[:200]}")
+    chunk = AIKnowledgeChunk(
+        business_id=b_id,
+        title=title_clean,
+        category=(payload.category or "REGULAMENTO_INTERNO").strip().upper(),
+        content=content_clean,
+        keywords=(payload.keywords or "").strip() or None,
+        encrypted_digest=enc_digest,
+        is_active=bool(payload.is_active),
+        created_by_id=get_uuid(current_user.id),
+    )
+    db.add(chunk)
+    try:
+        db.add(
+            AuditLog(
+                business_id=b_id,
+                user_id=get_uuid(current_user.id),
+                user_name=current_user.full_name,
+                user_role=str(getattr(current_user, "role", "admin")),
+                action=AuditAction.CREATE,
+                entity="ai_knowledge_chunks",
+                entity_id=get_uuid(chunk.id),
+                detail=f"ORBRICK_RAG_TRAIN: Diretriz '{title_clean}' adicionada ao motor RAG de {business.name}",
+            )
+        )
+    except Exception:
+        pass
+    await db.commit()
+    await db.refresh(chunk)
+    return {
+        "id": str(chunk.id),
+        "business_id": str(chunk.business_id),
+        "title": chunk.title,
+        "category": chunk.category,
+        "content": chunk.content,
+        "keywords": chunk.keywords,
+        "is_active": bool(chunk.is_active),
+        "created_at": chunk.created_at.isoformat() if chunk.created_at else None,
+    }
+
+
+@router.post("/cbm/ai-knowledge/seed-defaults")
+async def seed_default_tenant_ai_knowledge(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Treinamento 1-Clique de Primeiro Acesso para o Administrador Contratante:
+    Popula o kit inicial de Regulamento, Estatuto, Política Financeira PIX e FAQ
+    customizado com o nome da instituição e estritamente isolado no business_id atual.
+    """
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    existing_res = await db.execute(
+        select(AIKnowledgeChunk.title).where(AIKnowledgeChunk.business_id == b_id)
+    )
+    existing_titles = {row[0] for row in existing_res.fetchall()}
+
+    templates = get_default_tenant_knowledge_templates(business.name or "Instituição")
+    created_items = []
+    for tpl in templates:
+        if tpl["title"] in existing_titles:
+            continue
+        ch = AIKnowledgeChunk(
+            business_id=b_id,
+            title=tpl["title"],
+            category=tpl["category"],
+            content=tpl["content"],
+            keywords=tpl["keywords"],
+            encrypted_digest=encrypt_conversation_metadata(tpl["title"]),
+            is_active=True,
+            created_by_id=get_uuid(current_user.id),
+        )
+        db.add(ch)
+        created_items.append(ch)
+
+    if created_items:
+        await db.commit()
+
+    return await list_tenant_ai_knowledge(db=db, current_user=current_user)
+
+
+@router.delete("/cbm/ai-knowledge/{chunk_id}")
+async def delete_tenant_ai_knowledge(
+    chunk_id: str,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Remove uma diretriz da Base RAG garantindo isolamento estrito por business_id.
+    """
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    res = await db.execute(
+        select(AIKnowledgeChunk).where(
+            AIKnowledgeChunk.id == get_uuid(chunk_id),
+            AIKnowledgeChunk.business_id == b_id,
+        )
+    )
+    chunk = res.scalar_one_or_none()
+    if not chunk:
+        raise HTTPException(status_code=404, detail="Diretriz RAG não encontrada nesta instituição.")
+    await db.delete(chunk)
+    await db.commit()
+    return {"status": "deleted", "id": chunk_id}
+
+
 # ── CONTROLE DE SESSÃO IA NO ORBRICK (HANDOFF HUMANO, KILL-SWITCH & RÉGUA IA) ──
 class OrBrickHandoffPayload(BaseModel):
     assume_human: bool = True
@@ -1755,7 +2003,29 @@ async def process_orbrick_ai_reply(
             "pix_code": inv.pix_code,
         })
 
-    # 5. Executar Motor de Inferência Segura da IA Orbe Systems
+    # 5. Executar Motor de Inferência Segura da IA Orbe Systems + RAG Preditivo Isolado
+    rag_cbm_ctx = await _load_tenant_rag_and_cbm_context(
+        db,
+        b_id,
+        contact_id=str(contact.id) if contact else None,
+        phone_digits=re.sub(r"\D", "", payload.phone or ""),
+    )
+
+    try:
+        inbound_log = OmnichannelLog(
+            business_id=b_id,
+            sender_id=get_uuid(business.owner_id),
+            contact_id=get_uuid(contact.id) if contact else None,
+            channel="WHATSAPP",
+            recipient=payload.phone,
+            message_content=f"[CLIENTE] {payload.incoming_message.strip()}",
+            status=OmnichannelStatus.SENT,
+        )
+        db.add(inbound_log)
+        await db.commit()
+    except Exception:
+        pass
+
     ai_result = await classify_and_respond_orbrick(
         business_id=str(business.id),
         business_name=biz_name,
@@ -1763,6 +2033,10 @@ async def process_orbrick_ai_reply(
         contact_name=contact.name if contact else "Cliente",
         incoming_message=payload.incoming_message,
         open_invoices=open_invoices_data,
+        churn_risk_level=rag_cbm_ctx.get("churn_risk_level", "LOW"),
+        cbm_predictive_summary=rag_cbm_ctx.get("cbm_predictive_summary", ""),
+        tenant_knowledge_chunks=rag_cbm_ctx.get("tenant_knowledge_chunks", []),
+        recent_history=rag_cbm_ctx.get("recent_history", []),
         simulate_ai_offline=payload.simulate_ai_offline,
     )
 
@@ -1893,6 +2167,24 @@ async def process_baileys_inbound_webhook(
         for inv in inv_res.scalars().all()
     ]
 
+
+    try:
+        inbound_log = OmnichannelLog(
+            business_id=b_id,
+            sender_id=get_uuid(business.owner_id),
+            contact_id=get_uuid(contact.id) if contact else None,
+            channel="WHATSAPP",
+            recipient=payload.phone,
+            message_content=f"[CLIENTE] {payload.incoming_message.strip()}",
+            status=OmnichannelStatus.SENT,
+        )
+        db.add(inbound_log)
+        await db.commit()
+    except Exception:
+        pass
+
+
+
     ai_result = await classify_and_respond_orbrick(
         business_id=str(business.id),
         business_name=biz_name,
@@ -1900,6 +2192,10 @@ async def process_baileys_inbound_webhook(
         contact_name=contact.name,
         incoming_message=payload.incoming_message,
         open_invoices=open_invoices_data,
+        churn_risk_level=rag_cbm_ctx.get("churn_risk_level", "LOW"),
+        cbm_predictive_summary=rag_cbm_ctx.get("cbm_predictive_summary", ""),
+        tenant_knowledge_chunks=rag_cbm_ctx.get("tenant_knowledge_chunks", []),
+        recent_history=rag_cbm_ctx.get("recent_history", []),
         simulate_ai_offline=payload.simulate_ai_offline,
     )
 

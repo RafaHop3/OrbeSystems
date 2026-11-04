@@ -61,6 +61,14 @@ def run_all(verify_only: bool = False):
                 "CREATE INDEX IF NOT EXISTS ix_cbm_customer_profiles_contact_id ON inho.cbm_customer_profiles USING btree (contact_id)",
                 "CREATE INDEX IF NOT EXISTS ix_pco_surveys_business_id ON inho.pco_surveys USING btree (business_id)",
                 "CREATE INDEX IF NOT EXISTS ix_pco_responses_respondent_id ON inho.pco_responses USING btree (respondent_id)",
+                "CREATE TABLE IF NOT EXISTS inho.ai_knowledge_chunks (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), business_id UUID NOT NULL REFERENCES inho.businesses(id) ON DELETE CASCADE, title VARCHAR(200) NOT NULL, category VARCHAR(80) NOT NULL DEFAULT 'REGULAMENTO_INTERNO', content TEXT NOT NULL, keywords VARCHAR(500), encrypted_digest TEXT, is_active BOOLEAN NOT NULL DEFAULT TRUE, created_by_id VARCHAR(36) REFERENCES public.users(id) ON DELETE SET NULL, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
+                "CREATE INDEX IF NOT EXISTS ix_ai_knowledge_chunks_business ON inho.ai_knowledge_chunks USING btree (business_id)",
+                "CREATE INDEX IF NOT EXISTS ix_ai_knowledge_chunks_biz_cat ON inho.ai_knowledge_chunks USING btree (business_id, category)",
+                "CREATE INDEX IF NOT EXISTS ix_ai_knowledge_chunks_created_by_id ON inho.ai_knowledge_chunks USING btree (created_by_id)",
+                "ALTER TABLE inho.ai_knowledge_chunks ENABLE ROW LEVEL SECURITY",
+                "GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE inho.ai_knowledge_chunks TO authenticated",
+                "DROP POLICY IF EXISTS tenant_isolation_ai_knowledge_chunks ON inho.ai_knowledge_chunks",
+                "CREATE POLICY tenant_isolation_ai_knowledge_chunks ON inho.ai_knowledge_chunks FOR ALL TO authenticated USING (inho.can_access_business(business_id)) WITH CHECK (inho.can_access_business(business_id))",
             ]
             for stmt in ddl_indexes:
                 conn.execute(text(stmt))

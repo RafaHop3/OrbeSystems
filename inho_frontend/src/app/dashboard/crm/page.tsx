@@ -4,6 +4,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   Activity,
+  BookOpen,
+  Trash2,
+  Plus,
   AlertTriangle,
   Bot,
   Calendar,
@@ -38,6 +41,77 @@ export default function CBMIntelligencePage() {
     'Olá, {nome}! Aqui é a equipe de relacionamento da {empresa}. Preparamos uma condição especial para apoiar sua próxima movimentação conosco.'
   );
   const [creatingCamp, setCreatingCamp] = useState(false);
+  // RAG Knowledge Base State
+  const [knowledgeChunks, setKnowledgeChunks] = useState<any[]>([]);
+  const [loadingKnowledge, setLoadingKnowledge] = useState<boolean>(false);
+  const [seedingKnowledge, setSeedingKnowledge] = useState<boolean>(false);
+  const [showAddDoc, setShowAddDoc] = useState<boolean>(false);
+  const [newTitle, setNewTitle] = useState<string>('');
+  const [newCategory, setNewCategory] = useState<string>('REGULAMENTO_INTERNO');
+  const [newContent, setNewContent] = useState<string>('');
+  const [newKeywords, setNewKeywords] = useState<string>('');
+
+  const loadKnowledge = useCallback(async () => {
+    setLoadingKnowledge(true);
+    try {
+      const data = await crmApi.listAiKnowledge();
+      setKnowledgeChunks(data || []);
+    } catch (err: any) {
+      console.warn('Falha ao carregar RAG knowledge chunks:', err);
+    } finally {
+      setLoadingKnowledge(false);
+    }
+  }, []);
+
+  const handleSeedDefaults = async () => {
+    setSeedingKnowledge(true);
+    try {
+      const data = await crmApi.seedDefaultAiKnowledge();
+      setKnowledgeChunks(data || []);
+      showBanner('ok', '🎉 Regulamento Padrão Ativado! A OrBrick-IA foi treinada com 4 diretrizes oficiais da sua instituição.');
+    } catch (err: any) {
+      showBanner('err', err?.message || 'Falha ao ativar regulamento padrão.');
+    } finally {
+      setSeedingKnowledge(false);
+    }
+  };
+
+  const handleCreateKnowledge = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle.trim() || !newContent.trim()) {
+      showBanner('err', 'Informe o título e o conteúdo da norma/diretriz.');
+      return;
+    }
+    try {
+      await crmApi.createAiKnowledge({
+        title: newTitle.trim(),
+        category: newCategory,
+        content: newContent.trim(),
+        keywords: newKeywords.trim() || undefined,
+        is_active: true,
+      });
+      showBanner('ok', `Diretriz "${newTitle.trim()}" cadastrada com sucesso na base RAG.`);
+      setNewTitle('');
+      setNewContent('');
+      setNewKeywords('');
+      setShowAddDoc(false);
+      await loadKnowledge();
+    } catch (err: any) {
+      showBanner('err', err?.message || 'Falha ao salvar diretriz na base RAG.');
+    }
+  };
+
+  const handleDeleteKnowledge = async (id: string, title: string) => {
+    if (!confirm(`Deseja remover a diretriz "${title}" da base RAG da IA?`)) return;
+    try {
+      await crmApi.deleteAiKnowledge(id);
+      showBanner('ok', `Diretriz "${title}" removida.`);
+      await loadKnowledge();
+    } catch (err: any) {
+      showBanner('err', err?.message || 'Falha ao excluir diretriz.');
+    }
+  };
+
   const [dispatchingId, setDispatchingId] = useState<string | null>(null);
 
   const showBanner = (type: 'ok' | 'err', text: string) => {
@@ -597,6 +671,187 @@ export default function CBMIntelligencePage() {
           </div>
         </div>
       </div>
+
+      {/* BLOCO: BASE DE CONHECIMENTO RAG DA ORBRICK-IA (ISOLAMENTO MULTI-TENANT) */}
+      <div className="bg-white p-6 rounded-2xl border border-[#E2E8F0] shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-[#E2E8F0]">
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wide bg-gradient-to-r from-amber-50 to-emerald-50 text-[#8B6508] border border-amber-200">
+              <Sparkles size={13} className="text-[#B8860B]" /> Base RAG Preditiva Exclusiva do Contratante
+            </div>
+            <h2 className="text-xl font-extrabold text-[#0F172A] mt-2 flex items-center gap-2">
+              <BookOpen size={20} className="text-[#B8860B]" /> Treinamento & Regulamento da OrBrick-IA
+            </h2>
+            <p className="text-xs text-[#64748B] mt-1 max-w-3xl">
+              Cada instituição contratante possui um cofre RAG estritamente isolado por RLS. Adicione estatutos, 
+              regras de cota-parte, políticas de cobrança e horários para que a IA responda exatamente segundo o regulamento do seu negócio.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              onClick={handleSeedDefaults}
+              disabled={seedingKnowledge}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-[#B8860B] to-[#9A6F0B] hover:opacity-95 text-white text-xs font-extrabold uppercase tracking-wider shadow-sm transition-all disabled:opacity-50"
+            >
+              <Sparkles size={14} className={seedingKnowledge ? "animate-spin" : ""} />
+              {seedingKnowledge ? 'Ativando...' : 'Ativar Regulamento Padrão (1-Clique)'}
+            </button>
+
+            <button
+              onClick={() => setShowAddDoc(!showAddDoc)}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#F1F5F9] hover:bg-slate-200 text-[#0F172A] border border-slate-300 text-xs font-bold uppercase tracking-wider transition-colors"
+            >
+              <Plus size={14} /> {showAddDoc ? 'Fechar Formulário' : '+ Nova Diretriz'}
+            </button>
+          </div>
+        </div>
+
+        {/* Formulário de Nova Diretriz RAG */}
+        {showAddDoc && (
+          <form onSubmit={handleCreateKnowledge} className="mt-5 p-5 bg-[#F8FAFC] rounded-2xl border border-amber-200/80 space-y-4">
+            <div className="font-extrabold text-sm text-[#0F172A] flex items-center gap-2">
+              <Plus size={16} className="text-[#B8860B]" /> Cadastrar Nova Diretriz / Norma no RAG da Instituição
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-[11px] font-extrabold uppercase text-[#475569] mb-1">
+                  Título da Norma / Diretriz *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ex: Estatuto Social - Admissão e Cota-Parte"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-white border border-[#E2E8F0] text-xs text-[#0F172A] outline-none focus:border-[#B8860B]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-extrabold uppercase text-[#475569] mb-1">
+                  Categoria
+                </label>
+                <select
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-white border border-[#E2E8F0] text-xs text-[#0F172A] outline-none focus:border-[#B8860B]"
+                >
+                  <option value="REGULAMENTO_ESTATUTO">Estatuto & Regras Sociais</option>
+                  <option value="POLITICA_FINANCEIRA">Política de Cobrança & PIX</option>
+                  <option value="POLITICA_NEGOCIACAO">Acordos & Renegociação</option>
+                  <option value="ATENDIMENTO_FAQ">Atendimento & FAQ Geral</option>
+                  <option value="REGULAMENTO_INTERNO">Outros Regulamentos</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-extrabold uppercase text-[#475569] mb-1">
+                Conteúdo Oficial da Diretriz (Texto que a IA usará como verdade oficial) *
+              </label>
+              <textarea
+                required
+                rows={4}
+                placeholder="Insira as regras detalhadas, prazos, condições, documentos exigidos ou orientações específicas..."
+                value={newContent}
+                onChange={(e) => setNewContent(e.target.value)}
+                className="w-full p-3 rounded-xl bg-white border border-[#E2E8F0] text-xs text-[#0F172A] outline-none focus:border-[#B8860B]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-extrabold uppercase text-[#475569] mb-1">
+                Palavras-chave (Separadas por vírgula para agilizar a busca RAG)
+              </label>
+              <input
+                type="text"
+                placeholder="Ex: estatuto, cota, integralizacao, sobras, taxa, prazo"
+                value={newKeywords}
+                onChange={(e) => setNewKeywords(e.target.value)}
+                className="w-full p-2.5 rounded-xl bg-white border border-[#E2E8F0] text-xs text-[#0F172A] outline-none focus:border-[#B8860B]"
+              />
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowAddDoc(false)}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 transition-colors"
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl bg-[#B8860B] hover:bg-[#9A6F0B] text-white text-xs font-extrabold uppercase tracking-wider shadow-sm transition-colors"
+              >
+                Salvar Diretriz RAG
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Lista de Diretrizes Ativas no RAG */}
+        <div className="mt-6">
+          <div className="flex items-center justify-between mb-3 text-xs font-bold text-[#64748B]">
+            <span>Diretrizes e Regulamentos em Memória ({knowledgeChunks.length})</span>
+            {loadingKnowledge && <span className="text-[#B8860B] animate-pulse">Atualizando...</span>}
+          </div>
+
+          {knowledgeChunks.length === 0 ? (
+            <div className="p-8 text-center bg-[#F8FAFC] rounded-2xl border border-dashed border-slate-300">
+              <BookOpen size={32} className="mx-auto text-slate-400 mb-2" />
+              <p className="text-sm font-bold text-[#0F172A]">Nenhum regulamento cadastrado para esta instituição</p>
+              <p className="text-xs text-[#64748B] mt-1 max-w-md mx-auto">
+                Clique no botão <strong>"Ativar Regulamento Padrão (1-Clique)"</strong> acima para carregar o modelo oficial de Estatuto, Regras PIX e Atendimento da Orbe Systems adaptado para o seu negócio.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {knowledgeChunks.map((chunk) => (
+                <div
+                  key={chunk.id}
+                  className="p-4 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] hover:border-[#D4AF37]/50 transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-amber-50 text-[#8B6508] border border-amber-200">
+                        {chunk.category || 'REGULAMENTO'}
+                      </span>
+                      <button
+                        onClick={() => handleDeleteKnowledge(chunk.id, chunk.title)}
+                        className="p-1 text-slate-400 hover:text-red-600 transition-colors"
+                        title="Remover diretriz"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+
+                    <h4 className="font-extrabold text-sm text-[#0F172A] mt-2">
+                      {chunk.title}
+                    </h4>
+
+                    <p className="text-xs text-[#475569] mt-1.5 line-clamp-3 leading-relaxed">
+                      {chunk.content}
+                    </p>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-slate-200/70 flex items-center justify-between text-[10px] text-slate-500">
+                    <span className="font-mono truncate max-w-[200px]">
+                      {chunk.keywords ? `Tags: ${chunk.keywords}` : 'Isolado por RLS'}
+                    </span>
+                    <span className="text-emerald-700 font-bold flex items-center gap-1">
+                      <CheckCircle2 size={11} /> Ativo no RAG
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
     </div>
   );
 }

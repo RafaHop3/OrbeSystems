@@ -791,6 +791,41 @@ export const crmApi = {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
+
+  listAiKnowledge: () =>
+    apiFetch<{
+      id: string;
+      business_id: string;
+      title: string;
+      category: string;
+      content: string;
+      keywords?: string | null;
+      is_active: boolean;
+      created_at?: string | null;
+      updated_at?: string | null;
+    }[]>('/api/v1/crm/cbm/ai-knowledge'),
+
+  createAiKnowledge: (payload: {
+    title: string;
+    category?: string;
+    content: string;
+    keywords?: string;
+    is_active?: boolean;
+  }) =>
+    apiFetch<any>('/api/v1/crm/cbm/ai-knowledge', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  seedDefaultAiKnowledge: () =>
+    apiFetch<any[]>('/api/v1/crm/cbm/ai-knowledge/seed-defaults', {
+      method: 'POST',
+    }),
+
+  deleteAiKnowledge: (chunkId: string) =>
+    apiFetch<{ status: string; id: string }>(`/api/v1/crm/cbm/ai-knowledge/${encodeURIComponent(chunkId)}`, {
+      method: 'DELETE',
+    }),
 };
 
 // ── Cooperados (Módulo Cooperativismo) ───────────────────────────────

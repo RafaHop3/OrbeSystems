@@ -933,3 +933,36 @@ class CBMCampaign(Base):
         Index("ix_cbm_campaigns_trigger", "business_id", "trigger_type"),
     )
 
+
+class AIKnowledgeChunk(Base):
+    """
+    Base de Conhecimento RAG Isolada por Contratante (Multi-Tenant AI Knowledge Base).
+    Permite que cada administrador contratante treine sua própria OrBrick-IA com
+    regulamento interno, estatuto, regras de cobrança, FAQ e tom de voz, com isolamento
+    lateral estrito por business_id e RLS no PostgreSQL.
+    """
+    __tablename__ = "ai_knowledge_chunks"
+
+    id               = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id      = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    title            = Column(String(200), nullable=False)
+    category         = Column(String(80), nullable=False, default="REGULAMENTO_INTERNO")
+    content          = Column(Text, nullable=False)
+    keywords         = Column(String(500), nullable=True)
+    encrypted_digest = Column(Text, nullable=True)
+    is_active        = Column(Boolean, default=True, nullable=False)
+    created_by_id    = Column(DB_UUID, ForeignKey(_PUBLIC_USERS_FK, ondelete="SET NULL"), nullable=True)
+    created_at       = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at       = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        Index("ix_ai_knowledge_chunks_business", "business_id"),
+        Index("ix_ai_knowledge_chunks_biz_cat", "business_id", "category"),
+        Index("ix_ai_knowledge_chunks_created_by_id", "created_by_id"),
+    )
+
