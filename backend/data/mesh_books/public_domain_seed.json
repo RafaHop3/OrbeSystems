@@ -1,0 +1,733 @@
+{
+ "_nota": "Lote semente: 104 obras (meta 100). Todas com verified=false: falta conferir death_year em fonte, URL EPUB aberta (dominiopublico.gov.br/gutenberg/wikisource), edicao exata e file_sha256. Clarice Lispector (m. 1977) NAO entra antes de 2048. Lobato/Mario/Oswald: confirmar que a edicao nao tem revisao/ilustracao protegida.",
+ "works": [
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Dom Casmurro",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Memórias Póstumas de Brás Cubas",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Quincas Borba",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Esaú e Jacó",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Memorial de Aires",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Helena",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Iaiá Garcia",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "A Mão e a Luva",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "O Alienista",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Fernando Pessoa",
+   "death_year": 1935,
+   "title": "Mensagem",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "José de Alencar",
+   "death_year": 1877,
+   "title": "O Guarani",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "José de Alencar",
+   "death_year": 1877,
+   "title": "Iracema",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "José de Alencar",
+   "death_year": 1877,
+   "title": "Senhora",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "José de Alencar",
+   "death_year": 1877,
+   "title": "Lucíola",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Aluísio Azevedo",
+   "death_year": 1913,
+   "title": "O Cortiço",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Aluísio Azevedo",
+   "death_year": 1913,
+   "title": "O Mulato",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Euclides da Cunha",
+   "death_year": 1909,
+   "title": "Os Sertões",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Lima Barreto",
+   "death_year": 1922,
+   "title": "Triste Fim de Policarpo Quaresma",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Lima Barreto",
+   "death_year": 1922,
+   "title": "Clara dos Anjos",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Raul Pompeia",
+   "death_year": 1895,
+   "title": "O Ateneu",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Bernardo Guimarães",
+   "death_year": 1884,
+   "title": "A Escrava Isaura",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Manuel Antônio de Almeida",
+   "death_year": 1861,
+   "title": "Memórias de um Sargento de Milícias",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Joaquim Manuel de Macedo",
+   "death_year": 1882,
+   "title": "A Moreninha",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Visconde de Taunay",
+   "death_year": 1899,
+   "title": "Inocência",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Cruz e Sousa",
+   "death_year": 1898,
+   "title": "Broquéis",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Castro Alves",
+   "death_year": 1871,
+   "title": "Os Escravos",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Gonçalves Dias",
+   "death_year": 1864,
+   "title": "Primeiros Cantos",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Augusto dos Anjos",
+   "death_year": 1914,
+   "title": "Eu",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Eça de Queirós",
+   "death_year": 1900,
+   "title": "O Primo Basílio",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Camilo Castelo Branco",
+   "death_year": 1890,
+   "title": "Amor de Perdição",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "E?a de Queir?s",
+   "death_year": 1900,
+   "title": "O Crime do Padre Amaro",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "E?a de Queir?s",
+   "death_year": 1900,
+   "title": "Os Maias",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "E?a de Queir?s",
+   "death_year": 1900,
+   "title": "A Cidade e as Serras",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "E?a de Queir?s",
+   "death_year": 1900,
+   "title": "A Rel?quia",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "E?a de Queir?s",
+   "death_year": 1900,
+   "title": "A Ilustre Casa de Ramires",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "E?a de Queir?s",
+   "death_year": 1900,
+   "title": "O Mandarim",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "E?a de Queir?s",
+   "death_year": 1900,
+   "title": "A Correspond?ncia de Fradique Mendes",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Camilo Castelo Branco",
+   "death_year": 1890,
+   "title": "Amor de Salva??o",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Camilo Castelo Branco",
+   "death_year": 1890,
+   "title": "A Queda dum Anjo",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Camilo Castelo Branco",
+   "death_year": 1890,
+   "title": "A Brasileira de Prazins",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Camilo Castelo Branco",
+   "death_year": 1890,
+   "title": "Cora??o, Cabe?a e Est?mago",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Camilo Castelo Branco",
+   "death_year": 1890,
+   "title": "Novelas do Minho",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Almeida Garrett",
+   "death_year": 1854,
+   "title": "Viagens na Minha Terra",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Almeida Garrett",
+   "death_year": 1854,
+   "title": "Frei Lu?s de Sousa",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Almeida Garrett",
+   "death_year": 1854,
+   "title": "Folhas Ca?das",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Alexandre Herculano",
+   "death_year": 1877,
+   "title": "Eurico, o Presb?tero",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Alexandre Herculano",
+   "death_year": 1877,
+   "title": "O Monge de Cister",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "J?lio Dinis",
+   "death_year": 1871,
+   "title": "As Pupilas do Senhor Reitor",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "J?lio Dinis",
+   "death_year": 1871,
+   "title": "A Morgadinha dos Canaviais",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "J?lio Dinis",
+   "death_year": 1871,
+   "title": "Uma Fam?lia Inglesa",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Antero de Quental",
+   "death_year": 1891,
+   "title": "Sonetos Completos",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Ces?rio Verde",
+   "death_year": 1886,
+   "title": "O Livro de Ces?rio Verde",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Lu?s de Cam?es",
+   "death_year": 1580,
+   "title": "Os Lus?adas",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Lu?s de Cam?es",
+   "death_year": 1580,
+   "title": "Rimas",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Gil Vicente",
+   "death_year": 1536,
+   "title": "Auto da Barca do Inferno",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Padre Ant?nio Vieira",
+   "death_year": 1697,
+   "title": "Serm?o da Sexag?sima",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Fern?o Mendes Pinto",
+   "death_year": 1583,
+   "title": "Peregrina??o",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Florbela Espanca",
+   "death_year": 1930,
+   "title": "Livro de M?goas",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Florbela Espanca",
+   "death_year": 1930,
+   "title": "Charneca em Flor",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "M?rio de S?-Carneiro",
+   "death_year": 1916,
+   "title": "A Confiss?o de L?cio",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Fernando Pessoa",
+   "death_year": 1935,
+   "title": "O Guardador de Rebanhos",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Raul Brand?o",
+   "death_year": 1930,
+   "title": "H?mus",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Ressurrei??o",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Pap?is Avulsos",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Hist?rias sem Data",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "V?rias Hist?rias",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Rel?quias de Casa Velha",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Americanas",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Machado de Assis",
+   "death_year": 1908,
+   "title": "Poesias Completas",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Jos? de Alencar",
+   "death_year": 1877,
+   "title": "Ubirajara",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Jos? de Alencar",
+   "death_year": 1877,
+   "title": "O Ga?cho",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Jos? de Alencar",
+   "death_year": 1877,
+   "title": "O Sertanejo",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Jos? de Alencar",
+   "death_year": 1877,
+   "title": "Diva",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Jos? de Alencar",
+   "death_year": 1877,
+   "title": "As Minas de Prata",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Alu?sio Azevedo",
+   "death_year": 1913,
+   "title": "Casa de Pens?o",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Alu?sio Azevedo",
+   "death_year": 1913,
+   "title": "Livro de uma Sogra",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Lima Barreto",
+   "death_year": 1922,
+   "title": "Recorda??es do Escriv?o Isa?as Caminha",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Lima Barreto",
+   "death_year": 1922,
+   "title": "Numa e a Ninfa",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Lima Barreto",
+   "death_year": 1922,
+   "title": "Os Bruzundangas",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Lima Barreto",
+   "death_year": 1922,
+   "title": "Vida e Morte de M. J. Gonzaga de S?",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Joaquim Manuel de Macedo",
+   "death_year": 1882,
+   "title": "O Mo?o Loiro",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Bernardo Guimar?es",
+   "death_year": 1884,
+   "title": "O Seminarista",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Bernardo Guimar?es",
+   "death_year": 1884,
+   "title": "O Garimpeiro",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Visconde de Taunay",
+   "death_year": 1899,
+   "title": "A Retirada da Laguna",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Franklin T?vora",
+   "death_year": 1888,
+   "title": "O Cabeleira",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Adolfo Caminha",
+   "death_year": 1897,
+   "title": "Bom-Crioulo",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Ingl?s de Sousa",
+   "death_year": 1918,
+   "title": "O Mission?rio",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Afonso Arinos",
+   "death_year": 1916,
+   "title": "Pelo Sert?o",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Gra?a Aranha",
+   "death_year": 1931,
+   "title": "Cana?",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Coelho Neto",
+   "death_year": 1934,
+   "title": "A Conquista",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Olavo Bilac",
+   "death_year": 1918,
+   "title": "Poesias",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "?lvares de Azevedo",
+   "death_year": 1852,
+   "title": "Lira dos Vinte Anos",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "?lvares de Azevedo",
+   "death_year": 1852,
+   "title": "Noite na Taverna",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Casimiro de Abreu",
+   "death_year": 1860,
+   "title": "As Primaveras",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Castro Alves",
+   "death_year": 1871,
+   "title": "Espumas Flutuantes",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Gon?alves Dias",
+   "death_year": 1864,
+   "title": "?ltimos Cantos",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Cruz e Sousa",
+   "death_year": 1898,
+   "title": "Missal",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Alphonsus de Guimaraens",
+   "death_year": 1921,
+   "title": "Seten?rio das Dores de Nossa Senhora",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Greg?rio de Matos",
+   "death_year": 1696,
+   "title": "Poemas Escolhidos",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Monteiro Lobato",
+   "death_year": 1948,
+   "title": "Urup?s",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Monteiro Lobato",
+   "death_year": 1948,
+   "title": "Reina??es de Narizinho",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "M?rio de Andrade",
+   "death_year": 1945,
+   "title": "Macuna?ma",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "M?rio de Andrade",
+   "death_year": 1945,
+   "title": "Pauliceia Desvairada",
+   "source_url": "",
+   "verified": false
+  },
+  {
+   "author": "Oswald de Andrade",
+   "death_year": 1954,
+   "title": "Mem?rias Sentimentais de Jo?o Miramar",
+   "source_url": "",
+   "verified": false
+  }
+ ]
+}

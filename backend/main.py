@@ -30,6 +30,7 @@ from routes.sbom import router as sbom_router
 from routes.ir import router as ir_router
 from routes.chat import router as chat_router
 from routes.optout import router as optout_router
+from routes.books import router as books_router
 from routes.mesh_and_hardening import router as mesh_hardening_router
 from security.auth import verify_password
 from security.supabase_rls import ensure_supabase_rls
@@ -418,6 +419,7 @@ app.include_router(imobverse_router, prefix="/api", tags=["imobverse"])
 app.include_router(powershell_bot_router, prefix="/api", tags=["PowerShell Bot"])
 app.include_router(chat_router, prefix="/api", tags=["chat"])
 app.include_router(optout_router, prefix="/api/optout", tags=["data-broker-mvp"])
+app.include_router(books_router, prefix="/api/books", tags=["mesh-books"])
 app.include_router(mesh_hardening_router, prefix="/api", tags=["mesh-core-and-hardening"])
 from routes.suite_inteligente import router as suite_inteligente_router
 app.include_router(suite_inteligente_router)

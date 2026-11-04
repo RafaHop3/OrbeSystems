@@ -54,6 +54,27 @@ async def lifespan(app: FastAPI):
         "CREATE INDEX IF NOT EXISTS ix_cbm_campaigns_trigger ON inho.cbm_campaigns (business_id, trigger_type)",
         "ALTER TABLE inho.cbm_customer_profiles ENABLE ROW LEVEL SECURITY",
         "ALTER TABLE inho.cbm_campaigns ENABLE ROW LEVEL SECURITY",
+        "ALTER TABLE inho.business_operators ADD COLUMN IF NOT EXISTS role VARCHAR(50) NOT NULL DEFAULT 'operator'",
+        "CREATE INDEX IF NOT EXISTS ix_business_operators_user_id ON inho.business_operators USING btree (user_id)",
+        "CREATE INDEX IF NOT EXISTS ix_api_tokens_created_by_id ON inho.api_tokens USING btree (created_by_id)",
+        "CREATE INDEX IF NOT EXISTS ix_audit_logs_business_id ON inho.audit_logs USING btree (business_id)",
+        "CREATE INDEX IF NOT EXISTS ix_cash_registers_operator_id ON inho.cash_registers USING btree (operator_id)",
+        "CREATE INDEX IF NOT EXISTS ix_billing_invoices_cooperado_id ON inho.billing_invoices USING btree (cooperado_id)",
+        "CREATE INDEX IF NOT EXISTS ix_billing_invoices_crm_contact_id ON inho.billing_invoices USING btree (crm_contact_id)",
+        "CREATE INDEX IF NOT EXISTS ix_billing_invoices_category_id ON inho.billing_invoices USING btree (category_id)",
+        "CREATE INDEX IF NOT EXISTS ix_billing_invoices_created_by_id ON inho.billing_invoices USING btree (created_by_id)",
+        "CREATE INDEX IF NOT EXISTS ix_billing_invoices_updated_by_id ON inho.billing_invoices USING btree (updated_by_id)",
+        "CREATE INDEX IF NOT EXISTS ix_accounts_payable_supplier_id ON inho.accounts_payable USING btree (supplier_id)",
+        "CREATE INDEX IF NOT EXISTS ix_accounts_payable_category_id ON inho.accounts_payable USING btree (category_id)",
+        "CREATE INDEX IF NOT EXISTS ix_account_categories_parent_id ON inho.account_categories USING btree (parent_id)",
+        "CREATE INDEX IF NOT EXISTS ix_recurrences_crm_contact_id ON inho.recurrences USING btree (crm_contact_id)",
+        "CREATE INDEX IF NOT EXISTS ix_recurrences_cooperado_id ON inho.recurrences USING btree (cooperado_id)",
+        "CREATE INDEX IF NOT EXISTS ix_recurrences_category_id ON inho.recurrences USING btree (category_id)",
+        "CREATE INDEX IF NOT EXISTS ix_crm_deals_contact_id ON inho.crm_deals USING btree (contact_id)",
+        "CREATE INDEX IF NOT EXISTS ix_omnichannel_logs_contact_id ON inho.omnichannel_logs USING btree (contact_id)",
+        "CREATE INDEX IF NOT EXISTS ix_cbm_customer_profiles_contact_id ON inho.cbm_customer_profiles USING btree (contact_id)",
+        "CREATE INDEX IF NOT EXISTS ix_pco_surveys_business_id ON inho.pco_surveys USING btree (business_id)",
+        "CREATE INDEX IF NOT EXISTS ix_pco_responses_respondent_id ON inho.pco_responses USING btree (respondent_id)",
     ]
     if not is_sqlite:
         startup_stmts.append(
@@ -101,6 +122,16 @@ async def lifespan(app: FastAPI):
                 await rls_conn.execute(text(rls_sql))
         except Exception as rls_err:
             logger.warning(f"RLS hardening startup warning: {rls_err}")
+
+        # INFRA-02: Blindagem SQL Supabase (RESTRICTIVE, Grants Granulares, Helpers e FK Indexes)
+        from core.supabase_hardening import SUPABASE_HARDENING_SQL_STATEMENTS
+        for h_stmt in SUPABASE_HARDENING_SQL_STATEMENTS:
+            try:
+                async with engine.begin() as h_conn:
+                    await h_conn.execute(text("SET LOCAL lock_timeout = '5s'"))
+                    await h_conn.execute(text(h_stmt))
+            except Exception as h_err:
+                logger.warning(f"Supabase hardening warning: {h_err}")
 
     try:
         async with engine.begin() as conn:

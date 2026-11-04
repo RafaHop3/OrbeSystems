@@ -72,6 +72,7 @@ class PCOSurvey(Base):
     __table_args__ = (
         Index("ix_pco_surveys_status", "status"),
         Index("ix_pco_surveys_created_by", "created_by"),
+        Index("ix_pco_surveys_business_id", "business_id"),
     )
 
     def __repr__(self) -> str:
@@ -118,6 +119,7 @@ class PCOResponse(Base):
     __table_args__ = (
         Index("ix_pco_responses_survey", "survey_id"),
         Index("ix_pco_responses_submitted", "submitted_at"),
+        Index("ix_pco_responses_respondent_id", "respondent_id"),
     )
 
 

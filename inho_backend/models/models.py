@@ -149,11 +149,13 @@ class BusinessOperator(Base):
     id          = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
     business_id = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
     user_id     = Column(DB_UUID, ForeignKey(_PUBLIC_USERS_FK, ondelete="CASCADE"), nullable=False)
+    role        = Column(String(50), nullable=False, default="operator")
     
     created_at  = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
     __table_args__ = (
         Index("ix_business_operators_keys", "business_id", "user_id", unique=True),
+        Index("ix_business_operators_user_id", "user_id"),
     )
 
     def __repr__(self) -> str:
@@ -173,6 +175,7 @@ class ApiToken(Base):
 
     __table_args__ = (
         Index("ix_api_tokens_biz", "business_id"),
+        Index("ix_api_tokens_created_by_id", "created_by_id"),
     )
 
 class BankIntegration(Base):
@@ -213,6 +216,7 @@ class AuditLog(Base):
         Index("ix_audit_user_action", "user_id", "action"),
         Index("ix_audit_entity",      "entity",  "entity_id"),
         Index("ix_audit_timestamp",   "timestamp"),
+        Index("ix_audit_logs_business_id", "business_id"),
     )
 
 
@@ -316,6 +320,7 @@ class CashRegister(Base):
     __table_args__ = (
         Index("ix_cash_registers_status", "status"),
         Index("ix_cash_registers_business", "business_id"),
+        Index("ix_cash_registers_operator_id", "operator_id"),
     )
 
 
@@ -506,6 +511,11 @@ class BillingInvoice(Base):
         Index("ix_billing_invoices_business", "business_id"),
         # Índice composto de alta performance para BI (spec §8)
         Index("ix_billing_invoices_bi", "due_date", "status", "category_id"),
+        Index("ix_billing_invoices_cooperado_id", "cooperado_id"),
+        Index("ix_billing_invoices_crm_contact_id", "crm_contact_id"),
+        Index("ix_billing_invoices_category_id", "category_id"),
+        Index("ix_billing_invoices_created_by_id", "created_by_id"),
+        Index("ix_billing_invoices_updated_by_id", "updated_by_id"),
     )
 
 
@@ -543,6 +553,8 @@ class AccountPayable(Base):
         Index("ix_accounts_payable_business", "business_id"),
         # Índice composto de alta performance para BI (spec §8)
         Index("ix_accounts_payable_bi", "due_date", "status", "category_id"),
+        Index("ix_accounts_payable_supplier_id", "supplier_id"),
+        Index("ix_accounts_payable_category_id", "category_id"),
     )
 
 
@@ -649,6 +661,7 @@ class AccountCategory(Base):
     __table_args__ = (
         Index("ix_account_categories_business", "business_id"),
         Index("ix_account_categories_type",     "type"),
+        Index("ix_account_categories_parent_id", "parent_id"),
     )
 
 
@@ -745,6 +758,9 @@ class Recurrence(Base):
         Index("ix_recurrences_business", "business_id"),
         Index("ix_recurrences_status",   "status"),
         Index("ix_recurrences_next_due", "next_due_date"),
+        Index("ix_recurrences_crm_contact_id", "crm_contact_id"),
+        Index("ix_recurrences_cooperado_id", "cooperado_id"),
+        Index("ix_recurrences_category_id", "category_id"),
     )
 
 
@@ -809,6 +825,7 @@ class CRMDeal(Base):
     __table_args__ = (
         Index("ix_crm_deals_business", "business_id"),
         Index("ix_crm_deals_stage", "stage"),
+        Index("ix_crm_deals_contact_id", "contact_id"),
     )
 
 # ── Omnichannel Sessions (WhatsApp & E-mail Logs) ─────────────────
@@ -842,6 +859,7 @@ class OmnichannelLog(Base):
         Index("ix_omnichannel_logs_business", "business_id"),
         Index("ix_omnichannel_logs_channel", "channel"),
         Index("ix_omnichannel_logs_sender", "sender_id"),
+        Index("ix_omnichannel_logs_contact_id", "contact_id"),
     )
 
 
@@ -883,6 +901,7 @@ class CBMCustomerProfile(Base):
     __table_args__ = (
         Index("ix_cbm_profiles_business_risk", "business_id", "churn_risk_level"),
         Index("ix_cbm_profiles_business_contact", "business_id", "contact_id", unique=True),
+        Index("ix_cbm_customer_profiles_contact_id", "contact_id"),
     )
 
 

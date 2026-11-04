@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef } from 'react';
+import cleanerHashes from '@/data/cleaner_hashes.json';
 
 export default function OrbeCleanerHero() {
     const cardRef = useRef<HTMLDivElement>(null);
@@ -127,6 +128,21 @@ export default function OrbeCleanerHero() {
                     </span>
                     AMBIENTE LOCAL SEGURO
                 </div>
+
+                {/* Verificação pública de integridade (hashes gerados por scripts/gen-sha256.mjs) */}
+                <details className="mt-6 w-full text-left font-mono text-[10px] text-[#8b949e] layer-1">
+                    <summary className="cursor-pointer text-[#00fff5]/80 uppercase tracking-widest">Verificar integridade (SHA-256) &amp; requisitos</summary>
+                    <ul className="mt-3 space-y-2 break-all">
+                        {Object.entries(cleanerHashes).map(([file, hash]) => (
+                            <li key={file}><span className="text-white/70">{file}</span><br />{hash}</li>
+                        ))}
+                    </ul>
+                    <p className="mt-3 leading-relaxed">
+                        Windows: <code>certutil -hashfile orbe-cleaner-win.bat SHA256</code> · macOS: <code>shasum -a 256 orbe-cleaner-mac.sh</code>.
+                        Requisitos: Windows 10+ (PowerShell 5.1) ou macOS 12+. Execução 100% local, sem login e sem envio de dados.
+                        Lista completa em <a href="/downloads/SHA256SUMS.txt" className="underline">SHA256SUMS.txt</a>.
+                    </p>
+                </details>
             </div>
         </div>
     );
