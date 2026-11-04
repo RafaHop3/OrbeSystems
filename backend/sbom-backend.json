@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:dece71ab-7fef-4e64-865f-b6d7335b5951",
+  "serialNumber": "urn:uuid:dbc1158d-df5d-4d36-bfc1-063160131f0b",
   "metadata": {
-    "timestamp": "2026-11-03T18:57:02.773461+00:00",
+    "timestamp": "2026-11-04T15:32:07.363319+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -510,8 +510,8 @@
     {
       "type": "library",
       "name": "dnspython",
-      "version": "2.9.1",
-      "purl": "pkg:pypi/dnspython@2.9.1",
+      "version": "2.9.2",
+      "purl": "pkg:pypi/dnspython@2.9.2",
       "licenses": [
         {
           "license": {
@@ -528,7 +528,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "defba8949a9436dc558e925d939508e73a00448eb12dc21464e43e5b7bf57b8d"
+          "content": "c61e48c29b8086e94d8b7086f66b972313a7912f8de6c521fa5e6bf2b3b11964"
         }
       ]
     },
@@ -1155,8 +1155,8 @@
     {
       "type": "library",
       "name": "psycopg",
-      "version": "3.3.7",
-      "purl": "pkg:pypi/psycopg@3.3.7",
+      "version": "3.3.8",
+      "purl": "pkg:pypi/psycopg@3.3.8",
       "licenses": [
         {
           "license": {
@@ -1173,15 +1173,15 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "34df1b82e236c1719641eff9e564c959d93a7853585f2fe47dc80be781cdf5d3"
+          "content": "81726b19288a4dc3f852cbf3c9aace3d374e79f24477471d8510b9e5a88bf701"
         }
       ]
     },
     {
       "type": "library",
       "name": "psycopg-binary",
-      "version": "3.3.7",
-      "purl": "pkg:pypi/psycopg-binary@3.3.7",
+      "version": "3.3.8",
+      "purl": "pkg:pypi/psycopg-binary@3.3.8",
       "licenses": [
         {
           "license": {
@@ -1198,7 +1198,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "60ba57e82b40a14c2ed0a749cba790a2674208f14620076e71250486b04180c0"
+          "content": "a67ab8460a37f0c29fac41236d21b9eda04e3abd7be474875ad776e8c3d2c509"
         }
       ]
     },
@@ -1765,8 +1765,8 @@
     {
       "type": "library",
       "name": "SQLAlchemy",
-      "version": "2.1.6",
-      "purl": "pkg:pypi/sqlalchemy@2.1.6",
+      "version": "2.1.8",
+      "purl": "pkg:pypi/sqlalchemy@2.1.8",
       "licenses": [
         {
           "license": {
@@ -1783,7 +1783,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "405174305cd8c8cd136577f141f8c1dd507645b17c01b9151b254c1c432f0f5e"
+          "content": "c06abab304931173a5caf829531196384ce901d37b4d06f7f03ff2c373a9c4a9"
         }
       ]
     },
