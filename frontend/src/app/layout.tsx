@@ -12,33 +12,33 @@ const OrbeAssistant = dynamic(() => import('@/components/OrbeAssistant'), { ssr:
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://orbesystems.com.br'),
-  title: 'Orbe Systems | Engineering & Mesh Core',
+  title: 'Orbe Systems | INHO ERP, Mesh Core & Engenharia de Software',
   description:
-    'Hub tecnológico da Orbe Systems: Conheça a Mesh Social / Nexus Core (nova rede social autêntica, sem anúncios e gratuita), soluções em engenharia de software, cyber segurança, privacidade LGPD e inteligência artificial.',
+    'Hub tecnológico da Orbe Systems: Conheça o INHO (ERP para PMEs e Cooperativas com Inteligência OrBrick-IA e Cobrança WhatsApp), a Mesh Social e soluções avançadas em cyber segurança e LGPD.',
   keywords: [
     'Orbe Systems',
+    'INHO ERP',
+    'INHO Cooperativa',
+    'OrBrick IA',
+    'Régua de Cobrança WhatsApp',
     'Mesh Core',
     'Nexus Core',
     'Mesh Social',
     'rede social sem anuncios',
-    'rede social amigos',
     'engenharia de software',
     'cyber seguranca',
     'privacidade digital',
     'remocao de dados LGPD',
     'Ghost Engine',
     'inteligencia artificial',
-    'arquitetura de dados',
-    'tecnologia brasil',
-    'desenvolvimento de software',
-    'plataforma digital inovadora'
+    'gestao cooperativismo BACEN'
   ],
   icons: {
     icon: '/favicon.ico',
   },
   openGraph: {
-    title: 'Orbe Systems | Engineering & Mesh Core',
-    description: 'Hub tecnológico: Mesh Social, Nexus Core, engenharia de software, cyber safety e soluções digitais.',
+    title: 'Orbe Systems | INHO ERP & Mesh Core',
+    description: 'Hub tecnológico: INHO ERP com IA no WhatsApp, Gestão de Cooperativas, Mesh Social e Engenharia de Software.',
     url: 'https://orbesystems.com.br',
     siteName: 'Orbe Systems',
     type: 'website',
