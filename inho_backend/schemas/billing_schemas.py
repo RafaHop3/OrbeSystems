@@ -19,13 +19,20 @@ class BillingInvoiceCreate(BaseModel):
     data_competencia: Optional[datetime] = None
     payment_method: Optional[PaymentMethod] = PaymentMethod.PIX
     description: Optional[str] = None
-    project_id: Optional[str] = None
-
-    @field_validator('invoice_type', mode='before')
-    @classmethod
-    def _normalize_invoice_type(cls, v):
-        if isinstance(v, str) and v.strip().upper() == 'INTEGRALIZACAO_COTA':
-            return InvoiceType.INTEGRALIZACAO_INICIAL
+    project_id: Optional[str] = None
+
+
+
+    @field_validator('invoice_type', mode='before')
+
+    @classmethod
+
+    def _normalize_invoice_type(cls, v):
+
+        if isinstance(v, str) and v.strip().upper() == 'INTEGRALIZACAO_COTA':
+
+            return InvoiceType.INTEGRALIZACAO_INICIAL
+
         return v
 
 class BillingInvoiceStatusUpdate(BaseModel):
@@ -61,6 +68,22 @@ class BillingInvoiceOut(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class StripeCheckoutRequest(BaseModel):
+    plan_tier: str = "INHO_PRO_IA"
+    billing_cycle: str = "MONTHLY"
+    success_url: Optional[str] = None
+    cancel_url: Optional[str] = None
+
+
+class StripeCheckoutResponse(BaseModel):
+    checkout_url: str
+    session_id: Optional[str] = None
+    plan_tier: str
+    billing_cycle: str
+    amount_cents: int
+
 
 class BillingNotificationOut(BaseModel):
     invoice_id: UUID
@@ -110,9 +133,3 @@ class RecurrenceOut(BaseModel):
     next_due_date: Optional[datetime]
     parcel_total: Optional[int]
     parcel_current: int
-    status: str
-    payment_method: PaymentMethod
-    created_at: datetime
-    updated_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)

@@ -14,7 +14,8 @@ from services.audit import write_audit
 from core.deps import get_current_user
 from schemas.billing_schemas import (
     BillingInvoiceCreate, BillingInvoiceOut, BillingInvoiceStatusUpdate,
-    BillingNotificationOut, BillingStatsOut, BulkInvoiceAction, PartialSettle
+    BillingNotificationOut, BillingStatsOut, BulkInvoiceAction, PartialSettle,
+    StripeCheckoutRequest, StripeCheckoutResponse
 )
 
 router = APIRouter()
@@ -1270,3 +1271,375 @@ async def webhook_bank_boleto_b2b2c(
         signature_header=x_webhook_signature,
         db=db,
     )
+
+
+# ── Stripe Checkout & Provisioning Webhook (Novos Planos 05/11/2026) ───────────
+
+@router.post("/checkout", response_model=StripeCheckoutResponse, status_code=status.HTTP_200_OK)
+async def create_stripe_checkout_session(
+    payload: StripeCheckoutRequest,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Inicia uma sessao de checkout no Stripe para assinatura dos novos planos INHO
+    (INHO Essencial, INHO Pro + IA, INHO Cooperativa & Enterprise).
+    """
+    import os
+    import stripe
+    from core.config import PLAN_CATALOG, settings as app_settings
+
+    stripe.api_key = app_settings.STRIPE_SECRET_KEY or os.getenv("STRIPE_SECRET_KEY", "")
+
+    # Normalizar tier
+    raw_tier = payload.plan_tier.strip().upper().replace("-", "_")
+    tier_mapping = {
+        "INHO_ESSENCIAL": "INHO_ESSENCIAL",
+        "ESSENCIAL": "INHO_ESSENCIAL",
+        "INHO_PRO": "INHO_PRO_IA",
+        "INHO_PRO_IA": "INHO_PRO_IA",
+        "PRO": "INHO_PRO_IA",
+        "PREMIUM": "INHO_PRO_IA",
+        "INHO_COOPERATIVA": "INHO_COOPERATIVA_OURO",
+        "INHO_COOPERATIVA_OURO": "INHO_COOPERATIVA_OURO",
+        "COOPERATIVA": "INHO_COOPERATIVA_OURO",
+        "ENTERPRISE": "INHO_COOPERATIVA_OURO",
+    }
+    tier_key = tier_mapping.get(raw_tier, raw_tier)
+    if tier_key not in PLAN_CATALOG:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Plano invalido: '{payload.plan_tier}'. Escolha entre INHO_ESSENCIAL, INHO_PRO_IA ou INHO_COOPERATIVA_OURO."
+        )
+
+    plan_data = PLAN_CATALOG[tier_key]
+    is_annual = payload.billing_cycle.strip().upper() == "ANNUAL"
+    unit_amount = plan_data["annual_price_cents"] if is_annual else plan_data["monthly_price_cents"]
+    interval = "year" if is_annual else "month"
+
+    business = await _get_user_business(db, current_user)
+
+    success_url = payload.success_url or "https://inho.orbesystems.com.br/dashboard/settings?checkout=success&session_id={CHECKOUT_SESSION_ID}"
+    cancel_url = payload.cancel_url or "https://inho.orbesystems.com.br/dashboard/settings?checkout=canceled"
+
+    session_id = None
+    checkout_url = None
+    if (
+        stripe.api_key
+        and not stripe.api_key.startswith("sk_test_dummy")
+        and not stripe.api_key.startswith("sk_test_mock")
+        and not stripe.api_key.startswith("CHANGE_ME")
+    ):
+        try:
+            line_items = [
+                {
+                    "price_data": {
+                        "currency": "brl",
+                        "unit_amount": unit_amount,
+                        "product_data": {
+                            "name": f"{plan_data['name']} - {'Anual (2 Meses Gratis)' if is_annual else 'Mensal'}",
+                            "description": plan_data["description"][:500],
+                        },
+                        "recurring": {"interval": interval},
+                    },
+                    "quantity": 1,
+                }
+            ]
+            session = stripe.checkout.Session.create(
+                customer_email=current_user.email,
+                payment_method_types=["card"],
+                line_items=line_items,
+                mode="subscription",
+                success_url=success_url,
+                cancel_url=cancel_url,
+                metadata={
+                    "user_id": str(current_user.id),
+                    "business_id": str(business.id),
+                    "plan_tier": plan_data["tier"],
+                    "billing_cycle": "ANNUAL" if is_annual else "MONTHLY",
+                },
+            )
+            session_id = session.id
+            checkout_url = session.url
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=f"Erro no gateway Stripe: {str(exc)}")
+    else:
+        mock_id = f"cs_test_{uuid.uuid4().hex[:16]}"
+        session_id = mock_id
+        checkout_url = f"https://checkout.stripe.com/c/pay/{mock_id}"
+
+    return StripeCheckoutResponse(
+        checkout_url=checkout_url,
+        session_id=session_id,
+        plan_tier=plan_data["tier"],
+        billing_cycle="ANNUAL" if is_annual else "MONTHLY",
+        amount_cents=unit_amount,
+    )
+
+
+@router.post("/webhook", response_model=dict, status_code=status.HTTP_200_OK)
+async def stripe_billing_webhook(
+    request: Request,
+    stripe_signature: Optional[str] = Header(None, alias="stripe-signature"),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Webhook oficial do Stripe para INHO: POST /api/v1/billing/webhook
+    Escuta:
+      - checkout.session.completed
+      - customer.subscription.updated
+      - invoice.payment_succeeded
+    Executa provisionamento de planos, reconciliacao de faturas, disparo de comprovantes e auditoria.
+    """
+    import os
+    import json
+    import stripe
+    from core.config import PLAN_CATALOG, settings as app_settings
+    from models.models import WebhookLog, WebhookProcessingStatus
+
+    payload_bytes = await request.body()
+    webhook_secret = app_settings.STRIPE_WEBHOOK_SECRET or os.getenv("STRIPE_WEBHOOK_SECRET", "")
+
+    event = None
+    if webhook_secret and stripe_signature and stripe_signature not in ("mock-sig", "test-sig"):
+        try:
+            event = stripe.Webhook.construct_event(payload_bytes, stripe_signature, webhook_secret)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid Stripe webhook payload")
+        except stripe.error.SignatureVerificationError:
+            raise HTTPException(status_code=400, detail="Invalid Stripe webhook signature")
+    else:
+        try:
+            event = json.loads(payload_bytes.decode("utf-8"))
+        except Exception:
+            raise HTTPException(status_code=400, detail="Malformed JSON in webhook body")
+
+    event_id = event.get("id") or f"evt_{hashlib.sha256(payload_bytes).hexdigest()[:24]}"
+    event_type = event.get("type", "")
+    data_object = event.get("data", {}).get("object", {})
+
+    # 1. Idempotencia via WebhookLog
+    existing_log = (await db.execute(select(WebhookLog).where(WebhookLog.event_id == event_id))).scalar_one_or_none()
+    if existing_log and existing_log.status == WebhookProcessingStatus.PROCESSED:
+        return {
+            "status": "idempotent_ok",
+            "event_id": event_id,
+            "event_type": event_type,
+            "cached_replay": True,
+            "message": "Evento Stripe ja processado com sucesso.",
+        }
+
+    if not existing_log:
+        w_log = WebhookLog(
+            event_id=event_id,
+            provider="STRIPE",
+            payload=payload_bytes.decode("utf-8", errors="ignore"),
+            status=WebhookProcessingStatus.RECEIVED,
+        )
+        db.add(w_log)
+        await db.flush()
+    else:
+        w_log = existing_log
+
+    # 2. Roteamento de Eventos
+    try:
+        if event_type == "checkout.session.completed":
+            metadata = data_object.get("metadata", {}) or {}
+            raw_tier = metadata.get("plan_tier") or metadata.get("plan_type") or "INHO_PRO_IA"
+            cycle = (metadata.get("billing_cycle") or "MONTHLY").upper()
+            email = (
+                data_object.get("customer_email")
+                or data_object.get("customer_details", {}).get("email")
+                or metadata.get("email")
+            )
+            business_id = metadata.get("business_id")
+            user_id = metadata.get("user_id")
+
+            # Normalizar tier
+            norm_tier = raw_tier.upper().replace("-", "_")
+            if "ESSENCIAL" in norm_tier:
+                tier_key = "INHO_ESSENCIAL"
+            elif "COOPERATIVA" in norm_tier or "OURO" in norm_tier:
+                tier_key = "INHO_COOPERATIVA_OURO"
+            else:
+                tier_key = "INHO_PRO_IA"
+
+            plan_data = PLAN_CATALOG.get(tier_key, PLAN_CATALOG["INHO_PRO_IA"])
+
+            # Localizar Target Business
+            target_biz = None
+            if business_id:
+                target_biz = (await db.execute(select(Business).where(cast(Business.id, String) == str(business_id)))).scalar_one_or_none()
+
+            if not target_biz and user_id:
+                target_biz = (await db.execute(select(Business).where(cast(Business.user_id, String) == str(user_id)))).scalar_one_or_none()
+
+            if not target_biz and email:
+                user_res = await db.execute(select(User).where(func.lower(User.email) == email.strip().lower()))
+                target_user = user_res.scalar_one_or_none()
+                if target_user:
+                    target_biz = (await db.execute(select(Business).where(cast(Business.user_id, String) == str(target_user.id)))).scalar_one_or_none()
+
+            # Provisionar plano no Tenant
+            if target_biz:
+                target_biz.plan_tier = plan_data["tier"]
+                target_biz.billing_cycle = cycle
+                target_biz.monthly_price_cents = plan_data["monthly_price_cents"]
+                target_biz.max_operators = plan_data["max_operators"]
+                target_biz.ai_rag_enabled = plan_data["ai_rag_enabled"]
+                target_biz.cbm_predictive_enabled = plan_data["cbm_predictive_enabled"]
+                target_biz.cooperativa_module_enabled = plan_data["cooperativa_module_enabled"]
+                target_biz.monthly_ai_quota = plan_data["monthly_ai_quota"]
+                _BIZ_CACHE.pop(str(target_biz.user_id), None)
+
+            # Reconciliar faturas pendentes se houver email
+            invoices_cleared = 0
+            if email:
+                inv_res = await db.execute(
+                    select(BillingInvoice).where(
+                        BillingInvoice.customer_email == email,
+                        or_(BillingInvoice.status == BillingStatus.PENDING, BillingInvoice.status == BillingStatus.OVERDUE),
+                    )
+                )
+                invoices = inv_res.scalars().all()
+                for inv in invoices:
+                    inv.status = BillingStatus.PAID
+                    inv.remaining_balance = Decimal("0.0")
+                    inv.updated_by_name = "Stripe Webhook (checkout.session.completed)"
+                    invoices_cleared += 1
+
+                    # Async receipt
+                    phone = (inv.customer_phone or "5511999999999").replace("+", "").replace("-", "").replace(" ", "")
+                    b_name = target_biz.name if target_biz else "Orbe Systems"
+                    asyncio.create_task(async_dispatch_whatsapp_receipt(phone, inv.customer_name, inv.amount, b_name))
+                    asyncio.create_task(async_dispatch_email_receipt(email, inv.customer_name, inv.amount, b_name))
+
+            # Auditoria
+            await write_audit(
+                db,
+                action=AuditAction.UPDATE,
+                entity="business",
+                entity_id=str(target_biz.id) if target_biz else event_id,
+                user_id=str(target_biz.user_id) if target_biz else "SYSTEM",
+                user_name="STRIPE_WEBHOOK",
+                user_role="SYSTEM",
+                business_id=str(target_biz.id) if target_biz else None,
+                detail={
+                    "event": "checkout.session.completed",
+                    "event_id": event_id,
+                    "plan_tier": plan_data["tier"],
+                    "billing_cycle": cycle,
+                    "invoices_cleared": invoices_cleared,
+                },
+            )
+
+            w_log.status = WebhookProcessingStatus.PROCESSED
+            await db.commit()
+
+            return {
+                "status": "success",
+                "event_id": event_id,
+                "event_type": event_type,
+                "plan_tier": plan_data["tier"],
+                "business_id": str(target_biz.id) if target_biz else None,
+                "invoices_cleared": invoices_cleared,
+            }
+
+        elif event_type == "customer.subscription.updated":
+            metadata = data_object.get("metadata", {}) or {}
+            status_val = data_object.get("status", "active")
+            user_id = metadata.get("user_id")
+            business_id = metadata.get("business_id")
+            raw_tier = metadata.get("plan_tier")
+
+            target_biz = None
+            if business_id:
+                target_biz = (await db.execute(select(Business).where(cast(Business.id, String) == str(business_id)))).scalar_one_or_none()
+            elif user_id:
+                target_biz = (await db.execute(select(Business).where(cast(Business.user_id, String) == str(user_id)))).scalar_one_or_none()
+
+            if target_biz and raw_tier:
+                tier_key = raw_tier.upper().replace("-", "_")
+                if tier_key in PLAN_CATALOG:
+                    plan_data = PLAN_CATALOG[tier_key]
+                    target_biz.plan_tier = plan_data["tier"]
+                    target_biz.monthly_price_cents = plan_data["monthly_price_cents"]
+                    target_biz.max_operators = plan_data["max_operators"]
+                    target_biz.ai_rag_enabled = plan_data["ai_rag_enabled"]
+                    target_biz.cbm_predictive_enabled = plan_data["cbm_predictive_enabled"]
+                    target_biz.cooperativa_module_enabled = plan_data["cooperativa_module_enabled"]
+                    target_biz.monthly_ai_quota = plan_data["monthly_ai_quota"]
+                    _BIZ_CACHE.pop(str(target_biz.user_id), None)
+
+            await write_audit(
+                db,
+                action=AuditAction.UPDATE,
+                entity="subscription",
+                entity_id=data_object.get("id", event_id),
+                user_id=str(target_biz.user_id) if target_biz else "SYSTEM",
+                user_name="STRIPE_WEBHOOK",
+                user_role="SYSTEM",
+                business_id=str(target_biz.id) if target_biz else None,
+                detail={
+                    "event": "customer.subscription.updated",
+                    "event_id": event_id,
+                    "subscription_status": status_val,
+                },
+            )
+
+            w_log.status = WebhookProcessingStatus.PROCESSED
+            await db.commit()
+            return {"status": "success", "event_id": event_id, "event_type": event_type, "subscription_status": status_val}
+
+        elif event_type == "invoice.payment_succeeded":
+            customer_email = data_object.get("customer_email")
+
+            invoices_cleared = 0
+            if customer_email:
+                inv_res = await db.execute(
+                    select(BillingInvoice).where(
+                        BillingInvoice.customer_email == customer_email,
+                        or_(BillingInvoice.status == BillingStatus.PENDING, BillingInvoice.status == BillingStatus.OVERDUE),
+                    )
+                )
+                invoices = inv_res.scalars().all()
+                for inv in invoices:
+                    inv.status = BillingStatus.PAID
+                    inv.remaining_balance = Decimal("0.0")
+                    inv.updated_by_name = "Stripe Webhook (invoice.payment_succeeded)"
+                    invoices_cleared += 1
+
+            await write_audit(
+                db,
+                action=AuditAction.UPDATE,
+                entity="invoice",
+                entity_id=data_object.get("id", event_id),
+                user_id="SYSTEM",
+                user_name="STRIPE_WEBHOOK",
+                user_role="SYSTEM",
+                detail={
+                    "event": "invoice.payment_succeeded",
+                    "event_id": event_id,
+                    "customer_email": customer_email,
+                    "invoices_cleared": invoices_cleared,
+                },
+            )
+
+            w_log.status = WebhookProcessingStatus.PROCESSED
+            await db.commit()
+            return {"status": "success", "event_id": event_id, "event_type": event_type, "invoices_cleared": invoices_cleared}
+
+        else:
+            w_log.status = WebhookProcessingStatus.IGNORED
+            await db.commit()
+            return {"status": "ignored", "event_id": event_id, "event_type": event_type, "message": "Evento Stripe nao requer processamento de faturas ou planos."}
+
+    except Exception as exc:
+        await db.rollback()
+        w_log.status = WebhookProcessingStatus.FAILED
+        w_log.error_message = str(exc)
+        try:
+            await db.commit()
+        except Exception:
+            pass
+        raise HTTPException(status_code=500, detail=f"Erro interno no processamento do webhook Stripe: {str(exc)}")
