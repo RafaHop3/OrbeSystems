@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ShieldCheck, ArrowRight, Users, Crown, MessageSquare } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Users, Crown, MessageSquare, CreditCard, Sparkles } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { addLoginLog } from '@/lib/loginLog';
 
@@ -210,21 +210,60 @@ function LoginContent() {
           )}
         </div>
 
-        {/* OrBrick WhatsApp Direct Onboarding Banner */}
-        <div className="mt-6 text-center animate-fade-in">
-          <p className="text-xs text-[#64748B] mb-2 font-medium">
-            Deseja credenciar sua cooperativa ou assinar o INHO?
+        {/* Subscription & Plans Executive Banner */}
+        <div className="mt-6 bg-white/95 backdrop-blur-md border border-[#E2E8F0] hover:border-[#D4AF37] rounded-3xl p-5 shadow-[0_10px_30px_-10px_rgba(15,23,42,0.06)] transition-all animate-fade-in">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-1.5 text-xs font-black text-[#0F172A]">
+              <Sparkles size={15} className="text-[#B8860B]" />
+              <span>Não possui uma assinatura ativa?</span>
+            </div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+              2 Meses Grátis no Anual
+            </span>
+          </div>
+
+          <p className="text-xs text-[#64748B] mb-3 leading-relaxed">
+            Escolha seu plano para ter acesso imediato ao ERP INHO, Copilot IA para Operadores, Maquininha Stripe e Governança Ouro.
           </p>
-          <a
-            href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa."
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 text-xs font-bold text-slate-800 hover:text-emerald-700 shadow-sm transition-all"
-          >
-            <MessageSquare size={15} className="text-emerald-600" />
-            <span>Falar com o OrBrick no WhatsApp</span>
-            <ArrowRight size={13} className="text-slate-400" />
-          </a>
+
+          {/* Pricing Badges */}
+          <div className="grid grid-cols-3 gap-2 mb-4 text-center">
+            <div className="p-2 rounded-xl bg-[#F8FAFC] border border-slate-200">
+              <span className="block text-[10px] font-bold text-slate-500 uppercase">Essencial</span>
+              <span className="text-xs font-black text-[#0F172A]">R$ 290<span className="text-[9px] font-normal text-slate-400">/m</span></span>
+            </div>
+            <div className="p-2 rounded-xl bg-purple-50/60 border border-purple-200">
+              <span className="block text-[10px] font-bold text-purple-700 uppercase">Pro + IA</span>
+              <span className="text-xs font-black text-purple-950">R$ 590<span className="text-[9px] font-normal text-purple-400">/m</span></span>
+            </div>
+            <div className="p-2 rounded-xl bg-amber-50/60 border border-amber-200">
+              <span className="block text-[10px] font-bold text-[#8B6508] uppercase">Cooperativa</span>
+              <span className="text-xs font-black text-[#0F172A]">R$ 990<span className="text-[9px] font-normal text-amber-500">/m</span></span>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <a
+              href="https://orbesystems.com.br/assinar"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-[#9A6F0B] via-[#C59B27] to-[#9A6F0B] text-white text-xs font-extrabold flex items-center justify-center gap-2 shadow-sm hover:brightness-105 transition-all text-center"
+            >
+              <CreditCard size={14} />
+              <span>Assinar Planos INHO</span>
+              <ArrowRight size={13} />
+            </a>
+
+            <a
+              href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full py-2 px-4 rounded-xl bg-[#F8FAFC] hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-300 text-xs font-bold text-slate-700 hover:text-emerald-700 transition-all flex items-center justify-center gap-2"
+            >
+              <MessageSquare size={14} className="text-emerald-600" />
+              <span>Falar com OrBrick no WhatsApp</span>
+            </a>
+          </div>
         </div>
 
         {/* Security Footer */}

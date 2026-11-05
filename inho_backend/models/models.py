@@ -37,6 +37,7 @@ class UserRole(str, enum.Enum):
 
 class BusinessCategory(str, enum.Enum):
     COOPERATIVA = "COOPERATIVA"
+    MERCADOS_E_AFINS  = "MERCADOS_E_AFINS"
     VAREJO      = "VAREJO"
     SERVICOS    = "SERVICOS"
     OUTROS      = "OUTROS"
@@ -334,6 +335,34 @@ class CashRegister(Base):
     )
 
 
+class TerminalReaderStatus(str, enum.Enum):
+    ONLINE  = "ONLINE"
+    OFFLINE = "OFFLINE"
+    BUSY    = "BUSY"
+
+
+class StripeTerminalReader(Base):
+    __tablename__ = "stripe_terminal_readers"
+
+    id               = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id      = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    stripe_reader_id = Column(String(100), unique=True, nullable=False, index=True)
+    label            = Column(String(100), nullable=False)
+    device_type      = Column(String(50), nullable=False, default="bbpos_wisepos_e")
+    serial_number    = Column(String(100), nullable=True)
+    status           = Column(Enum(TerminalReaderStatus), default=TerminalReaderStatus.ONLINE, nullable=False)
+    location_id      = Column(String(100), nullable=True)
+    ip_address       = Column(String(50), nullable=True)
+    created_at       = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    business = relationship("Business")
+
+    __table_args__ = (
+        Index("ix_terminal_readers_business", "business_id"),
+        Index("ix_terminal_readers_status", "status"),
+    )
+
+
 class PDVSale(Base):
     __tablename__ = "pdv_sales"
 
@@ -343,6 +372,13 @@ class PDVSale(Base):
     total_amount     = Column(Numeric(precision=20, scale=8), nullable=False)
     payment_method   = Column(Enum(PaymentMethod), nullable=False)
     description      = Column(Text, nullable=True)
+    barcode          = Column(String(100), nullable=True)
+    is_weighable     = Column(Boolean, default=False, nullable=False, server_default='0')
+    weight_kg        = Column(Numeric(precision=10, scale=3), nullable=True)
+    stripe_payment_intent_id = Column(String(100), nullable=True)
+    terminal_reader_id = Column(String(100), nullable=True)
+    card_brand       = Column(String(50), nullable=True)
+    card_entry_method = Column(String(50), nullable=True)
     created_at       = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 
     cash_register = relationship("CashRegister", back_populates="sales")
@@ -350,6 +386,7 @@ class PDVSale(Base):
     __table_args__ = (
         Index("ix_pdv_sales_register", "cash_register_id"),
         Index("ix_pdv_sales_created", "created_at"),
+        Index("ix_pdv_sales_barcode", "barcode"),
     )
 
 

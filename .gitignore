@@ -51,3 +51,6 @@ logs/
 .aider*
 whatsapp_bot/auth_info_baileys/
 whatsapp_bot/auth_info_baileys/
+
+stripe_provisioned_plans.json
+inho_backend/storage/cold_storage/

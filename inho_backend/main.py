@@ -17,7 +17,7 @@ from keep_alive import start_keep_alive, stop_keep_alive
 from routers import (
     auth, users, audit, contracts, sales_orders, pdv, admin, pco, businesses, billing, ghost_engine, crm
 )
-from routers import cooperados, categories, notes, recurrences, accounting, reports, settings as settings_router, open_finance
+from routers import cooperados, categories, notes, recurrences, accounting, reports, settings as settings_router, open_finance, terminal, copilot
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger("inho")
@@ -316,6 +316,8 @@ app.include_router(categories.router)  # /api/v1/categories
 app.include_router(notes.router)       # /api/v1/notes
 app.include_router(settings_router.router, prefix="/api/v1/settings", tags=["Settings"])
 app.include_router(open_finance.router, prefix="/api/v1/open-finance", tags=["Open Finance Brasil (BACEN)"])
+app.include_router(terminal.router)
+app.include_router(copilot.router)
 
 @app.post("/api/v1/webhooks/banking/{provider}", tags=["Banking Webhooks"])
 async def banking_webhook_entry(
