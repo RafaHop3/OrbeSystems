@@ -153,11 +153,31 @@ async def register_terminal_reader(
     ip_addr = "192.168.1.150"
     serial = f"WPOS_{uuid.uuid4().hex[:8].upper()}"
 
-    if key and not key.startswith("sk_test_dummy") and not key.startswith("sk_test_mock") and not key.startswith("CHANGE_ME"):
+    location_id = payload.location_id
+    if not payload.registration_code.startswith("simulated-") and key and not key.startswith("sk_test_dummy") and not key.startswith("sk_test_mock") and not key.startswith("CHANGE_ME"):
         try:
+            if not location_id:
+                # Obter ou criar localização comercial no Stripe Terminal
+                locs = stripe.terminal.Location.list(limit=1)
+                if locs and locs.data:
+                    location_id = locs.data[0].id
+                else:
+                    new_loc = stripe.terminal.Location.create(
+                        display_name=biz.name or "Sede Comercial",
+                        address={
+                            "line1": "Av. Principal, 1000",
+                            "city": "Porto Alegre",
+                            "state": "RS",
+                            "country": "BR",
+                            "postal_code": "90000-000",
+                        }
+                    )
+                    location_id = new_loc.id
+
             reader = stripe.terminal.Reader.create(
                 registration_code=payload.registration_code.strip(),
                 label=payload.label.strip(),
+                location=location_id,
                 metadata={"business_id": str(biz.id), "system": "inho_mercados"}
             )
             stripe_reader_id = reader.id
@@ -169,6 +189,8 @@ async def register_terminal_reader(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Falha ao parear maquininha no Stripe Terminal: {str(exc)}"
             )
+    else:
+        stripe_reader_id = f"tmr_sim_{uuid.uuid4().hex[:12]}" 
 
     # Persistir no banco de dados local
     new_reader = StripeTerminalReader(
@@ -251,7 +273,7 @@ async def create_and_process_terminal_payment(
     client_sec = f"{pi_id}_secret_{uuid.uuid4().hex[:8]}"
     pi_status = "requires_payment_method"
 
-    if key and not key.startswith("sk_test_dummy") and not key.startswith("sk_test_mock") and not key.startswith("CHANGE_ME"):
+    if key and not reader.stripe_reader_id.startswith("tmr_sim_") and not key.startswith("sk_test_dummy") and not key.startswith("sk_test_mock") and not key.startswith("CHANGE_ME"):
         try:
             # 1. Criar PaymentIntent presencial
             pi = stripe.PaymentIntent.create(
@@ -333,7 +355,7 @@ async def cancel_terminal_payment(
     if not reader:
         raise HTTPException(status_code=404, detail="Maquininha não encontrada.")
 
-    if key and not key.startswith("sk_test_dummy") and not key.startswith("sk_test_mock") and not key.startswith("CHANGE_ME"):
+    if key and not reader.stripe_reader_id.startswith("tmr_sim_") and not key.startswith("sk_test_dummy") and not key.startswith("sk_test_mock") and not key.startswith("CHANGE_ME"):
         try:
             stripe.terminal.Reader.cancel_action(reader.stripe_reader_id)
         except Exception as exc:
