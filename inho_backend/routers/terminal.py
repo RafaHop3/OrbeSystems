@@ -18,7 +18,10 @@ from decimal import Decimal
 from datetime import datetime, timezone
 from typing import List, Optional
 
-import stripe
+try:
+    import stripe
+except ImportError:
+    stripe = None
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
 from sqlalchemy import select
