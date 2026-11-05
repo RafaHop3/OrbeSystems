@@ -74,7 +74,7 @@ export default function InhoManifestoHero() {
       <div className="relative z-10 max-w-7xl mx-auto">
         <header className="max-w-3xl mb-14 space-y-5">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#8b5cf6]/10 border border-[#8b5cf6]/30 rounded-full text-[10px] text-[#a78bfa] uppercase font-bold tracking-widest">
-            <Sprout size={14} /> Manifesto Interativo · INHO Business
+            <Sprout size={14} /> Árvore de Habilidades &amp; Manifesto Interativo · INHO Business
           </div>
           <h2
             id="inho-manifesto-title"
@@ -89,8 +89,7 @@ export default function InhoManifestoHero() {
             </span>
           </h2>
           <p className="text-slate-300 font-sans leading-relaxed text-lg">
-            Um sistema de gestão empresarial que cuida do seu negócio como quem cuida de um jardim.
-            Passe o cursor sobre cada estação para iluminar a anatomia da árvore ao lado.
+            Árvore de habilidades corporativas: RAG multi-tenant com regulamento próprio, atendimento WhatsApp omnichannel com chat bidirecional, CBM preditivo, PIX instantâneo e governança cooperativa. Passe o cursor sobre cada estação para iluminar a anatomia da árvore ao lado.
           </p>
         </header>
 
@@ -184,9 +183,9 @@ export default function InhoManifestoHero() {
             )}
             <ProductMetrics
               metrics={[
-                { label: 'Anti-injection', value: '< 1 ms' },
-                { label: 'Isolamento', value: 'UUID + RLS' },
-                { label: 'Privacidade', value: 'LGPD Art. 18' },
+                { label: 'OrBrick-IA RAG', value: 'Regulamento Próprio' },
+                { label: 'Chat WhatsApp', value: 'Bidirecional' },
+                { label: 'Isolamento', value: 'UUID + Postgre RLS' },
               ]}
             />
           </div>

@@ -87,12 +87,12 @@ const ORBE_12_TOOLS: ToolProject[] = [
     {
         id: "inho-erp",
         title: "INHO Business Engine",
-        category: "ERP, IA Segura & CBM",
-        tagline: "Árvore neural de gestão, PIX instantâneo & DRE",
+        category: "ERP, OrBrick-IA RAG & CBM",
+        tagline: "Árvore de habilidades: RAG multi-tenant, WhatsApp IA, PIX & CBM",
         url: "https://inho.orbesystems.com.br",
         accentColor: "#10b981",
         secondaryColor: "#00fff5",
-        telemetryTag: "PIX < 1s · MULTI-TENANT",
+        telemetryTag: "RAG IA · PIX < 1s · MULTI-TENANT",
         miniVoidType: "inho-erp",
     },
     {

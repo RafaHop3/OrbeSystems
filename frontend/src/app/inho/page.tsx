@@ -4,7 +4,7 @@ import { MANIFESTO_KEYWORDS, MANIFESTO_STAGES, MANIFESTO_TAGLINE } from '@/data/
 
 const TITLE = 'INHO Business: ERP inteligente para cooperativas e PMEs | Orbe Systems';
 const DESCRIPTION =
-  'Gestão financeira, CRM, cobrança por WhatsApp com IA segura e análise de churn num só sistema, com isolamento multiempresa e LGPD.';
+  'Gestão para cooperativas e empresas: OrBrick-IA com RAG de regulamento próprio, WhatsApp omnichannel bidirecional, CBM preditivo, alçada dual-control, PIX dinâmico e isolamento PostgreSQL RLS.';
 
 export const metadata: Metadata = {
   title: TITLE,
