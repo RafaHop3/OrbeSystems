@@ -26,12 +26,13 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 @router.post("/checkout")
 async def create_checkout_session(
-    plan_type: Optional[str] = Query("premium", description="Tipo de plano: 'premium' ou 'ghost_engine'"),
+    plan_type: Optional[str] = Query("inho_pro", description="Tipo de plano: 'ghost_engine', 'inho_essencial', 'inho_pro', 'inho_cooperativa' ou 'premium'"),
+    billing_cycle: Optional[str] = Query("monthly", description="Ciclo: 'monthly' ou 'annual' (2 meses grátis)"),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
     """
-    Generates a Stripe Checkout URL for the selected plan.
+    Generates a Stripe Checkout URL for the selected plan and billing cycle.
     Returns {"checkout_url": "https://checkout.stripe.com/..."}
     """
     if not settings.STRIPE_SECRET_KEY:
@@ -40,11 +41,8 @@ async def create_checkout_session(
             detail="Payment system not configured (STRIPE_SECRET_KEY missing).",
         )
 
-    if plan_type == "premium" and current_user.role == "premium":
-        raise HTTPException(
-            status_code=400,
-            detail="You are already a Premium subscriber.",
-        )
+    norm_plan = (plan_type or "inho_pro").strip().lower()
+    is_annual = (billing_cycle or "monthly").strip().lower() == "annual"
 
     try:
         # ── Idempotent Customer Creation ──────────────────────────────────────
@@ -60,7 +58,7 @@ async def create_checkout_session(
                 payment_logger.warning(f"Skipping stripe customer creation: {e}")
 
         # ── Line items and mode based on plan_type ────────────────────────────
-        if plan_type == "ghost_engine":
+        if norm_plan == "ghost_engine":
             line_items = [
                 {
                     "price_data": {
@@ -75,25 +73,75 @@ async def create_checkout_session(
                 }
             ]
             mode = "payment"
-            success_url = f"{settings.FRONTEND_URL}/ferramentas-premium/databroker-optout?unlocked=true&session_id={{CHECKOUT_SESSION_ID}}"
+            success_url = f"{settings.FRONTEND_URL}/ferramentas-premium/databroker-optout?unlocked=true&session_id={CHECKOUT_SESSION_ID}"
             cancel_url = f"{settings.FRONTEND_URL}/ghost-engine"
-        else:
+            tier_code = "GHOST_ENGINE"
+
+        elif norm_plan in ("inho_essencial", "essencial", "INHO_ESSENCIAL"):
+            price_cents = 290000 if is_annual else 29000
+            interval = "year" if is_annual else "month"
             line_items = [
                 {
                     "price_data": {
                         "currency": "brl",
-                        "unit_amount": 29000,  # R$ 290,00
+                        "unit_amount": price_cents,
                         "product_data": {
-                            "name": "Orbe Premium (INHO Business + Orbe Knight SecSuite)",
+                            "name": f"INHO Essencial (PME & Serviços) — {'Anual (2 Meses Grátis)' if is_annual else 'Mensal'}",
+                            "description": "Core ERP completo, até 3 operadores, PDV, Contratos, Boletos/PIX e Central WhatsApp Básica.",
                         },
-                        "recurring": {"interval": "month"},
+                        "recurring": {"interval": interval},
                     },
                     "quantity": 1,
                 }
             ]
             mode = "subscription"
-            success_url = f"{settings.FRONTEND_URL}/assinar/sucesso?session_id={{CHECKOUT_SESSION_ID}}"
+            success_url = f"{settings.FRONTEND_URL}/assinar/sucesso?session_id={CHECKOUT_SESSION_ID}"
             cancel_url = f"{settings.FRONTEND_URL}/assinar"
+            tier_code = "INHO_ESSENCIAL"
+
+        elif norm_plan in ("inho_cooperativa", "cooperativa", "INHO_COOPERATIVA_OURO", "cooperativa_ouro"):
+            price_cents = 990000 if is_annual else 99000
+            interval = "year" if is_annual else "month"
+            line_items = [
+                {
+                    "price_data": {
+                        "currency": "brl",
+                        "unit_amount": price_cents,
+                        "product_data": {
+                            "name": f"INHO Cooperativa & Enterprise (Padrão Ouro) — {'Anual (2 Meses Grátis)' if is_annual else 'Mensal'}",
+                            "description": "Quadro Social, Cotas-Partes, Open Finance Sicoob/Sicredi, até 25 operadores, RAG Ilimitado e Guardrail Zero-Trust.",
+                        },
+                        "recurring": {"interval": interval},
+                    },
+                    "quantity": 1,
+                }
+            ]
+            mode = "subscription"
+            success_url = f"{settings.FRONTEND_URL}/assinar/sucesso?session_id={CHECKOUT_SESSION_ID}"
+            cancel_url = f"{settings.FRONTEND_URL}/assinar"
+            tier_code = "INHO_COOPERATIVA_OURO"
+
+        else: # default: inho_pro / INHO_PRO_IA / premium
+            price_cents = 590000 if is_annual else 59000
+            interval = "year" if is_annual else "month"
+            line_items = [
+                {
+                    "price_data": {
+                        "currency": "brl",
+                        "unit_amount": price_cents,
+                        "product_data": {
+                            "name": f"INHO Pro + OrBrick-IA (CBM & RAG) — {'Anual (2 Meses Grátis)' if is_annual else 'Mensal'}",
+                            "description": "OrBrick-IA Ativa, CBM Preditivo, até 8 operadores, até 25 diretrizes RAG (.PDF/.DOCX) e Alçada Dual-Control.",
+                        },
+                        "recurring": {"interval": interval},
+                    },
+                    "quantity": 1,
+                }
+            ]
+            mode = "subscription"
+            success_url = f"{settings.FRONTEND_URL}/assinar/sucesso?session_id={CHECKOUT_SESSION_ID}"
+            cancel_url = f"{settings.FRONTEND_URL}/assinar"
+            tier_code = "INHO_PRO_IA"
 
         # ── Checkout Session (Stripe Gateway) ───────────────────────────────────
         checkout_session = stripe.checkout.Session.create(
@@ -105,11 +153,12 @@ async def create_checkout_session(
             cancel_url=cancel_url,
             metadata={
                 "user_id": str(current_user.id),
-                "plan_type": plan_type or "premium"
+                "plan_type": tier_code,
+                "billing_cycle": "ANNUAL" if is_annual else "MONTHLY"
             },
         )
 
-        payment_logger.info(f"Stripe Checkout session ({plan_type}) created for {current_user.email}")
+        payment_logger.info(f"Stripe Checkout session ({tier_code}) created for {current_user.email}")
         return {"checkout_url": checkout_session.url}
 
     except stripe.error.StripeError as e:

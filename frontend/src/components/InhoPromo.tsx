@@ -31,14 +31,14 @@ export default function InhoPromo() {
                     </h2>
 
                     <p className="text-slate-400 font-sans leading-relaxed text-lg max-w-xl">
-                        Plataforma corporativa de gestão multiempresa e automação de cobranças.
-                        Opere até 3 empresas com dados isolados, cobrança PIX dinâmica em 1 clique, conciliação por webhooks assinados (HMAC-SHA256), régua de cobrança no OrBrick WhatsApp e relatórios DRE executivos.
+                        Plataforma corporativa de gestão multiempresa, cooperativas e automação com IA segura.
+                        Opere com dados isolados por PostgreSQL RLS, base RAG com regulamento próprio, atendimento WhatsApp com chat bidirecional e resposta assistida, cobrança PIX dinâmica em 1 clique, governança de alçada dual-control (&gt; R$ 5k), inteligência CBM preditiva e relatórios DRE executivos.
                     </p>
 
                     <ProductMetrics metrics={[
-                        { label: 'Latência BI / DRE', value: '< 290 ms' },
-                        { label: 'Isolamento de Dados', value: 'Multiempresa UUID' },
-                        { label: 'Mensageria', value: 'OrBrick WhatsApp' },
+                        { label: 'OrBrick-IA', value: 'RAG Multi-Tenant' },
+                        { label: 'Isolamento RLS', value: 'UUID + Postgre' },
+                        { label: 'CBM Preditivo', value: 'RFM & Churn' },
                     ]} />
 
                     <div className="flex flex-wrap gap-4 pt-4">
@@ -75,8 +75,8 @@ export default function InhoPromo() {
                                 <Building2 className="text-purple-400" size={24} />
                             </div>
                             <div>
-                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>1. Multiempresa Isolado</h3>
-                                <p className="text-xs text-slate-400 mt-1">Até 3 empresas com dados segregados por identificador único (UUID).</p>
+                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>1. Multiempresa &amp; Cooperativas</h3>
+                                <p className="text-xs text-slate-400 mt-1">Segregação por PostgreSQL RLS, quadro social de cooperados e informe DIRF/IRPF.</p>
                             </div>
                         </div>
 
@@ -88,8 +88,8 @@ export default function InhoPromo() {
                                 <QrCode className="text-amber-400 animate-pulse" size={24} />
                             </div>
                             <div>
-                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>2. Cobranças PIX + WhatsApp</h3>
-                                <p className="text-xs text-slate-400 mt-1">Cobrança PIX e régua automática no OrBrick (D-3, D0 e D+3).</p>
+                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>2. OrBrick-IA RAG &amp; WhatsApp</h3>
+                                <p className="text-xs text-slate-400 mt-1">Regulamento próprio em 1 clique, chat bidirecional, Handoff e Anti-Injection.</p>
                             </div>
                         </div>
 
@@ -101,8 +101,8 @@ export default function InhoPromo() {
                                 <ShieldCheck className="text-emerald-400" size={24} />
                             </div>
                             <div>
-                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>3. DRE Executivo & Auditoria</h3>
-                                <p className="text-xs text-slate-400 mt-1">Fluxo de caixa inteligente, relatórios PCO e logs de auditoria.</p>
+                                <h3 className="font-tilt-neon tracking-widest font-bold text-white text-sm" style={{ textShadow: '0 0 5px rgba(255,255,255,0.4)' }}>3. PIX, Dual-Control &amp; CBM</h3>
+                                <p className="text-xs text-slate-400 mt-1">Alçada dupla &gt; R$ 5k, Open Finance BACEN, radar de churn RFM e DRE executivo.</p>
                             </div>
                         </div>
 

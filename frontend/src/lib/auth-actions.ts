@@ -73,14 +73,18 @@ export async function logoutAction(): Promise<void> {
   await clearAuthCookie();
 }
 
-export async function createCheckoutSessionAction(): Promise<{ url?: string; error?: string }> {
+export async function createCheckoutSessionAction(
+  planType: string = "inho_pro",
+  billingCycle: string = "monthly"
+): Promise<{ url?: string; error?: string }> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get(TOKEN_COOKIE)?.value;
 
     if (!token) return { error: "unauthorized" };
 
-    const res = await fetch(`${API_URL}/api/users/checkout`, {
+    const url = `${API_URL}/api/users/checkout?plan_type=${encodeURIComponent(planType)}&billing_cycle=${encodeURIComponent(billingCycle)}`;
+    const res = await fetch(url, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

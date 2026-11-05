@@ -131,6 +131,16 @@ class Business(Base):
     logo_url = Column(String(500), nullable=True)
     cashflow_horizon_months = Column(Integer, nullable=False, default=6)
 
+    # Controle de Plano & Franquias (Novos Planos 05/11/2026)
+    plan_tier = Column(String(40), nullable=False, default="INHO_ESSENCIAL", server_default="INHO_ESSENCIAL")
+    billing_cycle = Column(String(20), nullable=False, default="MONTHLY", server_default="MONTHLY")
+    monthly_price_cents = Column(Integer, nullable=False, default=29000, server_default="29000")
+    max_operators = Column(Integer, nullable=False, default=3, server_default="3")
+    ai_rag_enabled = Column(Boolean, nullable=False, default=False, server_default="false")
+    cbm_predictive_enabled = Column(Boolean, nullable=False, default=False, server_default="false")
+    cooperativa_module_enabled = Column(Boolean, nullable=False, default=False, server_default="false")
+    monthly_ai_quota = Column(Integer, nullable=False, default=500, server_default="500")
+
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc),
                         onupdate=lambda: datetime.now(timezone.utc), nullable=False)

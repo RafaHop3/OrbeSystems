@@ -27,6 +27,68 @@ def _require_admin(user: User):
 def _encrypt_key(key: str) -> str:
     return encrypt_secret(key)
 
+# ── Overview / Plan & Quotas (05/11/2026) ────────────────────────
+@router.get("", response_model=dict)
+@router.get("/", response_model=dict)
+async def get_settings_overview(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    Retorna dados de plano_tier, monthly_price_cents, max_operators,
+    consumo da franquia RAG/IA e operadores para o tenant ativo.
+    """
+    from models.models import BusinessOperator, AIKnowledgeChunk
+    from core.config import PLAN_CATALOG
+    from sqlalchemy import func
+
+    business = await _get_user_business(db, current_user)
+    if not business:
+        raise HTTPException(status_code=404, detail="Negócio não encontrado.")
+
+    b_id = get_uuid(business.id)
+
+    operators_count = (await db.execute(
+        select(func.count(BusinessOperator.id)).where(BusinessOperator.business_id == b_id)
+    )).scalar() or 0
+
+    rag_chunks_count = (await db.execute(
+        select(func.count(AIKnowledgeChunk.id)).where(
+            AIKnowledgeChunk.business_id == b_id,
+            AIKnowledgeChunk.is_active == True,
+        )
+    )).scalar() or 0
+
+    tier = getattr(business, "plan_tier", "INHO_ESSENCIAL")
+    plan_info = PLAN_CATALOG.get(tier, {
+        "tier": tier,
+        "name": tier,
+        "badge": "PLANO ATIVO",
+        "monthly_price_cents": getattr(business, "monthly_price_cents", 29000),
+        "max_operators": getattr(business, "max_operators", 3),
+        "ai_rag_enabled": getattr(business, "ai_rag_enabled", False),
+        "cbm_predictive_enabled": getattr(business, "cbm_predictive_enabled", False),
+        "cooperativa_module_enabled": getattr(business, "cooperativa_module_enabled", False),
+        "monthly_ai_quota": getattr(business, "monthly_ai_quota", 500),
+    })
+
+    return {
+        "plan_tier": tier,
+        "billing_cycle": getattr(business, "billing_cycle", "MONTHLY"),
+        "monthly_price_cents": getattr(business, "monthly_price_cents", 29000),
+        "max_operators": getattr(business, "max_operators", 3),
+        "operators_count": operators_count,
+        "ai_rag_enabled": getattr(business, "ai_rag_enabled", False),
+        "cbm_predictive_enabled": getattr(business, "cbm_predictive_enabled", False),
+        "cooperativa_module_enabled": getattr(business, "cooperativa_module_enabled", False),
+        "monthly_ai_quota": getattr(business, "monthly_ai_quota", 500),
+        "rag_chunks_count": rag_chunks_count,
+        "business_id": str(business.id),
+        "business_name": business.name,
+        "plan_details": plan_info,
+        "available_plans": PLAN_CATALOG,
+    }
+
 # ── API Tokens ──────────────────────────────────────────────────
 @router.post("/api-tokens", response_model=ApiTokenCreateResponse)
 async def create_api_token(

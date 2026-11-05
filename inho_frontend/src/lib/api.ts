@@ -238,6 +238,16 @@ export interface BusinessOut {
   name: string;
   cnpj?: string;
   category: string;
+  plan_tier?: string;
+  billing_cycle?: string;
+  monthly_price_cents?: number;
+  max_operators?: number;
+  operators_count?: number;
+  ai_rag_enabled?: boolean;
+  cbm_predictive_enabled?: boolean;
+  cooperativa_module_enabled?: boolean;
+  monthly_ai_quota?: number;
+  rag_chunks_count?: number;
 }
 
 export const businessesApi = {
@@ -1150,6 +1160,7 @@ export interface BankIntegrationItem {
 }
 
 export const settingsApi = {
+  getSettings: () => apiFetch<any>('/api/v1/settings'),
   listTokens: () => apiFetch<ApiTokenItem[]>('/api/v1/settings/api-tokens'),
   createToken: (name: string) =>
     apiFetch<ApiTokenItem>('/api/v1/settings/api-tokens', {

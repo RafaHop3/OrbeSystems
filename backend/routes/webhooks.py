@@ -153,7 +153,9 @@ async def stripe_webhook(
                             reconcile_payload = {
                                 "email": user_email,
                                 "action": "checkout_session_completed",
-                                "stripe_customer_id": customer_id
+                                "stripe_customer_id": customer_id,
+                                "plan_tier": data.get("metadata", {}).get("plan_type") or "INHO_PRO_IA",
+                                "billing_cycle": data.get("metadata", {}).get("billing_cycle") or "MONTHLY",
                             }
                             rec_resp = await client.post(
                                 f"{inho_api_url}/billing/webhook/reconcile",

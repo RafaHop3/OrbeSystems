@@ -36,6 +36,16 @@ class BusinessResponse(BaseModel):
     logo_url: str | None = None
     cashflow_horizon_months: int = 6
 
+    # ── Controle de Plano & Franquias (05/11/2026) ──
+    plan_tier: str = "INHO_ESSENCIAL"
+    billing_cycle: str = "MONTHLY"
+    monthly_price_cents: int = 29000
+    max_operators: int = 3
+    ai_rag_enabled: bool = False
+    cbm_predictive_enabled: bool = False
+    cooperativa_module_enabled: bool = False
+    monthly_ai_quota: int = 500
+
     model_config = ConfigDict(from_attributes=True)
 
 class BusinessSettingsUpdate(BaseModel):

@@ -64,6 +64,22 @@ async def create_user(
         target_biz_id = admin_biz.id if admin_biz else None
     target_b_uuid = get_uuid(target_biz_id) if target_biz_id else None
 
+    # ── Feature Gate de Operadores por Plano (Novos Planos 05/11/2026) ──
+    if role_input == "operator" and target_b_uuid:
+        from models.models import Business
+        biz_obj = (await db.execute(select(Business).where(Business.id == target_b_uuid))).scalar_one_or_none()
+        if biz_obj:
+            curr_ops = (await db.execute(
+                select(func.count(BusinessOperator.id)).where(BusinessOperator.business_id == target_b_uuid)
+            )).scalar() or 0
+            max_limit = getattr(biz_obj, "max_operators", 3) or 3
+            if curr_ops >= max_limit:
+                tier_name = getattr(biz_obj, "plan_tier", "INHO_ESSENCIAL")
+                raise HTTPException(
+                    status_code=status.HTTP_402_PAYMENT_REQUIRED,
+                    detail=f"Limite de operadores atingido ({curr_ops}/{max_limit}) para o plano {tier_name}. Faça o upgrade de plano ou contrate operadores adicionais (+ R$ 49,00/mês)."
+                )
+
     # BUG-04: Tratamento idempotente e prevenção de HTTP 500 por e-mail duplicado
     clean_email = body.email.strip().lower()
     existing_user = (await db.execute(select(User).where(func.lower(User.email) == clean_email))).scalar_one_or_none()

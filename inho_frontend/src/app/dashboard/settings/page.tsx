@@ -33,8 +33,9 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'COMPANY' | 'BANKS' | 'API' | 'TELEMETRY' | 'ORBRICK_RAG' | 'ORBRICK_SIMULATOR'>('COMPANY');
   const [loading, setLoading] = useState(true);
 
-  // Company / Tenant
+  // Company / Tenant & Plan Overview
   const [business, setBusiness] = useState<BusinessOut | null>(null);
+  const [planOverview, setPlanOverview] = useState<any>(null);
 
   // Bank Integrations
   const [banks, setBanks] = useState<BankIntegrationItem[]>([]);
@@ -57,11 +58,12 @@ export default function SettingsPage() {
   const loadSettings = async () => {
     setLoading(true);
     try {
-      const [bizList, bankList, tokenList, apmData] = await Promise.all([
+      const [bizList, bankList, tokenList, apmData, overview] = await Promise.all([
         businessesApi.list().catch(() => []),
         settingsApi.listBanks().catch(() => []),
         settingsApi.listTokens().catch(() => []),
         settingsApi.getTelemetry().catch(() => null),
+        settingsApi.getSettings().catch(() => null),
       ]);
       if (Array.isArray(bizList) && bizList.length > 0) {
         setBusiness(bizList[0]);
@@ -69,6 +71,7 @@ export default function SettingsPage() {
       setBanks(Array.isArray(bankList) ? bankList : []);
       setTokens(Array.isArray(tokenList) ? tokenList : []);
       setTelemetry(apmData);
+      setPlanOverview(overview);
     } finally {
       setLoading(false);
     }
@@ -255,6 +258,99 @@ export default function SettingsPage() {
           <div className="md:col-span-3">
             {activeTab === 'COMPANY' && (
               <div className="glassmorphism p-6 rounded-2xl border border-inho-border space-y-6 animate-fade-in">
+                {/* Card: Plano & Franquia da Instituição (Novos Planos 05/11/2026) */}
+                <div className="bg-gradient-to-br from-[#0F172A] to-[#1E293B] text-white p-6 rounded-2xl border border-inho-border shadow-xl space-y-5">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4">
+                    <div>
+                      <span className="text-[10px] font-mono tracking-widest text-inho-teal uppercase block">
+                        Governança de Licenciamento &amp; Franquias
+                      </span>
+                      <h3 className="text-xl font-bold flex items-center gap-2 mt-0.5">
+                        <CreditCard size={20} className="text-inho-teal" />
+                        Plano &amp; Franquia da Instituição
+                      </h3>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold tracking-wide ${
+                        (planOverview?.plan_tier || business?.plan_tier) === 'INHO_COOPERATIVA_OURO'
+                          ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                          : (planOverview?.plan_tier || business?.plan_tier) === 'INHO_PRO_IA'
+                          ? 'bg-purple-500/20 text-purple-300 border border-purple-500/40'
+                          : 'bg-teal-500/20 text-teal-300 border border-teal-500/40'
+                      }`}>
+                        {planOverview?.plan_details?.badge || 'PADRÃO EXECUTIVO OURO'}
+                      </span>
+                      <span className="text-xs font-mono text-slate-400 bg-white/5 px-2.5 py-1 rounded-lg">
+                        {planOverview?.billing_cycle === 'ANNUAL' ? 'Ciclo Anual' : 'Ciclo Mensal'}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {/* Operadores */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                      <div className="text-xs font-mono text-slate-400 uppercase">Operadores Ativos</div>
+                      <div className="text-2xl font-extrabold text-white mt-1">
+                        {planOverview?.operators_count ?? 2} <span className="text-xs font-normal text-slate-400">/ {planOverview?.max_operators ?? business?.max_operators ?? 25} inclusos</span>
+                      </div>
+                      <div className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1">
+                        <CheckCircle2 size={12} /> RBAC Multi-Nível Ativo
+                      </div>
+                    </div>
+
+                    {/* Diretrizes RAG */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                      <div className="text-xs font-mono text-slate-400 uppercase">Base RAG / Treinamento</div>
+                      <div className="text-2xl font-extrabold text-white mt-1">
+                        {planOverview?.rag_chunks_count ?? 2} <span className="text-xs font-normal text-slate-400">diretrizes</span>
+                      </div>
+                      <div className="text-[11px] text-emerald-400 mt-1 flex items-center gap-1">
+                        <CheckCircle2 size={12} /> {planOverview?.ai_rag_enabled ?? true ? 'Upload PDF/DOCX Liberado' : 'Consulte Upgrade'}
+                      </div>
+                    </div>
+
+                    {/* Cota IA Mensal */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                      <div className="text-xs font-mono text-slate-400 uppercase">Franquia OrBrick-IA</div>
+                      <div className="text-2xl font-extrabold text-inho-teal mt-1">
+                        {planOverview?.monthly_ai_quota ?? business?.monthly_ai_quota ?? 5000} <span className="text-xs font-normal text-slate-400">mensagens/mês</span>
+                      </div>
+                      <div className="text-[11px] text-slate-400 mt-1">
+                        Inferência c/ Kill-Switch Zero-Trust
+                      </div>
+                    </div>
+
+                    {/* Valor do Plano */}
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+                      <div className="text-xs font-mono text-slate-400 uppercase">Investimento</div>
+                      <div className="text-2xl font-extrabold text-amber-400 mt-1">
+                        R$ {((planOverview?.monthly_price_cents ?? business?.monthly_price_cents ?? 99000) / 100).toFixed(2).replace('.', ',')}
+                        <span className="text-xs font-normal text-slate-400">/mês</span>
+                      </div>
+                      <div className="text-[11px] text-slate-400 mt-1">
+                        Fatura &amp; NFS-e Automáticas
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-xs text-slate-300 flex flex-wrap items-center justify-between gap-3">
+                    <div className="flex flex-wrap items-center gap-4">
+                      <span className="font-bold text-white">Módulos Habilitados:</span>
+                      <span className="inline-flex items-center gap-1 text-emerald-400">✓ Core ERP &amp; PDV</span>
+                      <span className="inline-flex items-center gap-1 text-emerald-400">✓ Central WhatsApp OrBrick</span>
+                      <span className="inline-flex items-center gap-1 text-emerald-400">✓ CBM &amp; RFM Preditivo</span>
+                      <span className="inline-flex items-center gap-1 text-emerald-400">✓ Cooperativismo &amp; Open Finance</span>
+                    </div>
+                    <Link
+                      href="https://orbesystems.com.br/assinar"
+                      target="_blank"
+                      className="text-inho-teal hover:underline font-mono text-xs"
+                    >
+                      Ver Tabela Comercial &rarr;
+                    </Link>
+                  </div>
+                </div>
+
                 <h2 className="text-lg font-bold text-[#0F172A] border-b border-inho-border pb-3">
                   Perfil da Organização (Tenant Ativo)
                 </h2>

@@ -13,10 +13,40 @@ Garante de forma idempotente:
 """
 
 SUPABASE_HARDENING_SQL_STATEMENTS = [
-    # 1. Alinhamento estrutural business_operators (public vs inho)
+    # 1. Alinhamento estrutural businesses e business_operators (public vs inho)
     """
     DO $$
     BEGIN
+        IF EXISTS (
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = 'inho' AND table_name = 'businesses'
+        ) THEN
+            ALTER TABLE inho.businesses
+                ADD COLUMN IF NOT EXISTS plan_tier VARCHAR(40) NOT NULL DEFAULT 'INHO_ESSENCIAL',
+                ADD COLUMN IF NOT EXISTS billing_cycle VARCHAR(20) NOT NULL DEFAULT 'MONTHLY',
+                ADD COLUMN IF NOT EXISTS monthly_price_cents INTEGER NOT NULL DEFAULT 29000,
+                ADD COLUMN IF NOT EXISTS max_operators INTEGER NOT NULL DEFAULT 3,
+                ADD COLUMN IF NOT EXISTS ai_rag_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+                ADD COLUMN IF NOT EXISTS cbm_predictive_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+                ADD COLUMN IF NOT EXISTS cooperativa_module_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+                ADD COLUMN IF NOT EXISTS monthly_ai_quota INTEGER NOT NULL DEFAULT 500;
+        END IF;
+
+        IF EXISTS (
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = 'public' AND table_name = 'businesses'
+        ) THEN
+            ALTER TABLE public.businesses
+                ADD COLUMN IF NOT EXISTS plan_tier VARCHAR(40) NOT NULL DEFAULT 'INHO_ESSENCIAL',
+                ADD COLUMN IF NOT EXISTS billing_cycle VARCHAR(20) NOT NULL DEFAULT 'MONTHLY',
+                ADD COLUMN IF NOT EXISTS monthly_price_cents INTEGER NOT NULL DEFAULT 29000,
+                ADD COLUMN IF NOT EXISTS max_operators INTEGER NOT NULL DEFAULT 3,
+                ADD COLUMN IF NOT EXISTS ai_rag_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+                ADD COLUMN IF NOT EXISTS cbm_predictive_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+                ADD COLUMN IF NOT EXISTS cooperativa_module_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+                ADD COLUMN IF NOT EXISTS monthly_ai_quota INTEGER NOT NULL DEFAULT 500;
+        END IF;
+
         IF EXISTS (
             SELECT 1 FROM information_schema.tables
             WHERE table_schema = 'inho' AND table_name = 'business_operators'

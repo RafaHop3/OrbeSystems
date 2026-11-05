@@ -314,6 +314,7 @@ app.include_router(crm.router, prefix="/api/v1")
 app.include_router(cooperados.router)   # /api/v1/crm/cooperados
 app.include_router(categories.router)  # /api/v1/categories
 app.include_router(notes.router)       # /api/v1/notes
+app.include_router(settings_router.router, prefix="/api/v1/settings", tags=["Settings"])
 app.include_router(open_finance.router, prefix="/api/v1/open-finance", tags=["Open Finance Brasil (BACEN)"])
 
 @app.post("/api/v1/webhooks/banking/{provider}", tags=["Banking Webhooks"])

@@ -41,6 +41,13 @@ class Settings(BaseSettings):
     ADMIN_USERNAME: str = ""
     ADMIN_PASSWORD_HASH: str = ""
 
+    # ── Stripe & Novos Planos (05/11/2026) ──────────────────────
+    STRIPE_SECRET_KEY: str = ""
+    STRIPE_WEBHOOK_SECRET: str = ""
+    STRIPE_PRICE_ID_ESSENCIAL: str = ""
+    STRIPE_PRICE_ID_PRO_IA: str = ""
+    STRIPE_PRICE_ID_COOPERATIVA_OURO: str = ""
+
     # ── Keep-Alive (Render) ──────────────────────────────────────
     SELF_URL: str = "http://localhost:8000/health"
     KEEP_ALIVE_ENABLED: bool = False       # enable only in production
@@ -58,3 +65,47 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
+
+
+# ── Catálogo de Planos e Franquias (Novos Planos 05/11/2026) ───────────
+PLAN_CATALOG = {
+    "INHO_ESSENCIAL": {
+        "tier": "INHO_ESSENCIAL",
+        "name": "INHO Essencial (PME & Serviços)",
+        "badge": "PME & SERVIÇOS",
+        "monthly_price_cents": 29000,
+        "annual_price_cents": 290000,
+        "max_operators": 3,
+        "ai_rag_enabled": False,
+        "cbm_predictive_enabled": False,
+        "cooperativa_module_enabled": False,
+        "monthly_ai_quota": 500,
+        "description": "PDV, Pedidos 1-Click, Contratos, Boletos/PIX, NFS-e, DRE Caixa/Competência, Lacre SHA-256 e Central WhatsApp básica.",
+    },
+    "INHO_PRO_IA": {
+        "tier": "INHO_PRO_IA",
+        "name": "INHO Pro + OrBrick-IA (CBM & RAG)",
+        "badge": "MAIS POPULAR",
+        "monthly_price_cents": 59000,
+        "annual_price_cents": 590000,
+        "max_operators": 8,
+        "ai_rag_enabled": True,
+        "cbm_predictive_enabled": True,
+        "cooperativa_module_enabled": False,
+        "monthly_ai_quota": 2500,
+        "description": "Core completo + Alçada Dual-Control, OrBrick-IA Ativa, RAG Multi-Tenant (até 25 diretrizes/chunks PDF/DOCX), CBM Preditivo e RFM.",
+    },
+    "INHO_COOPERATIVA_OURO": {
+        "tier": "INHO_COOPERATIVA_OURO",
+        "name": "INHO Cooperativa & Enterprise (Padrão Ouro)",
+        "badge": "PADRÃO EXECUTIVO OURO",
+        "monthly_price_cents": 99000,
+        "annual_price_cents": 990000,
+        "max_operators": 25,
+        "ai_rag_enabled": True,
+        "cbm_predictive_enabled": True,
+        "cooperativa_module_enabled": True,
+        "monthly_ai_quota": 5000,
+        "description": "Padrão Ouro Institucional: Módulo Cooperativismo completo (Quadro Social, Cotas-Partes, Retenções INSS/IRRF, Open Finance Sicoob/Sicredi), RAG Ilimitado, CBM Sócios VIP e Guardrail Zero-Trust.",
+    },
+}

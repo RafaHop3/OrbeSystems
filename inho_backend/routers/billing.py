@@ -850,6 +850,9 @@ from models.models import (
 class WebhookReconcileRequest(BaseModel):
     email: str
     action: str = "payment_succeeded"
+    stripe_customer_id: Optional[str] = None
+    plan_tier: Optional[str] = None
+    billing_cycle: Optional[str] = None
 
 
 @router.post("/webhook/reconcile", response_model=dict, status_code=status.HTTP_200_OK)
@@ -859,11 +862,40 @@ async def webhook_reconcile_billing(
     db: AsyncSession = Depends(get_db)
 ):
     """
-    INTERNAL USE ONLY: Chamado pelo Webhook do Orbe Hub após pagamento no Stripe para limpeza de faturas e disparo de recibos via Zap/Email.
+    INTERNAL USE ONLY: Chamado pelo Webhook do Orbe Hub após pagamento no Stripe para provisionamento de plano e reconciliação de faturas.
     """
     expected_secret = os.getenv("INHO_SYSTEM_SECRET", "")
     if not x_inho_system_secret or x_inho_system_secret != expected_secret:
         raise HTTPException(status_code=403, detail="Acesso negado: Secret de sistema inválido.")
+
+    # ── Provisionamento de Plano do Tenant (Novos Planos 05/11/2026) ──────
+    if payload.plan_tier:
+        from core.config import PLAN_CATALOG
+        from models.models import BusinessOperator
+        tier_key = payload.plan_tier.upper().replace("-", "_")
+        plan_data = PLAN_CATALOG.get(tier_key, PLAN_CATALOG.get(payload.plan_tier))
+        if plan_data:
+            user_res = await db.execute(select(User).where(func.lower(User.email) == payload.email.strip().lower()))
+            target_user = user_res.scalar_one_or_none()
+            if target_user:
+                biz_res = await db.execute(select(Business).where(Business.user_id == target_user.id))
+                target_biz = biz_res.scalar_one_or_none()
+                if not target_biz:
+                    op_res = await db.execute(select(BusinessOperator).where(BusinessOperator.user_id == target_user.id))
+                    biz_op = op_res.scalar_one_or_none()
+                    if biz_op:
+                        target_biz = (await db.execute(select(Business).where(Business.id == biz_op.business_id))).scalar_one_or_none()
+                if target_biz:
+                    target_biz.plan_tier = plan_data["tier"]
+                    target_biz.billing_cycle = (payload.billing_cycle or "MONTHLY").upper()
+                    target_biz.monthly_price_cents = plan_data["monthly_price_cents"]
+                    target_biz.max_operators = plan_data["max_operators"]
+                    target_biz.ai_rag_enabled = plan_data["ai_rag_enabled"]
+                    target_biz.cbm_predictive_enabled = plan_data["cbm_predictive_enabled"]
+                    target_biz.cooperativa_module_enabled = plan_data["cooperativa_module_enabled"]
+                    target_biz.monthly_ai_quota = plan_data["monthly_ai_quota"]
+                    _BIZ_CACHE.pop(str(target_user.id), None)
+                    await db.commit()
 
     # 1. Tentar encontrar a cobrança pelo E-mail que está PENDENTE ou VENCIDA
     query = select(BillingInvoice).where(
