@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:f247b7c1-f5e4-40cc-b2af-a7760dbf2e11",
+  "serialNumber": "urn:uuid:2bf1ec6b-abff-4015-8a8e-c24de2733290",
   "metadata": {
-    "timestamp": "2026-11-04T19:58:04.656199+00:00",
+    "timestamp": "2026-11-05T18:31:41.798969+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -435,8 +435,8 @@
     {
       "type": "library",
       "name": "cloudinary",
-      "version": "1.46.3",
-      "purl": "pkg:pypi/cloudinary@1.46.3",
+      "version": "1.47.0",
+      "purl": "pkg:pypi/cloudinary@1.47.0",
       "licenses": [
         {
           "license": {
@@ -453,7 +453,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "8cf68793d7567f9e1d1dee04c57cf92cc2120001a6132c1423fdfb602aacca33"
+          "content": "996e788d29ad06dd1aaf6468f2624bf7fb412c960f9f5e385d26eb9a90ca9b09"
         }
       ]
     },
