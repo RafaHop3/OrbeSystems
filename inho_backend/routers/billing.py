@@ -1349,6 +1349,7 @@ async def create_public_stripe_checkout_session(
                 payment_method_types=["card"],
                 line_items=line_items,
                 mode="subscription",
+                allow_promotion_codes=True,
                 success_url=success_url,
                 cancel_url=cancel_url,
                 metadata=metadata,
@@ -1500,6 +1501,7 @@ async def create_stripe_checkout_session(
                 payment_method_types=["card"],
                 line_items=line_items,
                 mode="subscription",
+                allow_promotion_codes=True,
                 success_url=success_url,
                 cancel_url=cancel_url,
                 metadata={
