@@ -99,7 +99,7 @@ async def create_checkout_session(
             cancel_url = f"{settings.FRONTEND_URL}/assinar"
             tier_code = "INHO_ESSENCIAL"
 
-        elif norm_plan in ("inho_cooperativa", "cooperativa", "INHO_COOPERATIVA_OURO", "cooperativa_ouro"):
+        elif norm_plan in ("inho_cooperativa", "cooperativa", "INHO_COOPERATIVA_OURO", "cooperativa_ouro", "inho_enterprise", "enterprise", "INHO_ENTERPRISE_OURO"):
             price_cents = 990000 if is_annual else 99000
             interval = "year" if is_annual else "month"
             line_items = [
@@ -108,8 +108,8 @@ async def create_checkout_session(
                         "currency": "brl",
                         "unit_amount": price_cents,
                         "product_data": {
-                            "name": f"INHO Cooperativa & Enterprise (Padrão Ouro) — {'Anual (2 Meses Grátis)' if is_annual else 'Mensal'}",
-                            "description": "Quadro Social, Cotas-Partes, Open Finance Sicoob/Sicredi, até 25 operadores, RAG Ilimitado e Guardrail Zero-Trust.",
+                            "name": f"INHO Enterprise & Corporativo (Padrão Ouro) — {'Anual (2 Meses Grátis)' if is_annual else 'Mensal'}",
+                            "description": "Governança Multi-Empresas, Quadro Societário, Open Finance Oficial, até 25 operadores, RAG Ilimitado e Guardrail Zero-Trust.",
                         },
                         "recurring": {"interval": interval},
                     },

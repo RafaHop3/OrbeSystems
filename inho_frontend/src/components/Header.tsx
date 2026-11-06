@@ -70,7 +70,7 @@ export default function Header() {
               Entrar
             </Link>
             <a
-              href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa."
+              href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa."
               target="_blank"
               rel="noopener noreferrer"
               id="header-register"
@@ -118,7 +118,7 @@ export default function Header() {
             >
               Entrar
             </Link>
-            <a href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa." target="_blank" rel="noopener noreferrer" id="mobile-register"
+            <a href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa." target="_blank" rel="noopener noreferrer" id="mobile-register"
               className="px-4 py-3 text-center bg-emerald-600 text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 shadow-sm"
             >
               <MessageSquare size={15} />

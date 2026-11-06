@@ -37,7 +37,7 @@ export default function OrbeAssistantHeroCard() {
 
             <p className="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
               Olá! Sou o <strong>Orbe Assistant</strong>. O sistema que você precisava para automatizar
-              cobranças pelo <strong>WhatsApp com Pix e Boletos</strong>, gerenciar seu <strong>PDV com Maquininha Física Stripe</strong> e ter governança de ponta para <strong>PMEs, Mercados e Cooperativas</strong>.
+              cobranças pelo <strong>WhatsApp com Pix e Boletos</strong>, gerenciar seu <strong>PDV com Maquininha Física Stripe</strong> e ter governança de ponta para <strong>PMEs, Mercados, Redes e Franquias</strong>.
             </p>
 
             {/* Vantagens Chave */}
@@ -52,7 +52,7 @@ export default function OrbeAssistantHeroCard() {
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" />
-                <span>Módulo Cooperativas BACEN &amp; Cotas</span>
+                <span>Governança Multi-Empresas &amp; Auditoria</span>
               </div>
               <div className="flex items-center gap-2">
                 <CheckCircle2 size={16} className="text-emerald-400 flex-shrink-0" />
@@ -130,9 +130,9 @@ export default function OrbeAssistantHeroCard() {
                 </div>
                 <div>
                   <div className="text-sm font-bold text-white flex items-center gap-1.5">
-                    <span>Cooperativa &amp; Enterprise</span>
+                    <span>Enterprise &amp; Corporativo</span>
                   </div>
-                  <div className="text-[11px] text-slate-400">Cooperativas BACEN • 25 operadores</div>
+                  <div className="text-[11px] text-slate-400">Grandes Redes, Franquias • 25 operadores</div>
                 </div>
                 <div className="text-right">
                   <div className="text-sm font-extrabold text-amber-300">R$ 990<span className="text-[10px] text-slate-400 font-normal">/mês</span></div>

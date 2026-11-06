@@ -6,7 +6,7 @@
  * Nova Arquitetura de 3 Planos (05/11/2026):
  * 1. INHO Essencial (R$ 290/mês | R$ 2.900/ano)
  * 2. INHO Pro + OrBrick-IA (R$ 590/mês | R$ 5.900/ano - MAIS POPULAR)
- * 3. INHO Cooperativa & Enterprise (R$ 990/mês | R$ 9.900/ano - PADRÃO EXECUTIVO OURO)
+ * 3. INHO Enterprise & Corporativo (R$ 990/mês | R$ 9.900/ano - PADRÃO EXECUTIVO OURO)
  * Seletor de Ciclo Mensal / Anual (2 Meses Grátis) + Suporte a Ghost Engine Pass avulso.
  */
 
@@ -59,7 +59,7 @@ const INHO_PLANS: PlanConfig[] = [
       { text: "OrBrick-IA Ativa & Resposta Assistida", ok: false },
       { text: "Treinamento RAG (.PDF / .DOCX)", ok: false },
       { text: "Inteligência Preditiva CBM & RFM", ok: false },
-      { text: "Módulo Cooperativismo & Open Finance", ok: false },
+      { text: "Governança Multi-Empresas & Open Finance", ok: false },
     ],
     cta: "Assinar Essencial",
   },
@@ -84,15 +84,15 @@ const INHO_PLANS: PlanConfig[] = [
       { text: "Franquia de 2.500 inferências IA / mês", ok: true },
       { text: "CBM Preditivo Completo (RFM, Churn & LTV)", ok: true },
       { text: "Campanhas Multicanal Automatizadas", ok: true },
-      { text: "Módulo Cooperativismo & Open Finance", ok: false },
+      { text: "Governança Multi-Empresas & Open Finance", ok: false },
     ],
     cta: "Assinar Pro + IA",
   },
   {
-    id: "inho_cooperativa",
+    id: "inho_enterprise",
     tierCode: "INHO_COOPERATIVA_OURO",
-    label: "COOPERATIVA & ENTERPRISE",
-    subtitle: "Cooperativas, Associações & Grandes Contas",
+    label: "ENTERPRISE & CORPORATIVO",
+    subtitle: "Grandes Empresas, Redes, Franquias & Negócios em Escala",
     monthlyPrice: "R$ 990",
     annualPrice: "R$ 9.900",
     annualMonthlyEquivalent: "R$ 825,00/mês",
@@ -102,13 +102,13 @@ const INHO_PLANS: PlanConfig[] = [
     isGold: true,
     features: [
       { text: "10 a 25 operadores c/ Trilha de Auditoria Imutável", ok: true, highlight: true },
-      { text: "Módulo Cooperativismo 100% Incluído (Quadro Social & Cotas)", ok: true, highlight: true },
-      { text: "Retenções Fiscais (INSS/IRRF/FATES) & Informe IRPF/DIRF", ok: true },
+      { text: "Governança Corporativa Completa (Multi-Empresas, Quadro Societário & Auditoria)", ok: true, highlight: true },
+      { text: "Retenções Fiscais (INSS/IRRF/CSLL) & Informe de Rendimentos", ok: true },
       { text: "Open Finance Brasil Oficial (Sicoob, Sicredi, BB & Inter)", ok: true, highlight: true },
       { text: "OrBrick-IA Multi-Operador c/ Guardrail Zero-Trust", ok: true },
-      { text: "RAG Ilimitado + Upload do Estatuto Social (.PDF/.DOCX)", ok: true, highlight: true },
+      { text: "RAG Ilimitado + Upload de Políticas, Manuais & Estatuto (.PDF/.DOCX)", ok: true, highlight: true },
       { text: "Franquia de 5.000 inferências IA / mês", ok: true },
-      { text: "CBM Sócios VIP + Expurgo LGPD Art. 18", ok: true },
+      { text: "CBM Clientes & Parceiros VIP + Expurgo LGPD Art. 18", ok: true },
       { text: "Portal do Contador & Alçada Dual-Control", ok: true },
     ],
     cta: "Contratar Padrão Ouro",

@@ -1459,7 +1459,7 @@ async def stripe_billing_webhook(
             norm_tier = raw_tier.upper().replace("-", "_")
             if "ESSENCIAL" in norm_tier:
                 tier_key = "INHO_ESSENCIAL"
-            elif "COOPERATIVA" in norm_tier or "OURO" in norm_tier:
+            elif "COOPERATIVA" in norm_tier or "OURO" in norm_tier or "ENTERPRISE" in norm_tier:
                 tier_key = "INHO_COOPERATIVA_OURO"
             else:
                 tier_key = "INHO_PRO_IA"

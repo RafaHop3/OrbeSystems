@@ -18,7 +18,7 @@ const QUICK_PROMPTS = [
   "Quais são os planos e valores do INHO ERP?",
   "Como funciona a cobrança automática no WhatsApp?",
   "Como funciona o PDV para Mercados com Maquininha?",
-  "Como o INHO atende Cooperativas com regras BACEN?"
+  "Como funciona a Governança Corporativa e Multi-Empresas?"
 ];
 
 // ── Ultra-Stable CSS Cyberpunk Core ──
@@ -58,7 +58,7 @@ export default function OrbeAssistant() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     { 
       role: 'bot', 
-      text: 'Olá! Sou o **Orbe Assistant**, seu consultor de negócios e tecnologia da Orbe Systems. 🚀\n\nConheça os **Novos Planos do INHO ERP & OrBrick-IA**: automatize cobranças pelo WhatsApp com Pix, acelere seu PDV com leitor e maquininhas físicas, e tenha gestão completa para PMEs, Mercados e Cooperativas.\n\n💎 **Planos a partir de R$ 290/mês (com 2 meses grátis no anual)**.\n\nQual é o seu segmento? Como posso te ajudar a escolher o plano ideal hoje?' 
+      text: 'Olá! Sou o **Orbe Assistant**, seu consultor de negócios e tecnologia da Orbe Systems. 🚀\n\nConheça os **Novos Planos do INHO ERP & OrBrick-IA**: automatize cobranças pelo WhatsApp com Pix, acelere seu PDV com leitor e maquininhas físicas, e tenha gestão completa para PMEs, Mercados, Franquias e Redes Corporativas.\n\n💎 **Planos a partir de R$ 290/mês (com 2 meses grátis no anual)**.\n\nQual é o seu segmento? Como posso te ajudar a escolher o plano ideal hoje?' 
     }
   ]);
   const [input, setInput] = useState('');

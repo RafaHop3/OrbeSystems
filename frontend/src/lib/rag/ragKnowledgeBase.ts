@@ -36,10 +36,11 @@ export const ORBE_KNOWLEDGE_CHUNKS: RagChunk[] = [
 - Recursos: Até 8 operadores com RBAC, Alçada Dual-Control (acima de R$ 5.000), OrBrick-IA Ativa no WhatsApp com resposta assistida e Kill-Switch, Treinamento RAG com upload de PDF/DOCX (até 25 diretrizes), Inteligência Preditiva CBM (Score de Churn, LTV e Matriz RFM), Copilot do Operador e suporte à Maquininha Física Stripe Terminal.
 - Link de Assinatura: https://orbesystems.com.br/assinar
 
-3. PLANO INHO COOPERATIVA & ENTERPRISE (Cooperativas Agro/Crédito/Saúde e Redes — PADRÃO EXECUTIVO OURO):
+3. PLANO INHO ENTERPRISE & CORPORATIVO (Grandes Empresas, Redes, Franquias e Negócios em Escala — PADRÃO EXECUTIVO OURO):
 - Valor Mensal: R$ 990,00 / mês
 - Valor Anual: R$ 9.900,00 / ano (Equivalente a R$ 825,00/mês — 2 Meses Grátis)
-- Recursos: 10 a 25 operadores, Módulo Cooperativismo BACEN 100% Incluído (Quadro Social, Cotas-Partes, Retenções INSS/IRRF/FATES, Informe IRPF/DIRF, Sobras/Perdas), Open Finance Sicoob/Sicredi, Diretrizes RAG Ilimitadas com Estatuto Social, Maquininhas de Cartão Stripe Terminal Ilimitadas e Portal do Contador.
+- O plano mais completo e robusto da plataforma: ideal para qualquer tipo de negócio que demanda alta escala, múltiplas unidades ou governança corporativa avançada.
+- Recursos: 10 a 25 operadores, Governança Corporativa Completa (Multi-Empresas, Quadro Societário, Retenções Fiscais, Informe IRPF/DIRF), Open Finance Oficial (Sicoob/Sicredi/BB/Inter), Diretrizes RAG Ilimitadas com Políticas e Estatuto, Maquininhas de Cartão Stripe Terminal Ilimitadas, Trilha de Auditoria Imutável e Portal do Contador.
 - Link de Assinatura: https://orbesystems.com.br/assinar
 
 Diferencial Único: Todas as assinaturas são processadas com segurança criptografada pelo Stripe Checkout e provisionadas instantaneamente.`

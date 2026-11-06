@@ -97,7 +97,7 @@ PLAN_CATALOG = {
     },
     "INHO_COOPERATIVA_OURO": {
         "tier": "INHO_COOPERATIVA_OURO",
-        "name": "INHO Cooperativa & Enterprise (Padrão Ouro)",
+        "name": "INHO Enterprise & Corporativo (Padrão Ouro)",
         "badge": "PADRÃO EXECUTIVO OURO",
         "monthly_price_cents": 99000,
         "annual_price_cents": 990000,
@@ -106,6 +106,6 @@ PLAN_CATALOG = {
         "cbm_predictive_enabled": True,
         "cooperativa_module_enabled": True,
         "monthly_ai_quota": 5000,
-        "description": "Padrão Ouro Institucional: Módulo Cooperativismo completo (Quadro Social, Cotas-Partes, Retenções INSS/IRRF, Open Finance Sicoob/Sicredi), RAG Ilimitado, CBM Sócios VIP e Guardrail Zero-Trust.",
+        "description": "Padrão Ouro Institucional: Governança Corporativa Completa (Multi-Empresas, Quadro Societário, Retenções Fiscais, Open Finance Oficial Sicoob/Sicredi/BB/Inter), até 25 operadores, RAG Ilimitado, CBM Clientes VIP e Guardrail Zero-Trust.",
     },
 }

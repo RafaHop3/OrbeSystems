@@ -146,7 +146,7 @@ function LoginContent() {
                   </h2>
                   <p className="text-xs text-[#64748B]">
                     {loginMode === 'proprietario'
-                      ? 'Gestão Financeira, Cooperativa e Administrativa'
+                      ? 'Gestão Financeira, Corporativa e Administrativa'
                       : 'Use suas credenciais cadastradas pelo gestor.'}
                   </p>
                 </div>
@@ -237,7 +237,7 @@ function LoginContent() {
               <span className="text-xs font-black text-purple-950">R$ 590<span className="text-[9px] font-normal text-purple-400">/m</span></span>
             </div>
             <div className="p-2 rounded-xl bg-amber-50/60 border border-amber-200">
-              <span className="block text-[10px] font-bold text-[#8B6508] uppercase">Cooperativa</span>
+              <span className="block text-[10px] font-bold text-[#8B6508] uppercase">Enterprise</span>
               <span className="text-xs font-black text-[#0F172A]">R$ 990<span className="text-[9px] font-normal text-amber-500">/m</span></span>
             </div>
           </div>
@@ -255,7 +255,7 @@ function LoginContent() {
             </a>
 
             <a
-              href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa."
+              href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa."
               target="_blank"
               rel="noopener noreferrer"
               className="w-full py-2 px-4 rounded-xl bg-[#F8FAFC] hover:bg-emerald-50/60 border border-slate-200 hover:border-emerald-300 text-xs font-bold text-slate-700 hover:text-emerald-700 transition-all flex items-center justify-center gap-2"

@@ -59,7 +59,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               </span>
               <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-[#475569] pl-2 border-l border-[#E2E8F0]">
                 <Building2 size={13} className="text-[#B8860B]" />
-                {user?.full_name || 'Instituição Cooperativa'}
+                {user?.full_name || 'Instituição Corporativa'}
               </span>
             </div>
           </div>

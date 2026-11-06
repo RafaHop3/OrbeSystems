@@ -128,7 +128,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-slide-up">
             <GlassButton
               glowColor="green"
-              onClick={() => window.open('https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa.', '_blank')}
+              onClick={() => window.open('https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa.', '_blank')}
               className="w-full sm:w-auto min-w-[220px] justify-center bg-emerald-600 hover:bg-emerald-700 text-white border-none shadow-sm flex items-center gap-2"
             >
               <MessageSquare size={18} />
@@ -322,7 +322,7 @@ export default function HomePage() {
               Planos Desenhados para sua <span className="text-shimmer">Operação Escalar</span>
             </h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-              De comércios e supermercados com maquininha física a cooperativas estruturadas sob governança BACEN. Sem custos ocultos.
+              De comércios e supermercados com maquininha física a redes e grandes operações corporativas com alta governança. Sem custos ocultos.
             </p>
 
             {/* Toggle Mensal / Anual */}
@@ -493,7 +493,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* 3. Cooperativa & Enterprise */}
+            {/* 3. Enterprise & Corporativo */}
             <div className="rounded-3xl p-8 bg-slate-900/60 border border-[#D4AF37]/50 hover:border-[#D4AF37] transition-all flex flex-col justify-between group shadow-[0_0_30px_rgba(212,175,55,0.08)]">
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -502,8 +502,8 @@ export default function HomePage() {
                   </span>
                   <Building2 size={20} className="text-[#D4AF37]" />
                 </div>
-                <h3 className="text-xl font-black text-white mb-1">Cooperativa & Enterprise</h3>
-                <p className="text-xs text-amber-200/80 mb-6">Cooperativas, Associações & Grandes Redes</p>
+                <h3 className="text-xl font-black text-white mb-1">Enterprise & Corporativo</h3>
+                <p className="text-xs text-amber-200/80 mb-6">Grandes Empresas, Redes, Franquias & Negócios em Escala</p>
 
                 <div className="mb-6">
                   <div className="flex items-baseline gap-1">
@@ -526,7 +526,7 @@ export default function HomePage() {
                   </div>
                   <div className="flex items-start gap-2.5">
                     <Check size={15} className="text-amber-400 flex-shrink-0 mt-0.5" />
-                    <span className="font-semibold text-amber-200">Módulo Cooperativas: Cotas-Partes & Lei 5.764/71</span>
+                    <span className="font-semibold text-amber-200">Governança Corporativa: Multi-Empresas, Quadro Societário & Auditoria</span>
                   </div>
                   <div className="flex items-start gap-2.5">
                     <Check size={15} className="text-amber-400 flex-shrink-0 mt-0.5" />
@@ -575,7 +575,7 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa%2Fcooperativa."
+              href="https://wa.me/5551981598760?text=Ol%C3%A1%21%20Gostaria%20de%20assinar%20e%20ativar%20o%20ORBE%20INHO%20para%20minha%20empresa."
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-base rounded-2xl shadow-sm hover:shadow transition-all inline-flex items-center gap-2"

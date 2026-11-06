@@ -1,60 +1,13 @@
-HEAD is now at c9d4b94 perf(db): replace per-request pool_pre_ping RTT with pool_recycle=300s to cut ~180ms WAN latency
-#0 building with "default" instance using docker driver
-
-#1 [inho_backend internal] load build definition from Dockerfile
-#1 transferring dockerfile: 1.49kB 0.0s done
-#1 DONE 0.0s
-
-#2 [inho_backend internal] load metadata for docker.io/library/python:3.11-slim
-#2 DONE 0.5s
-
-#3 [inho_backend internal] load .dockerignore
-#3 transferring context: 396B done
-#3 DONE 0.0s
-
-#4 [inho_backend internal] load build context
-#4 ...
-
-#5 [inho_backend builder 1/4] FROM docker.io/library/python:3.11-slim@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce
-#5 resolve docker.io/library/python:3.11-slim@sha256:e88e9763f943ec1834f992a4b51e0f24500486803e8bc534e5767af9ea65f6ce 0.1s done
-#5 DONE 0.1s
-
-#4 [inho_backend internal] load build context
-#4 transferring context: 140.23kB 0.2s done
-#4 DONE 0.3s
-
-#6 [inho_backend builder 2/4] RUN python -m venv /opt/venv
-#6 CACHED
-
-#7 [inho_backend builder 3/4] COPY requirements.txt .
-#7 CACHED
-
-#8 [inho_backend builder 4/4] RUN pip install --upgrade pip &&     pip install --no-cache-dir -r requirements.txt
-#8 CACHED
-
-#9 [inho_backend runtime 2/5] COPY --from=builder /opt/venv /opt/venv
-#9 CACHED
-
-#10 [inho_backend runtime 3/5] RUN groupadd --gid 1001 appgroup &&     useradd --uid 1001 --gid appgroup --shell /bin/false --create-home appuser
-#10 CACHED
-
-#11 [inho_backend runtime 4/5] WORKDIR /app
-#11 CACHED
-
-#12 [inho_ba
----Output truncated---
+HEAD is now at 671b0b0 fix(ci): add default mock fallback for STRIPE_SECRET_KEY and STRIPE_WEBHOOK_SECRET
+orbe_backend
+inho_backend
+orbe_whatsapp
+orbe_backend
+inho_backend
+orbe_whatsapp
+{"status":"operational","service":"orbe-systems-api","database":"connected"}
+{"status":"operational","service":"inho-api","version":"1.0.0","env":"development","database":"connected","timestamp":"2026-11-06T10:14:25.684234+00:00"}
 ----------ERROR-------
 From https://github.com/RafaHop3/OrbeSystems
  * branch            main       -> FETCH_HEAD
-   78b43c1..c9d4b94  main       -> origin/main
-time="2026-10-19T17:41:04Z" level=warning msg="Found orphan containers ([orbe_whatsapp]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up."
- Container orbe_postgres  Running
- Container inho_backend  Recreate
- Container inho_backend  Recreated
- Container inho_backend  Starting
- Container inho_backend  Started
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
-curl: (56) Recv failure: Connection reset by peer
-failed to run commands: exit status 56
+   1d69055..671b0b0  main       -> origin/main
