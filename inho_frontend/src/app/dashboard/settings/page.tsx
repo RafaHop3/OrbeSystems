@@ -27,10 +27,11 @@ import {
   ApiTokenItem,
   BankIntegrationItem,
   BusinessOut,
+  terminalApi,
 } from '@/lib/api';
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<'COMPANY' | 'BANKS' | 'API' | 'TELEMETRY' | 'ORBRICK_RAG' | 'ORBRICK_SIMULATOR'>('COMPANY');
+  const [activeTab, setActiveTab] = useState<'COMPANY' | 'BANKS' | 'API' | 'TELEMETRY' | 'ORBRICK_RAG' | 'ORBRICK_SIMULATOR' | 'TERMINAL_POS'>('COMPANY');
   const [loading, setLoading] = useState(true);
 
   // Company / Tenant & Plan Overview
@@ -55,15 +56,23 @@ export default function SettingsPage() {
   const [rotatingSecrets, setRotatingSecrets] = useState(false);
   const [rotationResult, setRotationResult] = useState<string | null>(null);
 
+  // Stripe Terminal Readers
+  const [readers, setReaders] = useState<any[]>([]);
+  const [regCode, setRegCode] = useState('');
+  const [readerLabel, setReaderLabel] = useState('');
+  const [registeringReader, setRegisteringReader] = useState(false);
+  const [readerMsg, setReaderMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
   const loadSettings = async () => {
     setLoading(true);
     try {
-      const [bizList, bankList, tokenList, apmData, overview] = await Promise.all([
+      const [bizList, bankList, tokenList, apmData, overview, readerList] = await Promise.all([
         businessesApi.list().catch(() => []),
         settingsApi.listBanks().catch(() => []),
         settingsApi.listTokens().catch(() => []),
         settingsApi.getTelemetry().catch(() => null),
         settingsApi.getSettings().catch(() => null),
+        terminalApi.listReaders().catch(() => []),
       ]);
       if (Array.isArray(bizList) && bizList.length > 0) {
         setBusiness(bizList[0]);
@@ -72,6 +81,7 @@ export default function SettingsPage() {
       setTokens(Array.isArray(tokenList) ? tokenList : []);
       setTelemetry(apmData);
       setPlanOverview(overview);
+      setReaders(Array.isArray(readerList) ? readerList : []);
     } finally {
       setLoading(false);
     }
@@ -80,6 +90,27 @@ export default function SettingsPage() {
   useEffect(() => {
     loadSettings();
   }, []);
+
+  const handleRegisterReader = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regCode.trim() || !readerLabel.trim()) return;
+    setRegisteringReader(true);
+    setReaderMsg(null);
+    try {
+      const res = await terminalApi.registerReader({
+        registration_code: regCode.trim(),
+        label: readerLabel.trim(),
+      });
+      setReaderMsg({ type: 'success', text: `Maquininha "${res.label}" (${res.stripe_reader_id}) pareada com sucesso!` });
+      setRegCode('');
+      setReaderLabel('');
+      await loadSettings();
+    } catch (err: any) {
+      setReaderMsg({ type: 'error', text: err?.message || 'Falha ao parear maquininha no Stripe Terminal.' });
+    } finally {
+      setRegisteringReader(false);
+    }
+  };
 
   const handleCreateBank = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -241,6 +272,16 @@ export default function SettingsPage() {
               }`}
             >
               <ShieldAlert size={16} className="text-red-600" /> Simulador Cyber Safety
+            </button>
+            <button
+              onClick={() => setActiveTab('TERMINAL_POS')}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all ${
+                activeTab === 'TERMINAL_POS'
+                  ? 'bg-gradient-to-r from-[#9A6F0B] to-[#C59B27] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <CreditCard size={15} /> Maquininha (Stripe Terminal)
             </button>
             <button
               onClick={() => setActiveTab('TELEMETRY')}

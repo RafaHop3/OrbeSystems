@@ -157,7 +157,7 @@ async def register_terminal_reader(
     serial = f"WPOS_{uuid.uuid4().hex[:8].upper()}"
 
     location_id = payload.location_id
-    if not payload.registration_code.startswith("simulated-") and key and not key.startswith("sk_test_dummy") and not key.startswith("sk_test_mock") and not key.startswith("CHANGE_ME"):
+    if not (payload.registration_code.startswith("simulated-") or payload.registration_code.startswith("sim-")) and key and not key.startswith("sk_test_dummy") and not key.startswith("sk_test_mock") and not key.startswith("CHANGE_ME"):
         try:
             if not location_id:
                 # Obter ou criar localização comercial no Stripe Terminal
@@ -274,7 +274,7 @@ async def create_and_process_terminal_payment(
 
     pi_id = f"pi_term_{uuid.uuid4().hex[:16]}"
     client_sec = f"{pi_id}_secret_{uuid.uuid4().hex[:8]}"
-    pi_status = "requires_payment_method"
+    pi_status = "in_progress_on_reader"
 
     if key and not reader.stripe_reader_id.startswith("tmr_sim_") and not key.startswith("sk_test_dummy") and not key.startswith("sk_test_mock") and not key.startswith("CHANGE_ME"):
         try:

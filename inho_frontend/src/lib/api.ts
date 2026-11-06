@@ -1308,3 +1308,122 @@ export const openFinanceApi = {
       body: JSON.stringify(payload),
     }),
 };
+
+
+export const terminalApi = {
+  getConnectionToken: () =>
+    apiFetch<{ secret: string; business_id: string }>('/api/v1/terminal/connection_token', {
+      method: 'POST',
+    }),
+
+  registerReader: (payload: { registration_code: string; label: string; location_id?: string }) =>
+    apiFetch<{
+      id: string;
+      stripe_reader_id: string;
+      label: string;
+      device_type: string;
+      status: string;
+      ip_address?: string;
+      serial_number?: string;
+      created_at: string;
+    }>('/api/v1/terminal/readers/register', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  listReaders: () =>
+    apiFetch<{
+      id: string;
+      stripe_reader_id: string;
+      label: string;
+      device_type: string;
+      status: string;
+      ip_address?: string;
+      serial_number?: string;
+      created_at: string;
+    }[]>('/api/v1/terminal/readers'),
+
+  createPayment: (payload: {
+    reader_id: string;
+    amount_cents: number;
+    cash_register_id?: string;
+    customer_name?: string;
+    description?: string;
+  }) =>
+    apiFetch<{
+      payment_intent_id: string;
+      status: string;
+      reader_id: string;
+      amount_cents: number;
+      amount_formatted: string;
+      client_secret?: string;
+    }>('/api/v1/terminal/create_payment', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  cancelPayment: (reader_id: string) =>
+    apiFetch<{
+      status: string;
+      reader_id: string;
+      message: string;
+    }>('/api/v1/terminal/cancel_payment', {
+      method: 'POST',
+      body: JSON.stringify({ reader_id }),
+    }),
+};
+
+export const copilotApi = {
+  operatorAssist: (payload: {
+    query: string;
+    vertical?: string;
+    current_cart?: Array<{ name: string; quantity: number; unit_price: number; barcode?: string }>;
+    cooperado_id?: string;
+  }) =>
+    apiFetch<{
+      reply: string;
+      vertical: string;
+      action_type: string;
+      cross_sell_suggestions: Array<{ item_name: string; reason: string; suggested_price?: string }>;
+      scale_data?: any;
+      tax_breakdown?: any;
+      timestamp: string;
+    }>('/api/v1/copilot/operator_assist', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  decodeScaleTag: (barcode: string) =>
+    apiFetch<{
+      is_scale_barcode: boolean;
+      product_code: string;
+      total_price?: number;
+      weight_kg?: number;
+      interpretation: string;
+    }>('/api/v1/copilot/decode_scale_tag', {
+      method: 'POST',
+      body: JSON.stringify({ barcode }),
+    }),
+
+  cashReconcile: (payload: {
+    cash_register_id?: string;
+    register_id?: string;
+    physical_cash?: number;
+    counted_cash?: number;
+    card_receipts?: number;
+    counted_checks?: number;
+    pix_total?: number;
+    counted_pix?: number;
+  }) =>
+    apiFetch<{
+      cash_register_id: string;
+      system_expected_total: number;
+      actual_counted_total: number;
+      difference: number;
+      status: string;
+      ai_audit_justification: string;
+    }>('/api/v1/copilot/cash_reconcile', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+};

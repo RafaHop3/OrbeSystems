@@ -10,7 +10,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, status
-from sqlalchemy import select, cast, String, func
+from sqlalchemy import select, or_, cast, String, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.deps import get_current_user
@@ -2068,12 +2068,25 @@ async def process_orbrick_ai_reply(
     if not check_ai_rate_limit(str(business.id), payload.phone, max_per_minute=20):
         raise HTTPException(status_code=429, detail="Rate limit de mensagens para a IA atingido neste número.")
 
+    # Saneamento e normalização robusta de telefone (Manual 06 - 9º dígito BR)
+    import re
+    digits = re.sub(r"\D", "", payload.phone or "")
+    if len(digits) in (10, 11):
+        digits = "55" + digits
+
+    phones_to_try = [digits] if digits else []
+    if len(digits) == 13 and digits.startswith("55"):
+        sem_9 = digits[:4] + digits[5:]
+        phones_to_try.append(sem_9)
+
     # 1. Verificar Kill-Switch do Tenant
     if is_ai_kill_switch_active(str(business.id)):
+        reason_msg = "Kill-Switch da IA está ativo para esta instituição. Atendimento exclusivo por operador humano."
         return {
             "status": "PAUSED_KILL_SWITCH",
             "ai_responded": False,
-            "reason": "Kill-Switch da IA está ativo para esta instituição. Atendimento exclusivo por operador humano.",
+            "reason": reason_msg,
+            "formatted_message": f"[{biz_name}>OrBrick-IA] {reason_msg}",
             "whatsapp_delivery_code": [],
         }
 
@@ -2087,16 +2100,21 @@ async def process_orbrick_ai_reply(
             )
         )
         contact = c_res.scalar_one_or_none()
-    if not contact and payload.phone:
-        phone_digits = re.sub(r"\D", "", payload.phone)
-        if len(phone_digits) >= 8:
-            c_res2 = await db.execute(
-                select(CRMContact).where(
-                    CRMContact.business_id == b_id,
-                    CRMContact.phone.ilike(f"%{phone_digits[-8:]}%"),
+    if not contact and phones_to_try:
+        for p_cand in phones_to_try:
+            if len(p_cand) >= 8:
+                c_res2 = await db.execute(
+                    select(CRMContact).where(
+                        CRMContact.business_id == b_id,
+                        or_(
+                            CRMContact.phone.ilike(f"%{p_cand[-8:]}%"),
+                            CRMContact.phone.ilike(f"%{p_cand}%"),
+                        )
+                    )
                 )
-            )
-            contact = c_res2.scalars().first()
+                contact = c_res2.scalars().first()
+                if contact:
+                    break
 
     # 3. Verificar Handoff Humano no Contato
     if contact:
@@ -2105,11 +2123,13 @@ async def process_orbrick_ai_reply(
         if handoff_dt and handoff_dt.tzinfo is None:
             handoff_dt = handoff_dt.replace(tzinfo=timezone.utc)
         if not getattr(contact, "ai_attendance_enabled", True) or (handoff_dt and handoff_dt > now_utc):
+            handoff_msg = "Operador humano assumiu esta conversa. IA permanece em silêncio."
             return {
                 "status": "HUMAN_HANDOFF_ACTIVE",
                 "ai_responded": False,
                 "contact_id": str(contact.id),
-                "reason": "Operador humano assumiu esta conversa. IA permanece em silêncio.",
+                "reason": handoff_msg,
+                "formatted_message": f"[{biz_name}>OrBrick-IA] {handoff_msg}",
                 "whatsapp_delivery_code": [],
             }
 
@@ -2173,17 +2193,20 @@ async def process_orbrick_ai_reply(
         contact.ai_attendance_enabled = False
         contact.ai_handoff_until = datetime.now(timezone.utc) + _timedelta(hours=24)
 
-    # 6. Despachar via container Baileys (com resiliência se container offline) e gravar em OmnichannelLog
-    digits = re.sub(r"\D", "", payload.phone)
-    if len(digits) in (10, 11):
-        digits = "55" + digits
+    # 6. Despachar via container Baileys (tentando com e sem 9º dígito conforme Manual 06)
     if not os.environ.get("DATABASE_URL", "").startswith("sqlite"):
         try:
             async with httpx.AsyncClient(timeout=4.0) as client:
-                await client.post(
-                    "http://orbe_whatsapp:3001/send",
-                    json={"phone": digits, "message": ai_result["reply_text"]},
-                )
+                for num in phones_to_try:
+                    try:
+                        wa_res = await client.post(
+                            "http://orbe_whatsapp:3001/send",
+                            json={"phone": num, "message": ai_result["reply_text"]},
+                        )
+                        if wa_res.status_code == 200:
+                            break
+                    except Exception:
+                        pass
         except Exception:
             pass
 

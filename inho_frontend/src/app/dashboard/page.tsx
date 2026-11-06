@@ -39,11 +39,11 @@ export default function DashboardHub() {
         },
         {
             id: 'supermercado',
-            title: 'Supermercados & Atacarejo',
+            title: 'Mercados, Varejo & PDV',
             icon: Store,
-            description: 'Integração massiva B2C, controle logístico de reposição e frente de caixa rápida.',
-            status: 'locked',
-            href: '#',
+            description: 'Frente de Caixa rápida com leitor de código de barras, balança nacional, Copilot IA e Maquininha Stripe Terminal (Smart POS).',
+            status: 'active',
+            href: '/dashboard/pdv',
         },
         {
             id: 'restaurante',

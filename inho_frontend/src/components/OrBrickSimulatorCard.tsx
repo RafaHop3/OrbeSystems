@@ -30,6 +30,14 @@ interface OrBrickSimulatorCardProps {
   defaultPhone?: string;
 }
 
+function sanitizePhone(raw: string): string {
+  let digits = raw.replace(/\D/g, '');
+  if (digits.length === 10 || digits.length === 11) {
+    digits = '55' + digits;
+  }
+  return digits;
+}
+
 export default function OrBrickSimulatorCard({
   className = '',
   defaultPhone = '5551995008347',
@@ -51,7 +59,7 @@ export default function OrBrickSimulatorCard({
     setError(null);
     try {
       const res = await crmApi.triggerWhatsappAiReply({
-        phone: phone.trim() || defaultPhone,
+        phone: sanitizePhone(phone.trim() || defaultPhone),
         incoming_message: msgToSend,
         simulate_ai_offline: simulateOffline,
       });
@@ -292,7 +300,7 @@ export default function OrBrickSimulatorCard({
               <Terminal size={13} className="text-[#8B6508]" /> Resposta Emitida no WhatsApp (*NOME_TENANT&gt;OrBrick-IA*):
             </span>
             <div className="p-3.5 bg-emerald-900/90 text-emerald-50 rounded-xl font-mono text-xs leading-relaxed whitespace-pre-wrap border border-emerald-800 shadow-inner">
-              {result.formatted_message || result.formattedMessage || '(Sem mensagem retornada)'}
+              {result.formatted_message || result.formattedMessage || result.reason || '(Sem mensagem retornada)'}
             </div>
           </div>
         </div>
