@@ -24,7 +24,7 @@ from db.session import get_db
 from models.models import AuditAction, User, UserRole
 from schemas.schemas import (
     LoginRequest, RegisterRequest, TokenResponse, RefreshRequest,
-    WebhookProvisionRequest, MFASetupResponse, MFAVerifyRequest
+    WebhookProvisionRequest, WelcomeSetupRequest, MFASetupResponse, MFAVerifyRequest
 )
 from services.audit import write_audit
 from core.deps import get_current_user
@@ -343,7 +343,7 @@ async def mfa_verify(
 @router.post("/webhook/provision", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def webhook_provision(
     request: Request,
-    body: WebhookProvisionRequest,
+    body: WebhookProvisionRequest, WelcomeSetupRequest,
     x_inho_system_secret: str = Header(None),
     db: AsyncSession = Depends(get_db),
 ):
@@ -386,3 +386,137 @@ async def webhook_provision(
     )
     await db.commit()
     return {"message": "Admin INHO provisionado com sucesso via Webhook", "user_id": str(user.id)}
+
+
+@router.post("/welcome-setup", response_model=dict, status_code=status.HTTP_200_OK)
+async def welcome_setup_subscriber(
+    body: WelcomeSetupRequest,
+    response: Response,
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Chamado pela pagina /bem-vindo apos checkout do Stripe.
+    Ativa o usuario como ADMIN, define a senha, provisiona a Business com o plano contratado,
+    configura os cookies de sessao e retorna o token JWT para login imediato.
+    """
+    import asyncio
+    from core.security import hash_password, create_access_token, create_refresh_token
+    from core.config import PLAN_CATALOG, settings
+    from models.models import Business, BusinessCategory
+    from services.audit import write_audit, AuditAction
+    import stripe
+
+    email_to_use = str(body.email).strip().lower() if body.email else ""
+    biz_name = body.business_name or "Minha Empresa"
+    plan_tier = "INHO_PRO_IA"
+    cycle = "MONTHLY"
+
+    # Buscar dados reais da sessao do Stripe se disponivel
+    if body.session_id and not body.session_id.startswith("cs_test_mock") and settings.STRIPE_SECRET_KEY:
+        try:
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+            session = stripe.checkout.Session.retrieve(body.session_id)
+            meta = session.metadata or {}
+            session_email = session.customer_email or (session.customer_details.email if session.customer_details else None) or meta.get("email")
+            if session_email:
+                email_to_use = session_email.strip().lower()
+            if meta.get("business_name"):
+                biz_name = meta.get("business_name")
+            if meta.get("plan_tier"):
+                plan_tier = meta.get("plan_tier")
+            if meta.get("billing_cycle"):
+                cycle = meta.get("billing_cycle")
+        except Exception:
+            pass
+
+    if not email_to_use:
+        raise HTTPException(status_code=400, detail="E-mail de acesso e obrigatorio para ativacao da conta.")
+
+    hashed_pw = hash_password(body.password)
+
+    # 1. Localizar ou Criar User
+    existing = await db.execute(select(User).where(func.lower(User.email) == email_to_use))
+    user = existing.scalar_one_or_none()
+
+    if user:
+        user.password_hash = hashed_pw
+        user.subscription_status = "active"
+        user.role = UserRole.ADMIN
+        user.is_email_verified = True
+    else:
+        user = User(
+            email=email_to_use,
+            full_name_db=biz_name,
+            password_hash=hashed_pw,
+            role=UserRole.ADMIN,
+            subscription_status="active",
+            is_email_verified=True,
+        )
+        db.add(user)
+        await db.flush()
+
+    # 2. Localizar ou Criar Business
+    plan_data = PLAN_CATALOG.get(plan_tier, PLAN_CATALOG["INHO_PRO_IA"])
+    existing_biz = await db.execute(select(Business).where(cast(Business.user_id, String) == str(user.id)))
+    business = existing_biz.scalar_one_or_none()
+
+    if not business:
+        business = Business(
+            user_id=user.id,
+            name=biz_name,
+            category=BusinessCategory.VAREJO,
+            plan_tier=plan_data["tier"],
+            billing_cycle=cycle,
+            monthly_price_cents=plan_data["monthly_price_cents"],
+            max_operators=plan_data["max_operators"],
+            ai_rag_enabled=plan_data["ai_rag_enabled"],
+            cbm_predictive_enabled=plan_data["cbm_predictive_enabled"],
+            cooperativa_module_enabled=plan_data["cooperativa_module_enabled"],
+            monthly_ai_quota=plan_data["monthly_ai_quota"],
+        )
+        db.add(business)
+    else:
+        business.name = biz_name
+        business.plan_tier = plan_data["tier"]
+        business.billing_cycle = cycle
+        business.monthly_price_cents = plan_data["monthly_price_cents"]
+        business.max_operators = plan_data["max_operators"]
+        business.ai_rag_enabled = plan_data["ai_rag_enabled"]
+        business.cbm_predictive_enabled = plan_data["cbm_predictive_enabled"]
+        business.cooperativa_module_enabled = plan_data["cooperativa_module_enabled"]
+        business.monthly_ai_quota = plan_data["monthly_ai_quota"]
+
+    await write_audit(
+        db, AuditAction.CREATE, "User",
+        user_id=user.id, entity_id=str(user.id),
+        detail={"email": user.email, "action": "welcome_setup_subscriber", "plan": plan_data["tier"]},
+        request=request,
+    )
+    await db.commit()
+
+    # 3. Gerar Tokens de Acesso
+    role_val = user.role.value if hasattr(user.role, "value") else str(user.role)
+    access_token = create_access_token(str(user.id), role_val)
+    refresh_token = create_refresh_token(str(user.id))
+
+    response.set_cookie(
+        key="inho_refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=settings.APP_ENV == "production",
+        samesite="lax",
+        domain=".orbesystems.com.br" if settings.APP_ENV == "production" else None,
+        max_age=7 * 86400
+    )
+
+    return {
+        "status": "success",
+        "message": "Conta ativada com sucesso!",
+        "access_token": access_token,
+        "token_type": "bearer",
+        "email": user.email,
+        "user_id": str(user.id),
+        "business_id": str(business.id),
+        "redirect_url": "/dashboard",
+    }

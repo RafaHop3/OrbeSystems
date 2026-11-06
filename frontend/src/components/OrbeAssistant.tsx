@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, X, Bot, Activity, BookOpen, Sparkles } from 'lucide-react';
+import { Send, X, Bot, Activity, BookOpen, Sparkles, ArrowRight } from 'lucide-react';
 
 interface ChatSource {
   title: string;
@@ -157,6 +157,19 @@ export default function OrbeAssistant() {
                   : 'bg-white/5 text-slate-100 border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.02)] rounded-bl-none'
                   }`}>
                   {m.text}
+
+                  {/* Botão de Ação Direta para Checkout */}
+                  {m.role === 'bot' && (m.text.includes('/assinar') || m.text.includes('R$ 290') || m.text.toLowerCase().includes('plano')) && (
+                    <div className="mt-3 pt-2 border-t border-white/10">
+                      <a
+                        href="/assinar"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-emerald-500 text-slate-950 font-black text-[11px] hover:brightness-110 shadow-sm transition-all"
+                      >
+                        <span>Ver Planos &amp; Assinar Agora</span>
+                        <ArrowRight size={12} />
+                      </a>
+                    </div>
+                  )}
 
                   {/* Fontes Oficiais RAG */}
                   {m.sources && m.sources.length > 0 && (

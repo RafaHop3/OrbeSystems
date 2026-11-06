@@ -10,8 +10,8 @@
  * Seletor de Ciclo Mensal / Anual (2 Meses Grátis) + Suporte a Ghost Engine Pass avulso.
  */
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createCheckoutSessionAction } from "@/lib/auth-actions";
 
 type BillingCycle = "monthly" | "annual";
@@ -117,10 +117,76 @@ const INHO_PLANS: PlanConfig[] = [
 
 function AssinarPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [cycle, setCycle] = useState<BillingCycle>("monthly");
   const [isPending, startTransition] = useTransition();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [selectedPlanForModal, setSelectedPlanForModal] = useState<PlanConfig | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [businessName, setBusinessName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [isSubmittingCheckout, setIsSubmittingCheckout] = useState(false);
+
+  const openCheckoutModal = (plan: PlanConfig) => {
+    setError(null);
+    setSelectedPlanForModal(plan);
+    setIsModalOpen(true);
+  };
+
+  useEffect(() => {
+    const planParam = searchParams.get("plan");
+    if (planParam) {
+      const pLower = planParam.toLowerCase();
+      const match = INHO_PLANS.find(
+        (p) => p.id.toLowerCase().includes(pLower) || p.tierCode.toLowerCase().includes(pLower)
+      );
+      if (match) {
+        setSelectedPlanForModal(match);
+        setIsModalOpen(true);
+      }
+    }
+  }, [searchParams]);
+
+  const handlePublicCheckoutSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPlanForModal) return;
+    if (!customerEmail.trim()) {
+      setError("Por favor, informe seu e-mail principal de acesso.");
+      return;
+    }
+    setError(null);
+    setIsSubmittingCheckout(true);
+
+    try {
+      const res = await fetch("/api/v1/inho/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          plan_tier: selectedPlanForModal.tierCode,
+          billing_cycle: cycle,
+          business_name: businessName || "Minha Empresa",
+          email: customerEmail,
+          phone: customerPhone,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setError(data.error || "Falha ao iniciar checkout Stripe.");
+        setIsSubmittingCheckout(false);
+        return;
+      }
+
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      }
+    } catch {
+      setError("Erro de conexao ao gateway de pagamento. Tente novamente.");
+      setIsSubmittingCheckout(false);
+    }
+  };
 
   const handleCheckout = (tierCode: string) => {
     setError(null);
@@ -218,6 +284,31 @@ function AssinarPageContent() {
             <span>⚠</span> {error}
           </div>
         )}
+
+                {/* Faixa Visual: Como Funciona em 3 Passos (Zero-Friccao) */}
+        <div style={styles.stepsWrapper}>
+          <div style={styles.stepCard}>
+            <div style={styles.stepNumber}>01</div>
+            <div>
+              <div style={styles.stepTitle}>Escolha seu Plano</div>
+              <div style={styles.stepDesc}>Mensal sem fidelidade ou Anual com 2 meses gratis (17% OFF).</div>
+            </div>
+          </div>
+          <div style={styles.stepCard}>
+            <div style={styles.stepNumber}>02</div>
+            <div>
+              <div style={styles.stepTitle}>Pagamento Seguro Stripe</div>
+              <div style={styles.stepDesc}>Ambiente oficial criptografado com cartao ou Pix sem friccao.</div>
+            </div>
+          </div>
+          <div style={styles.stepCard}>
+            <div style={styles.stepNumber}>03</div>
+            <div>
+              <div style={styles.stepTitle}>Acesso Imediato &amp; Senha</div>
+              <div style={styles.stepDesc}>Crie sua senha na hora em /bem-vindo e receba suporte no WhatsApp.</div>
+            </div>
+          </div>
+        </div>
 
         {/* Grade Comparativa de Planos */}
         <div style={styles.plansGrid}>
@@ -322,7 +413,7 @@ function AssinarPageContent() {
                     opacity: isPending ? 0.6 : 1,
                     cursor: isPending ? "not-allowed" : "pointer",
                   }}
-                  onClick={() => handleCheckout(plan.tierCode)}
+                  onClick={() => openCheckoutModal(plan)}
                 >
                   {isLoadingThis ? "REDIRECIONANDO..." : `[ ${plan.cta} ]`}
                 </button>
@@ -371,6 +462,167 @@ export default function AssinarPage() {
 
 // ── Styles ────────────────────────────────────────────────────────────────────
 const styles: Record<string, React.CSSProperties> = {
+  stepsWrapper: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    gap: "16px",
+    maxWidth: "1100px",
+    margin: "0 auto 36px auto",
+  },
+  stepCard: {
+    background: "rgba(15, 23, 42, 0.6)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    borderRadius: "16px",
+    padding: "16px 20px",
+    display: "flex",
+    alignItems: "center",
+    gap: "14px",
+    backdropFilter: "blur(12px)",
+  },
+  stepNumber: {
+    fontFamily: "monospace",
+    fontSize: "20px",
+    fontWeight: "900",
+    color: "#00fff5",
+    background: "rgba(0, 255, 245, 0.1)",
+    border: "1px solid rgba(0, 255, 245, 0.3)",
+    borderRadius: "12px",
+    width: "42px",
+    height: "42px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  stepTitle: {
+    color: "#ffffff",
+    fontSize: "13px",
+    fontWeight: "700",
+    marginBottom: "2px",
+  },
+  stepDesc: {
+    color: "rgba(255, 255, 255, 0.6)",
+    fontSize: "11px",
+    lineHeight: "1.4",
+  },
+  modalOverlay: {
+    position: "fixed" as const,
+    inset: 0,
+    background: "rgba(0, 0, 0, 0.85)",
+    backdropFilter: "blur(10px)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+    padding: "20px",
+  },
+  modalContent: {
+    background: "#0a0f1d",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
+    borderRadius: "24px",
+    maxWidth: "520px",
+    width: "100%",
+    padding: "32px",
+    boxShadow: "0 25px 60px -15px rgba(0, 255, 245, 0.2), 0 0 40px rgba(0, 0, 0, 0.9)",
+    position: "relative" as const,
+  },
+  modalHeader: {
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    marginBottom: "24px",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+    paddingBottom: "16px",
+  },
+  modalBadge: {
+    fontSize: "10px",
+    fontFamily: "monospace",
+    fontWeight: "800",
+    letterSpacing: "0.1em",
+    padding: "4px 8px",
+    borderRadius: "6px",
+    border: "1px solid",
+    display: "inline-block",
+    marginBottom: "8px",
+  },
+  modalTitle: {
+    color: "#ffffff",
+    fontSize: "20px",
+    fontWeight: "900",
+    margin: "0 0 4px 0",
+  },
+  modalSubtitle: {
+    color: "#00fff5",
+    fontSize: "13px",
+    fontWeight: "700",
+    margin: 0,
+  },
+  modalCloseBtn: {
+    background: "rgba(255, 255, 255, 0.05)",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    color: "#94a3b8",
+    borderRadius: "10px",
+    width: "32px",
+    height: "32px",
+    cursor: "pointer",
+    fontSize: "14px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  modalForm: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "16px",
+  },
+  inputGroup: {
+    display: "flex",
+    flexDirection: "column" as const,
+    gap: "6px",
+  },
+  inputLabel: {
+    color: "#cbd5e1",
+    fontSize: "12px",
+    fontWeight: "700",
+  },
+  modalInput: {
+    background: "rgba(15, 23, 42, 0.8)",
+    border: "1px solid rgba(255, 255, 255, 0.12)",
+    borderRadius: "12px",
+    padding: "12px 14px",
+    color: "#ffffff",
+    fontSize: "13px",
+    outline: "none",
+  },
+  modalSecurityInfo: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontSize: "11px",
+    color: "#94a3b8",
+    background: "rgba(255, 255, 255, 0.03)",
+    padding: "10px 12px",
+    borderRadius: "10px",
+    border: "1px solid rgba(255, 255, 255, 0.05)",
+  },
+  modalSubmitBtn: {
+    color: "#ffffff",
+    border: "none",
+    borderRadius: "14px",
+    padding: "14px 20px",
+    fontSize: "13px",
+    fontWeight: "800",
+    letterSpacing: "0.05em",
+    marginTop: "8px",
+    boxShadow: "0 10px 25px -5px rgba(16, 185, 129, 0.4)",
+  },
+  modalWhatsappHelp: {
+    textAlign: "center" as const,
+    fontSize: "11px",
+    color: "#94a3b8",
+    marginTop: "4px",
+  },
+
   page: {
     minHeight: "100vh",
     background: "linear-gradient(135deg, #020408 0%, #050d1a 50%, #020408 100%)",

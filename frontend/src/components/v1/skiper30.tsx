@@ -89,7 +89,7 @@ const ORBE_12_TOOLS: ToolProject[] = [
         title: "INHO Business Engine",
         category: "ERP, OrBrick-IA RAG & CBM",
         tagline: "Árvore de habilidades: RAG multi-tenant, WhatsApp IA, PIX & CBM",
-        url: "https://inho.orbesystems.com.br",
+        url: "/assinar",
         accentColor: "#10b981",
         secondaryColor: "#00fff5",
         telemetryTag: "RAG IA · PIX < 1s · MULTI-TENANT",

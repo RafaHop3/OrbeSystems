@@ -15,6 +15,14 @@ class RegisterRequest(BaseModel):
     password: str = Field(..., min_length=8)
 
 
+
+class WelcomeSetupRequest(BaseModel):
+    session_id: str
+    password: str = Field(..., min_length=6)
+    email: Optional[str] = None
+    business_name: Optional[str] = None
+    phone: Optional[str] = None
+
 class WebhookProvisionRequest(BaseModel):
     email: EmailStr
     full_name: str

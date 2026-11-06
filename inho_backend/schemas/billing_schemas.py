@@ -85,6 +85,28 @@ class StripeCheckoutResponse(BaseModel):
     amount_cents: int
 
 
+
+class PublicCheckoutRequest(BaseModel):
+    plan_tier: str = "INHO_PRO_IA"
+    billing_cycle: str = "MONTHLY"
+    business_name: str
+    email: str
+    phone: str
+    success_url: Optional[str] = None
+    cancel_url: Optional[str] = None
+
+
+class SessionInfoResponse(BaseModel):
+    session_id: str
+    email: Optional[str] = None
+    business_name: Optional[str] = None
+    phone: Optional[str] = None
+    plan_tier: str = "INHO_PRO_IA"
+    billing_cycle: str = "MONTHLY"
+    amount_total: Optional[int] = None
+    payment_status: str = "paid"
+    status: str = "complete"
+
 class BillingNotificationOut(BaseModel):
     invoice_id: UUID
     channel: str  # 'WHATSAPP' | 'EMAIL'

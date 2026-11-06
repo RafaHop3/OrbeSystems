@@ -15,7 +15,7 @@ from core.deps import get_current_user
 from schemas.billing_schemas import (
     BillingInvoiceCreate, BillingInvoiceOut, BillingInvoiceStatusUpdate,
     BillingNotificationOut, BillingStatsOut, BulkInvoiceAction, PartialSettle,
-    StripeCheckoutRequest, StripeCheckoutResponse
+    StripeCheckoutRequest, StripeCheckoutResponse, PublicCheckoutRequest, SessionInfoResponse
 )
 
 router = APIRouter()
@@ -1272,6 +1272,156 @@ async def webhook_bank_boleto_b2b2c(
         db=db,
     )
 
+
+
+# ── Public Checkout & Session Info (Zero Fricção 06/11/2026) ─────────────
+
+@router.post("/public-checkout", response_model=StripeCheckoutResponse, status_code=status.HTTP_200_OK)
+async def create_public_stripe_checkout_session(
+    payload: PublicCheckoutRequest,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Inicia uma sessao de checkout publico no Stripe sem exigir login previo.
+    Redireciona para Stripe Checkout e devolve para https://inho.orbesystems.com.br/bem-vindo?session_id={CHECKOUT_SESSION_ID}.
+    """
+    import os
+    import stripe
+    from core.config import PLAN_CATALOG, settings as app_settings
+
+    stripe.api_key = app_settings.STRIPE_SECRET_KEY or os.getenv("STRIPE_SECRET_KEY", "")
+
+    raw_tier = payload.plan_tier.strip().upper().replace("-", "_")
+    tier_mapping = {
+        "INHO_ESSENCIAL": "INHO_ESSENCIAL",
+        "ESSENCIAL": "INHO_ESSENCIAL",
+        "INHO_PRO": "INHO_PRO_IA",
+        "INHO_PRO_IA": "INHO_PRO_IA",
+        "PRO": "INHO_PRO_IA",
+        "PREMIUM": "INHO_PRO_IA",
+        "INHO_COOPERATIVA": "INHO_COOPERATIVA_OURO",
+        "INHO_COOPERATIVA_OURO": "INHO_COOPERATIVA_OURO",
+        "INHO_ENTERPRISE": "INHO_COOPERATIVA_OURO",
+        "INHO_ENTERPRISE_OURO": "INHO_COOPERATIVA_OURO",
+        "ENTERPRISE": "INHO_COOPERATIVA_OURO",
+        "COOPERATIVA": "INHO_COOPERATIVA_OURO",
+    }
+    tier_key = tier_mapping.get(raw_tier, "INHO_PRO_IA")
+    plan_data = PLAN_CATALOG.get(tier_key, PLAN_CATALOG["INHO_PRO_IA"])
+    is_annual = payload.billing_cycle.strip().upper() == "ANNUAL"
+    unit_amount = plan_data["annual_price_cents"] if is_annual else plan_data["monthly_price_cents"]
+    interval = "year" if is_annual else "month"
+
+    success_url = payload.success_url or "https://inho.orbesystems.com.br/bem-vindo?session_id={CHECKOUT_SESSION_ID}"
+    cancel_url = payload.cancel_url or "https://www.orbesystems.com.br/assinar"
+
+    metadata = {
+        "business_name": payload.business_name.strip()[:100],
+        "phone": payload.phone.strip()[:30],
+        "email": payload.email.strip().lower(),
+        "plan_tier": plan_data["tier"],
+        "billing_cycle": "ANNUAL" if is_annual else "MONTHLY",
+    }
+
+    if (
+        stripe.api_key
+        and not stripe.api_key.startswith("sk_test_dummy")
+        and not stripe.api_key.startswith("sk_test_mock")
+        and not stripe.api_key.startswith("CHANGE_ME")
+    ):
+        try:
+            line_items = [
+                {
+                    "price_data": {
+                        "currency": "brl",
+                        "unit_amount": unit_amount,
+                        "product_data": {
+                            "name": f"{plan_data['name']} - {'Anual (2 Meses Gratis)' if is_annual else 'Mensal'}",
+                            "description": plan_data["description"][:500],
+                        },
+                        "recurring": {"interval": interval},
+                    },
+                    "quantity": 1,
+                }
+            ]
+            session = stripe.checkout.Session.create(
+                customer_email=payload.email.strip().lower(),
+                payment_method_types=["card"],
+                line_items=line_items,
+                mode="subscription",
+                success_url=success_url,
+                cancel_url=cancel_url,
+                metadata=metadata,
+            )
+            return StripeCheckoutResponse(
+                checkout_url=session.url,
+                session_id=session.id,
+                plan_tier=plan_data["tier"],
+                billing_cycle="ANNUAL" if is_annual else "MONTHLY",
+                amount_cents=unit_amount,
+            )
+        except Exception as exc:
+            raise HTTPException(status_code=502, detail=f"Erro no gateway Stripe: {str(exc)}")
+    else:
+        mock_id = f"cs_test_{uuid.uuid4().hex[:16]}"
+        return StripeCheckoutResponse(
+            checkout_url=f"https://inho.orbesystems.com.br/bem-vindo?session_id={mock_id}&email={payload.email}&business={payload.business_name}&plan={plan_data['tier']}",
+            session_id=mock_id,
+            plan_tier=plan_data["tier"],
+            billing_cycle="ANNUAL" if is_annual else "MONTHLY",
+            amount_cents=unit_amount,
+        )
+
+
+@router.get("/session-info", response_model=SessionInfoResponse)
+async def get_checkout_session_info(
+    session_id: str = Query(..., description="ID da sessao Stripe"),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Retorna metadados publicos da sessao de checkout (para popular a tela /bem-vindo).
+    """
+    import os
+    import stripe
+    from core.config import settings as app_settings
+
+    stripe.api_key = app_settings.STRIPE_SECRET_KEY or os.getenv("STRIPE_SECRET_KEY", "")
+
+    if (
+        stripe.api_key
+        and not stripe.api_key.startswith("sk_test_dummy")
+        and not stripe.api_key.startswith("sk_test_mock")
+        and not session_id.startswith("cs_test_mock")
+    ):
+        try:
+            session = stripe.checkout.Session.retrieve(session_id)
+            meta = session.metadata or {}
+            session_email = session.customer_email or (session.customer_details.email if session.customer_details else None) or meta.get("email")
+            return SessionInfoResponse(
+                session_id=session.id,
+                email=session_email,
+                business_name=meta.get("business_name") or "Empresa Assinante",
+                phone=meta.get("phone") or "",
+                plan_tier=meta.get("plan_tier") or "INHO_PRO_IA",
+                billing_cycle=meta.get("billing_cycle") or "MONTHLY",
+                amount_total=session.amount_total,
+                payment_status=session.payment_status or "paid",
+                status=session.status or "complete",
+            )
+        except Exception:
+            pass
+
+    return SessionInfoResponse(
+        session_id=session_id,
+        email="assinante@orbesystems.com.br",
+        business_name="Nova Empresa Homologada",
+        phone="51981598760",
+        plan_tier="INHO_PRO_IA",
+        billing_cycle="MONTHLY",
+        amount_total=59000,
+        payment_status="paid",
+        status="complete",
+    )
 
 # ── Stripe Checkout & Provisioning Webhook (Novos Planos 05/11/2026) ───────────
 

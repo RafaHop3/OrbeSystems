@@ -409,15 +409,25 @@ export default function HomePage() {
 
               <div className="pt-8">
                 <a
-                  href="https://orbesystems.com.br/assinar"
+                  href="https://orbesystems.com.br/assinar?plan=essencial"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-cyan-600 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-sm group-hover:bg-cyan-500"
+                  className="w-full py-3.5 px-4 rounded-xl bg-slate-800 hover:bg-cyan-600 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-sm group-hover:bg-cyan-500 text-center"
                 >
                   <CreditCard size={15} />
-                  <span>Assinar Essencial</span>
+                  <span>Assinar Agora (Liberação Imediata)</span>
                   <ArrowRight size={13} />
                 </a>
+                <div className="mt-2.5 text-center">
+                  <a
+                    href="https://wa.me/5551981598760?text=Olá!%20Gostaria%20de%20tirar%20dúvidas%20sobre%20o%20INHO%20Essencial."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] text-slate-400 hover:text-cyan-400 font-medium transition-colors"
+                  >
+                    Prefere tirar dúvidas no WhatsApp?
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -481,15 +491,25 @@ export default function HomePage() {
 
               <div className="pt-8">
                 <a
-                  href="https://orbesystems.com.br/assinar"
+                  href="https://orbesystems.com.br/assinar?plan=pro"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:brightness-110 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-lg text-center"
                 >
                   <CreditCard size={15} />
-                  <span>Assinar Pro + Copilot IA</span>
+                  <span>Assinar Agora (Liberação Imediata)</span>
                   <ArrowRight size={13} />
                 </a>
+                <div className="mt-2.5 text-center">
+                  <a
+                    href="https://wa.me/5551981598760?text=Olá!%20Gostaria%20de%20tirar%20dúvidas%20sobre%20o%20INHO%20Pro."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] text-purple-300 hover:text-white font-medium transition-colors"
+                  >
+                    Prefere tirar dúvidas no WhatsApp?
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -549,15 +569,25 @@ export default function HomePage() {
 
               <div className="pt-8">
                 <a
-                  href="https://orbesystems.com.br/assinar"
+                  href="https://orbesystems.com.br/assinar?plan=enterprise"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-[#9A6F0B] via-[#D4AF37] to-[#9A6F0B] hover:brightness-110 text-white font-extrabold text-xs flex items-center justify-center gap-2 transition-all shadow-md text-center"
                 >
                   <CreditCard size={15} />
-                  <span>Contratar Padrão Ouro</span>
+                  <span>Contratar Agora (Liberação Imediata)</span>
                   <ArrowRight size={13} />
                 </a>
+                <div className="mt-2.5 text-center">
+                  <a
+                    href="https://wa.me/5551981598760?text=Olá!%20Gostaria%20de%20tirar%20dúvidas%20sobre%20o%20INHO%20Enterprise."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] text-amber-300 hover:text-white font-medium transition-colors"
+                  >
+                    Prefere tirar dúvidas no WhatsApp?
+                  </a>
+                </div>
               </div>
             </div>
           </div>

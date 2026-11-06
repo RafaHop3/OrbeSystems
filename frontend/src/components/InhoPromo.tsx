@@ -42,13 +42,19 @@ export default function InhoPromo() {
                     ]} />
 
                     <div className="flex flex-wrap gap-4 pt-4">
+                        <Link
+                            href="/assinar"
+                            className="inline-flex items-center gap-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110 text-slate-950 font-black uppercase tracking-widest text-sm px-8 py-4 transition-all duration-300 shadow-[0_0_25px_rgba(16,185,129,0.5)]"
+                        >
+                            Assinar Planos INHO <ArrowRight size={18} />
+                        </Link>
                         <a
                             href={`${inhoUrl}/login`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-3 bg-[#8b5cf6] hover:bg-white text-white hover:text-black font-bold uppercase tracking-widest text-sm px-8 py-4 transition-all duration-300 shadow-[0_0_25px_rgba(139,92,246,0.5)]"
+                            className="inline-flex items-center gap-3 bg-[#8b5cf6]/80 hover:bg-white text-white hover:text-black font-bold uppercase tracking-widest text-sm px-8 py-4 transition-all duration-300 shadow-[0_0_25px_rgba(139,92,246,0.5)]"
                         >
-                            Acessar INHO via Orbe SSO <ArrowRight size={18} />
+                            Já sou Assinante (Login)
                         </a>
                         <a
                             href="#inho-manifesto"
@@ -57,7 +63,7 @@ export default function InhoPromo() {
                             Conheça o INHO
                         </a>
                     </div>
-                    <p className="text-[11px] text-slate-500 max-w-xl">Acesso restrito a contas provisionadas por assinatura ativa ou homologação administrativa. Não há cadastro público.</p>
+                    <p className="text-[11px] text-slate-400 max-w-xl">Ambiente corporativo blindado: sua conta e banco de dados isolado são liberados automaticamente assim que você escolhe seu plano.</p>
                 </div>
 
                 {/* Right Interactive Visual Infographic */}
