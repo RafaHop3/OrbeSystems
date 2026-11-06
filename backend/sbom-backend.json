@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:096b1503-18a9-47b0-b1d0-441ef5868ebc",
+  "serialNumber": "urn:uuid:596b6b97-52f5-482b-808f-017107efca9c",
   "metadata": {
-    "timestamp": "2026-11-06T11:30:22.888444+00:00",
+    "timestamp": "2026-11-06T20:36:26.423516+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -415,8 +415,8 @@
     {
       "type": "library",
       "name": "click",
-      "version": "8.5.0",
-      "purl": "pkg:pypi/click@8.5.0",
+      "version": "8.5.1",
+      "purl": "pkg:pypi/click@8.5.1",
       "licenses": [
         {
           "license": {
@@ -428,7 +428,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "fd92772b8e9b092abcf4192503b3a93b6e398532ee244471b437c15c8f2afbe0"
+          "content": "cbdce779b6b4cd41cc1839a2b2981e50d774e38e5eb259c5302836c1594ee94b"
         }
       ]
     },
