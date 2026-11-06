@@ -37,6 +37,7 @@ export async function POST(request: Request) {
     if (stripeSecretKey) {
       const params = new URLSearchParams();
       params.append('mode', 'subscription');
+      params.append('allow_promotion_codes', 'true');
       params.append('payment_method_types[0]', 'card');
       params.append('line_items[0][price_data][currency]', 'brl');
       params.append('line_items[0][price_data][unit_amount]', String(unitAmount));
