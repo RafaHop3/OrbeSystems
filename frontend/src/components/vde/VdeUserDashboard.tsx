@@ -498,7 +498,7 @@ export default function VdeUserDashboard() {
         ...prev,
         `[${time()}] ✅ Registro inicial de checkout concluído. Status do item de vistoria: PENDING.`,
         `[${time()}] 🤖 Chamada de tarefa assíncrona disparada para o worker do LLM (Background Task)...`,
-        `[${time()}] Iniciando sondagem (polling) dos resultados gerados pelo Gemini Cloud/Ollama...`
+        `[${time()}] Iniciando sondagem (polling) dos resultados gerados pela Orbe AI Core/Ollama...`
       ]);
 
       let attempts = 0;

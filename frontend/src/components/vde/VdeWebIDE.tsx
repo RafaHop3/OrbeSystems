@@ -331,7 +331,7 @@ function ApiRunner() {
 const COMMANDS: Record<string, string> = {
   help: '  Comandos: help, ls, status, api, clear, whoami, version',
   ls: '  backend/  frontend/  README.md  requirements.txt',
-  status: '  ✅ FastAPI     → localhost:8000\n  ✅ Next.js     → localhost:3000\n  ⚡ Gemini API  → cloud (production)\n  🟡 Ollama      → localhost:11434 (opcional)',
+  status: '  ✅ FastAPI     → localhost:8000\n  ✅ Next.js     → localhost:3000\n  ⚡ Orbe AI API → cloud (production)\n  🟡 Ollama      → localhost:11434 (opcional)',
   api: '  Endpoints: /health /api/projects /api/imobverse/properties /api/imortal/analyze',
   whoami: '  orbe@workspace — Orbe Systems VDE v1.0',
   version: '  Orbe WebIDE v2.0 | FastAPI 0.115 | Next.js 14.2 | Python 3.11',

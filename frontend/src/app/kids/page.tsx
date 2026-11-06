@@ -754,7 +754,7 @@ export default function KidsStudioPage() {
     setIsTyping(true);
 
     try {
-      // Map history to Gemini format (limit to last 10 messages for speed)
+      // Map history to Orbe AI format (limit to last 10 messages for speed)
       const apiMessages = updatedHistory.slice(-10).map(msg => ({
         role: msg.sender === 'bot' ? 'assistant' : 'user',
         content: msg.text

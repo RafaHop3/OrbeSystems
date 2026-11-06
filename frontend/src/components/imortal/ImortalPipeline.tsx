@@ -33,7 +33,7 @@ mas nunca use delays superiores a 1 segundo."`
     },
     {
       number: '02',
-      title: 'Parser de IA (Gemini)',
+      title: 'Parser de IA (Orbe AI)',
       icon: <Sparkles size={18} />,
       colorClass: 'text-neon-blue',
       bgClass: 'bg-neon-blue/5',

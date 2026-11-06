@@ -63,7 +63,7 @@ const VARIANT_LABELS: Record<BrandOrbVariant, string> = {
   openai: "OpenAI",
   codex: "Codex",
   cursor: "Cursor",
-  gemini: "Gemini",
+  gemini: "Orbe AI",
   figma: "Figma",
   framer: "Framer",
   react: "React",

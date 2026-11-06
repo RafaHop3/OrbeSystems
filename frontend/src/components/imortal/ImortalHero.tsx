@@ -157,7 +157,7 @@ export default function ImortalHero() {
 
         {/* Tags */}
         <div className="flex flex-wrap justify-center gap-2">
-          {['Z3 Theorem Prover', 'Sandbox Fuzzing', 'AVR/Arduino', 'Gemini 2.0 Flash', 'Groq Llama', 'Python', 'Apache 2.0'].map((tag) => (
+          {['Z3 Theorem Prover', 'Sandbox Fuzzing', 'AVR/Arduino', 'Orbe AI Core', 'Groq Llama', 'Python', 'Apache 2.0'].map((tag) => (
             <span
               key={tag}
               className="font-mono text-[10px] px-2.5 py-1 rounded border border-neon-cyan/15 text-neon-cyan/60 bg-neon-cyan/5"

@@ -62,7 +62,7 @@ ${retrievedDocsText}
     let aiResponseText = '';
 
     // =========================================================================
-    // ETAPA 2: PROVEDOR 1 - GOOGLE GEMINI FLASH (Se configurado)
+    // ETAPA 2: PROVEDOR 1 - ORBE AI CORE NEURAL ENGINE
     // =========================================================================
     if (GEMINI_API_KEY && !aiResponseText) {
       try {

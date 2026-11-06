@@ -52,11 +52,13 @@ const INHO_PLANS: PlanConfig[] = [
     glow: "rgba(0,255,245,0.15)",
     features: [
       { text: "Até 3 operadores (1 Admin + 2 Operadores)", ok: true },
-      { text: "Core ERP Completo (PDV, Pedidos, Boletos & PIX)", ok: true },
-      { text: "NFS-e, DRE Caixa/Competência & Lacre SHA-256", ok: true },
-      { text: "Central WhatsApp Básica (Régua D-3, D0, D+3)", ok: true },
-      { text: "Disparos Manuais Nominalmente Assinados", ok: true },
-      { text: "OrBrick-IA Ativa & Resposta Assistida", ok: false },
+      { text: "Frente de Caixa (PDV) com Maquininha Smart POS (Zero Aluguel)", ok: true, highlight: true },
+      { text: "Emissão de Nota Fiscal (NFS-e) Automática Integrada", ok: true, highlight: true },
+      { text: "Balança Pesável EAN-13 & Consulta PLU Rápida", ok: true },
+      { text: "Core ERP Completo (Vendas, Estoque, Boletos & PIX)", ok: true },
+      { text: "Central WhatsApp com Régua D-3, D0, D+3 e PIX", ok: true },
+      { text: "DRE Caixa/Competência & Lacre SHA-256", ok: true },
+      { text: "Orbe Assistant AI com Poder ROOT (Alt+A)", ok: false },
       { text: "Treinamento RAG (.PDF / .DOCX)", ok: false },
       { text: "Inteligência Preditiva CBM & RFM", ok: false },
       { text: "Governança Multi-Empresas & Open Finance", ok: false },
@@ -77,6 +79,9 @@ const INHO_PLANS: PlanConfig[] = [
     isPopular: true,
     features: [
       { text: "Até 8 operadores com RBAC completo", ok: true, highlight: true },
+      { text: "PDV com Maquininha Smart POS + Cancelamento F9", ok: true, highlight: true },
+      { text: "Emissão de Nota Fiscal (NFS-e) com Lacre Criptográfico", ok: true, highlight: true },
+      { text: "Orbe Assistant AI com Poder ROOT Ativo (Alt+A)", ok: true, highlight: true },
       { text: "Core ERP Completo + Alçada Dual-Control (> R$ 5.000)", ok: true },
       { text: "Pesquisa de Clima Organizacional (PCO)", ok: true },
       { text: "OrBrick-IA Ativa c/ Handoff Humano & Kill-Switch", ok: true, highlight: true },
@@ -102,11 +107,14 @@ const INHO_PLANS: PlanConfig[] = [
     isGold: true,
     features: [
       { text: "10 a 25 operadores c/ Trilha de Auditoria Imutável", ok: true, highlight: true },
-      { text: "Governança Corporativa Completa (Multi-Empresas, Quadro Societário & Auditoria)", ok: true, highlight: true },
+      { text: "Emissão Fiscal Ilimitada + Retenções na Fonte (INSS/IRRF)", ok: true, highlight: true },
+      { text: "PDV Multi-Caixas com Maquininhas Ilimitadas & Balanças", ok: true, highlight: true },
+      { text: "Orbe Assistant AI ROOT Integrado a Todos os Módulos", ok: true, highlight: true },
+      { text: "Governança Corporativa Completa (Multi-Empresas & Estatuto)", ok: true, highlight: true },
       { text: "Retenções Fiscais (INSS/IRRF/CSLL) & Informe de Rendimentos", ok: true },
       { text: "Open Finance Brasil Oficial (Sicoob, Sicredi, BB & Inter)", ok: true, highlight: true },
       { text: "OrBrick-IA Multi-Operador c/ Guardrail Zero-Trust", ok: true },
-      { text: "RAG Ilimitado + Upload de Políticas, Manuais & Estatuto (.PDF/.DOCX)", ok: true, highlight: true },
+      { text: "RAG Ilimitado + Upload de Políticas e Manuais (.PDF/.DOCX)", ok: true, highlight: true },
       { text: "Franquia de 5.000 inferências IA / mês", ok: true },
       { text: "CBM Clientes & Parceiros VIP + Expurgo LGPD Art. 18", ok: true },
       { text: "Portal do Contador & Alçada Dual-Control", ok: true },
@@ -443,6 +451,123 @@ function AssinarPageContent() {
               >
                 {loadingPlan === "ghost_engine" && isPending ? "PROCESSANDO..." : "Desbloquear Pass"}
               </button>
+            </div>
+          </div>
+        </div>
+
+        
+        {/* ============================================================== */}
+        {/* CAMPANHA OFICIAL: MENOS TRABALHO & MAIS DINHEIRO NO CAIXA     */}
+        {/* ============================================================== */}
+        <div style={{ maxWidth: "1100px", margin: "48px auto 32px auto" }}>
+          <div style={{ textAlign: "center", marginBottom: "32px" }}>
+            <span style={{ fontSize: "11px", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.15em", color: "#10b981", background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.3)", padding: "6px 14px", borderRadius: "999px", display: "inline-block", marginBottom: "12px" }}>
+              ⚡ COMPROVADO NA PRÁTICA: RESULTADOS IMEDIATOS
+            </span>
+            <h2 style={{ fontSize: "28px", fontWeight: "800", color: "#ffffff", margin: "0 0 10px 0" }}>
+              Como o INHO ERP Ajuda Sua Empresa a Faturar Mais e Trabalhar Menos
+            </h2>
+            <p style={{ fontSize: "14px", color: "rgba(255,255,255,0.65)", maxWidth: "700px", margin: "0 auto" }}>
+              Eliminamos as dores de cabeça do empresário brasileiro: cobrança manual, aluguéis abusivos de maquininha e erros de fechamento de caixa.
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "20px", marginBottom: "40px" }}>
+            {/* Card 1: Como Você Ganha Mais Dinheiro */}
+            <div style={{ background: "linear-gradient(135deg, rgba(16,185,129,0.08), rgba(15,23,42,0.85))", border: "1px solid rgba(16,185,129,0.3)", borderRadius: "16px", padding: "24px", backdropFilter: "blur(12px)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "rgba(16,185,129,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#10b981", fontSize: "20px" }}>💰</div>
+                <div>
+                  <h3 style={{ fontSize: "16px", fontWeight: "800", color: "#10b981", margin: 0 }}>Como Você Gera Mais Dinheiro</h3>
+                  <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)" }}>Aumento Real de Caixa e Redução de Perdas</span>
+                </div>
+              </div>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "12px" }}>
+                <li style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", lineHeight: "1.5" }}>
+                  🟢 <strong>Recupere até 65% da Inadimplência:</strong> Régua WhatsApp preventiva (D-3, D0, D+3) com código Pix Copia e Cola instantâneo. O cliente paga pelo celular sem atrito.
+                </li>
+                <li style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", lineHeight: "1.5" }}>
+                  🟢 <strong>Zero Aluguel de Maquininha:</strong> Conecte maquininhas Smart POS (BBPOS WisePOS E / S700) via Wi-Fi no balcão sem pagar mensalidades absurdas para credenciadoras.
+                </li>
+                <li style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", lineHeight: "1.5" }}>
+                  🟢 <strong>Aumento do Ticket Médio no PDV:</strong> Sugestões de cross-sell e leitura em milissegundos de balanças pesáveis (EAN-13) aceleram as filas em até 3x.
+                </li>
+                <li style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", lineHeight: "1.5" }}>
+                  🟢 <strong>Radar de Clientes VIP & Churn:</strong> Inteligência CBM identifica quem parou de comprar e dispara ofertas personalizadas para reativar faturamento.
+                </li>
+              </ul>
+            </div>
+
+            {/* Card 2: Como Você Tem Menos Trabalho */}
+            <div style={{ background: "linear-gradient(135deg, rgba(0,255,245,0.08), rgba(15,23,42,0.85))", border: "1px solid rgba(0,255,245,0.3)", borderRadius: "16px", padding: "24px", backdropFilter: "blur(12px)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "16px" }}>
+                <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: "rgba(0,255,245,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: "#00fff5", fontSize: "20px" }}>⚡</div>
+                <div>
+                  <h3 style={{ fontSize: "16px", fontWeight: "800", color: "#00fff5", margin: 0 }}>Como Você Tem Menos Trabalho</h3>
+                  <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.5)" }}>Automação Total de Tarefas Repetitivas</span>
+                </div>
+              </div>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "12px" }}>
+                <li style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", lineHeight: "1.5" }}>
+                  🔵 <strong>Emissão de Nota Fiscal (NFS-e) em Segundos:</strong> Geração fiscal automática sem complicação de sites de prefeitura ou formulários burocráticos.
+                </li>
+                <li style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", lineHeight: "1.5" }}>
+                  🔵 <strong>Fechamento Cego de Caixa com IA:</strong> O operador digita o que contou na gaveta e a IA faz a auditoria pericial, apontando quebras ou sobras instantaneamente.
+                </li>
+                <li style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", lineHeight: "1.5" }}>
+                  🔵 <strong>Co-piloto Orbe AI ROOT (Alt+A):</strong> Seus funcionários tiram dúvidas de caixa, balanças, cadastro de itens e estornos sozinhos, sem interromper o dono.
+                </li>
+                <li style={{ fontSize: "13px", color: "rgba(255,255,255,0.85)", lineHeight: "1.5" }}>
+                  🔵 <strong>Alçada Dual-Control (&gt; R$ 5.000):</strong> Segurança contra fraudes financeiras com exigência de aprovação dupla criptografada no Contas a Pagar.
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* ============================================================== */}
+          {/* FAQ OFICIAL GOOGLE SEO (RESPOSTAS DIRETAS AOS EMPRESÁRIOS)     */}
+          {/* ============================================================== */}
+          <div style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px", padding: "28px", backdropFilter: "blur(12px)" }}>
+            <h3 style={{ fontSize: "20px", fontWeight: "800", color: "#ffffff", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+              ❓ Perguntas Frequentes de Empresários e Comerciantes
+            </h3>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <div style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "14px" }}>
+                <h4 style={{ fontSize: "15px", fontWeight: "700", color: "#00fff5", margin: "0 0 6px 0" }}>
+                  🧾 O INHO ERP consegue gerar Nota Fiscal?
+                </h4>
+                <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", margin: 0, lineHeight: "1.6" }}>
+                  <strong>Sim, com certeza!</strong> O INHO possui emissor integrado de Nota Fiscal de Serviços Eletrônica (NFS-e) e notas com lacre criptográfico SHA-256 e DRE em tempo real. Tudo é integrado diretamente ao financeiro e às ordens de venda, eliminando a digitação manual de notas fiscais.
+                </p>
+              </div>
+
+              <div style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "14px" }}>
+                <h4 style={{ fontSize: "15px", fontWeight: "700", color: "#10b981", margin: "0 0 6px 0" }}>
+                  💳 Nossos assinantes podem usar maquininha física de cartão no balcão?
+                </h4>
+                <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", margin: 0, lineHeight: "1.6" }}>
+                  <strong>Sim!</strong> O ecossistema suporta maquininhas físicas <strong>Smart POS (BBPOS WisePOS E e Stripe Reader S700)</strong> integradas diretamente ao PDV via Stripe Terminal. Você conecta o leitor ao Wi-Fi da loja em menos de 1 minuto usando o código de pareamento, cobra por aproximação (NFC) ou chip, tem cancelamento rápido no teclado (F9) e o dinheiro cai direto na sua conta bancária sem intermediários.
+                </p>
+              </div>
+
+              <div style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: "14px" }}>
+                <h4 style={{ fontSize: "15px", fontWeight: "700", color: "#a855f7", margin: "0 0 6px 0" }}>
+                  📱 Como funciona a cobrança automática via WhatsApp com PIX?
+                </h4>
+                <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", margin: 0, lineHeight: "1.6" }}>
+                  O sistema dispara lembretes educados e automáticos nas réguas <strong>D-3 (preventivo), D0 (vencimento) e D+3 (cobrança)</strong> diretamente no WhatsApp do cliente, acompanhado do código Pix Copia e Cola dinâmico. Quando o cliente paga, o INHO reconhece a liquidação e dá baixa imediata no sistema.
+                </p>
+              </div>
+
+              <div>
+                <h4 style={{ fontSize: "15px", fontWeight: "700", color: "#f59e0b", margin: "0 0 6px 0" }}>
+                  🤖 O que é o Co-piloto Orbe AI com Poder ROOT?
+                </h4>
+                <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.75)", margin: 0, lineHeight: "1.6" }}>
+                  É o assistente de inteligência operacional acessível por qualquer operador pressionando <strong>Alt + A</strong>. Ele conhece todas as regras do sistema, orienta sobre pesagem em balanças, códigos PLU, cancelamentos no caixa, retenções fiscais de cooperativas (Lei 5.764) e alçadas de despesas, funcionando como um supervisor de turno 24 horas por dia.
+                </p>
+              </div>
             </div>
           </div>
         </div>

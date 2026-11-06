@@ -80,10 +80,10 @@ export const MANIFESTO_STAGES: ManifestoStage[] = [
     numeral: 'VII',
     title: 'O Clima',
     heading: 'Motor Orbe AI Unificado & Telemetria Ultrarrápida',
-    line: 'Conectado ao cérebro Orbe AI (Gemini Flash + Qwen2.5-72B), resposta em < 500ms e plano B automático.',
-    keywords: ['Motor Orbe AI', 'Gemini & Qwen Cascata', '< 500 ms', 'Fallback Autônomo', 'Telemetria'],
+    line: 'Conectado ao cérebro Orbe AI Core (Multi-Model Neuronal), resposta em < 500ms e plano B automático.',
+    keywords: ['Motor Orbe AI Core', 'Orbe Neuronal em Cascata', '< 500 ms', 'Fallback Autônomo', 'Telemetria'],
     paragraphs: [
-      'A telemetria contínua acompanha cada rota de API, mantendo o tempo de resposta abaixo de meio segundo. O motor de inteligência artificial opera em cascata com Google Gemini Flash, Hugging Face Qwen2.5-72B Instruct e sintetizador RAG autônomo.',
+      'A telemetria contínua acompanha cada rota de API, mantendo o tempo de resposta abaixo de meio segundo. O motor de inteligência artificial opera com a tecnologia proprietária Orbe AI Core, arquitetura neural em cascata de alta precisão e sintetizador RAG autônomo.',
       'Se um serviço externo oscila, há um plano B automático (fallback) e o sistema segue de pé com alta disponibilidade e zero interrupção.',
     ],
   },

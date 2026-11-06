@@ -142,7 +142,7 @@ export default function ImortalPage() {
         step: 'AI Parser Engine',
         status: 'PASSED',
         icon: '🧠',
-        details: `Código estruturado gerado via Gemini (${genData.is_mock ? 'Mock' : 'Real-time'})`
+        details: `Código estruturado gerado via Orbe AI Core (${genData.is_mock ? 'Mock' : 'Real-time'})`
       }]);
 
       // Step 2: Validate IR structure
@@ -490,7 +490,7 @@ export default function ImortalPage() {
             </div>
             <div className="flex justify-between">
               <span>PROVEDOR PADRÃO:</span>
-              <span className="text-white">GEMINI 1.5 FLASH</span>
+              <span className="text-white">ORBE AI CORE</span>
             </div>
           </div>
 
