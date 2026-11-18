@@ -572,6 +572,101 @@ function AssinarPageContent() {
           </div>
         </div>
 
+        {/* Mini-Modal de Checkout Público Zero-Fricção (Stripe) */}
+        {isModalOpen && selectedPlanForModal && (
+          <div style={styles.modalOverlay} onClick={() => !isSubmittingCheckout && setIsModalOpen(false)}>
+            <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+              <div style={styles.modalHeader}>
+                <div>
+                  <span style={{ ...styles.modalBadge, color: selectedPlanForModal.color, borderColor: selectedPlanForModal.color }}>
+                    CHECKOUT SEGURO STRIPE
+                  </span>
+                  <h3 style={styles.modalTitle}>{selectedPlanForModal.name}</h3>
+                  <p style={styles.modalSubtitle}>
+                    {cycle === "monthly" ? selectedPlanForModal.monthlyFormatted : selectedPlanForModal.annualFormatted} ·{" "}
+                    {cycle === "monthly" ? "Cobrança Mensal" : "Plano Anual (2 Meses Grátis)"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  style={styles.modalCloseBtn}
+                  onClick={() => !isSubmittingCheckout && setIsModalOpen(false)}
+                  aria-label="Fechar modal"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {error && (
+                <div style={{ marginBottom: "14px", padding: "10px 12px", borderRadius: "10px", background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.4)", color: "#fca5a5", fontSize: "12px" }}>
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handlePublicCheckoutSubmit} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "#94a3b8", marginBottom: "6px", textTransform: "uppercase" }}>
+                    Nome da Empresa / Cooperativa
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ex: Cooperativa Sul"
+                    value={businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
+                    style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", fontSize: "13px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "#94a3b8", marginBottom: "6px", textTransform: "uppercase" }}>
+                    E-mail Principal de Acesso
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="voce@suaempresa.com.br"
+                    value={customerEmail}
+                    onChange={(e) => setCustomerEmail(e.target.value)}
+                    style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", fontSize: "13px" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: "#94a3b8", marginBottom: "6px", textTransform: "uppercase" }}>
+                    WhatsApp (opcional)
+                  </label>
+                  <input
+                    type="tel"
+                    placeholder="(51) 99999-0000"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    style={{ width: "100%", padding: "11px 14px", borderRadius: "10px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", fontSize: "13px" }}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={isSubmittingCheckout}
+                  style={{
+                    marginTop: "6px",
+                    padding: "13px 18px",
+                    borderRadius: "12px",
+                    border: "none",
+                    background: selectedPlanForModal.color,
+                    color: "#020617",
+                    fontWeight: 900,
+                    fontSize: "13px",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                    cursor: isSubmittingCheckout ? "wait" : "pointer",
+                    opacity: isSubmittingCheckout ? 0.7 : 1,
+                  }}
+                >
+                  {isSubmittingCheckout ? "REDIRECIONANDO PARA O STRIPE..." : "Ir para Pagamento Seguro →"}
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* Nota de Segurança e Garantia */}
         <p style={styles.securityNote}>
           🔒 Pagamento processado com segurança bancária criptografada pelo Stripe • Emissão automática de NFS-e • Cancele a qualquer momento
