@@ -119,6 +119,194 @@ def rank_tenant_rag_chunks(
     return [item[1] for item in scored[:top_k]]
 
 
+def rank_tenant_rag_hybrid_rrf(
+    query: str,
+    tenant_chunks: List[Dict[str, Any]],
+    top_k: int = 5,
+    rrf_k: int = 60,
+) -> List[Dict[str, Any]]:
+    """
+    RAG Híbrido 2.0 (Onda 2 - Manual 35):
+    Combina busca vetorial (cosseno de embedding determinístico / pgvector) e busca lexical
+    usando Reciprocal Rank Fusion (RRF), retornando os Top-5 trechos mais relevantes do tenant.
+    """
+    if not tenant_chunks or not (query or "").strip():
+        return []
+
+    q_vec = compute_text_embedding(query)
+    q_tokens = set(_normalize_tokens(query))
+
+    vec_scored: List[Tuple[float, int, Dict[str, Any]]] = []
+    lex_scored: List[Tuple[float, int, Dict[str, Any]]] = []
+
+    for idx, chunk in enumerate(tenant_chunks):
+        title = str(chunk.get("title") or "")
+        category = str(chunk.get("category") or "")
+        content = str(chunk.get("content") or "")
+        keywords = str(chunk.get("keywords") or "")
+        full_text = f"{title} {keywords} {category} {content}".strip()
+
+        c_vec = _parse_embedding_field(chunk.get("embedding_json"))
+        if not c_vec:
+            c_vec = compute_text_embedding(full_text)
+        v_sim = cosine_similarity(q_vec, c_vec)
+        vec_scored.append((v_sim, idx, chunk))
+
+        title_tokens = set(_normalize_tokens(f"{title} {keywords} {category}"))
+        body_tokens = set(_normalize_tokens(content))
+        l_score = (
+            (len(q_tokens.intersection(title_tokens)) * 3.0)
+            + (len(q_tokens.intersection(body_tokens)) * 1.2)
+            if q_tokens
+            else 0.0
+        )
+        lex_scored.append((l_score, idx, chunk))
+
+    vec_scored.sort(key=lambda x: x[0], reverse=True)
+    lex_scored.sort(key=lambda x: x[0], reverse=True)
+
+    vec_rank = {item[1]: rank + 1 for rank, item in enumerate(vec_scored)}
+    lex_rank = {item[1]: rank + 1 for rank, item in enumerate(lex_scored)}
+    vec_val = {item[1]: item[0] for item in vec_scored}
+    lex_val = {item[1]: item[0] for item in lex_scored}
+
+    fused: List[Tuple[float, Dict[str, Any]]] = []
+    for idx, chunk in enumerate(tenant_chunks):
+        v_s = vec_val[idx]
+        l_s = lex_val[idx]
+        if l_s <= 0.0 and v_s < 0.08:
+            continue
+        rrf = (1.0 / (rrf_k + vec_rank[idx])) + (1.0 / (rrf_k + lex_rank[idx]))
+        if l_s > 0.0:
+            rrf += 0.005 * min(l_s, 10.0)
+        fused.append((
+            rrf,
+            {
+                **chunk,
+                "rrf_score": round(rrf, 6),
+                "rag_score": round(max(l_s, v_s * 10.0), 2),
+            },
+        ))
+
+    if not fused:
+        return rank_tenant_rag_chunks(query, tenant_chunks, top_k=top_k)
+
+    fused.sort(key=lambda x: x[0], reverse=True)
+    return [pair[1] for pair in fused[:top_k]]
+
+
+def build_3layer_orbrick_prompt(
+    *,
+    business_name: str,
+    approved_policy: Optional[Dict[str, Any]] = None,
+    matched_rag_docs: Optional[List[Dict[str, Any]]] = None,
+    contact_name: Optional[str] = None,
+    churn_risk_level: str = "LOW",
+    cbm_predictive_summary: str = "",
+    open_invoices: Optional[List[Dict[str, Any]]] = None,
+    recent_history: Optional[List[Dict[str, str]]] = None,
+) -> str:
+    """
+    Constrói o prompt em 3 camadas (Onda 1 - Manual 35):
+    Camada 1: Núcleo inviolável Orbe (HARDENED_SYSTEM_PROMPT)
+    Camada 2: Perfil & Política Aprovada do Tenant + RAG Top-5
+    Camada 3: Contexto do Contato (Faturas, CBM RFM/Churn, Histórico até 10 turnos)
+    """
+    rag_lines = []
+    for doc in (matched_rag_docs or [])[:5]:
+        snippet = str(doc.get("content") or "")[:360].replace("\n", " ")
+        rag_lines.append(f"- [{doc.get('title', 'Norma')}]: {snippet}")
+    rag_block = "\n".join(rag_lines) if rag_lines else "- Nenhum trecho específico encontrado."
+
+    policy_block = (
+        _json.dumps(approved_policy, ensure_ascii=False)
+        if approved_policy
+        else "Sem política numérica customizada aprovada (escalar exceções para humano)."
+    )
+
+    hist_lines = []
+    for turn in (recent_history or [])[-10:]:
+        role = "Cliente" if turn.get("role") == "user" else "OrBrick-IA"
+        hist_lines.append(f"{role}: {str(turn.get('content') or '')[:220]}")
+    hist_block = "\n".join(hist_lines) if hist_lines else "(Início da conversa)"
+
+    inv_count = len(open_invoices or [])
+    inv_total = round(sum(float(i.get("amount", 0.0) or 0.0) for i in (open_invoices or [])), 2)
+
+    return (
+        f"{HARDENED_SYSTEM_PROMPT}\n\n"
+        f"=== CAMADA 2: POLÍTICA E CONHECIMENTO DO TENANT ({business_name}) ===\n"
+        f"Política Aprovada: {policy_block}\n"
+        f"Trechos RAG Top-5:\n{rag_block}\n"
+        "REGRA DE LINGUAGEM: Explique sempre em português simples e acolhedor para cliente leigo, "
+        "sem despejar jargão técnico interno.\n\n"
+        f"=== CAMADA 3: CONTEXTO DO CONTATO ({(contact_name or 'Cliente').split(' ')[0]}) ===\n"
+        f"Faturas em aberto: {inv_count} (total R$ {inv_total:.2f}) | "
+        f"Risco CBM: {churn_risk_level} {cbm_predictive_summary}\n"
+        f"Histórico recente (até 10 turnos):\n{hist_block}"
+    )
+
+
+def classify_intent_deterministic(
+    *,
+    incoming_message: str,
+    lower_msg: str,
+    business_name: str,
+    matched_rag_docs: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """
+    Classificador estruturado (intent, confidence, sentiment) usado como camada
+    de alta confiabilidade / fallback determinístico quando o LLM estiver offline.
+    """
+    e2e_match = _E2E_PIX_RE.search(incoming_message or "")
+    stripped_low = lower_msg.strip()
+    is_explicit_handoff = (
+        stripped_low in ("atendente", "humano", "operador", "gerente", "suporte", "falar com atendente", "falar com humano")
+        or bool(re.search(
+            r"\b(falar|conversar|chamar|passar|transferir|preciso|quero)\s+(com\s+|para\s+|de\s+)?(um\s+|uma\s+|o\s+)?(atendente|humano|operador|gerente|suporte|pessoa)\b",
+            lower_msg,
+        ))
+        or "suporte humano" in lower_msg
+        or "atendimento humano" in lower_msg
+    )
+    other_coop_match = re.search(r"\bcooperativa\s+([a-zà-ÿ0-9_-]{3,})", lower_msg)
+    mentions_other_tenant = bool(
+        other_coop_match and other_coop_match.group(1) not in (business_name or "").lower()
+    )
+    is_angry = bool(re.search(
+        r"\b(raiva|indignad[oa]|absurdo|cobraram\s+errado|procon|processo|reclama[cç][aã]o|p[eé]ssimo|vergonha|rid[ií]culo)\b",
+        lower_msg,
+    ))
+    sentiment = "NEGATIVE" if is_angry else "NEUTRAL"
+
+    if is_explicit_handoff:
+        return {"intent": "ATENDIMENTO_HUMANO", "confidence": 0.99, "sentiment": sentiment, "e2e_match": e2e_match}
+    if stripped_low.startswith(("+xp", "+curso", "+cert", "+skill", "xp:", "curso:", "skill:")):
+        return {"intent": "ORBEJOBS_LIVING_CV_UPDATE", "confidence": 0.98, "sentiment": "POSITIVE", "e2e_match": e2e_match}
+    if mentions_other_tenant:
+        return {"intent": "CONSULTA_OUTRO_TENANT", "confidence": 0.96, "sentiment": sentiment, "e2e_match": e2e_match}
+    if is_angry:
+        return {"intent": "URGENCIA_RECLAMACAO", "confidence": 0.95, "sentiment": "NEGATIVE", "e2e_match": e2e_match}
+    if re.search(r"\b(quero\s+cancelar|cancelar\s+(minha\s+|a\s+)?(conta|assinatura|contrato|cota)|desistir)\b", lower_msg):
+        return {"intent": "CANCELAMENTO_RETENCAO", "confidence": 0.93, "sentiment": "NEGATIVE", "e2e_match": e2e_match}
+    if e2e_match or any(k in lower_msg for k in ("comprovante", "ja paguei", "já paguei", "pix enviado", "pagamento feito", "segue o pix")):
+        return {"intent": "COMPROVANTE_PIX", "confidence": 0.95, "sentiment": "POSITIVE", "e2e_match": e2e_match}
+    if any(k in lower_msg for k in ("segunda via", "2 via", "2ª via", "manda o pix", "pix de novo", "como pago", "nao entendo esse negocio de pix", "não entendo esse negócio de pix", "chave pix", "codigo pix", "código pix", "boleto", "copia e cola")):
+        return {"intent": "SEGUNDA_VIA_PIX", "confidence": 0.94, "sentiment": sentiment, "e2e_match": e2e_match}
+    if re.search(r"\b(\d+\s*(x|vezes)|parcela[rs]?|parcelamento|prazo|prorrogar|negociar|acordo|desconto)\b", lower_msg):
+        return {"intent": "NEGOCIACAO_PRAZO", "confidence": 0.91, "sentiment": sentiment, "e2e_match": e2e_match}
+    if re.search(r"\b(voc[eê]\s+[eêeé]\s+(um\s+)?(rob[oô]|bot|ia)|robo\?)\b", lower_msg):
+        return {"intent": "IDENTIDADE_IA", "confidence": 0.95, "sentiment": "NEUTRAL", "e2e_match": e2e_match}
+    if matched_rag_docs and any(
+        k in lower_msg
+        for k in ("regulamento", "estatuto", "regra", "regras", "cota", "cotas", "sobras", "horario", "horário", "como funciona", "taxa", "multa", "assembleia")
+    ):
+        return {"intent": "REGULAMENTO_RAG", "confidence": 0.88, "sentiment": sentiment, "e2e_match": e2e_match}
+    if any(k in lower_msg for k in ("devendo", "fatura", "faturas", "saldo", "cadastro", "debito", "débito", "divida", "dívida", "pendente", "vencid", "oi", "olá", "ola", "bom dia", "boa tarde", "boa noite")):
+        return {"intent": "DUVIDA_FATURA", "confidence": 0.86, "sentiment": sentiment, "e2e_match": e2e_match}
+    return {"intent": "FORA_DE_ESCOPO", "confidence": 0.72, "sentiment": sentiment, "e2e_match": e2e_match}
+
+
 def get_default_tenant_knowledge_templates(business_name: str) -> List[Dict[str, str]]:
     """
     Templates iniciais de Regulamento & FAQ que o administrador contratante pode
@@ -372,6 +560,9 @@ async def classify_and_respond_orbrick(
     cbm_predictive_summary: str = "",
     tenant_knowledge_chunks: Optional[List[Dict[str, Any]]] = None,
     recent_history: Optional[List[Dict[str, str]]] = None,
+    approved_policy: Optional[Dict[str, Any]] = None,
+    policy_status: str = "APPROVED",
+    policy_has_conflict: bool = False,
     simulate_ai_offline: bool = False,
 ) -> Dict[str, Any]:
     """
@@ -414,57 +605,24 @@ async def classify_and_respond_orbrick(
     sanitized_msg = sanitize_pii_text(incoming_message)
     lower_msg = sanitized_msg.lower()
 
-    # 3. Recuperação Semântica RAG Isolada do Contratante (business_id)
-    matched_rag_docs = rank_tenant_rag_chunks(sanitized_msg, tenant_knowledge_chunks, top_k=3)
+    # 3. Recuperação Semântica RAG Híbrida 2.0 (RRF Top-5) Isolada do Contratante
+    matched_rag_docs = rank_tenant_rag_hybrid_rrf(sanitized_msg, tenant_knowledge_chunks, top_k=5)
     rag_sources = [
         {"id": str(d.get("id", "")), "title": str(d.get("title", "")), "category": str(d.get("category", ""))}
         for d in matched_rag_docs
     ]
 
-    # 4. Classificação Inteligente de Intenção, Sentimento e Escopo (Manual 35)
-    e2e_match = _E2E_PIX_RE.search(incoming_message or "")
-    stripped_low = lower_msg.strip()
-    is_explicit_handoff = (
-        stripped_low in ("atendente", "humano", "operador", "gerente", "suporte", "falar com atendente", "falar com humano")
-        or bool(re.search(
-            r"\b(falar|conversar|chamar|passar|transferir|preciso|quero)\s+(com\s+|para\s+|de\s+)?(um\s+|uma\s+|o\s+)?(atendente|humano|operador|gerente|suporte|pessoa)\b",
-            lower_msg,
-        ))
-        or "suporte humano" in lower_msg
-        or "atendimento humano" in lower_msg
+    # 4. Classificação Estruturada (Intent + Confiança + Sentimento)
+    cls_res = classify_intent_deterministic(
+        incoming_message=incoming_message,
+        lower_msg=lower_msg,
+        business_name=business_name,
+        matched_rag_docs=matched_rag_docs,
     )
-    other_coop_match = re.search(r"\bcooperativa\s+([a-zà-ÿ0-9_-]{3,})", lower_msg)
-    mentions_other_tenant = bool(
-        other_coop_match and other_coop_match.group(1) not in (business_name or "").lower()
-    )
-
-    if is_explicit_handoff:
-        intent = "ATENDIMENTO_HUMANO"
-    elif stripped_low.startswith(("+xp", "+curso", "+cert", "+skill", "xp:", "curso:", "skill:")):
-        intent = "ORBEJOBS_LIVING_CV_UPDATE"
-    elif mentions_other_tenant:
-        intent = "CONSULTA_OUTRO_TENANT"
-    elif re.search(r"\b(raiva|indignad[oa]|absurdo|cobraram\s+errado|procon|processo|reclama[cç][aã]o|p[eé]ssimo|vergonha)\b", lower_msg):
-        intent = "URGENCIA_RECLAMACAO"
-    elif re.search(r"\b(quero\s+cancelar|cancelar\s+(minha\s+|a\s+)?(conta|assinatura|contrato|cota)|desistir)\b", lower_msg):
-        intent = "CANCELAMENTO_RETENCAO"
-    elif e2e_match or any(k in lower_msg for k in ("comprovante", "ja paguei", "já paguei", "pix enviado", "pagamento feito", "segue o pix")):
-        intent = "COMPROVANTE_PIX"
-    elif any(k in lower_msg for k in ("segunda via", "2 via", "2ª via", "manda o pix", "pix de novo", "como pago", "nao entendo esse negocio de pix", "não entendo esse negócio de pix", "chave pix", "codigo pix", "código pix", "boleto", "copia e cola")):
-        intent = "SEGUNDA_VIA_PIX"
-    elif re.search(r"\b(\d+\s*(x|vezes)|parcela[rs]?|parcelamento|prazo|prorrogar|negociar|acordo)\b", lower_msg):
-        intent = "NEGOCIACAO_PRAZO"
-    elif re.search(r"\b(voc[eê]\s+[eêeé]\s+(um\s+)?(rob[oô]|bot|ia)|robo\?)\b", lower_msg):
-        intent = "IDENTIDADE_IA"
-    elif matched_rag_docs and any(
-        k in lower_msg
-        for k in ("regulamento", "estatuto", "regra", "regras", "cota", "cotas", "sobras", "horario", "horário", "como funciona", "taxa", "multa", "assembleia")
-    ):
-        intent = "REGULAMENTO_RAG"
-    elif any(k in lower_msg for k in ("devendo", "fatura", "faturas", "saldo", "cadastro", "debito", "débito", "divida", "dívida", "pendente", "vencid", "oi", "olá", "ola", "bom dia", "boa tarde", "boa noite")):
-        intent = "DUVIDA_FATURA"
-    else:
-        intent = "FORA_DE_ESCOPO"
+    intent = cls_res["intent"]
+    intent_confidence = float(cls_res["confidence"])
+    sentiment = str(cls_res["sentiment"])
+    e2e_match = cls_res.get("e2e_match")
 
     # 5. Conexão Direta ao Motor de IA da Orbe Systems (Rede Interna Docker EC2 + Fallback)
     configured_url = os.environ.get("ORBE_AI_ENGINE_URL", "").strip()
@@ -488,6 +646,16 @@ async def classify_and_respond_orbrick(
     )
 
     if should_query_orbe_llm:
+        three_layer_prompt = build_3layer_orbrick_prompt(
+            business_name=business_name,
+            approved_policy=approved_policy,
+            matched_rag_docs=matched_rag_docs,
+            contact_name=contact_name,
+            churn_risk_level=churn_risk_level,
+            cbm_predictive_summary=cbm_predictive_summary,
+            open_invoices=open_invoices,
+            recent_history=recent_history,
+        )
         pseudo_ctx = build_pseudonymized_context(
             business_id=business_id,
             business_name=business_name,
@@ -506,7 +674,7 @@ async def classify_and_respond_orbrick(
                         engine_url,
                         json={
                             "message": sanitized_msg,
-                            "system_prompt": HARDENED_SYSTEM_PROMPT,
+                            "system_prompt": three_layer_prompt,
                             "context": pseudo_ctx,
                             "user_message": sanitized_msg,
                             "intent": intent,
@@ -529,7 +697,7 @@ async def classify_and_respond_orbrick(
             cascade_out = await imortal_cascade_router.generate(
                 task_type=f"orbrick_{intent.lower()}",
                 prompt=sanitized_msg,
-                system_prompt=HARDENED_SYSTEM_PROMPT,
+                system_prompt=three_layer_prompt,
                 context_items=matched_rag_docs,
                 simulate_offline=simulate_ai_offline,
             )
@@ -542,6 +710,7 @@ async def classify_and_respond_orbrick(
     # 6. Construção da Resposta Contextual Segura (LLM Orbe + RAG do Contratante + Dados Financeiros)
     requires_handoff = False
     receipt_triage_status = None
+    policy_decision: Optional[Dict[str, Any]] = None
 
     if intent == "ATENDIMENTO_HUMANO":
         requires_handoff = True
@@ -606,16 +775,61 @@ async def classify_and_respond_orbrick(
     elif external_reply:
         body_text = external_reply
     elif intent == "NEGOCIACAO_PRAZO":
+        from services.policy_engine import evaluate_policy_action
+
+        total_open = sum(float(i.get("amount", 0.0) or 0.0) for i in open_invoices)
         inv_hint = ""
         if open_invoices:
-            total_open = sum(float(i.get("amount", 0.0)) for i in open_invoices)
             amt_str = f"R$ {total_open:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
             inv_hint = f" Identificamos *{len(open_invoices)}* título(s) em aberto no total de *{amt_str}*."
-        body_text = (
-            f"Olá, {first_name}!{inv_hint} Podemos registrar sua solicitação de parcelamento ou prorrogação de prazo "
-            f"junto à tesouraria de *{business_name}* dentro das regras vigentes. "
-            "Para analisar as opções de parcelas com um especialista financeiro, responda *ATENDENTE*."
-        )
+
+        m_inst = re.search(r"(\d{1,2})\s*(?:x|vezes|parcelas?)", lower_msg)
+        m_disc = re.search(r"(\d{1,3}(?:[.,]\d{1,2})?)\s*%", lower_msg)
+        m_days = re.search(r"(\d{1,3})\s*dias?", lower_msg)
+
+        if approved_policy is not None or policy_has_conflict:
+            if m_disc:
+                dec = evaluate_policy_action(
+                    business_id=business_id,
+                    action="apply_discount",
+                    amount_brl=total_open,
+                    requested_discount_pct=float(m_disc.group(1).replace(",", ".")),
+                    policy_status=policy_status if approved_policy is not None else "DRAFT",
+                    approved_rules=approved_policy,
+                    has_conflict=policy_has_conflict,
+                )
+            elif m_days:
+                dec = evaluate_policy_action(
+                    business_id=business_id,
+                    action="extend_due_date",
+                    amount_brl=total_open,
+                    requested_extension_days=int(m_days.group(1)),
+                    policy_status=policy_status if approved_policy is not None else "DRAFT",
+                    approved_rules=approved_policy,
+                    has_conflict=policy_has_conflict,
+                )
+            else:
+                dec = evaluate_policy_action(
+                    business_id=business_id,
+                    action="installment",
+                    amount_brl=total_open,
+                    requested_installments=int(m_inst.group(1)) if m_inst else 1,
+                    policy_status=policy_status if approved_policy is not None else "DRAFT",
+                    approved_rules=approved_policy,
+                    has_conflict=policy_has_conflict,
+                )
+            policy_decision = dec.to_dict()
+            if dec.requires_human_handoff:
+                requires_handoff = True
+            body_text = f"Olá, {first_name}!{inv_hint} {dec.explanation}"
+            if dec.decision != "ALLOWED" and not dec.requires_human_handoff:
+                body_text += " Se precisar de uma análise especial, digite *ATENDENTE*."
+        else:
+            body_text = (
+                f"Olá, {first_name}!{inv_hint} Podemos registrar sua solicitação de parcelamento ou prorrogação de prazo "
+                f"junto à tesouraria de *{business_name}* dentro das regras vigentes. "
+                "Para analisar as opções de parcelas com um especialista financeiro, responda *ATENDENTE*."
+            )
     elif matched_rag_docs:
         top_doc = matched_rag_docs[0]
         ai_engine_mode = "ORBE_TENANT_RAG_PREDICTIVE" if not simulate_ai_offline else "FALLBACK_RESILIENT"
@@ -652,6 +866,8 @@ async def classify_and_respond_orbrick(
 
     return {
         "intent": intent,
+        "intent_confidence": intent_confidence,
+        "sentiment": sentiment,
         "blocked_injection": False,
         "injection_reason": None,
         "sanitized_input": sanitized_msg,
@@ -661,6 +877,7 @@ async def classify_and_respond_orbrick(
         "invoice_status_mutated": False,
         "ai_engine_mode": ai_engine_mode,
         "rag_sources": rag_sources,
+        "policy_decision": policy_decision,
     }
 
 

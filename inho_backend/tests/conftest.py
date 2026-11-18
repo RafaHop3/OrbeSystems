@@ -79,3 +79,18 @@ def _strip_public_schema_from_metadata():
 
 # Run the patch at import time
 _strip_public_schema_from_metadata()
+
+
+@pytest.fixture(autouse=True)
+def _reset_rate_limiters():
+    """Reset slowapi in-memory rate-limit counters between tests to avoid cumulative 429s."""
+    for mod_name, attr in (("routers.auth", "_limiter"), ("main", "limiter")):
+        try:
+            mod = __import__(mod_name, fromlist=[attr])
+            lim = getattr(mod, attr, None)
+            storage = getattr(lim, "_storage", None)
+            if storage and hasattr(storage, "reset"):
+                storage.reset()
+        except Exception:
+            pass
+    yield

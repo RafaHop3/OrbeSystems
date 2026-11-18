@@ -1,6 +1,6 @@
 ORBE SYSTEMS LTDA — REGISTRO E-SOFTWARE INPI (HASH SHA-256)
-Gerado em (UTC): 2026-11-18T22:37:46.194213+00:00
-Master Bundle SHA-256: 0aa7a45dab110001288398133826859c0b19859048c862651bcdb23b8e6bce4f
+Gerado em (UTC): 2026-11-18T23:07:02.928397+00:00
+Master Bundle SHA-256: 9ce90df55090454c32950bf469a64f582a7c03f2d3772d19928905b132ddda9c
 ==============================================================================
 
 [TRANSPILADOR_IMORTAL_AST_SSA_Z3] Bundle SHA-256: 5c71285d3eeae887b03f26471ce6771ba900bbb037e90b29fa6f1b76d75a9fe9
@@ -16,8 +16,8 @@ Master Bundle SHA-256: 0aa7a45dab110001288398133826859c0b19859048c862651bcdb23b8
   56f6172090b23b1ee47cea1ee7a908edd2ad512ea1165ae43ad62e0853069f59  backend/imortal/visualizer.py (208 linhas, 8882 bytes)
   8a7ef2c0de9e1780325f02165ccab278e0d8153e607be105531c53086b1ac7f7  backend/routes/imortal.py (365 linhas, 16885 bytes)
 
-[ORBEJOBS_ZERO_KEY_IMORTAL_CASCADE] Bundle SHA-256: b8fc7da19cc0665059ebf332ce2bea8be78cd1bf6f1f7e8c10e94ec89148c0de
-  b8520afee7a8a65a0f4ba4208d14560e6cbf5a377ac9df6d3be7656c69024d64  inho_backend/services/ai_agent.py (1085 linhas, 50932 bytes)
+[ORBEJOBS_ZERO_KEY_IMORTAL_CASCADE] Bundle SHA-256: 325fea60b84bf546ac97d2cee158fc800f31c1164e1f0ff076bd581748fd5d33
+  c74c318c0d45f447da407fd781a4f04202622db42231cc8451e273eaabedc3e0  inho_backend/services/ai_agent.py (1302 linhas, 60988 bytes)
   a317be9ff019efb28fd3b868ff54d15216aa91623162f58b4de850d882eeeb04  inho_backend/services/orbejobs_scraper.py (380 linhas, 14924 bytes)
   a16b6df05404e4f5724ded7f2754c0ed5c36ce7d84115c61255d11d740903049  inho_backend/services/orbejobs_service.py (320 linhas, 12967 bytes)
   f14903b698eab22e3c8f85018b3cb9cb3ee63fa8adea9f8fa5a291ecc7b2e429  inho_backend/services/orbejobs_mailer.py (410 linhas, 15484 bytes)

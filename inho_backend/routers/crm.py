@@ -17,7 +17,7 @@ from core.deps import get_current_user
 from db.session import get_db
 from models.models import (
     AccountPayable, BillingInvoice, BillingStatus, CRMContact, ContactCategory,
-    PayableStatus, User, Business, AuditLog, AuditAction
+    PayableStatus, User, Business, AuditLog, AuditAction, TenantAIPolicy
 )
 from routers.billing import _get_user_business
 from schemas.crm_schemas import (
@@ -1578,7 +1578,7 @@ async def _load_tenant_rag_and_cbm_context(
             hist_stmt = None
 
         if hist_stmt is not None:
-            hist_res = await db.execute(hist_stmt.order_by(OmnichannelLog.created_at.desc()).limit(6))
+            hist_res = await db.execute(hist_stmt.order_by(OmnichannelLog.created_at.desc()).limit(10))
             rows = list(reversed(hist_res.scalars().all()))
             for r in rows:
                 msg_txt = (r.message_content or "").strip()
@@ -2183,6 +2183,15 @@ async def process_orbrick_ai_reply(
     except Exception:
         pass
 
+    from services.policy_engine import parse_approved_rules_json as _parse_pol_json
+    pol_res = await db.execute(select(TenantAIPolicy).where(TenantAIPolicy.business_id == b_id))
+    tenant_pol = pol_res.scalar_one_or_none()
+    approved_pol_dict = (
+        _parse_pol_json(tenant_pol.approved_rules_json)
+        if tenant_pol and tenant_pol.status == "APPROVED"
+        else None
+    )
+
     ai_result = await classify_and_respond_orbrick(
         business_id=str(business.id),
         business_name=biz_name,
@@ -2194,8 +2203,28 @@ async def process_orbrick_ai_reply(
         cbm_predictive_summary=rag_cbm_ctx.get("cbm_predictive_summary", ""),
         tenant_knowledge_chunks=rag_cbm_ctx.get("tenant_knowledge_chunks", []),
         recent_history=rag_cbm_ctx.get("recent_history", []),
+        approved_policy=approved_pol_dict,
+        policy_status=tenant_pol.status if tenant_pol else "DRAFT",
+        policy_has_conflict=bool(tenant_pol.has_conflict) if tenant_pol else False,
         simulate_ai_offline=payload.simulate_ai_offline,
     )
+
+    if ai_result.get("policy_decision"):
+        try:
+            db.add(
+                AuditLog(
+                    business_id=b_id,
+                    user_id=get_uuid(current_user.id),
+                    user_name=current_user.full_name,
+                    user_role=str(getattr(current_user, "role", "operator")),
+                    action=AuditAction.UPDATE,
+                    entity="ORBRICK_AI_ACTION",
+                    entity_id=get_uuid(contact.id) if contact else b_id,
+                    detail=_json.dumps(ai_result["policy_decision"], ensure_ascii=False),
+                )
+            )
+        except Exception:
+            pass
 
     # Se o cliente pediu atendente humano, ativar handoff automático no contato
     if ai_result.get("requires_human_handoff") and contact:
@@ -2252,6 +2281,9 @@ async def process_orbrick_ai_reply(
         "receipt_triage_status": ai_result["receipt_triage_status"],
         "invoice_status_mutated": False,
         "ai_engine_mode": ai_result["ai_engine_mode"],
+        "intent_confidence": ai_result.get("intent_confidence"),
+        "sentiment": ai_result.get("sentiment"),
+        "policy_decision": ai_result.get("policy_decision"),
         "whatsapp_delivery_code": ["DELIVERED:200"],
         "message_id": str(db_log.id),
     }
@@ -2410,3 +2442,234 @@ async def process_baileys_inbound_webhook(
         "whatsapp_delivery_code": ["DELIVERED:200"],
         "message_id": str(db_log.id),
     }
+
+
+# ── Onda 3 (Fase 5A/5B): PolicyEngine Estruturado & Aprovação Humana ──
+
+class _PolicyApprovePayload(BaseModel):
+    max_installments: Optional[int] = None
+    max_discount_pct: Optional[float] = None
+    max_extension_days: Optional[int] = None
+    tone_of_voice: str = "acolhedor_simples"
+
+
+class _PolicyEvaluatePayload(BaseModel):
+    action: str
+    amount_brl: float = 0.0
+    requested_installments: Optional[int] = None
+    requested_discount_pct: Optional[float] = None
+    requested_extension_days: Optional[int] = None
+    target_business_id: Optional[str] = None
+
+
+def _serialize_tenant_policy(pol: Optional[TenantAIPolicy]) -> dict:
+    from services.policy_engine import parse_approved_rules_json
+
+    if not pol:
+        return {
+            "exists": False,
+            "status": "NOT_CONFIGURED",
+            "draft_rules": {},
+            "approved_rules": {},
+            "source_excerpts": [],
+            "has_conflict": False,
+            "conflict_notes": None,
+            "approved_by_name": None,
+            "approved_at": None,
+        }
+    try:
+        excerpts = _json.loads(pol.source_excerpts_json or "[]")
+    except Exception:
+        excerpts = []
+    return {
+        "exists": True,
+        "id": str(pol.id),
+        "status": pol.status,
+        "draft_rules": parse_approved_rules_json(pol.draft_rules_json),
+        "approved_rules": parse_approved_rules_json(pol.approved_rules_json),
+        "source_excerpts": excerpts,
+        "has_conflict": bool(pol.has_conflict),
+        "conflict_notes": pol.conflict_notes,
+        "approved_by_name": pol.approved_by_name,
+        "approved_at": pol.approved_at.isoformat() if pol.approved_at else None,
+    }
+
+
+@router.get("/cbm/ai-policy")
+async def get_tenant_ai_policy(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    res = await db.execute(select(TenantAIPolicy).where(TenantAIPolicy.business_id == b_id))
+    return _serialize_tenant_policy(res.scalar_one_or_none())
+
+
+@router.post("/cbm/ai-policy/extract")
+async def extract_tenant_ai_policy(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Extrai regras estruturadas dos documentos RAG do tenant e detecta conflitos."""
+    from services.policy_engine import extract_policy_from_chunks
+
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    ch_res = await db.execute(
+        select(AIKnowledgeChunk).where(
+            AIKnowledgeChunk.business_id == b_id,
+            AIKnowledgeChunk.is_active.is_(True),
+        )
+    )
+    chunks = [
+        {"id": str(c.id), "title": c.title, "content": c.content}
+        for c in ch_res.scalars().all()
+    ]
+    extracted = extract_policy_from_chunks(chunks)
+
+    res = await db.execute(select(TenantAIPolicy).where(TenantAIPolicy.business_id == b_id))
+    pol = res.scalar_one_or_none()
+    new_status = "CONFLICT_REVIEW" if extracted["has_conflict"] else "DRAFT"
+    if not pol:
+        pol = TenantAIPolicy(
+            business_id=b_id,
+            status=new_status,
+            draft_rules_json=_json.dumps(extracted["draft_rules"], ensure_ascii=False),
+            approved_rules_json="{}",
+            source_excerpts_json=_json.dumps(extracted["source_excerpts"], ensure_ascii=False),
+            has_conflict=extracted["has_conflict"],
+            conflict_notes=extracted["conflict_notes"],
+        )
+        db.add(pol)
+    else:
+        pol.status = new_status
+        pol.draft_rules_json = _json.dumps(extracted["draft_rules"], ensure_ascii=False)
+        pol.source_excerpts_json = _json.dumps(extracted["source_excerpts"], ensure_ascii=False)
+        pol.has_conflict = extracted["has_conflict"]
+        pol.conflict_notes = extracted["conflict_notes"]
+
+    db.add(
+        AuditLog(
+            business_id=b_id,
+            user_id=get_uuid(current_user.id),
+            user_name=current_user.full_name,
+            user_role=str(getattr(current_user, "role", "admin")),
+            action=AuditAction.UPDATE,
+            entity="ORBRICK_AI_ACTION",
+            entity_id=b_id,
+            detail=f"POLICY_EXTRACTED status={new_status} conflict={extracted['has_conflict']}",
+        )
+    )
+    await db.commit()
+    await db.refresh(pol)
+    return _serialize_tenant_policy(pol)
+
+
+@router.post("/cbm/ai-policy/approve")
+async def approve_tenant_ai_policy(
+    payload: _PolicyApprovePayload,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Aprova explicitamente a política do tenant respeitando o teto inviolável Orbe."""
+    from services.policy_engine import ORBE_DUAL_CONTROL_LIMIT_BRL, ORBE_HARD_MAX_DISCOUNT_PCT
+
+    if payload.max_discount_pct is not None and payload.max_discount_pct > ORBE_HARD_MAX_DISCOUNT_PCT:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Teto Orbe bloqueou desconto de {payload.max_discount_pct}%. Máximo permitido: {ORBE_HARD_MAX_DISCOUNT_PCT}%.",
+        )
+
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    approved_dict = {
+        "max_installments": payload.max_installments,
+        "max_discount_pct": payload.max_discount_pct,
+        "max_extension_days": payload.max_extension_days,
+        "tone_of_voice": payload.tone_of_voice or "acolhedor_simples",
+        "allow_chat_paid": False,
+        "dual_control_limit_brl": ORBE_DUAL_CONTROL_LIMIT_BRL,
+    }
+    now_utc = datetime.now(timezone.utc)
+    res = await db.execute(select(TenantAIPolicy).where(TenantAIPolicy.business_id == b_id))
+    pol = res.scalar_one_or_none()
+    if not pol:
+        pol = TenantAIPolicy(
+            business_id=b_id,
+            status="APPROVED",
+            draft_rules_json=_json.dumps(approved_dict, ensure_ascii=False),
+            approved_rules_json=_json.dumps(approved_dict, ensure_ascii=False),
+            source_excerpts_json="[]",
+            has_conflict=False,
+            conflict_notes=None,
+            approved_by_id=get_uuid(current_user.id),
+            approved_by_name=current_user.full_name,
+            approved_at=now_utc,
+        )
+        db.add(pol)
+    else:
+        pol.status = "APPROVED"
+        pol.approved_rules_json = _json.dumps(approved_dict, ensure_ascii=False)
+        pol.has_conflict = False
+        pol.approved_by_id = get_uuid(current_user.id)
+        pol.approved_by_name = current_user.full_name
+        pol.approved_at = now_utc
+
+    db.add(
+        AuditLog(
+            business_id=b_id,
+            user_id=get_uuid(current_user.id),
+            user_name=current_user.full_name,
+            user_role=str(getattr(current_user, "role", "admin")),
+            action=AuditAction.UPDATE,
+            entity="ORBRICK_AI_ACTION",
+            entity_id=b_id,
+            detail=f"POLICY_APPROVED rules={_json.dumps(approved_dict, ensure_ascii=False)}",
+        )
+    )
+    await db.commit()
+    await db.refresh(pol)
+    return _serialize_tenant_policy(pol)
+
+
+@router.post("/cbm/ai-policy/evaluate")
+async def evaluate_tenant_ai_policy(
+    payload: _PolicyEvaluatePayload,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Executa simulação auditável do PolicyEngine determinístico e grava AuditLog."""
+    from services.policy_engine import evaluate_policy_action, parse_approved_rules_json
+
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    res = await db.execute(select(TenantAIPolicy).where(TenantAIPolicy.business_id == b_id))
+    pol = res.scalar_one_or_none()
+    decision = evaluate_policy_action(
+        business_id=str(business.id),
+        action=payload.action,
+        amount_brl=payload.amount_brl,
+        requested_installments=payload.requested_installments,
+        requested_discount_pct=payload.requested_discount_pct,
+        requested_extension_days=payload.requested_extension_days,
+        target_business_id=payload.target_business_id,
+        policy_status=pol.status if pol else "DRAFT",
+        approved_rules=parse_approved_rules_json(pol.approved_rules_json) if pol else None,
+        has_conflict=bool(pol.has_conflict) if pol else False,
+    )
+    dec_dict = decision.to_dict()
+    db.add(
+        AuditLog(
+            business_id=b_id,
+            user_id=get_uuid(current_user.id),
+            user_name=current_user.full_name,
+            user_role=str(getattr(current_user, "role", "operator")),
+            action=AuditAction.UPDATE,
+            entity="ORBRICK_AI_ACTION",
+            entity_id=b_id,
+            detail=_json.dumps({"action": payload.action, **dec_dict}, ensure_ascii=False),
+        )
+    )
+    await db.commit()
+    return dec_dict

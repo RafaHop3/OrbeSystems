@@ -40,6 +40,7 @@ class BusinessCategory(str, enum.Enum):
     MERCADOS_E_AFINS  = "MERCADOS_E_AFINS"
     VAREJO      = "VAREJO"
     SERVICOS    = "SERVICOS"
+    TURISMO     = "TURISMO"
     OUTROS      = "OUTROS"
 
 
@@ -1219,4 +1220,228 @@ class OrbeJobOAuthVault(Base):
         UniqueConstraint("business_id", "user_id", "provider", name="uq_orbejobs_oauth_biz_user_prov"),
         Index("ix_orbejobs_oauth_business_id", "business_id"),
         Index("ix_orbejobs_oauth_user_id", "user_id"),
+    )
+
+
+class TenantAIPolicy(Base):
+    """
+    Política Estruturada da IA por Contratante (Onda 3 - Fase 5A/5B, Manual 35).
+    Armazena regras extraídas de estatutos/documentos, trechos de origem,
+    detecção de conflitos e aprovação explícita do gestor humano.
+    O PolicyEngine determinístico executa apenas sobre `approved_rules_json`.
+    """
+    __tablename__ = "tenant_ai_policies"
+
+    id                   = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id          = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False, unique=True)
+    status               = Column(String(40), nullable=False, default="DRAFT")  # DRAFT, CONFLICT_REVIEW, APPROVED
+    draft_rules_json     = Column(Text, nullable=False, default="{}")
+    approved_rules_json  = Column(Text, nullable=False, default="{}")
+    source_excerpts_json = Column(Text, nullable=False, default="[]")
+    has_conflict         = Column(Boolean, nullable=False, default=False, server_default="false")
+    conflict_notes       = Column(Text, nullable=True)
+    approved_by_id       = Column(DB_UUID, ForeignKey(_PUBLIC_USERS_FK, ondelete="SET NULL"), nullable=True)
+    approved_by_name     = Column(String(255), nullable=True)
+    approved_at          = Column(DateTime(timezone=True), nullable=True)
+    created_at           = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at           = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        Index("ix_tenant_ai_policies_business_id", "business_id"),
+        Index("ix_tenant_ai_policies_status", "status"),
+    )
+
+
+# ── INHO Turismo Vertical (AI-First / Human-Last · NYDROBS Pilot) ────────
+
+class TurismoQuote(Base):
+    __tablename__ = "turismo_quotes"
+
+    id                   = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id          = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    contact_id           = Column(DB_UUID, ForeignKey("crm_contacts.id", ondelete="SET NULL"), nullable=True)
+    proposal_slug        = Column(String(80), nullable=False, unique=True)
+    client_name          = Column(String(200), nullable=False)
+    origin               = Column(String(20), nullable=False)
+    destination          = Column(String(20), nullable=False)
+    departure_date       = Column(String(30), nullable=True)
+    return_date          = Column(String(30), nullable=True)
+    passengers           = Column(Integer, nullable=False, default=1)
+    airline_program      = Column(String(60), nullable=False, default="SMILES")
+    cash_price_brl       = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    miles_required       = Column(Integer, nullable=False, default=0)
+    mile_cost_per_k_brl  = Column(Numeric(precision=10, scale=2), nullable=False, default=17.5)
+    tax_fees_brl         = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    total_miles_cost_brl = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    recommended_mode     = Column(String(20), nullable=False, default="MILES")  # MILES | CASH
+    savings_brl          = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    options_json         = Column(Text, nullable=False, default="[]")
+    selected_option      = Column(String(10), nullable=True)  # A | B | C
+    pnr_locator          = Column(String(30), nullable=True)
+    pnr_raw_text         = Column(Text, nullable=True)
+    is_public_offer      = Column(Boolean, nullable=False, default=False, server_default="false")
+    status               = Column(String(30), nullable=False, default="DRAFT")  # DRAFT, SENT, APPROVED, EMITTED
+    approved_at          = Column(DateTime(timezone=True), nullable=True)
+    created_at           = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at           = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_turismo_quotes_business_id", "business_id"),
+        Index("ix_turismo_quotes_slug", "proposal_slug"),
+    )
+
+
+class TurismoMilesAccount(Base):
+    """
+    Cofre de Milhas & Semáforo de CPF (sem NUNCA armazenar senhas).
+    """
+    __tablename__ = "turismo_miles_accounts"
+
+    id                      = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id             = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    program_name            = Column(String(60), nullable=False)  # SMILES, LATAM_PASS, AZUL, LIVELO
+    holder_name             = Column(String(200), nullable=False)
+    holder_document_masked  = Column(String(40), nullable=False)
+    miles_balance           = Column(Integer, nullable=False, default=0)
+    cpfs_used_year          = Column(Integer, nullable=False, default=0)
+    cpfs_limit_year         = Column(Integer, nullable=False, default=25)
+    semaphore_status        = Column(String(20), nullable=False, default="GREEN")  # GREEN | YELLOW | RED
+    notes                   = Column(Text, nullable=True)
+    created_at              = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at              = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_turismo_miles_business_id", "business_id"),
+    )
+
+
+class TurismoBooking(Base):
+    """
+    Reservas confirmadas, DRE de Agência (Intermediação vs Repasse/ISS) e Radar de Embarque.
+    """
+    __tablename__ = "turismo_bookings"
+
+    id                   = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id          = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    quote_id             = Column(DB_UUID, ForeignKey("turismo_quotes.id", ondelete="SET NULL"), nullable=True)
+    contact_id           = Column(DB_UUID, ForeignKey("crm_contacts.id", ondelete="SET NULL"), nullable=True)
+    pnr_locator          = Column(String(30), nullable=False)
+    passenger_name       = Column(String(200), nullable=False)
+    origin               = Column(String(20), nullable=False)
+    destination          = Column(String(20), nullable=False)
+    departure_at         = Column(DateTime(timezone=True), nullable=False)
+    return_at            = Column(DateTime(timezone=True), nullable=True)
+    sale_amount_brl      = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    supplier_cost_brl    = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    agency_fee_brl       = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    iss_rate_pct         = Column(Numeric(precision=5, scale=2), nullable=False, default=5.0)
+    iss_tax_brl          = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    net_profit_brl       = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    status               = Column(String(30), nullable=False, default="CONFIRMED")
+    boarding_d7_sent     = Column(Boolean, nullable=False, default=False, server_default="false")
+    boarding_d2_sent     = Column(Boolean, nullable=False, default=False, server_default="false")
+    boarding_d0_sent     = Column(Boolean, nullable=False, default=False, server_default="false")
+    boarding_d2_post_sent = Column(Boolean, nullable=False, default=False, server_default="false")
+    created_at           = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_turismo_bookings_business_id", "business_id"),
+    )
+
+
+class TurismoGroup(Base):
+    __tablename__ = "turismo_groups"
+
+    id                   = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id          = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    group_name           = Column(String(200), nullable=False)
+    destination          = Column(String(120), nullable=False)
+    departure_date       = Column(String(30), nullable=True)
+    return_date          = Column(String(30), nullable=True)
+    max_members          = Column(Integer, nullable=False, default=30)
+    price_per_person_brl = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    status               = Column(String(30), nullable=False, default="OPEN")
+    created_at           = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_turismo_groups_business_id", "business_id"),
+    )
+
+
+class TurismoGroupMember(Base):
+    __tablename__ = "turismo_group_members"
+
+    id              = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id     = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    group_id        = Column(DB_UUID, ForeignKey("turismo_groups.id", ondelete="CASCADE"), nullable=False)
+    member_name     = Column(String(200), nullable=False)
+    document_masked = Column(String(40), nullable=True)
+    room_number     = Column(String(20), nullable=True)
+    room_type       = Column(String(40), nullable=False, default="DUPLO")
+    amount_paid_brl = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    amount_due_brl  = Column(Numeric(precision=15, scale=2), nullable=False, default=0.0)
+    payment_status  = Column(String(30), nullable=False, default="PENDING")
+    created_at      = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_turismo_group_members_group_id", "group_id"),
+        Index("ix_turismo_group_members_business_id", "business_id"),
+    )
+
+
+class TurismoChannelConfig(Base):
+    __tablename__ = "turismo_channel_configs"
+
+    id                            = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id                   = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False, unique=True)
+    whatsapp_enabled              = Column(Boolean, nullable=False, default=True, server_default="true")
+    instagram_enabled             = Column(Boolean, nullable=False, default=False, server_default="false")
+    instagram_page_id             = Column(String(100), nullable=True)
+    encrypted_instagram_token     = Column(Text, nullable=True)
+    telegram_enabled              = Column(Boolean, nullable=False, default=False, server_default="false")
+    encrypted_telegram_bot_token  = Column(Text, nullable=True)
+    telegram_vip_channel_id       = Column(String(100), nullable=True)
+    ai_first_enabled              = Column(Boolean, nullable=False, default=True, server_default="true")
+    updated_at                    = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+
+class TurismoChannelMessage(Base):
+    __tablename__ = "turismo_channel_messages"
+
+    id                = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id       = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    channel           = Column(String(20), nullable=False)  # WHATSAPP | INSTAGRAM | TELEGRAM
+    sender_ref        = Column(String(120), nullable=False)
+    direction         = Column(String(15), nullable=False)  # INBOUND | OUTBOUND
+    message_text      = Column(Text, nullable=False)
+    handled_by        = Column(String(20), nullable=False, default="AI_FIRST")  # AI_FIRST | HUMAN_LAST
+    escalation_trigger = Column(String(60), nullable=True)
+    created_at        = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_turismo_channel_msgs_business_id", "business_id"),
+    )
+
+
+class TurismoClubSubscription(Base):
+    __tablename__ = "turismo_club_subscriptions"
+
+    id                     = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id            = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    member_name            = Column(String(200), nullable=False)
+    member_email           = Column(String(255), nullable=False)
+    telegram_chat_id       = Column(String(100), nullable=True)
+    stripe_subscription_id = Column(String(120), nullable=True)
+    plan_price_brl         = Column(Numeric(precision=10, scale=2), nullable=False, default=49.90)
+    discount_pct           = Column(Numeric(precision=5, scale=2), nullable=False, default=50.0)
+    status                 = Column(String(30), nullable=False, default="ACTIVE")
+    created_at             = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_turismo_club_business_id", "business_id"),
     )

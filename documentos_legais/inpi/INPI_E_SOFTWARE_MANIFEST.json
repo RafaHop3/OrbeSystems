@@ -1,9 +1,9 @@
 {
   "schema": "ORBE-INPI-E-SOFTWARE-V1",
   "holder": "ORBE SYSTEMS LTDA",
-  "generated_at_utc": "2026-11-18T22:37:46.194213+00:00",
+  "generated_at_utc": "2026-11-18T23:07:02.928397+00:00",
   "hash_algorithm": "SHA-256",
-  "master_bundle_sha256": "0aa7a45dab110001288398133826859c0b19859048c862651bcdb23b8e6bce4f",
+  "master_bundle_sha256": "9ce90df55090454c32950bf469a64f582a7c03f2d3772d19928905b132ddda9c",
   "groups": {
     "TRANSPILADOR_IMORTAL_AST_SSA_Z3": {
       "files_count": 11,
@@ -90,14 +90,14 @@
     },
     "ORBEJOBS_ZERO_KEY_IMORTAL_CASCADE": {
       "files_count": 6,
-      "bundle_sha256": "b8fc7da19cc0665059ebf332ce2bea8be78cd1bf6f1f7e8c10e94ec89148c0de",
+      "bundle_sha256": "325fea60b84bf546ac97d2cee158fc800f31c1164e1f0ff076bd581748fd5d33",
       "files": [
         {
           "path": "inho_backend/services/ai_agent.py",
-          "size_bytes": 50932,
-          "lines": 1085,
-          "sha256_raw": "b14b4d8bd03b4927d2764ce82476d1f63ecdeff3a41b26871b31a675e41c9ff8",
-          "sha256_canonical_lf": "b8520afee7a8a65a0f4ba4208d14560e6cbf5a377ac9df6d3be7656c69024d64"
+          "size_bytes": 60988,
+          "lines": 1302,
+          "sha256_raw": "343d1021056e9de1df97d976b8d0b9d87bbfd8ee19fc550e40c7e0a83396915f",
+          "sha256_canonical_lf": "c74c318c0d45f447da407fd781a4f04202622db42231cc8451e273eaabedc3e0"
         },
         {
           "path": "inho_backend/services/orbejobs_scraper.py",
