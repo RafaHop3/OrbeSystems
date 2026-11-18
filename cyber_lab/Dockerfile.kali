@@ -1,0 +1,33 @@
+FROM kalilinux/kali-rolling:latest
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    openssh-server \
+    tmux \
+    nmap \
+    sqlmap \
+    ffuf \
+    curl \
+    iputils-ping \
+    netcat-traditional \
+    dnsutils \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /var/run/sshd /root/.ssh && chmod 700 /root/.ssh
+
+# Hardening SSH: somente chave Ed25519 (sem senha), permitindo Port Forwarding Local (Termius)
+RUN sed -i 's/^#*Port .*/Port 2222/' /etc/ssh/sshd_config && \
+    sed -i 's/^#*PermitRootLogin .*/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config && \
+    sed -i 's/^#*PasswordAuthentication .*/PasswordAuthentication no/' /etc/ssh/sshd_config && \
+    sed -i 's/^#*PubkeyAuthentication .*/PubkeyAuthentication yes/' /etc/ssh/sshd_config && \
+    sed -i 's/^#*AllowTcpForwarding .*/AllowTcpForwarding yes/' /etc/ssh/sshd_config && \
+    sed -i 's/^#*GatewayPorts .*/GatewayPorts no/' /etc/ssh/sshd_config
+
+COPY kali-entrypoint.sh /usr/local/bin/kali-entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/kali-entrypoint.sh && chmod +x /usr/local/bin/kali-entrypoint.sh
+
+EXPOSE 2222
+
+ENTRYPOINT ["/usr/local/bin/kali-entrypoint.sh"]

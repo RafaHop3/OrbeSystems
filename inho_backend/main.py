@@ -17,7 +17,7 @@ from keep_alive import start_keep_alive, stop_keep_alive
 from routers import (
     auth, users, audit, contracts, sales_orders, pdv, admin, pco, businesses, billing, ghost_engine, crm
 )
-from routers import cooperados, categories, notes, recurrences, accounting, reports, settings as settings_router, open_finance, terminal, copilot
+from routers import cooperados, categories, notes, recurrences, accounting, reports, settings as settings_router, open_finance, terminal, copilot, orbejobs
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(name)s | %(message)s")
 logger = logging.getLogger("inho")
@@ -87,7 +87,13 @@ async def lifespan(app: FastAPI):
     ]
     if not is_sqlite:
         startup_stmts.append(
-            "CREATE UNIQUE INDEX IF NOT EXISTS ux_cooperados_business_doc ON inho.cooperados (business_id, regexp_replace(document, '\\D', '', 'g'))"
+            "CREATE UNIQUE INDEX IF NOT EXISTS ux_cooperados_business_doc ON inho.cooperados (business_id, regexp_replace(document, '\\D', '', 'g'))",
+            "CREATE TABLE IF NOT EXISTS inho.orbejobs_living_cvs (id UUID PRIMARY KEY, business_id UUID NOT NULL REFERENCES inho.businesses(id) ON DELETE CASCADE, user_id VARCHAR(36) NOT NULL REFERENCES public.users(id) ON DELETE CASCADE, full_name VARCHAR(200) NOT NULL DEFAULT '', headline VARCHAR(255), target_roles TEXT, json_resume TEXT NOT NULL DEFAULT '{}', embedding_json TEXT, human_in_the_loop BOOLEAN NOT NULL DEFAULT TRUE, daily_send_limit INTEGER NOT NULL DEFAULT 12, kill_switch_active BOOLEAN NOT NULL DEFAULT FALSE, whatsapp_source_phone VARCHAR(40), last_pdf_sha256 VARCHAR(64), created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), CONSTRAINT uq_orbejobs_living_cv_biz_user UNIQUE (business_id, user_id))",
+            "CREATE TABLE IF NOT EXISTS inho.orbejobs_listings (id UUID PRIMARY KEY, business_id UUID NOT NULL REFERENCES inho.businesses(id) ON DELETE CASCADE, source_ats VARCHAR(40) NOT NULL DEFAULT 'rss', company_name VARCHAR(200) NOT NULL, title VARCHAR(255) NOT NULL, location VARCHAR(200), remote_type VARCHAR(60), job_url VARCHAR(1000) NOT NULL, job_url_hash VARCHAR(64) NOT NULL, recipient_email VARCHAR(255), description_text TEXT NOT NULL DEFAULT '', skills_tags TEXT, embedding_json TEXT, published_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), CONSTRAINT uq_orbejobs_listing_biz_hash UNIQUE (business_id, job_url_hash))",
+            "CREATE TABLE IF NOT EXISTS inho.orbejobs_applications (id UUID PRIMARY KEY, business_id UUID NOT NULL REFERENCES inho.businesses(id) ON DELETE CASCADE, user_id VARCHAR(36) NOT NULL REFERENCES public.users(id) ON DELETE CASCADE, job_id UUID REFERENCES inho.orbejobs_listings(id) ON DELETE SET NULL, job_url_hash VARCHAR(64) NOT NULL, company_name VARCHAR(200) NOT NULL, job_title VARCHAR(255) NOT NULL, job_url VARCHAR(1000) NOT NULL, recipient_email VARCHAR(255), stage VARCHAR(40) NOT NULL DEFAULT 'DISCOVERED', match_score NUMERIC(5,4) NOT NULL DEFAULT 0, tailored_cover_letter TEXT, tailored_resume_json TEXT, ai_provider_used VARCHAR(80), requires_approval BOOLEAN NOT NULL DEFAULT TRUE, approved_by_human BOOLEAN NOT NULL DEFAULT FALSE, approved_at TIMESTAMPTZ, applied_at TIMESTAMPTZ, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), CONSTRAINT uq_orbejobs_app_user_job_hash UNIQUE (user_id, job_url_hash))",
+            "CREATE TABLE IF NOT EXISTS inho.orbejobs_send_queue (id UUID PRIMARY KEY, business_id UUID NOT NULL REFERENCES inho.businesses(id) ON DELETE CASCADE, user_id VARCHAR(36) NOT NULL REFERENCES public.users(id) ON DELETE CASCADE, application_id UUID NOT NULL REFERENCES inho.orbejobs_applications(id) ON DELETE CASCADE, recipient_email VARCHAR(255) NOT NULL, subject VARCHAR(300) NOT NULL, body_text TEXT NOT NULL, mx_valid BOOLEAN NOT NULL DEFAULT FALSE, mx_records_json TEXT, status VARCHAR(40) NOT NULL DEFAULT 'PENDING_APPROVAL', jitter_seconds NUMERIC(8,2) NOT NULL DEFAULT 0, scheduled_for TIMESTAMPTZ, sent_at TIMESTAMPTZ, error_message TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
+            "CREATE TABLE IF NOT EXISTS inho.orbejobs_send_logs (id UUID PRIMARY KEY, business_id UUID NOT NULL REFERENCES inho.businesses(id) ON DELETE CASCADE, user_id VARCHAR(36) NOT NULL REFERENCES public.users(id) ON DELETE CASCADE, queue_id UUID REFERENCES inho.orbejobs_send_queue(id) ON DELETE SET NULL, application_id UUID REFERENCES inho.orbejobs_applications(id) ON DELETE SET NULL, recipient_email VARCHAR(255) NOT NULL, gmail_message_id VARCHAR(200), mx_host VARCHAR(255), status VARCHAR(40) NOT NULL, latency_ms INTEGER NOT NULL DEFAULT 0, lgpd_audit_hash VARCHAR(64) NOT NULL, detail TEXT, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())",
+            "CREATE TABLE IF NOT EXISTS inho.orbejobs_oauth_vault (id UUID PRIMARY KEY, business_id UUID NOT NULL REFERENCES inho.businesses(id) ON DELETE CASCADE, user_id VARCHAR(36) NOT NULL REFERENCES public.users(id) ON DELETE CASCADE, provider VARCHAR(40) NOT NULL DEFAULT 'gmail', account_email VARCHAR(255) NOT NULL, encrypted_access_token TEXT NOT NULL, encrypted_refresh_token TEXT, scopes VARCHAR(500) NOT NULL DEFAULT 'https://www.googleapis.com/auth/gmail.send', token_expiry TIMESTAMPTZ, is_active BOOLEAN NOT NULL DEFAULT TRUE, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), CONSTRAINT uq_orbejobs_oauth_biz_user_prov UNIQUE (business_id, user_id, provider))"
         )
     for stmt in startup_stmts:
         try:
@@ -318,6 +324,7 @@ app.include_router(settings_router.router, prefix="/api/v1/settings", tags=["Set
 app.include_router(open_finance.router, prefix="/api/v1/open-finance", tags=["Open Finance Brasil (BACEN)"])
 app.include_router(terminal.router)
 app.include_router(copilot.router)
+app.include_router(orbejobs.router)
 
 @app.post("/api/v1/webhooks/banking/{provider}", tags=["Banking Webhooks"])
 async def banking_webhook_entry(

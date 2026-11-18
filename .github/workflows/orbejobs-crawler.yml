@@ -1,0 +1,72 @@
+name: OrbeJobs — Hybrid ATS & Playwright Crawler (Zero-VPS)
+
+on:
+  schedule:
+    # Executa a cada 6 horas sem custo de VPS dedicada
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      greenhouse_boards:
+        description: 'Comma-separated Greenhouse board tokens'
+        required: false
+        default: 'stripe,gitlab'
+      lever_companies:
+        description: 'Comma-separated Lever company slugs'
+        required: false
+        default: ''
+      rss_feeds:
+        description: 'Comma-separated public job RSS feeds'
+        required: false
+        default: 'https://weworkremotely.com/remote-jobs.rss'
+      playwright_urls:
+        description: 'Comma-separated JS career board URLs for Playwright fallback'
+        required: false
+        default: ''
+
+jobs:
+  orbejobs-scrape:
+    name: Scrape ATS & RSS Jobs (Playwright + Python)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'inho_backend/requirements.txt'
+
+      - name: Cache Playwright Browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-orbejobs-${{ hashFiles('inho_backend/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-orbejobs-
+
+      - name: Install Crawler Dependencies
+        run: |
+          cd inho_backend
+          python -m pip install --upgrade pip
+          pip install httpx playwright
+          playwright install chromium --with-deps
+
+      - name: Run Hybrid OrbeJobs Crawler
+        env:
+          ORBEJOBS_GREENHOUSE_BOARDS: ${{ github.event.inputs.greenhouse_boards || vars.ORBEJOBS_GREENHOUSE_BOARDS || 'stripe' }}
+          ORBEJOBS_LEVER_COMPANIES: ${{ github.event.inputs.lever_companies || vars.ORBEJOBS_LEVER_COMPANIES || '' }}
+          ORBEJOBS_RSS_FEEDS: ${{ github.event.inputs.rss_feeds || vars.ORBEJOBS_RSS_FEEDS || '' }}
+          ORBEJOBS_PLAYWRIGHT_URLS: ${{ github.event.inputs.playwright_urls || vars.ORBEJOBS_PLAYWRIGHT_URLS || '' }}
+        run: |
+          cd inho_backend
+          python scripts/run_orbejobs_crawler.py --limit 25 --output orbejobs_scraped.json
+
+      - name: Upload Scraped Jobs Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: orbejobs-scraped-snapshot
+          path: inho_backend/orbejobs_scraped.json
+          retention-days: 7

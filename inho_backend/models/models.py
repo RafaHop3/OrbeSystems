@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import (
     Boolean, Column, DateTime, Enum, ForeignKey,
-    String, Text, Index, Numeric, Integer
+    String, Text, Index, Numeric, Integer, UniqueConstraint
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -1013,3 +1013,210 @@ class AIKnowledgeChunk(Base):
         Index("ix_ai_knowledge_chunks_created_by_id", "created_by_id"),
     )
 
+
+
+# ── Módulo OrbeJobs (Zero-Key + IMORTAL Predictive Cascade + Gmail Vault) ────
+
+class LivingCVProfile(Base):
+    """
+    Living CV em formato JSON Resume (v1.0) vinculado ao usuário e tenant.
+    Armazena experiências, cursos/certificações, embedding vetorial e governança de envio.
+    """
+    __tablename__ = "orbejobs_living_cvs"
+
+    id                    = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id           = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    user_id               = Column(DB_UUID, ForeignKey(_PUBLIC_USERS_FK, ondelete="CASCADE"), nullable=False)
+    full_name             = Column(String(200), nullable=False, default="")
+    headline              = Column(String(255), nullable=True)
+    target_roles          = Column(Text, nullable=True)
+    json_resume           = Column(Text, nullable=False, default="{}")
+    embedding_json        = Column(Text, nullable=True)
+    human_in_the_loop     = Column(Boolean, nullable=False, default=True, server_default="true")
+    daily_send_limit      = Column(Integer, nullable=False, default=12, server_default="12")
+    kill_switch_active    = Column(Boolean, nullable=False, default=False, server_default="false")
+    whatsapp_source_phone = Column(String(40), nullable=True)
+    last_pdf_sha256       = Column(String(64), nullable=True)
+    created_at            = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at            = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        UniqueConstraint("business_id", "user_id", name="uq_orbejobs_living_cv_biz_user"),
+        Index("ix_orbejobs_living_cvs_business_id", "business_id"),
+        Index("ix_orbejobs_living_cvs_user_id", "user_id"),
+    )
+
+
+class OrbeJobListing(Base):
+    """
+    Vagas coletadas pelos conectores híbridos (Greenhouse, Lever, RSS, Playwright).
+    Deduplicadas por SHA-256 canônico da URL (job_url_hash).
+    """
+    __tablename__ = "orbejobs_listings"
+
+    id               = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id      = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    source_ats       = Column(String(40), nullable=False, default="rss")
+    company_name     = Column(String(200), nullable=False)
+    title            = Column(String(255), nullable=False)
+    location         = Column(String(200), nullable=True)
+    remote_type      = Column(String(60), nullable=True)
+    job_url          = Column(String(1000), nullable=False)
+    job_url_hash     = Column(String(64), nullable=False)
+    recipient_email  = Column(String(255), nullable=True)
+    description_text = Column(Text, nullable=False, default="")
+    skills_tags      = Column(Text, nullable=True)
+    embedding_json   = Column(Text, nullable=True)
+    published_at     = Column(DateTime(timezone=True), nullable=True)
+    created_at       = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint("business_id", "job_url_hash", name="uq_orbejobs_listing_biz_hash"),
+        Index("ix_orbejobs_listings_business_id", "business_id"),
+        Index("ix_orbejobs_listings_hash", "job_url_hash"),
+        Index("ix_orbejobs_listings_ats", "source_ats"),
+    )
+
+
+class OrbeJobApplication(Base):
+    """
+    Candidaturas no Kanban OrbeJobs com deduplicação estrita por (user_id, job_url_hash).
+    """
+    __tablename__ = "orbejobs_applications"
+
+    id                     = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id            = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    user_id                = Column(DB_UUID, ForeignKey(_PUBLIC_USERS_FK, ondelete="CASCADE"), nullable=False)
+    job_id                 = Column(DB_UUID, ForeignKey("orbejobs_listings.id", ondelete="SET NULL"), nullable=True)
+    job_url_hash           = Column(String(64), nullable=False)
+    company_name           = Column(String(200), nullable=False)
+    job_title              = Column(String(255), nullable=False)
+    job_url                = Column(String(1000), nullable=False)
+    recipient_email        = Column(String(255), nullable=True)
+    stage                  = Column(String(40), nullable=False, default="DISCOVERED")
+    match_score            = Column(Numeric(precision=5, scale=4), nullable=False, default=0)
+    tailored_cover_letter  = Column(Text, nullable=True)
+    tailored_resume_json   = Column(Text, nullable=True)
+    ai_provider_used       = Column(String(80), nullable=True)
+    requires_approval      = Column(Boolean, nullable=False, default=True, server_default="true")
+    approved_by_human      = Column(Boolean, nullable=False, default=False, server_default="false")
+    approved_at            = Column(DateTime(timezone=True), nullable=True)
+    applied_at             = Column(DateTime(timezone=True), nullable=True)
+    created_at             = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at             = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "job_url_hash", name="uq_orbejobs_app_user_job_hash"),
+        Index("ix_orbejobs_apps_business_id", "business_id"),
+        Index("ix_orbejobs_apps_user_id", "user_id"),
+        Index("ix_orbejobs_apps_job_id", "job_id"),
+        Index("ix_orbejobs_apps_stage", "business_id", "stage"),
+    )
+
+
+class OrbeJobSendQueue(Base):
+    """
+    Fila de envio controlada via Gmail API com validação DNS MX, jitter aleatório,
+    teto diário (10-15 envios/dia) e Kill-Switch.
+    """
+    __tablename__ = "orbejobs_send_queue"
+
+    id               = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id      = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    user_id          = Column(DB_UUID, ForeignKey(_PUBLIC_USERS_FK, ondelete="CASCADE"), nullable=False)
+    application_id   = Column(DB_UUID, ForeignKey("orbejobs_applications.id", ondelete="CASCADE"), nullable=False)
+    recipient_email  = Column(String(255), nullable=False)
+    subject          = Column(String(300), nullable=False)
+    body_text        = Column(Text, nullable=False)
+    mx_valid         = Column(Boolean, nullable=False, default=False, server_default="false")
+    mx_records_json  = Column(Text, nullable=True)
+    status           = Column(String(40), nullable=False, default="PENDING_APPROVAL")
+    jitter_seconds   = Column(Numeric(precision=8, scale=2), nullable=False, default=0)
+    scheduled_for    = Column(DateTime(timezone=True), nullable=True)
+    sent_at          = Column(DateTime(timezone=True), nullable=True)
+    error_message    = Column(Text, nullable=True)
+    created_at       = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at       = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        Index("ix_orbejobs_queue_business_id", "business_id"),
+        Index("ix_orbejobs_queue_user_id", "user_id"),
+        Index("ix_orbejobs_queue_app_id", "application_id"),
+        Index("ix_orbejobs_queue_status", "business_id", "status"),
+    )
+
+
+class OrbeJobSendLog(Base):
+    """
+    Log imutável de envios e trilha de conformidade LGPD do OrbeJobs.
+    """
+    __tablename__ = "orbejobs_send_logs"
+
+    id               = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id      = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    user_id          = Column(DB_UUID, ForeignKey(_PUBLIC_USERS_FK, ondelete="CASCADE"), nullable=False)
+    queue_id         = Column(DB_UUID, ForeignKey("orbejobs_send_queue.id", ondelete="SET NULL"), nullable=True)
+    application_id   = Column(DB_UUID, ForeignKey("orbejobs_applications.id", ondelete="SET NULL"), nullable=True)
+    recipient_email  = Column(String(255), nullable=False)
+    gmail_message_id = Column(String(200), nullable=True)
+    mx_host          = Column(String(255), nullable=True)
+    status           = Column(String(40), nullable=False)
+    latency_ms       = Column(Integer, nullable=False, default=0)
+    lgpd_audit_hash  = Column(String(64), nullable=False)
+    detail           = Column(Text, nullable=True)
+    created_at       = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index("ix_orbejobs_logs_business_id", "business_id"),
+        Index("ix_orbejobs_logs_user_id", "user_id"),
+        Index("ix_orbejobs_logs_queue_id", "queue_id"),
+        Index("ix_orbejobs_logs_app_id", "application_id"),
+        Index("ix_orbejobs_logs_created_at", "created_at"),
+    )
+
+
+class OrbeJobOAuthVault(Base):
+    """
+    Cofre criptografado MultiFernet AES-256 para tokens OAuth2 (gmail.send) do OrbeJobs.
+    Bloqueado 100% no PostgREST via supabase_hardening.sensitive_tables.
+    """
+    __tablename__ = "orbejobs_oauth_vault"
+
+    id                      = Column(DB_UUID, primary_key=True, default=lambda: str(uuid.uuid4()))
+    business_id             = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
+    user_id                 = Column(DB_UUID, ForeignKey(_PUBLIC_USERS_FK, ondelete="CASCADE"), nullable=False)
+    provider                = Column(String(40), nullable=False, default="gmail")
+    account_email           = Column(String(255), nullable=False)
+    encrypted_access_token  = Column(Text, nullable=False)
+    encrypted_refresh_token = Column(Text, nullable=True)
+    scopes                  = Column(String(500), nullable=False, default="https://www.googleapis.com/auth/gmail.send")
+    token_expiry            = Column(DateTime(timezone=True), nullable=True)
+    is_active               = Column(Boolean, nullable=False, default=True, server_default="true")
+    created_at              = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at              = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
+        nullable=False,
+    )
+
+    __table_args__ = (
+        UniqueConstraint("business_id", "user_id", "provider", name="uq_orbejobs_oauth_biz_user_prov"),
+        Index("ix_orbejobs_oauth_business_id", "business_id"),
+        Index("ix_orbejobs_oauth_user_id", "user_id"),
+    )

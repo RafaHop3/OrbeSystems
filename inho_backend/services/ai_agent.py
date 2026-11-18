@@ -423,6 +423,8 @@ async def classify_and_respond_orbrick(
     e2e_match = _E2E_PIX_RE.search(incoming_message or "")
     if any(k in lower_msg for k in ("atendente", "humano", "operador", "falar com pessoa", "gerente", "suporte humano")):
         intent = "ATENDIMENTO_HUMANO"
+    elif lower_msg.strip().startswith(("+xp", "+curso", "+cert", "+skill", "xp:", "curso:", "skill:")):
+        intent = "ORBEJOBS_LIVING_CV_UPDATE"
     elif e2e_match or any(k in lower_msg for k in ("comprovante", "ja paguei", "já paguei", "pix enviado", "pagamento feito", "segue o pix")):
         intent = "COMPROVANTE_PIX"
     elif any(k in lower_msg for k in ("segunda via", "2 via", "2ª via", "chave pix", "codigo pix", "código pix", "boleto", "copia e cola")):
@@ -491,8 +493,22 @@ async def classify_and_respond_orbrick(
                             ai_engine_mode = data.get("provider") or "ORBE_LLM_REMOTE"
                             break
             except Exception as exc:
-                logger.warning(f"[OrBrick-IA] Motor Orbe ({engine_url}) indisponível, acionando síntese local: {exc}")
+                logger.warning(f"[OrBrick-IA] Motor Orbe ({engine_url}) indisponível, acionando cascata IMORTAL: {exc}")
                 ai_engine_mode = "FALLBACK_RESILIENT"
+        if not external_reply and (
+            _split_api_keys("GEMINI_API_KEYS", "GEMINI_API_KEY")
+            or _split_api_keys("GROQ_API_KEYS", "GROQ_API_KEY")
+        ):
+            cascade_out = await imortal_cascade_router.generate(
+                task_type=f"orbrick_{intent.lower()}",
+                prompt=sanitized_msg,
+                system_prompt=HARDENED_SYSTEM_PROMPT,
+                context_items=matched_rag_docs,
+                simulate_offline=simulate_ai_offline,
+            )
+            if cascade_out.get("provider") != "LOCAL_DETERMINISTIC_IMORTAL":
+                external_reply = cascade_out.get("reply")
+                ai_engine_mode = str(cascade_out.get("provider") or "IMORTAL_CASCADE")
     elif simulate_ai_offline:
         ai_engine_mode = "FALLBACK_RESILIENT"
 
@@ -506,6 +522,11 @@ async def classify_and_respond_orbrick(
             f"Compreendido, {first_name}! Pausamos o atendimento automático nesta conversa e "
             f"transferimos seu chamado para um operador da equipe *{business_name}*. "
             "Em instantes você será atendido(a)."
+        )
+    elif intent == "ORBEJOBS_LIVING_CV_UPDATE":
+        body_text = (
+            f"Perfeito, {first_name}! Comando de atualização do *Living CV (OrbeJobs)* recebido: "
+            f"`{sanitized_msg[:180]}`. Seu perfil JSON Resume e vetor pgvector foram sinalizados para sincronização."
         )
     elif intent == "COMPROVANTE_PIX":
         receipt_triage_status = "QUEUED_FOR_ATOMIC_RECONCILIATION"
@@ -581,3 +602,424 @@ async def classify_and_respond_orbrick(
         "ai_engine_mode": ai_engine_mode,
         "rag_sources": rag_sources,
     }
+
+
+# ── IMORTAL Predictive Cascade Router (pgvector + Cache + Gemini/Groq/Ollama) ──
+
+import json as _json
+import math as _math
+
+IMORTAL_EMBEDDING_DIM = 64
+_IMORTAL_CACHE: "OrderedDict[str, Tuple[float, Dict[str, Any]]]" = OrderedDict()
+_IMORTAL_CACHE_MAX = 512
+_IMORTAL_CACHE_TTL_SECONDS = 3600.0
+_PROVIDER_COOLDOWNS: Dict[str, float] = {}
+
+
+def compute_text_embedding(text: str, dim: int = IMORTAL_EMBEDDING_DIM) -> List[float]:
+    """
+    Gera embedding vetorial determinístico L2-normalizado (compatível com pgvector)
+    combinando unigramas e trigramas de caracteres sem dependência de chaves pagas.
+    """
+    if not text or not text.strip():
+        return [0.0] * dim
+
+    vec = [0.0] * dim
+    tokens = _normalize_tokens(text)
+    features: List[Tuple[str, float]] = [(tok, 2.0) for tok in tokens]
+
+    compact = re.sub(r"\s+", " ", text.lower()).strip()
+    for tok in tokens:
+        if len(tok) >= 4:
+            for i in range(len(tok) - 2):
+                features.append((tok[i:i + 3], 0.6))
+    if not features and compact:
+        features.append((compact[:32], 1.0))
+
+    for feat, weight in features:
+        digest = hashlib.blake2b(feat.encode("utf-8"), digest_size=8).digest()
+        idx = int.from_bytes(digest[:4], "big") % dim
+        sign = 1.0 if (digest[4] & 1) == 0 else -1.0
+        vec[idx] += sign * weight
+
+    norm = _math.sqrt(sum(v * v for v in vec))
+    if norm <= 1e-12:
+        return [0.0] * dim
+    return [round(v / norm, 6) for v in vec]
+
+
+def cosine_similarity(vec_a: List[float], vec_b: List[float]) -> float:
+    """Similaridade de cosseno em [0.0, 1.0] para vetores normalizados."""
+    if not vec_a or not vec_b or len(vec_a) != len(vec_b):
+        return 0.0
+    dot = sum(a * b for a, b in zip(vec_a, vec_b))
+    norm_a = _math.sqrt(sum(a * a for a in vec_a))
+    norm_b = _math.sqrt(sum(b * b for b in vec_b))
+    if norm_a <= 1e-12 or norm_b <= 1e-12:
+        return 0.0
+    raw = dot / (norm_a * norm_b)
+    return round(max(0.0, min(1.0, (raw + 1.0) / 2.0 if raw < 0 else raw)), 4)
+
+
+def format_pgvector_literal(vec: List[float]) -> str:
+    """Serializa vetor float no formato literal do operador <=> do pgvector."""
+    return "[" + ",".join(f"{float(v):.6f}" for v in vec) + "]"
+
+
+def _parse_embedding_field(raw: Any) -> Optional[List[float]]:
+    if isinstance(raw, list) and raw:
+        try:
+            return [float(x) for x in raw]
+        except (TypeError, ValueError):
+            return None
+    if isinstance(raw, str) and raw.strip():
+        try:
+            parsed = _json.loads(raw)
+            if isinstance(parsed, list) and parsed:
+                return [float(x) for x in parsed]
+        except Exception:
+            return None
+    return None
+
+
+def prefilter_pgvector_candidates(
+    query_text: str,
+    candidates: List[Dict[str, Any]],
+    *,
+    text_key: str = "description_text",
+    title_key: str = "title",
+    embedding_key: str = "embedding_json",
+    top_k: int = 10,
+    min_score: float = 0.05,
+) -> List[Dict[str, Any]]:
+    """
+    Pré-filtro vetorial estilo pgvector antes da inferência LLM:
+    ranqueia vagas ou documentos RAG localmente com custo zero de tokens.
+    """
+    if not candidates or not (query_text or "").strip():
+        return []
+
+    q_vec = compute_text_embedding(query_text)
+    q_tokens = set(_normalize_tokens(query_text))
+    ranked: List[Tuple[float, Dict[str, Any]]] = []
+
+    for item in candidates:
+        cand_vec = _parse_embedding_field(item.get(embedding_key))
+        cand_text = f"{item.get(title_key, '')} {item.get(text_key, '')} {item.get('skills_tags', '')}"
+        if not cand_vec:
+            cand_vec = compute_text_embedding(cand_text)
+
+        vec_sim = cosine_similarity(q_vec, cand_vec)
+        cand_tokens = set(_normalize_tokens(cand_text))
+        lexical = (
+            len(q_tokens.intersection(cand_tokens)) / max(1, len(q_tokens))
+            if q_tokens and cand_tokens
+            else 0.0
+        )
+        score = round(min(1.0, (0.65 * vec_sim) + (0.35 * lexical)), 4)
+        if score >= min_score:
+            ranked.append((score, {**item, "pgvector_score": score}))
+
+    ranked.sort(key=lambda pair: pair[0], reverse=True)
+    return [pair[1] for pair in ranked[:top_k]]
+
+
+def _split_api_keys(*env_names: str) -> List[str]:
+    keys: List[str] = []
+    for name in env_names:
+        raw = os.environ.get(name, "").strip()
+        if not raw:
+            continue
+        for part in raw.split(","):
+            k = part.strip()
+            if k and k not in keys:
+                keys.append(k)
+    return keys
+
+
+class IMORTALPredictiveCascadeRouter:
+    """
+    Roteador Preditivo em Cascata Zero-Key do Projeto IMORTAL:
+    1. Sanitização LGPD (sem CPF/CNPJ/tokens no payload externo).
+    2. Pré-filtro vetorial (pgvector / cosseno determinístico) para reduzir contexto.
+    3. Cache em memória TTL/LRU para eliminar chamadas repetidas.
+    4. Rotação automática de provedores gratuitos/locais:
+       Gemini (rotação de chaves) -> Groq (rotação de chaves) -> Ollama Local -> Síntese Local Resiliente.
+    """
+
+    def __init__(self, cache_ttl_seconds: float = _IMORTAL_CACHE_TTL_SECONDS):
+        self.cache_ttl_seconds = cache_ttl_seconds
+
+    @staticmethod
+    def _cache_key(task_type: str, prompt: str, context_digest: str) -> str:
+        raw = f"{task_type}::{prompt}::{context_digest}"
+        return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def _is_in_cooldown(slot_id: str) -> bool:
+        until = _PROVIDER_COOLDOWNS.get(slot_id, 0.0)
+        return time.time() < until
+
+    @staticmethod
+    def _mark_cooldown(slot_id: str, seconds: float = 45.0) -> None:
+        _PROVIDER_COOLDOWNS[slot_id] = time.time() + seconds
+
+    def clear_cache(self) -> None:
+        _IMORTAL_CACHE.clear()
+        _PROVIDER_COOLDOWNS.clear()
+
+    async def _call_gemini(
+        self,
+        api_key: str,
+        system_prompt: str,
+        user_prompt: str,
+        timeout: float = 8.0,
+    ) -> Optional[str]:
+        model = os.environ.get("GEMINI_MODEL", "gemini-2.0-flash").strip() or "gemini-2.0-flash"
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        payload = {
+            "system_instruction": {"parts": [{"text": system_prompt}]},
+            "contents": [{"role": "user", "parts": [{"text": user_prompt}]}],
+            "generationConfig": {"temperature": 0.25, "maxOutputTokens": 900},
+        }
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            resp = await client.post(url, json=payload)
+            if resp.status_code == 200:
+                data = resp.json()
+                cands = data.get("candidates") or []
+                if cands:
+                    parts = ((cands[0].get("content") or {}).get("parts")) or []
+                    text_out = "".join(str(p.get("text", "")) for p in parts).strip()
+                    if text_out:
+                        return text_out
+            if resp.status_code in (429, 500, 502, 503, 504):
+                raise RuntimeError(f"Gemini HTTP {resp.status_code}")
+        return None
+
+    async def _call_groq(
+        self,
+        api_key: str,
+        system_prompt: str,
+        user_prompt: str,
+        timeout: float = 8.0,
+    ) -> Optional[str]:
+        model = os.environ.get("GROQ_MODEL", "llama-3.3-70b-versatile").strip() or "llama-3.3-70b-versatile"
+        url = os.environ.get("GROQ_API_URL", "https://api.groq.com/openai/v1/chat/completions").strip()
+        payload = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            "temperature": 0.25,
+            "max_tokens": 900,
+        }
+        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            resp = await client.post(url, json=payload, headers=headers)
+            if resp.status_code == 200:
+                data = resp.json()
+                choices = data.get("choices") or []
+                if choices:
+                    msg = ((choices[0].get("message") or {}).get("content")) or ""
+                    if str(msg).strip():
+                        return str(msg).strip()
+            if resp.status_code in (429, 500, 502, 503, 504):
+                raise RuntimeError(f"Groq HTTP {resp.status_code}")
+        return None
+
+    async def _call_ollama(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        timeout: float = 6.0,
+    ) -> Optional[str]:
+        ollama_url = os.environ.get("OLLAMA_URL", "http://localhost:11434/api/generate").strip()
+        model = os.environ.get("IMORTAL_MODEL", "qwen2.5-coder:7b").strip() or "qwen2.5-coder:7b"
+        payload = {
+            "model": model,
+            "system": system_prompt,
+            "prompt": user_prompt,
+            "stream": False,
+        }
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            resp = await client.post(ollama_url, json=payload)
+            if resp.status_code == 200:
+                data = resp.json()
+                reply = (data.get("response") or data.get("reply") or "").strip()
+                if reply:
+                    return reply
+            if resp.status_code >= 500:
+                raise RuntimeError(f"Ollama HTTP {resp.status_code}")
+        return None
+
+    async def _call_orbe_ia(
+        self,
+        system_prompt: str,
+        user_prompt: str,
+        context_items: Optional[List[Dict[str, Any]]] = None,
+        task_type: str = "orbejobs",
+        timeout: float = 6.0,
+    ) -> Optional[str]:
+        """Chama o motor interno Orbe IA (`orbe_backend:8000/api/chat`) sem depender de chaves externas no INHO."""
+        engine_url = os.environ.get("ORBE_AI_ENGINE_URL", "").strip() or "http://orbe_backend:8000/api/chat"
+        payload = {
+            "message": user_prompt,
+            "user_message": user_prompt,
+            "system_prompt": system_prompt,
+            "intent": task_type.upper(),
+            "context": {"tenant_rag_docs": context_items or []},
+        }
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            resp = await client.post(engine_url, json=payload)
+            if resp.status_code == 200:
+                data = resp.json()
+                reply = (data.get("reply") or data.get("response") or "").strip()
+                if reply:
+                    return reply
+            if resp.status_code >= 500:
+                raise RuntimeError(f"Orbe IA HTTP {resp.status_code}")
+        return None
+
+    async def generate(
+        self,
+        *,
+        task_type: str,
+        prompt: str,
+        system_prompt: Optional[str] = None,
+        context_items: Optional[List[Dict[str, Any]]] = None,
+        fallback_text: str = "",
+        bypass_cache: bool = False,
+        simulate_offline: bool = False,
+        allow_local_ollama_in_test: bool = False,
+    ) -> Dict[str, Any]:
+        """
+        Executa a cascata preditiva Zero-Key:
+        pgvector pre-filter -> cache -> Gemini -> Groq -> Ollama local -> fallback local.
+        """
+        sanitized_prompt = sanitize_pii_text(prompt or "")
+        prefiltered = prefilter_pgvector_candidates(
+            sanitized_prompt,
+            context_items or [],
+            top_k=5,
+            min_score=0.01,
+        )
+        ctx_digest = hashlib.sha256(
+            _json.dumps(prefiltered, sort_keys=True, default=str).encode("utf-8")
+        ).hexdigest()[:16]
+        c_key = self._cache_key(task_type, sanitized_prompt, ctx_digest)
+
+        now = time.time()
+        if not bypass_cache and c_key in _IMORTAL_CACHE:
+            ts, cached_res = _IMORTAL_CACHE[c_key]
+            if (now - ts) < self.cache_ttl_seconds:
+                _IMORTAL_CACHE.move_to_end(c_key)
+                return {**cached_res, "cache_hit": True}
+            del _IMORTAL_CACHE[c_key]
+
+        eff_system = system_prompt or (
+            "Você é o motor Orbe Systems IMORTAL Cascade. "
+            "Responda de forma objetiva, profissional e estritamente baseada no contexto fornecido."
+        )
+        ctx_block = ""
+        if prefiltered:
+            snippets = [
+                f"- [{c.get('title', 'Item')}] (score={c.get('pgvector_score', 0)}): "
+                f"{sanitize_pii_text(str(c.get('description_text') or c.get('content') or ''))[:400]}"
+                for c in prefiltered[:3]
+            ]
+            ctx_block = "\n\nContexto pré-filtrado (pgvector):\n" + "\n".join(snippets)
+        full_user_prompt = f"{sanitized_prompt}{ctx_block}".strip()
+
+        providers_attempted: List[str] = []
+        reply_text: Optional[str] = None
+        selected_provider = "LOCAL_DETERMINISTIC_IMORTAL"
+
+        if not simulate_offline:
+            is_sqlite_test = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+            orbe_url_explicit = bool(os.environ.get("ORBE_AI_ENGINE_URL", "").strip())
+
+            # 1. Motor Nativo Orbe IA (orbe_backend:8000/api/chat ? Zero-Key no INHO)
+            if orbe_url_explicit or not is_sqlite_test:
+                slot = "orbe:primary"
+                if not self._is_in_cooldown(slot):
+                    providers_attempted.append(slot)
+                    try:
+                        reply_text = await self._call_orbe_ia(
+                            eff_system,
+                            full_user_prompt,
+                            context_items=prefiltered,
+                            task_type=task_type,
+                        )
+                        if reply_text:
+                            selected_provider = "ORBE_IA_ENGINE"
+                    except Exception as exc:
+                        logger.warning(f"[IMORTAL-Cascade] Orbe IA indispon?vel, rotacionando: {exc}")
+                        self._mark_cooldown(slot, seconds=15.0)
+
+            # 2. Ollama Local (infraestrutura pr?pria)
+            ollama_explicit = bool(os.environ.get("OLLAMA_URL", "").strip())
+            if not reply_text and (ollama_explicit or allow_local_ollama_in_test or not is_sqlite_test):
+                slot = "ollama:local"
+                if not self._is_in_cooldown(slot):
+                    providers_attempted.append(slot)
+                    try:
+                        reply_text = await self._call_ollama(eff_system, full_user_prompt)
+                        if reply_text:
+                            selected_provider = "OLLAMA_LOCAL"
+                    except Exception as exc:
+                        logger.warning(f"[IMORTAL-Cascade] Ollama local indispon?vel: {exc}")
+                        self._mark_cooldown(slot, seconds=15.0)
+
+            # 3. Gemini Key Rotation (opcional, apenas se chaves forem configuradas)
+            if not reply_text:
+                for idx, g_key in enumerate(_split_api_keys("GEMINI_API_KEYS", "GEMINI_API_KEY")):
+                    slot = f"gemini:{idx}"
+                    if self._is_in_cooldown(slot):
+                        continue
+                    providers_attempted.append(slot)
+                    try:
+                        reply_text = await self._call_gemini(g_key, eff_system, full_user_prompt)
+                        if reply_text:
+                            selected_provider = f"GEMINI_CASCADE_{idx}"
+                            break
+                    except Exception as exc:
+                        logger.warning(f"[IMORTAL-Cascade] {slot} falhou, rotacionando: {exc}")
+                        self._mark_cooldown(slot)
+
+            # 4. Groq Key Rotation (opcional, apenas se chaves forem configuradas)
+            if not reply_text:
+                for idx, gr_key in enumerate(_split_api_keys("GROQ_API_KEYS", "GROQ_API_KEY")):
+                    slot = f"groq:{idx}"
+                    if self._is_in_cooldown(slot):
+                        continue
+                    providers_attempted.append(slot)
+                    try:
+                        reply_text = await self._call_groq(gr_key, eff_system, full_user_prompt)
+                        if reply_text:
+                            selected_provider = f"GROQ_CASCADE_{idx}"
+                            break
+                    except Exception as exc:
+                        logger.warning(f"[IMORTAL-Cascade] {slot} falhou, rotacionando: {exc}")
+                        self._mark_cooldown(slot)
+        if not reply_text:
+            reply_text = fallback_text or (
+                "Análise sintetizada pelo Motor IMORTAL Local (modo Zero-Key resiliente)."
+            )
+
+        result = {
+            "reply": reply_text,
+            "provider": selected_provider,
+            "providers_attempted": providers_attempted,
+            "cache_hit": False,
+            "prefiltered_count": len(prefiltered),
+            "top_pgvector_score": prefiltered[0].get("pgvector_score", 0.0) if prefiltered else 0.0,
+        }
+
+        if len(_IMORTAL_CACHE) >= _IMORTAL_CACHE_MAX:
+            _IMORTAL_CACHE.popitem(last=False)
+        _IMORTAL_CACHE[c_key] = (now, result)
+        return result
+
+
+imortal_cascade_router = IMORTALPredictiveCascadeRouter()

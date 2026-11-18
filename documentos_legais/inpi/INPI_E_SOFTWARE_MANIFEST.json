@@ -1,0 +1,140 @@
+{
+  "schema": "ORBE-INPI-E-SOFTWARE-V1",
+  "holder": "ORBE SYSTEMS LTDA",
+  "generated_at_utc": "2026-11-18T21:26:49.383971+00:00",
+  "hash_algorithm": "SHA-256",
+  "master_bundle_sha256": "c6e922b46df0a5aa421208865deba69292ea240e40ae6d29d9d69a2f029423c6",
+  "groups": {
+    "TRANSPILADOR_IMORTAL_AST_SSA_Z3": {
+      "files_count": 11,
+      "bundle_sha256": "5c71285d3eeae887b03f26471ce6771ba900bbb037e90b29fa6f1b76d75a9fe9",
+      "files": [
+        {
+          "path": "backend/imortal/__init__.py",
+          "size_bytes": 30,
+          "lines": 1,
+          "sha256_raw": "d039b75437a814f076a544511497b60d94935f3f55319f2e73e77354acc99ce2",
+          "sha256_canonical_lf": "d039b75437a814f076a544511497b60d94935f3f55319f2e73e77354acc99ce2"
+        },
+        {
+          "path": "backend/imortal/ai.py",
+          "size_bytes": 12627,
+          "lines": 308,
+          "sha256_raw": "0b073a6bd398c1401fe5d1e622f4b710bb1d50b140499c61becc66d409dd68ea",
+          "sha256_canonical_lf": "86c389b0c06344f3dcc38465610609e5a3214b3d168d1acf159472d00b07af38"
+        },
+        {
+          "path": "backend/imortal/cli.py",
+          "size_bytes": 13802,
+          "lines": 263,
+          "sha256_raw": "9b933bb112944bd3318e6801b3af6c82531ed5b41d3133ac732612d2eb6a51c7",
+          "sha256_canonical_lf": "31057c3705a5407c2dc3d4e89972c90095d6f2db8a21077bff5a56722791699b"
+        },
+        {
+          "path": "backend/imortal/compiler.py",
+          "size_bytes": 11385,
+          "lines": 253,
+          "sha256_raw": "5ffa3f4b08f91c9ff371623e489ee44ab4fee4e0e4e3362b456915eb5edfc4a2",
+          "sha256_canonical_lf": "5ffa3f4b08f91c9ff371623e489ee44ab4fee4e0e4e3362b456915eb5edfc4a2"
+        },
+        {
+          "path": "backend/imortal/config.py",
+          "size_bytes": 5237,
+          "lines": 90,
+          "sha256_raw": "06c6033c14edd6b663bab415fcf4573121905e62e86055f6e88580ecb551452e",
+          "sha256_canonical_lf": "9be0a44a5dc4ec594252935d433245ea6ecb4a5634f2a85329acc29b89d30987"
+        },
+        {
+          "path": "backend/imortal/ir.py",
+          "size_bytes": 12638,
+          "lines": 287,
+          "sha256_raw": "1ba2324c0c428f1f764cebcb40c1be018930f447ad5d89da4e1d352fdc3ff09b",
+          "sha256_canonical_lf": "1ba2324c0c428f1f764cebcb40c1be018930f447ad5d89da4e1d352fdc3ff09b"
+        },
+        {
+          "path": "backend/imortal/prover.py",
+          "size_bytes": 18955,
+          "lines": 402,
+          "sha256_raw": "f507a9caf1d43352b21e365ca354b596c9abed0cb14892bb603201a597109744",
+          "sha256_canonical_lf": "44ee7f859616e312e04b1f6ada9c7c6718ece389f3ecd49f19855cc2e33cad5f"
+        },
+        {
+          "path": "backend/imortal/sandbox.py",
+          "size_bytes": 14738,
+          "lines": 308,
+          "sha256_raw": "237a58d1a1ca6697589b5cc0e8253ac6d20131f75790b9eb1ff51653b06b65ee",
+          "sha256_canonical_lf": "237a58d1a1ca6697589b5cc0e8253ac6d20131f75790b9eb1ff51653b06b65ee"
+        },
+        {
+          "path": "backend/imortal/server.py",
+          "size_bytes": 11983,
+          "lines": 284,
+          "sha256_raw": "a330e4dc427964e8be5fddf17a1f5f2d3a19328483588ccfe1532d5b438e0cf9",
+          "sha256_canonical_lf": "a330e4dc427964e8be5fddf17a1f5f2d3a19328483588ccfe1532d5b438e0cf9"
+        },
+        {
+          "path": "backend/imortal/visualizer.py",
+          "size_bytes": 8882,
+          "lines": 208,
+          "sha256_raw": "56f6172090b23b1ee47cea1ee7a908edd2ad512ea1165ae43ad62e0853069f59",
+          "sha256_canonical_lf": "56f6172090b23b1ee47cea1ee7a908edd2ad512ea1165ae43ad62e0853069f59"
+        },
+        {
+          "path": "backend/routes/imortal.py",
+          "size_bytes": 16885,
+          "lines": 365,
+          "sha256_raw": "7205d2e78942511d208a3f6f631f85e1dab8f0387ffaaa37c82cd9b144614f3e",
+          "sha256_canonical_lf": "8a7ef2c0de9e1780325f02165ccab278e0d8153e607be105531c53086b1ac7f7"
+        }
+      ]
+    },
+    "ORBEJOBS_ZERO_KEY_IMORTAL_CASCADE": {
+      "files_count": 6,
+      "bundle_sha256": "0e075bf157f30c8608ba3358fe2f57f5f67348a3ac82c13fb686f5f369299f97",
+      "files": [
+        {
+          "path": "inho_backend/services/ai_agent.py",
+          "size_bytes": 46623,
+          "lines": 1025,
+          "sha256_raw": "fd3261e6d4d9541bdc9f4e2280f464d436b8191bdcc4f8a7aeeafb8e123d48cc",
+          "sha256_canonical_lf": "5ea64f8523d7387286ad414142031137960e9cde7e75ec6fa823fc88593bd036"
+        },
+        {
+          "path": "inho_backend/services/orbejobs_scraper.py",
+          "size_bytes": 14544,
+          "lines": 380,
+          "sha256_raw": "a317be9ff019efb28fd3b868ff54d15216aa91623162f58b4de850d882eeeb04",
+          "sha256_canonical_lf": "a317be9ff019efb28fd3b868ff54d15216aa91623162f58b4de850d882eeeb04"
+        },
+        {
+          "path": "inho_backend/services/orbejobs_service.py",
+          "size_bytes": 12647,
+          "lines": 320,
+          "sha256_raw": "a16b6df05404e4f5724ded7f2754c0ed5c36ce7d84115c61255d11d740903049",
+          "sha256_canonical_lf": "a16b6df05404e4f5724ded7f2754c0ed5c36ce7d84115c61255d11d740903049"
+        },
+        {
+          "path": "inho_backend/services/orbejobs_mailer.py",
+          "size_bytes": 15074,
+          "lines": 410,
+          "sha256_raw": "f14903b698eab22e3c8f85018b3cb9cb3ee63fa8adea9f8fa5a291ecc7b2e429",
+          "sha256_canonical_lf": "f14903b698eab22e3c8f85018b3cb9cb3ee63fa8adea9f8fa5a291ecc7b2e429"
+        },
+        {
+          "path": "inho_backend/routers/orbejobs.py",
+          "size_bytes": 41535,
+          "lines": 1168,
+          "sha256_raw": "faf9731e795a0ca48c40c30a4ecd393eaf7f34613aa596efaeaafb952c7cca4b",
+          "sha256_canonical_lf": "faf9731e795a0ca48c40c30a4ecd393eaf7f34613aa596efaeaafb952c7cca4b"
+        },
+        {
+          "path": "inho_backend/core/security.py",
+          "size_bytes": 4027,
+          "lines": 106,
+          "sha256_raw": "7ced428aab1885a93f4b4125cb225b055683ceb6eb20f77f1a9c7a75652ec460",
+          "sha256_canonical_lf": "9187700110ab6ed022f1ceab0f416415752e9ee6686c294cf8b05d032efe2b79"
+        }
+      ]
+    }
+  }
+}

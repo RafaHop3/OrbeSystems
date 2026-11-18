@@ -38,3 +38,4 @@ httpx==0.28.0
 aiosqlite==0.20.0
 python-dateutil
 stripe>=9.0.0
+dnspython>=2.6.0

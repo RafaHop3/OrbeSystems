@@ -1,0 +1,25 @@
+ORBE SYSTEMS LTDA — REGISTRO E-SOFTWARE INPI (HASH SHA-256)
+Gerado em (UTC): 2026-11-18T21:26:49.383971+00:00
+Master Bundle SHA-256: c6e922b46df0a5aa421208865deba69292ea240e40ae6d29d9d69a2f029423c6
+==============================================================================
+
+[TRANSPILADOR_IMORTAL_AST_SSA_Z3] Bundle SHA-256: 5c71285d3eeae887b03f26471ce6771ba900bbb037e90b29fa6f1b76d75a9fe9
+  d039b75437a814f076a544511497b60d94935f3f55319f2e73e77354acc99ce2  backend/imortal/__init__.py (1 linhas, 30 bytes)
+  86c389b0c06344f3dcc38465610609e5a3214b3d168d1acf159472d00b07af38  backend/imortal/ai.py (308 linhas, 12627 bytes)
+  31057c3705a5407c2dc3d4e89972c90095d6f2db8a21077bff5a56722791699b  backend/imortal/cli.py (263 linhas, 13802 bytes)
+  5ffa3f4b08f91c9ff371623e489ee44ab4fee4e0e4e3362b456915eb5edfc4a2  backend/imortal/compiler.py (253 linhas, 11385 bytes)
+  9be0a44a5dc4ec594252935d433245ea6ecb4a5634f2a85329acc29b89d30987  backend/imortal/config.py (90 linhas, 5237 bytes)
+  1ba2324c0c428f1f764cebcb40c1be018930f447ad5d89da4e1d352fdc3ff09b  backend/imortal/ir.py (287 linhas, 12638 bytes)
+  44ee7f859616e312e04b1f6ada9c7c6718ece389f3ecd49f19855cc2e33cad5f  backend/imortal/prover.py (402 linhas, 18955 bytes)
+  237a58d1a1ca6697589b5cc0e8253ac6d20131f75790b9eb1ff51653b06b65ee  backend/imortal/sandbox.py (308 linhas, 14738 bytes)
+  a330e4dc427964e8be5fddf17a1f5f2d3a19328483588ccfe1532d5b438e0cf9  backend/imortal/server.py (284 linhas, 11983 bytes)
+  56f6172090b23b1ee47cea1ee7a908edd2ad512ea1165ae43ad62e0853069f59  backend/imortal/visualizer.py (208 linhas, 8882 bytes)
+  8a7ef2c0de9e1780325f02165ccab278e0d8153e607be105531c53086b1ac7f7  backend/routes/imortal.py (365 linhas, 16885 bytes)
+
+[ORBEJOBS_ZERO_KEY_IMORTAL_CASCADE] Bundle SHA-256: 0e075bf157f30c8608ba3358fe2f57f5f67348a3ac82c13fb686f5f369299f97
+  5ea64f8523d7387286ad414142031137960e9cde7e75ec6fa823fc88593bd036  inho_backend/services/ai_agent.py (1025 linhas, 46623 bytes)
+  a317be9ff019efb28fd3b868ff54d15216aa91623162f58b4de850d882eeeb04  inho_backend/services/orbejobs_scraper.py (380 linhas, 14544 bytes)
+  a16b6df05404e4f5724ded7f2754c0ed5c36ce7d84115c61255d11d740903049  inho_backend/services/orbejobs_service.py (320 linhas, 12647 bytes)
+  f14903b698eab22e3c8f85018b3cb9cb3ee63fa8adea9f8fa5a291ecc7b2e429  inho_backend/services/orbejobs_mailer.py (410 linhas, 15074 bytes)
+  faf9731e795a0ca48c40c30a4ecd393eaf7f34613aa596efaeaafb952c7cca4b  inho_backend/routers/orbejobs.py (1168 linhas, 41535 bytes)
+  9187700110ab6ed022f1ceab0f416415752e9ee6686c294cf8b05d032efe2b79  inho_backend/core/security.py (106 linhas, 4027 bytes)

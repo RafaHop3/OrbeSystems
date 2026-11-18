@@ -162,7 +162,7 @@ SUPABASE_HARDENING_SQL_STATEMENTS = [
     DO $$
     DECLARE
         r RECORD;
-        sensitive_tables text[] := ARRAY['api_tokens', 'bank_integrations', 'webhook_logs'];
+        sensitive_tables text[] := ARRAY['api_tokens', 'bank_integrations', 'webhook_logs', 'orbejobs_oauth_vault'];
     BEGIN
         -- Anon nunca acessa o schema inho diretamente
         REVOKE ALL ON SCHEMA inho FROM anon;
@@ -239,7 +239,7 @@ SUPABASE_HARDENING_SQL_STATEMENTS = [
             JOIN pg_tables t ON t.schemaname = c.table_schema AND t.tablename = c.table_name
             WHERE c.table_schema = 'inho'
               AND c.column_name = 'business_id'
-              AND c.table_name NOT IN ('api_tokens', 'bank_integrations', 'webhook_logs')
+              AND c.table_name NOT IN ('api_tokens', 'bank_integrations', 'webhook_logs', 'orbejobs_oauth_vault')
         LOOP
             IF NOT EXISTS (
                 SELECT 1 FROM pg_policies
