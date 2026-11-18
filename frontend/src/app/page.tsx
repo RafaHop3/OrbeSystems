@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import { Skiper30 } from '@/components/v1/skiper30';
 import OrbeAssistantHeroCard from '@/components/OrbeAssistantHeroCard';
+import OrbeJobsHeroCard from '@/components/OrbeJobsHeroCard';
 import dynamicImport from 'next/dynamic';
 
 export const dynamic = 'force-static';
@@ -32,6 +33,7 @@ export default function HomePage() {
       <Header />
       {/* 🚀 Hero Card Oficial: Orbe Assistant Convidando para os Planos INHO ERP */}
       <OrbeAssistantHeroCard />
+      <OrbeJobsHeroCard />
       <Skiper30 />
       <div className="below-fold-section"><OrbeMusicHero /></div>
       <div className="below-fold-section"><MusicDownloaderHero /></div>
