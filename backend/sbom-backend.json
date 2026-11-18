@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:411fb5d2-6252-4d5c-a290-6c7fe32d9690",
+  "serialNumber": "urn:uuid:39ec83cb-16bf-4014-b25d-6b5553f6d12d",
   "metadata": {
-    "timestamp": "2026-11-06T21:46:22.907221+00:00",
+    "timestamp": "2026-11-18T21:33:19.766197+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -90,8 +90,8 @@
     {
       "type": "library",
       "name": "annotated-doc",
-      "version": "0.0.5",
-      "purl": "pkg:pypi/annotated-doc@0.0.5",
+      "version": "0.0.7",
+      "purl": "pkg:pypi/annotated-doc@0.0.7",
       "licenses": [
         {
           "license": {
@@ -108,7 +108,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "d1153ad733a6bc8a01297eba649dd38265a6f462dea5c48837b9e5af32f23345"
+          "content": "374db9c1bc3d00c86c5c694485754438c556ae548405556f13267e12d7b508b2"
         }
       ]
     },
@@ -585,8 +585,8 @@
     {
       "type": "library",
       "name": "email-validator",
-      "version": "2.3.0",
-      "purl": "pkg:pypi/email-validator@2.3.0",
+      "version": "2.4.0",
+      "purl": "pkg:pypi/email-validator@2.4.0",
       "licenses": [
         {
           "license": {
@@ -603,7 +603,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "1cf0f2844d8475db5531ad21dd5c19be0b238caf98a970d13ee28fae731ac42e"
+          "content": "d8597651e92275b06569f8b6809692bc292f3f1b38e4fe99f0ae612f2236b298"
         }
       ]
     },
@@ -635,8 +635,8 @@
     {
       "type": "library",
       "name": "fastapi-cli",
-      "version": "0.0.32",
-      "purl": "pkg:pypi/fastapi-cli@0.0.32",
+      "version": "0.0.34",
+      "purl": "pkg:pypi/fastapi-cli@0.0.34",
       "licenses": [
         {
           "license": {
@@ -653,7 +653,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "c421676b974c5d8fa0aaace86c1235a3c1f521ccbadaa8276f270d8a1c8fcf1a"
+          "content": "ddb434aebf0d852df2dc9a2965792374a076b44aad933bd860e9260bc580b5a1"
         }
       ]
     },
@@ -900,8 +900,8 @@
     {
       "type": "library",
       "name": "markdown-it-py",
-      "version": "4.2.0",
-      "purl": "pkg:pypi/markdown-it-py@4.2.0",
+      "version": "4.3.0",
+      "purl": "pkg:pypi/markdown-it-py@4.3.0",
       "licenses": [
         {
           "license": {
@@ -918,7 +918,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "c273fe8f226454ff23f08fa3cbd69bce2ed76813f2e96a389fe9c6e881f0eb1d"
+          "content": "5f4c1e4d0da23e977045aa46dad27b5105968b5b139c8a8fc238d4acdad026b2"
         }
       ]
     },
@@ -1105,8 +1105,8 @@
     {
       "type": "library",
       "name": "pip",
-      "version": "26.2.2",
-      "purl": "pkg:pypi/pip@26.2.2",
+      "version": "26.3",
+      "purl": "pkg:pypi/pip@26.3",
       "licenses": [
         {
           "license": {
@@ -1123,7 +1123,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "7fd6d8899eac35e8766d08c2d35cf606a048c7c29fb268e42b40bd6df7c8de8b"
+          "content": "cb5162d51dac2ba89aaf0717724288b468f7c2e150356bf6bb3afced256dd18a"
         }
       ]
     },
@@ -1155,8 +1155,8 @@
     {
       "type": "library",
       "name": "psycopg",
-      "version": "3.3.8",
-      "purl": "pkg:pypi/psycopg@3.3.8",
+      "version": "3.3.9",
+      "purl": "pkg:pypi/psycopg@3.3.9",
       "licenses": [
         {
           "license": {
@@ -1173,15 +1173,15 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "81726b19288a4dc3f852cbf3c9aace3d374e79f24477471d8510b9e5a88bf701"
+          "content": "b4a4d71900b186eb097f6999d4c349748ddfaad1321b09caab656f218e9b81d6"
         }
       ]
     },
     {
       "type": "library",
       "name": "psycopg-binary",
-      "version": "3.3.8",
-      "purl": "pkg:pypi/psycopg-binary@3.3.8",
+      "version": "3.3.9",
+      "purl": "pkg:pypi/psycopg-binary@3.3.9",
       "licenses": [
         {
           "license": {
@@ -1198,7 +1198,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "a67ab8460a37f0c29fac41236d21b9eda04e3abd7be474875ad776e8c3d2c509"
+          "content": "7a99930509852cb96e5580af3efb4d1be2b1b94c1339f9cb10f5b61731e83958"
         }
       ]
     },
@@ -1765,8 +1765,8 @@
     {
       "type": "library",
       "name": "SQLAlchemy",
-      "version": "2.1.8",
-      "purl": "pkg:pypi/sqlalchemy@2.1.8",
+      "version": "2.1.9",
+      "purl": "pkg:pypi/sqlalchemy@2.1.9",
       "licenses": [
         {
           "license": {
@@ -1783,7 +1783,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "c06abab304931173a5caf829531196384ce901d37b4d06f7f03ff2c373a9c4a9"
+          "content": "1ac0dc0c75091dfbf7dfdb7cfef12e2a2c1d9eedd945ee1ebc65e4deb006cea8"
         }
       ]
     },
@@ -1835,8 +1835,8 @@
     {
       "type": "library",
       "name": "stripe",
-      "version": "16.1.0",
-      "purl": "pkg:pypi/stripe@16.1.0",
+      "version": "17.0.0",
+      "purl": "pkg:pypi/stripe@17.0.0",
       "licenses": [
         {
           "license": {
@@ -1853,15 +1853,15 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "8647fba55ea1d5ef3dce6bac71ce7897431d7bc227d7106c13df84d64aba74ec"
+          "content": "703c837891bad4742a5d6985a1f5110290c1ff587710a6491de565c22c967f55"
         }
       ]
     },
     {
       "type": "library",
       "name": "typer",
-      "version": "0.28.0",
-      "purl": "pkg:pypi/typer@0.28.0",
+      "version": "0.29.2",
+      "purl": "pkg:pypi/typer@0.29.2",
       "licenses": [
         {
           "license": {
@@ -1878,7 +1878,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "8c295552fcd0ae0b46ce80ba892ec5017cfe96884ec135549ad3f2d66a2a36d7"
+          "content": "45392c61087842a0861849e66dd07d9dc9a25619849a05c1c90c95ba517dd9eb"
         }
       ]
     },
