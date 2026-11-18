@@ -581,9 +581,9 @@ function AssinarPageContent() {
                   <span style={{ ...styles.modalBadge, color: selectedPlanForModal.color, borderColor: selectedPlanForModal.color }}>
                     CHECKOUT SEGURO STRIPE
                   </span>
-                  <h3 style={styles.modalTitle}>{selectedPlanForModal.name}</h3>
+                  <h3 style={styles.modalTitle}>{selectedPlanForModal.label}</h3>
                   <p style={styles.modalSubtitle}>
-                    {cycle === "monthly" ? selectedPlanForModal.monthlyFormatted : selectedPlanForModal.annualFormatted} ·{" "}
+                    {cycle === "monthly" ? selectedPlanForModal.monthlyPrice : selectedPlanForModal.annualPrice} ·{" "}
                     {cycle === "monthly" ? "Cobrança Mensal" : "Plano Anual (2 Meses Grátis)"}
                   </p>
                 </div>
