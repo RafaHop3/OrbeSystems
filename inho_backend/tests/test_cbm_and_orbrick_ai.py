@@ -432,3 +432,103 @@ async def test_4_statute_upload_and_auto_chunking_rag(client: AsyncClient):
     )
     assert r_invalid.status_code == 400
     assert "Formato '.exe' inválido" in r_invalid.json()["detail"]
+
+
+@pytest.mark.asyncio
+async def test_5_manual35_live_pdf_regressions_fixed(client: AsyncClient):
+    """
+    Valida as 4 correções prioritárias do Relatório Ao Vivo (Manual 35):
+    - S1.1: normalização 9º dígito (555195008347 vs 5551995008347) e detecção da fatura pendente
+    - S1.4: 'operador de caixa' não dispara handoff humano
+    - S1.6 / S1.7 / S1.3 / S2.1 / S3.3 / S3.4 / S4.4: intenções, empatia, passo-a-passo PIX e fora de escopo
+    - S8.12: suporte a upload .md no RAG
+    """
+    ctx = await _provision_two_cooperativas(client)
+    sul_headers = ctx["sul_headers"]
+
+    # Contato no CRM sem o 9º dígito + fatura pendente de R$ 850,00
+    c_res = await client.post(
+        "/api/v1/crm/contacts/",
+        json={
+            "category": "COOPERADO",
+            "name": "Associado Teste Sul",
+            "document": "333.444.555-66",
+            "phone": "555195008347",
+            "email": "assoc@sulcoop.com.br",
+        },
+        headers=sul_headers,
+    )
+    assert c_res.status_code in (200, 201)
+
+    inv_res = await client.post(
+        "/api/v1/billing/",
+        json={
+            "customer_name": "Associado Teste Sul",
+            "customer_phone": "555195008347",
+            "customer_doc": "333.444.555-66",
+            "amount": 850.00,
+            "due_date": (datetime.now(timezone.utc) + timedelta(days=20)).isoformat(),
+            "description": "Cota Mensal Sul",
+        },
+        headers=sul_headers,
+    )
+    assert inv_res.status_code in (200, 201)
+
+    # S1.1: consulta com o 9º dígito deve localizar a fatura de R$ 850,00
+    r_s11 = await client.post(
+        "/api/v1/crm/whatsapp/ai-reply",
+        json={"phone": "5551995008347", "incoming_message": "oi, tô devendo quanto?"},
+        headers=sul_headers,
+    )
+    assert r_s11.status_code == 200
+    assert "850,00" in r_s11.json()["formatted_message"]
+    assert "em dia" not in r_s11.json()["formatted_message"].lower()
+
+    # S1.4: 'operador de caixa' NÃO dispara handoff humano
+    r_s14 = await client.post(
+        "/api/v1/crm/whatsapp/ai-reply",
+        json={"phone": "5551995008347", "incoming_message": "qual o horário do operador de caixa?"},
+        headers=sul_headers,
+    )
+    assert r_s14.status_code == 200
+    assert r_s14.json()["intent"] != "ATENDIMENTO_HUMANO"
+    assert r_s14.json()["requires_human_handoff"] is False
+
+    # S1.3, S1.7, S2.1, S3.3, S3.4, S4.4 (antes do handoff de S1.6 silenciar o contato)
+    checks = [
+        ("consigo pagar em 3 vezes?", "NEGOCIACAO_PRAZO"),
+        ("quero cancelar", "CANCELAMENTO_RETENCAO"),
+        ("como pago?", "SEGUNDA_VIA_PIX"),
+        ("qual a cotação do dólar?", "FORA_DE_ESCOPO"),
+        ("qual o estatuto da Cooperativa Norte?", "CONSULTA_OUTRO_TENANT"),
+        ("você é robô?", "IDENTIDADE_IA"),
+    ]
+    for msg, expected_intent in checks:
+        resp = await client.post(
+            "/api/v1/crm/whatsapp/ai-reply",
+            json={"phone": "5551995008347", "incoming_message": msg},
+            headers=sul_headers,
+        )
+        assert resp.status_code == 200, resp.text
+        assert resp.json()["intent"] == expected_intent, (msg, resp.json())
+
+    # S1.6: raiva -> empatia + handoff prioritário
+    r_s16 = await client.post(
+        "/api/v1/crm/whatsapp/ai-reply",
+        json={"phone": "5551995008347", "incoming_message": "tô com raiva, vocês cobraram errado!!"},
+        headers=sul_headers,
+    )
+    assert r_s16.status_code == 200
+    assert r_s16.json()["intent"] == "URGENCIA_RECLAMACAO"
+    assert r_s16.json()["requires_human_handoff"] is True
+
+    # S8.12: upload .md aceito no RAG
+    md_doc = "# Política Comercial Sul\n\nArt. 1º. Parcelamento permitido em até 3x.\n\nArt. 2º. Desconto máximo de 5%."
+    r_md = await client.post(
+        "/api/v1/crm/cbm/ai-knowledge/upload-doc",
+        headers=sul_headers,
+        files={"file": ("politica_sul.md", md_doc.encode("utf-8"), "text/markdown")},
+        data={"category": "REGULAMENTO_ESTATUTO"},
+    )
+    assert r_md.status_code == 201, r_md.text
+    assert r_md.json()["chunks_created"] >= 2

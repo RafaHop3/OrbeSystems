@@ -1,9 +1,9 @@
 {
   "schema": "ORBE-INPI-E-SOFTWARE-V1",
   "holder": "ORBE SYSTEMS LTDA",
-  "generated_at_utc": "2026-11-18T21:26:49.383971+00:00",
+  "generated_at_utc": "2026-11-18T22:37:46.194213+00:00",
   "hash_algorithm": "SHA-256",
-  "master_bundle_sha256": "c6e922b46df0a5aa421208865deba69292ea240e40ae6d29d9d69a2f029423c6",
+  "master_bundle_sha256": "0aa7a45dab110001288398133826859c0b19859048c862651bcdb23b8e6bce4f",
   "groups": {
     "TRANSPILADOR_IMORTAL_AST_SSA_Z3": {
       "files_count": 11,
@@ -90,41 +90,41 @@
     },
     "ORBEJOBS_ZERO_KEY_IMORTAL_CASCADE": {
       "files_count": 6,
-      "bundle_sha256": "0e075bf157f30c8608ba3358fe2f57f5f67348a3ac82c13fb686f5f369299f97",
+      "bundle_sha256": "b8fc7da19cc0665059ebf332ce2bea8be78cd1bf6f1f7e8c10e94ec89148c0de",
       "files": [
         {
           "path": "inho_backend/services/ai_agent.py",
-          "size_bytes": 46623,
-          "lines": 1025,
-          "sha256_raw": "fd3261e6d4d9541bdc9f4e2280f464d436b8191bdcc4f8a7aeeafb8e123d48cc",
-          "sha256_canonical_lf": "5ea64f8523d7387286ad414142031137960e9cde7e75ec6fa823fc88593bd036"
+          "size_bytes": 50932,
+          "lines": 1085,
+          "sha256_raw": "b14b4d8bd03b4927d2764ce82476d1f63ecdeff3a41b26871b31a675e41c9ff8",
+          "sha256_canonical_lf": "b8520afee7a8a65a0f4ba4208d14560e6cbf5a377ac9df6d3be7656c69024d64"
         },
         {
           "path": "inho_backend/services/orbejobs_scraper.py",
-          "size_bytes": 14544,
+          "size_bytes": 14924,
           "lines": 380,
-          "sha256_raw": "a317be9ff019efb28fd3b868ff54d15216aa91623162f58b4de850d882eeeb04",
+          "sha256_raw": "8845bc7fd4f2274785ec627322c226ad2762e61ac20e9f9aa2c9c1fc9e80c51f",
           "sha256_canonical_lf": "a317be9ff019efb28fd3b868ff54d15216aa91623162f58b4de850d882eeeb04"
         },
         {
           "path": "inho_backend/services/orbejobs_service.py",
-          "size_bytes": 12647,
+          "size_bytes": 12967,
           "lines": 320,
-          "sha256_raw": "a16b6df05404e4f5724ded7f2754c0ed5c36ce7d84115c61255d11d740903049",
+          "sha256_raw": "64bba7e4e5470c132e361db7d0fb88f8143da0fe1ae581452343ef0d1875ed09",
           "sha256_canonical_lf": "a16b6df05404e4f5724ded7f2754c0ed5c36ce7d84115c61255d11d740903049"
         },
         {
           "path": "inho_backend/services/orbejobs_mailer.py",
-          "size_bytes": 15074,
+          "size_bytes": 15484,
           "lines": 410,
-          "sha256_raw": "f14903b698eab22e3c8f85018b3cb9cb3ee63fa8adea9f8fa5a291ecc7b2e429",
+          "sha256_raw": "91d37aa88c4136966937cc7d1f3b391f1a3b9d2b40b9b9e4521621b75fa9f640",
           "sha256_canonical_lf": "f14903b698eab22e3c8f85018b3cb9cb3ee63fa8adea9f8fa5a291ecc7b2e429"
         },
         {
           "path": "inho_backend/routers/orbejobs.py",
-          "size_bytes": 41535,
+          "size_bytes": 42703,
           "lines": 1168,
-          "sha256_raw": "faf9731e795a0ca48c40c30a4ecd393eaf7f34613aa596efaeaafb952c7cca4b",
+          "sha256_raw": "80d5defb4e49ccf6ccc7d4bcf19bbe1f4d6f1a450211690bba8ece350205fc23",
           "sha256_canonical_lf": "faf9731e795a0ca48c40c30a4ecd393eaf7f34613aa596efaeaafb952c7cca4b"
         },
         {

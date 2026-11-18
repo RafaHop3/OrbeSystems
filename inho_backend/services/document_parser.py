@@ -52,7 +52,7 @@ def extract_text_from_file(filename: str, content_bytes: bytes) -> str:
 
     ext = (filename.rsplit(".", 1)[-1] if "." in filename else "").lower().strip()
 
-    if ext == "txt":
+    if ext in ("txt", "md"):
         return _extract_txt(content_bytes)
     elif ext == "pdf":
         return _extract_pdf(content_bytes)

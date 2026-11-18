@@ -1770,7 +1770,7 @@ async def upload_statute_document(
 
     filename = (file.filename or "estatuto.txt").strip()
     ext = (filename.rsplit(".", 1)[-1] if "." in filename else "").lower()
-    if ext not in ("pdf", "docx", "txt"):
+    if ext not in ("pdf", "docx", "txt", "md"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Formato '.{ext}' inválido. Anexe um arquivo nos formatos .pdf, .docx ou .txt.",
@@ -2076,8 +2076,9 @@ async def process_orbrick_ai_reply(
 
     phones_to_try = [digits] if digits else []
     if len(digits) == 13 and digits.startswith("55"):
-        sem_9 = digits[:4] + digits[5:]
-        phones_to_try.append(sem_9)
+        phones_to_try.append(digits[:4] + digits[5:])
+    elif len(digits) == 12 and digits.startswith("55"):
+        phones_to_try.append(digits[:4] + "9" + digits[4:])
 
     # 1. Verificar Kill-Switch do Tenant
     if is_ai_kill_switch_active(str(business.id)):
@@ -2133,14 +2134,22 @@ async def process_orbrick_ai_reply(
                 "whatsapp_delivery_code": [],
             }
 
-    # 4. Buscar Faturas em Aberto ESTRITAMENTE do Tenant e do Contato
+    # 4. Buscar Faturas em Aberto ESTRITAMENTE do Tenant e do Contato (com fallback 9o digito e documento)
     open_invoices_data = []
     inv_stmt = select(BillingInvoice).where(
         BillingInvoice.business_id == b_id,
         BillingInvoice.status.in_([BillingStatus.PENDING, BillingStatus.OVERDUE]),
     )
+    last8 = digits[-8:] if len(digits) >= 8 else ""
     if contact:
-        inv_stmt = inv_stmt.where(BillingInvoice.crm_contact_id == contact.id)
+        contact_filters = [BillingInvoice.crm_contact_id == contact.id]
+        if last8:
+            contact_filters.append(BillingInvoice.customer_phone.ilike(f"%{last8}%"))
+        if getattr(contact, "document", None):
+            contact_filters.append(BillingInvoice.customer_doc == contact.document)
+        inv_stmt = inv_stmt.where(or_(*contact_filters))
+    elif last8:
+        inv_stmt = inv_stmt.where(BillingInvoice.customer_phone.ilike(f"%{last8}%"))
     inv_res = await db.execute(inv_stmt.order_by(BillingInvoice.due_date.asc()).limit(5))
     for inv in inv_res.scalars().all():
         open_invoices_data.append({
