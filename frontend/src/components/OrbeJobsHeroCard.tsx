@@ -73,7 +73,7 @@ export default function OrbeJobsHeroCard() {
 
           <div className="lg:col-span-4 flex flex-col gap-3">
             <a
-              href="https://inho.orbesystems.com.br/dashboard/orbejobs"
+              href="/orbejobs"
               className="w-full px-6 py-4 rounded-2xl bg-gradient-to-r from-[#FF6B1A] via-[#FF8C32] to-[#FF6B1A] text-white font-bold text-sm hover:brightness-110 shadow-[0_0_30px_rgba(255,107,26,0.45)] transition-all flex items-center justify-center gap-2 group"
             >
               <Briefcase size={16} />
