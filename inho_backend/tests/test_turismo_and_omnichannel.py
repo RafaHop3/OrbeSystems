@@ -255,3 +255,28 @@ async def test_turismo_full_workflow_and_omnichannel(db_session: AsyncSession):
         r_iso = await client.get("/api/v1/turismo/quotes", headers=h_b)
         assert r_iso.status_code == 200
         assert r_iso.json() == []
+
+        # 8. Decentralized OrBrick Multi-Tenant QR Hub (WA / IG / TG)
+        r_qr_a = await client.get("/api/v1/crm/orbrick/channels/qr-hub", headers=h_a)
+        assert r_qr_a.status_code == 200
+        qr_a = r_qr_a.json()
+        assert qr_a["business_id"] == str(ag_a["biz"].id)
+        assert qr_a["whatsapp"]["qr_payload"].startswith("whatsapp://orbrick-pair?session=tenant_")
+        r_conn_ig = await client.post(
+            "/api/v1/crm/orbrick/channels/connect",
+            headers=h_a,
+            json={"channel": "INSTAGRAM", "handle_or_id": "nydrobs_oficial", "access_token": "meta_ig_secret"},
+        )
+        assert r_conn_ig.status_code == 200
+        assert r_conn_ig.json()["instagram"]["connected"] is True
+        r_qr_b = await client.get("/api/v1/crm/orbrick/channels/qr-hub", headers=h_b)
+        assert r_qr_b.status_code == 200
+        assert r_qr_b.json()["session_key"] != qr_a["session_key"]
+        assert "nydrobs_oficial" not in r_qr_b.json()["instagram"]["qr_payload"]
+        r_disc_ig = await client.post(
+            "/api/v1/crm/orbrick/channels/disconnect",
+            headers=h_a,
+            json={"channel": "INSTAGRAM"},
+        )
+        assert r_disc_ig.status_code == 200
+        assert r_disc_ig.json()["instagram"]["connected"] is False

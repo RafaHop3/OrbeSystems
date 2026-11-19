@@ -17,7 +17,7 @@ from core.deps import get_current_user
 from db.session import get_db
 from models.models import (
     AccountPayable, BillingInvoice, BillingStatus, CRMContact, ContactCategory,
-    PayableStatus, User, Business, AuditLog, AuditAction, TenantAIPolicy
+    PayableStatus, User, Business, AuditLog, AuditAction, TenantAIPolicy, TurismoChannelConfig
 )
 from routers.billing import _get_user_business
 from schemas.crm_schemas import (
@@ -2673,3 +2673,184 @@ async def evaluate_tenant_ai_policy(
     )
     await db.commit()
     return dec_dict
+
+
+# ── OrBrick Descentralizado: Conexão Multi-Tenant por QR Code (WA / IG / TG) ──
+
+class _OrBrickChannelConnectPayload(BaseModel):
+    channel: str  # WHATSAPP | INSTAGRAM | TELEGRAM
+    handle_or_id: Optional[str] = None
+    access_token: Optional[str] = None
+
+
+class _OrBrickChannelDisconnectPayload(BaseModel):
+    channel: str  # WHATSAPP | INSTAGRAM | TELEGRAM
+
+
+async def _build_orbrick_qr_hub_state(db: AsyncSession, business: Business) -> dict:
+    from core.security import encrypt_secret as _enc_sec  # noqa: F401
+    b_id = get_uuid(business.id)
+    session_key = f"tenant_{str(business.id).replace('-', '')[:16]}"
+
+    res = await db.execute(select(TurismoChannelConfig).where(TurismoChannelConfig.business_id == b_id))
+    cfg = res.scalar_one_or_none()
+
+    wa_connected = False
+    wa_qr_data_url = None
+    wa_status = "QR_READY"
+    is_sqlite = os.environ.get("DATABASE_URL", "").startswith("sqlite")
+    if not is_sqlite:
+        try:
+            async with httpx.AsyncClient(timeout=3.5) as client:
+                r_wa = await client.get(f"http://orbe_whatsapp:3001/sessions/{session_key}/qr")
+                if r_wa.status_code == 200:
+                    wa_json = r_wa.json()
+                    wa_connected = bool(wa_json.get("connected"))
+                    wa_qr_data_url = wa_json.get("qr_data_url")
+                    wa_status = str(wa_json.get("status") or ("CONNECTED" if wa_connected else "QR_READY"))
+        except Exception:
+            pass
+
+    wa_enabled = bool(cfg.whatsapp_enabled) if cfg else True
+    ig_enabled = bool(cfg.instagram_enabled) if cfg else False
+    ig_page = (cfg.instagram_page_id if cfg and cfg.instagram_page_id else "orbesystems").lstrip("@")
+    ig_has_tok = bool(cfg and cfg.encrypted_instagram_token)
+
+    tg_enabled = bool(cfg.telegram_enabled) if cfg else False
+    tg_bot = (cfg.telegram_vip_channel_id if cfg and cfg.telegram_vip_channel_id else "OrbeBrickBot").lstrip("@")
+    tg_has_tok = bool(cfg and cfg.encrypted_telegram_bot_token)
+
+    short_tenant = str(business.id).split("-")[0]
+    return {
+        "business_id": str(business.id),
+        "business_name": business.name,
+        "session_key": session_key,
+        "whatsapp": {
+            "channel": "WHATSAPP",
+            "enabled": wa_enabled,
+            "connected": wa_connected,
+            "status": "CONNECTED" if wa_connected else ("DISCONNECTED" if not wa_enabled else wa_status),
+            "session_id": session_key,
+            "qr_data_url": wa_qr_data_url,
+            "qr_payload": f"whatsapp://orbrick-pair?session={session_key}&tenant={short_tenant}",
+        },
+        "instagram": {
+            "channel": "INSTAGRAM",
+            "enabled": ig_enabled,
+            "connected": bool(ig_enabled and (ig_has_tok or ig_page != "orbesystems")),
+            "status": "CONNECTED" if (ig_enabled and (ig_has_tok or ig_page != "orbesystems")) else "QR_READY",
+            "handle_or_page_id": ig_page,
+            "has_token": ig_has_tok,
+            "qr_payload": f"https://ig.me/m/{ig_page}?ref=orbrick_{short_tenant}",
+        },
+        "telegram": {
+            "channel": "TELEGRAM",
+            "enabled": tg_enabled,
+            "connected": bool(tg_enabled and (tg_has_tok or tg_bot != "OrbeBrickBot")),
+            "status": "CONNECTED" if (tg_enabled and (tg_has_tok or tg_bot != "OrbeBrickBot")) else "QR_READY",
+            "bot_or_channel": tg_bot,
+            "has_token": tg_has_tok,
+            "qr_payload": f"https://t.me/{tg_bot}?start=orbrick_{short_tenant}",
+        },
+    }
+
+
+@router.get("/orbrick/channels/qr-hub")
+async def get_orbrick_channels_qr_hub(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Retorna o hub descentralizado de QR Codes (WhatsApp, Instagram e Telegram) isolado por tenant."""
+    business = await _biz(db, current_user)
+    return await _build_orbrick_qr_hub_state(db, business)
+
+
+@router.post("/orbrick/channels/connect")
+async def connect_orbrick_channel(
+    payload: _OrBrickChannelConnectPayload,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Conecta ou gera novo QR Code para WhatsApp, Instagram ou Telegram do próprio cliente (tenant)."""
+    from core.security import encrypt_secret
+
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    ch = (payload.channel or "WHATSAPP").strip().upper()
+
+    res = await db.execute(select(TurismoChannelConfig).where(TurismoChannelConfig.business_id == b_id))
+    cfg = res.scalar_one_or_none()
+    if not cfg:
+        cfg = TurismoChannelConfig(business_id=b_id)
+        db.add(cfg)
+
+    if ch == "WHATSAPP":
+        cfg.whatsapp_enabled = True
+    elif ch == "INSTAGRAM":
+        cfg.instagram_enabled = True
+        if payload.handle_or_id:
+            cfg.instagram_page_id = payload.handle_or_id.strip().lstrip("@")
+        if payload.access_token:
+            cfg.encrypted_instagram_token = encrypt_secret(payload.access_token.strip())
+    elif ch == "TELEGRAM":
+        cfg.telegram_enabled = True
+        if payload.handle_or_id:
+            cfg.telegram_vip_channel_id = payload.handle_or_id.strip().lstrip("@")
+        if payload.access_token:
+            cfg.encrypted_telegram_bot_token = encrypt_secret(payload.access_token.strip())
+    else:
+        raise HTTPException(status_code=400, detail=f"Canal inválido: {ch}")
+
+    db.add(
+        AuditLog(
+            business_id=b_id,
+            user_id=get_uuid(current_user.id),
+            user_name=current_user.full_name,
+            user_role=str(getattr(current_user, "role", "admin")),
+            action=AuditAction.UPDATE,
+            entity="ORBRICK_CHANNEL_PAIRING",
+            entity_id=b_id,
+            detail=f"CHANNEL_CONNECT ch={ch} tenant={business.name}",
+        )
+    )
+    await db.commit()
+    return await _build_orbrick_qr_hub_state(db, business)
+
+
+@router.post("/orbrick/channels/disconnect")
+async def disconnect_orbrick_channel(
+    payload: _OrBrickChannelDisconnectPayload,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Desconecta a sessão do canal (WA/IG/TG) do tenant para permitir pareamento de nova conta."""
+    business = await _biz(db, current_user)
+    b_id = get_uuid(business.id)
+    ch = (payload.channel or "WHATSAPP").strip().upper()
+    session_key = f"tenant_{str(business.id).replace('-', '')[:16]}"
+
+    res = await db.execute(select(TurismoChannelConfig).where(TurismoChannelConfig.business_id == b_id))
+    cfg = res.scalar_one_or_none()
+    if not cfg:
+        cfg = TurismoChannelConfig(business_id=b_id)
+        db.add(cfg)
+
+    if ch == "WHATSAPP":
+        cfg.whatsapp_enabled = False
+        if not os.environ.get("DATABASE_URL", "").startswith("sqlite"):
+            try:
+                async with httpx.AsyncClient(timeout=3.0) as client:
+                    await client.post(f"http://orbe_whatsapp:3001/sessions/{session_key}/disconnect")
+            except Exception:
+                pass
+    elif ch == "INSTAGRAM":
+        cfg.instagram_enabled = False
+        cfg.encrypted_instagram_token = None
+    elif ch == "TELEGRAM":
+        cfg.telegram_enabled = False
+        cfg.encrypted_telegram_bot_token = None
+    else:
+        raise HTTPException(status_code=400, detail=f"Canal inválido: {ch}")
+
+    await db.commit()
+    return await _build_orbrick_qr_hub_state(db, business)

@@ -17,22 +17,32 @@ app.use((req, res, next) => {
     next();
 });
 
-// CUSTOM IN-MEMORY STORE TO HANDLE MESSAGE RETRIES (Fixes "Aguardando mensagem")
 const sentMessagesStore = {};
+const sessions = {};
 
-let currentQR = null;
-let isConnected = false;
-let sock = null;
+function sanitizeSessionId(rawId) {
+    const clean = String(rawId || 'default').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 64);
+    return clean || 'default';
+}
 
-// Persistent store logic removed. Operating exclusively on volatile memory scaling (LRU Cache).
+function getAuthDir(sessionId) {
+    return sessionId === 'default' ? 'auth_info_baileys' : `auth_info_baileys_${sessionId}`;
+}
 
-async function connectToWhatsApp() {
-    const { state, saveCreds } = await useMultiFileAuthState('auth_info_baileys');
+async function connectToWhatsApp(rawSessionId = 'default') {
+    const sessionId = sanitizeSessionId(rawSessionId);
+    const authDir = getAuthDir(sessionId);
+    const { state, saveCreds } = await useMultiFileAuthState(authDir);
 
-    sock = makeWASocket({
+    if (!sessions[sessionId]) {
+        sessions[sessionId] = { sock: null, currentQR: null, isConnected: false, starting: false };
+    }
+    sessions[sessionId].starting = true;
+
+    const sock = makeWASocket({
         auth: state,
         logger: pino({ level: 'silent' }),
-        printQRInTerminal: true,
+        printQRInTerminal: sessionId === 'default',
         markOnlineOnConnect: true,
         syncFullHistory: false,
         patchMessageBeforeSending: (message) => {
@@ -58,48 +68,43 @@ async function connectToWhatsApp() {
         },
         getMessage: async (key) => {
             const jid = key.remoteJid;
-            console.log("Recebida solicitação de reenvio E2E/Retry para MSG_ID:", key.id, "JID:", jid);
-
             if (sentMessagesStore[jid]) {
                 const found = sentMessagesStore[jid].find(m => m.key.id === key.id);
-                if (found) {
-                    console.log("Mensagem encontrada no cache LRU em memória! Retornando payload E2E intacto.");
-                    return found.message;
-                }
+                if (found) return found.message;
             }
-
-            // O store persistente foi removido; confiamos no sentMessagesStore.
-
-            console.log("Falha no Cache (Mensagem não encontrada). Deixando undefined para que o dispositivo principal (celular) responda...");
             return undefined;
         }
     });
 
-    // store.bind(sock.ev); removed
+    sessions[sessionId].sock = sock;
 
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect, qr } = update;
 
         if (qr) {
-            currentQR = await QRCode.toDataURL(qr);
-            isConnected = false;
-            console.log('Novo QR Code gerado.');
+            sessions[sessionId].currentQR = await QRCode.toDataURL(qr);
+            sessions[sessionId].isConnected = false;
+            sessions[sessionId].starting = false;
+            console.log(`[${sessionId}] Novo QR Code gerado.`);
         }
 
         if (connection === 'close') {
-            const shouldReconnect = (lastDisconnect.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-            console.log('Conexão fechada. Reconectar:', shouldReconnect);
+            sessions[sessionId].isConnected = false;
+            sessions[sessionId].starting = false;
+            const shouldReconnect = (lastDisconnect?.error)?.output?.statusCode !== DisconnectReason.loggedOut;
             if (!shouldReconnect) {
-                console.log("Deslogado do WhatsApp. Apagando auth_info_baileys...");
-                try { fs.rmSync('auth_info_baileys', { recursive: true, force: true }); } catch (e) { }
-                setTimeout(connectToWhatsApp, 2000);
+                try { fs.rmSync(authDir, { recursive: true, force: true }); } catch (e) { }
+                if (sessionId === 'default') {
+                    setTimeout(() => connectToWhatsApp(sessionId), 2000);
+                }
             } else {
-                connectToWhatsApp();
+                setTimeout(() => connectToWhatsApp(sessionId), 2000);
             }
         } else if (connection === 'open') {
-            console.log('Conectado ao WhatsApp com sucesso!');
-            isConnected = true;
-            currentQR = null;
+            console.log(`[${sessionId}] Conectado ao WhatsApp com sucesso!`);
+            sessions[sessionId].isConnected = true;
+            sessions[sessionId].currentQR = null;
+            sessions[sessionId].starting = false;
         }
     });
 
@@ -112,13 +117,13 @@ async function connectToWhatsApp() {
             sentMessagesStore[jid].push(m);
             if (sentMessagesStore[jid].length > 50) sentMessagesStore[jid].shift();
 
-            // 🤖 Orbe INHO OrBrick-IA: Encaminha mensagem recebida do cliente para triagem contextual segura
             if (type === 'notify' && !m.key.fromMe && jid && !jid.endsWith('@g.us')) {
                 const incomingText = m.message.conversation || (m.message.extendedTextMessage && m.message.extendedTextMessage.text) || '';
                 if (incomingText && !incomingText.startsWith('*')) {
                     const phoneDigits = jid.split('@')[0].replace(/\D/g, '');
                     const webhookUrl = process.env.INHO_API_WEBHOOK_URL || 'http://inho_backend:8000/api/v1/crm/whatsapp/webhook-inbound';
-                    const bodyStr = JSON.stringify({ phone: phoneDigits, incoming_message: incomingText });
+                    const bizId = sessionId.startsWith('tenant_') ? sessionId.replace(/^tenant_/, '') : undefined;
+                    const bodyStr = JSON.stringify({ phone: phoneDigits, incoming_message: incomingText, business_id: bizId });
                     const headers = { 'Content-Type': 'application/json' };
                     if (process.env.WHATSAPP_WEBHOOK_SECRET) {
                         const crypto = require('crypto');
@@ -133,14 +138,49 @@ async function connectToWhatsApp() {
     sock.ev.on('creds.update', saveCreds);
 }
 
-connectToWhatsApp();
+connectToWhatsApp('default');
+
+app.get('/sessions/:sessionId/qr', async (req, res) => {
+    const sessionId = sanitizeSessionId(req.params.sessionId);
+    if (!sessions[sessionId] || (!sessions[sessionId].isConnected && !sessions[sessionId].currentQR && !sessions[sessionId].starting)) {
+        connectToWhatsApp(sessionId).catch(() => {});
+        await new Promise(r => setTimeout(r, 1200));
+    }
+    const s = sessions[sessionId] || { isConnected: false, currentQR: null };
+    return res.json({
+        session_id: sessionId,
+        connected: Boolean(s.isConnected),
+        qr_data_url: s.currentQR || null,
+        status: s.isConnected ? 'CONNECTED' : (s.currentQR ? 'QR_READY' : 'INITIALIZING'),
+    });
+});
+
+app.post('/sessions/:sessionId/disconnect', async (req, res) => {
+    const sessionId = sanitizeSessionId(req.params.sessionId);
+    const s = sessions[sessionId];
+    if (s && s.sock) {
+        try { await s.sock.logout(); } catch (_) {}
+    }
+    try { fs.rmSync(getAuthDir(sessionId), { recursive: true, force: true }); } catch (_) {}
+    delete sessions[sessionId];
+    return res.json({ session_id: sessionId, connected: false, status: 'DISCONNECTED' });
+});
 
 app.get('/qr', (req, res) => {
-    if (isConnected) return res.send("<h2>Bot Já Conectado e Operacional! 🚀</h2>");
-    if (currentQR) return res.send(`
+    const sessionId = sanitizeSessionId(req.query.session_id || 'default');
+    const s = sessions[sessionId] || sessions['default'] || {};
+    if (req.query.format === 'json') {
+        return res.json({
+            session_id: sessionId,
+            connected: Boolean(s.isConnected),
+            qr_data_url: s.currentQR || null,
+        });
+    }
+    if (s.isConnected) return res.send("<h2>Bot Já Conectado e Operacional! 🚀</h2>");
+    if (s.currentQR) return res.send(`
         <div style="font-family: monospace; background: #000; color: #4ade80; padding: 20px; height: 100vh;">
-            <h2>Escaneie o QR Code com o WhatsApp da Orbe Inho</h2>
-            <img src="${currentQR}" alt="QR Code" style="width: 300px; height: 300px; border-radius: 10px; border: 2px solid #581c87; margin-top: 10px;" />
+            <h2>Escaneie o QR Code com o WhatsApp (${sessionId})</h2>
+            <img src="${s.currentQR}" alt="QR Code" style="width: 300px; height: 300px; border-radius: 10px; border: 2px solid #581c87; margin-top: 10px;" />
             <p>Seus avisos de cobrança passarão a ser disparados magicamente a custo R$ 0,00.</p>
         </div>
     `);
@@ -148,61 +188,50 @@ app.get('/qr', (req, res) => {
 });
 
 app.post('/send', async (req, res) => {
-    if (!isConnected) return res.status(500).json({ error: "Bot offline. Escaneie o QR Code na rota /qr" });
-    const { phone, message } = req.body;
+    const reqSession = sanitizeSessionId(req.body.session_id || (req.body.business_id ? `tenant_${req.body.business_id}` : 'default'));
+    const activeSession = (sessions[reqSession] && sessions[reqSession].isConnected)
+        ? sessions[reqSession]
+        : sessions['default'];
 
+    if (!activeSession || !activeSession.isConnected) {
+        return res.status(500).json({ error: "Bot offline. Escaneie o QR Code na Central OrBrick." });
+    }
+    const { phone, message } = req.body;
     if (!phone || !message) return res.status(400).json({ error: "Parâmetros 'phone' e 'message' são obrigatórios" });
 
     try {
         let digits = phone.replace(/\D/g, '');
-
-        // Add Brazil country code if missing
         if (digits.length === 10 || digits.length === 11) {
             digits = '55' + digits;
         }
-
-        // Build candidate numbers: with and without the 9th digit (Brazilian mobile quirk)
         const candidates = [digits];
         if (digits.length === 13 && digits.startsWith('55')) {
-            // Remove the 9th digit: 55 + DDD(2) + 9 + number(8) → 55 + DDD(2) + number(8)
-            const sem9 = digits.slice(0, 4) + digits.slice(5);
-            candidates.push(sem9);
+            candidates.push(digits.slice(0, 4) + digits.slice(5));
         } else if (digits.length === 12 && digits.startsWith('55')) {
-            // Add the 9th digit variant
-            const com9 = digits.slice(0, 4) + '9' + digits.slice(4);
-            candidates.push(com9);
+            candidates.push(digits.slice(0, 4) + '9' + digits.slice(4));
         }
 
-        // Use onWhatsApp to determine which JID is actually registered
         let resolvedJid = null;
         for (const candidate of candidates) {
             try {
-                const [result] = await sock.onWhatsApp(`${candidate}@s.whatsapp.net`);
+                const [result] = await activeSession.sock.onWhatsApp(`${candidate}@s.whatsapp.net`);
                 if (result && result.exists) {
                     resolvedJid = result.jid;
-                    console.log(`JID resolvido: ${resolvedJid}`);
                     break;
                 }
             } catch (_) { }
         }
-
-        // Fallback to first candidate if onWhatsApp lookup fails
         if (!resolvedJid) {
             resolvedJid = `${candidates[0]}@s.whatsapp.net`;
-            console.log(`Fallback JID: ${resolvedJid}`);
         }
 
-        const sentMsg = await sock.sendMessage(resolvedJid, { text: message });
-
-        // Store in LRU cache so E2E retry/decryption requests return the real message
+        const sentMsg = await activeSession.sock.sendMessage(resolvedJid, { text: message });
         if (sentMsg) {
             if (!sentMessagesStore[resolvedJid]) sentMessagesStore[resolvedJid] = [];
             sentMessagesStore[resolvedJid].push(sentMsg);
             if (sentMessagesStore[resolvedJid].length > 50) sentMessagesStore[resolvedJid].shift();
-            console.log(`Mensagem armazenada no cache LRU para JID: ${resolvedJid}`);
         }
-
-        res.json({ success: true, delivered: true, recipient: resolvedJid });
+        res.json({ success: true, delivered: true, recipient: resolvedJid, session_id: reqSession });
     } catch (e) {
         console.error('Erro de envio:', e);
         res.status(500).json({ error: e.toString() });
@@ -210,5 +239,5 @@ app.post('/send', async (req, res) => {
 });
 
 app.listen(3001, () => {
-    console.log('Orbe Inho WhatsApp Bot rodando na porta 3001');
+    console.log('Orbe Inho Multi-Tenant WhatsApp Bot rodando na porta 3001');
 });
