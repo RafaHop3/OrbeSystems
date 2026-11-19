@@ -1,5 +1,5 @@
 """
-INHO Turismo Router (AI-First / Human-Last · Omnichannel Custo Zero · NYDROBS Pilot).
+INHO Turismo Router (AI-First / Human-Last · Omnichannel Custo Zero · Orbe Systems).
 """
 from __future__ import annotations
 
@@ -749,7 +749,7 @@ async def add_group_member(
     return {"id": str(mem.id), "member_name": mem.member_name, "payment_status": mem.payment_status}
 
 
-# ── 8. NYDROBS Club & VIP Telegram Broadcast ─────────────────────────────────
+# ── 8. INHO Club VIP & Telegram Broadcast ────────────────────────────────────
 
 @router.get("/club")
 async def list_club_members(

@@ -1260,7 +1260,7 @@ class TenantAIPolicy(Base):
     )
 
 
-# ── INHO Turismo Vertical (AI-First / Human-Last · NYDROBS Pilot) ────────
+# ── INHO Turismo Vertical (AI-First / Human-Last · Orbe Systems) ────────
 
 class TurismoQuote(Base):
     __tablename__ = "turismo_quotes"
