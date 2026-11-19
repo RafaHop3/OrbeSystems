@@ -66,6 +66,9 @@ class User(Base):
     role            = Column(String(50), nullable=True, default="user")
     is_email_verified = Column(Boolean, default=False, nullable=False)
     subscription_status = Column(String(50), nullable=False, default="active")
+    otp_secret          = Column(String(255), nullable=True)
+    is_mfa_enabled      = Column(Boolean, nullable=False, default=False, server_default=("0" if _IS_SQLITE else "false"))
+    backup_codes        = Column(Text, nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
 

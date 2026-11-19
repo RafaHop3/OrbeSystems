@@ -3,10 +3,14 @@ from sqlalchemy import cast, String
 INHO – Auth Router
 POST /auth/register | POST /auth/login | POST /auth/refresh
 """
+import os
 import uuid
 import json
 import secrets
 import pyotp
+from datetime import datetime, timezone, timedelta
+from jose import jwt
+from pydantic import BaseModel
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response, status
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -33,6 +37,34 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 # FIX: Rate limiter especifico para rotas de autenticacao (mais restritivo)
 _limiter = Limiter(key_func=get_remote_address)
+
+def _is_user_mfa_enabled(user: User) -> bool:
+    val = getattr(user, "is_mfa_enabled", False)
+    if isinstance(val, str):
+        return val.strip().lower() in ("true", "1", "t", "yes")
+    return bool(val)
+
+
+def _is_mandatory_mfa_active() -> bool:
+    """Exige Authenticator App em todo login em produção; em SQLite de teste só se ENFORCE_MANDATORY_MFA=true."""
+    if os.environ.get("DATABASE_URL", "").startswith("sqlite"):
+        return os.environ.get("ENFORCE_MANDATORY_MFA", "").strip().lower() == "true"
+    return bool(getattr(settings, "ENFORCE_MANDATORY_MFA", True))
+
+
+def _create_mfa_enrollment_token(user_id: str) -> str:
+    exp = datetime.now(timezone.utc) + timedelta(minutes=10)
+    return jwt.encode(
+        {"sub": str(user_id), "scope": "mfa_enrollment", "exp": exp},
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
+    )
+
+
+class _MFAEnrollConfirmRequest(BaseModel):
+    mfa_enrollment_token: str
+    code: str
+
 
 
 async def _post_login_background_task(
@@ -139,7 +171,7 @@ async def login(
     if not user.is_active:
         raise HTTPException(status_code=403, detail="Conta desativada")
 
-    if getattr(user, "is_mfa_enabled", False):
+    if _is_user_mfa_enabled(user):
         if mfa_limiter.is_locked(user.email):
             raise HTTPException(
                 status_code=429,
@@ -181,6 +213,37 @@ async def login(
 
         # Successful verification -> Reset rate limiter
         mfa_limiter.reset(user.email)
+    elif _is_mandatory_mfa_active():
+        if not user.otp_secret:
+            plain_secret = pyotp.random_base32()
+            user.otp_secret = encrypt_secret(plain_secret)
+        else:
+            plain_secret = decrypt_secret(user.otp_secret)
+
+        if not user.backup_codes:
+            raw_backup_codes = [f"{secrets.token_hex(2).upper()}-{secrets.token_hex(2).upper()}" for _ in range(8)]
+            user.backup_codes = json.dumps(raw_backup_codes)
+        else:
+            try:
+                raw_backup_codes = json.loads(user.backup_codes)
+            except Exception:
+                raw_backup_codes = []
+
+        await db.commit()
+        totp = pyotp.TOTP(plain_secret)
+        provisioning_uri = totp.provisioning_uri(name=user.email, issuer_name="INHO Platform")
+        enrollment_token = _create_mfa_enrollment_token(str(user.id))
+        raise HTTPException(
+            status_code=403,
+            detail={
+                "code": "MFA_ENROLLMENT_REQUIRED",
+                "message": "Ativação obrigatória do Authenticator App necessária para concluir o login.",
+                "mfa_enrollment_token": enrollment_token,
+                "secret": plain_secret,
+                "provisioning_uri": provisioning_uri,
+                "backup_codes": raw_backup_codes,
+            },
+        )
 
     role_val = user.role.value if hasattr(user.role, "value") else str(user.role)
     access  = create_access_token(str(user.id), role_val)
@@ -290,8 +353,7 @@ async def mfa_setup(
     db: AsyncSession = Depends(get_db),
 ):
     """Gera chave secreta TOTP (criptografada com AES-256) e 8 códigos de emergência (Break Glass)."""
-    if user.role != UserRole.ADMIN and user.role != UserRole.SUPER_ADMIN:
-        raise HTTPException(status_code=403, detail="Apenas administradores podem ativar 2FA/MFA")
+    # Todos os perfis podem ativar/reconfigurar Authenticator App (MFA obrigatório)
 
     plain_secret = pyotp.random_base32()
     # AES-256 Fernet Encryption at rest
@@ -338,6 +400,76 @@ async def mfa_verify(
     user.is_mfa_enabled = True
     await db.commit()
     return {"message": "MFA ativado com sucesso!", "is_mfa_enabled": True}
+
+
+@router.post("/mfa/enroll-confirm", response_model=TokenResponse)
+@_limiter.limit("10/minute")
+async def mfa_enroll_confirm(
+    request: Request,
+    response: Response,
+    body: _MFAEnrollConfirmRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """Confirma o primeiro código do Authenticator App no login e conclui a autenticação."""
+    try:
+        payload = jwt.decode(body.mfa_enrollment_token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    except Exception:
+        raise HTTPException(status_code=401, detail="Token de ativação MFA inválido ou expirado. Faça login novamente.")
+
+    if payload.get("scope") != "mfa_enrollment" or not payload.get("sub"):
+        raise HTTPException(status_code=401, detail="Escopo de token MFA inválido.")
+
+    res = await db.execute(select(User).where(cast(User.id, String) == str(payload["sub"])))
+    user = res.scalar_one_or_none()
+    if not user or not user.is_active or not user.otp_secret:
+        raise HTTPException(status_code=401, detail="Usuário não encontrado ou sem segredo MFA inicializado.")
+
+    if mfa_limiter.is_locked(user.email):
+        raise HTTPException(
+            status_code=429,
+            detail="Muitas tentativas falhas de 2FA. Bloqueado por 15 minutos por seguranca.",
+        )
+
+    plain_secret = decrypt_secret(user.otp_secret)
+    totp = pyotp.TOTP(plain_secret)
+    if not totp.verify(body.code.strip(), valid_window=1):
+        remaining = mfa_limiter.record_failure(user.email)
+        raise HTTPException(
+            status_code=401,
+            detail=f"Codigo 2FA invalido ou expirado. Tentativas restantes: {remaining}",
+        )
+
+    mfa_limiter.reset(user.email)
+    user.is_mfa_enabled = True
+    await db.commit()
+
+    role_val = user.role.value if hasattr(user.role, "value") else str(user.role)
+    access = create_access_token(str(user.id), role_val)
+    refresh = create_refresh_token(str(user.id))
+
+    response.set_cookie(
+        key="inho_refresh_token",
+        value=refresh,
+        httponly=True,
+        secure=settings.APP_ENV == "production",
+        samesite="lax",
+        domain=".orbesystems.com.br" if settings.APP_ENV == "production" else None,
+        max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
+        path="/api/v1/auth",
+    )
+
+    try:
+        await write_audit(
+            db,
+            action=AuditAction.LOGIN,
+            entity="auth_mfa_enrolled",
+            user=user,
+            detail=f"MFA obrigatório ativado e login concluído para {user.email}",
+        )
+    except Exception:
+        pass
+
+    return TokenResponse(access_token=access, refresh_token=refresh)
 
 
 @router.post("/webhook/provision", response_model=dict, status_code=status.HTTP_201_CREATED)
