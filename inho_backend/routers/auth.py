@@ -66,6 +66,15 @@ class _MFAEnrollConfirmRequest(BaseModel):
     code: str
 
 
+class _MFAEnrollConfirmResponse(TokenResponse):
+    requires_password_change: bool = True
+
+
+class _ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+
 
 async def _post_login_background_task(
     user_id_str: str,
@@ -402,7 +411,7 @@ async def mfa_verify(
     return {"message": "MFA ativado com sucesso!", "is_mfa_enabled": True}
 
 
-@router.post("/mfa/enroll-confirm", response_model=TokenResponse)
+@router.post("/mfa/enroll-confirm", response_model=_MFAEnrollConfirmResponse)
 @_limiter.limit("10/minute")
 async def mfa_enroll_confirm(
     request: Request,
@@ -469,7 +478,44 @@ async def mfa_enroll_confirm(
     except Exception:
         pass
 
-    return TokenResponse(access_token=access, refresh_token=refresh)
+    return _MFAEnrollConfirmResponse(access_token=access, refresh_token=refresh, requires_password_change=True)
+
+
+@router.post("/change-password", response_model=dict)
+@_limiter.limit("10/minute")
+async def change_password(
+    request: Request,
+    body: _ChangePasswordRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Permite ao usuário trocar a senha após ativar o Authenticator App (ou no perfil)."""
+    if not verify_password(body.current_password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Senha atual incorreta.")
+    if len((body.new_password or "").strip()) < 8:
+        raise HTTPException(status_code=400, detail="A nova senha deve ter pelo menos 8 caracteres.")
+    if body.new_password.strip() == body.current_password.strip():
+        raise HTTPException(status_code=400, detail="A nova senha deve ser diferente da senha atual.")
+
+    res = await db.execute(select(User).where(cast(User.id, String) == str(user.id)))
+    db_user = res.scalar_one_or_none()
+    if not db_user:
+        raise HTTPException(status_code=404, detail="Usuário não encontrado.")
+    db_user.password_hash = hash_password(body.new_password.strip())
+    await db.commit()
+
+    try:
+        await write_audit(
+            db,
+            action=AuditAction.UPDATE,
+            entity="auth_password_changed",
+            user=user,
+            detail=f"Senha atualizada após ativação de MFA para {user.email}",
+        )
+    except Exception:
+        pass
+
+    return {"status": "password_updated", "message": "Senha alterada com sucesso!"}
 
 
 @router.post("/webhook/provision", response_model=dict, status_code=status.HTTP_201_CREATED)

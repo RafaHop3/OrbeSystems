@@ -1,7 +1,6 @@
 """
-Tests for Mandatory Authenticator App (TOTP MFA) on Every Login.
+Tests for Mandatory Authenticator App (TOTP MFA) + Password Change on First Login.
 """
-import os
 import uuid
 
 import pyotp
@@ -77,7 +76,7 @@ async def test_mandatory_authenticator_enrollment_and_login_flow(db_session: Asy
         )
         assert r_bad.status_code == 401
 
-        # 3. Valid TOTP code -> 200 + access_token + MFA activated
+        # 3. Valid TOTP code -> 200 + access_token + requires_password_change
         valid_code = pyotp.TOTP(secret).now()
         r_ok = await client.post(
             "/api/v1/auth/mfa/enroll-confirm",
@@ -85,19 +84,30 @@ async def test_mandatory_authenticator_enrollment_and_login_flow(db_session: Asy
         )
         assert r_ok.status_code == 200
         assert r_ok.json().get("access_token")
+        assert r_ok.json().get("requires_password_change") is True
+        access_tok = r_ok.json()["access_token"]
 
-        # 4. Subsequent login without mfa_code -> 403 MFA_REQUIRED
+        # 3b. User changes password right after MFA enrollment
+        r_pw = await client.post(
+            "/api/v1/auth/change-password",
+            headers={"Authorization": f"Bearer {access_tok}"},
+            json={"current_password": "SenhaForte123!", "new_password": "NovaSenhaSuperSegura!2026"},
+        )
+        assert r_pw.status_code == 200
+        assert r_pw.json()["status"] == "password_updated"
+
+        # 4. Subsequent login with NEW password without mfa_code -> 403 MFA_REQUIRED
         r2 = await client.post(
             "/api/v1/auth/login",
-            json={"email": email, "password": "SenhaForte123!"},
+            json={"email": email, "password": "NovaSenhaSuperSegura!2026"},
         )
         assert r2.status_code == 403
         assert r2.json()["detail"] == "MFA_REQUIRED"
 
-        # 5. Subsequent login with valid TOTP or backup code -> 200
+        # 5. Subsequent login with NEW password + backup code -> 200
         r3 = await client.post(
             "/api/v1/auth/login",
-            json={"email": email, "password": "SenhaForte123!", "mfa_code": det["backup_codes"][0]},
+            json={"email": email, "password": "NovaSenhaSuperSegura!2026", "mfa_code": det["backup_codes"][0]},
         )
         assert r3.status_code == 200
         assert r3.json().get("access_token")
