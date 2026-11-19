@@ -372,123 +372,259 @@ async def orbe_assistant_root_assist(
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Orbe Assistant AI com Poder ROOT:
-    Assistente universal para operadores e administradores do INHO ERP.
-    Possui poder ROOT, conhecimento integral dos 30 Manuais de Arquitetura e
-    capacidade de diagnosticar, orientar e resolver qualquer fluxo operacional.
+    Orbe Assistant AI com Poder ROOT (Manuais 01 a 38):
+    Assistente universal sensível à tela (`context_screen`), com memória multi-turn (`history`),
+    domínio completo de todos os módulos INHO (Turismo, OrbeJobs, OrBrick QR Multi-Tenant,
+    PolicyEngine, Cooperativismo, Mercados/PDV, Maquininhas Stripe, Contabilidade e Auth 2FA)
+    e integração com a Cascata Preditiva IMORTAL / Orbe IA.
     """
-    raw_query = payload.query.strip()
+    raw_query = (payload.query or "").strip()
     norm_query = unicodedata.normalize("NFKD", raw_query).encode("ascii", "ignore").decode("utf-8").lower()
     screen = (payload.context_screen or "dashboard").lower()
+    hist_text = " ".join(
+        unicodedata.normalize("NFKD", str(h.get("content") or "")).encode("ascii", "ignore").decode("utf-8").lower()
+        for h in (payload.history or [])[-4:]
+    )
+    combined_ctx = f"{norm_query} {screen} {hist_text}"
 
     now_iso = datetime.now(timezone.utc).isoformat()
     shortcuts: List[RootActionShortcut] = []
+    is_screen_help = any(
+        w in norm_query
+        for w in ["como uso", "como usar", "como funciona", "digo aqui", "este modulo", "esse modulo", "esta tela", "essa tela", "me ajuda", "tutorial", "passo a passo"]
+    )
 
-    # 1. Maquininhas Stripe Terminal & Smart POS
-    if any(k in norm_query for k in ["maquininha", "terminal", "wisepos", "pos", "bbpos", "parear", "leitor"]):
-        reply = (
-            "### ⚡ [PODER ROOT ATIVO] 💳 Guia de Maquininhas Stripe Terminal\\n\\n"
-            "O ecossistema INHO opera com maquininhas físicas **Smart POS (BBPOS WisePOS E e Stripe Reader S700)** integradas diretamente à API oficial Stripe Terminal:\\n\\n"
-            "1. **Pareamento em 1 Minuto:**\\n"
-            "   * Conecte a maquininha ao Wi-Fi da loja.\\n"
-            "   * Anote o código de pareamento de 3 palavras gerado no visor (ex: `sim-whistle-tree`).\\n"
-            "   * Acesse **/dashboard/settings** na aba **Maquininha (Stripe Terminal)** e registre o leitor.\\n\\n"
-            "2. **Disparo no PDV:** Ao escolher Cartão no checkout do caixa, a transição para `in_progress_on_reader` envia a cobrança direto ao visor físico.\\n\\n"
-            "3. **Cancelamento Imediato (F9):** Em caso de desistência, pressione a tecla **F9** ou clique em 'Cancelar Leitura' para liberação imediata."
-        ).replace("\\n", "\n")
+    # 1. INHO Turismo, Milhas, Proposta Viva, PNR, DRE Agência & Omnichannel
+    if (
+        any(k in norm_query for k in ["turismo", "milha", "milheiro", "pnr", "proposta viva", "semaforo", "embarque", "radar", "voo", "passagem", "rooming", "club vip"])
+        or ("turismo" in screen and is_screen_help)
+        or ("turismo" in hist_text and is_screen_help)
+    ):
+        if any(k in norm_query for k in ["pnr", "importar", "localizador"]):
+            reply = (
+                "### ✈️ [PODER ROOT ATIVO] 🎫 Smart Import PNR no INHO Turismo\n\n"
+                "Para importar uma reserva aérea em segundos na aba **Cotador & Proposta Viva**:\n"
+                "1. Cole o texto bruto do PNR no campo **Smart Import PNR** (ex: `LOCATOR XYZ987 GRU-LIS PAX: MARIA SOUZA`).\n"
+                "2. Clique em **Importar PNR Automaticamente**.\n"
+                "3. O motor extrai automaticamente o **Localizador (6 caracteres)**, **Origem/Destino (IATA)** e **Passageiro**, gerando já a **Proposta Viva** comparando emissão em milhas vs tarifa pagante."
+            )
+        elif any(k in norm_query for k in ["cofre", "semaforo", "cpf", "limite"]):
+            reply = (
+                "### 🛡️ [PODER ROOT ATIVO] 🚦 Cofre de Milhas & Semáforo de CPF (Zero Senhas)\n\n"
+                "Na aba **Cofre de Milhas & Semáforo CPF** de `/dashboard/turismo`:\n"
+                "* **Segurança LGPD:** O INHO **nunca** armazena senhas dos programas (Smiles, LATAM Pass, TudoAzul, Livelo) e mascara o CPF do titular (`***.***.***-**`).\n"
+                "* **Semáforo Automático (Limite 25 CPFs/ano):**\n"
+                "  * 🟢 **GREEN:** Abaixo de 70% do limite anual.\n"
+                "  * 🟡 **YELLOW:** Entre 70% e 89% (alerta preventivo).\n"
+                "  * 🔴 **RED:** 90% ou mais (bloqueia emissões acima do teto da cia aérea).\n"
+                "* Clique em **`+1 CPF`** a cada emissão para atualizar o contador auditado em tempo real."
+            )
+        elif any(k in norm_query for k in ["dre", "iss", "intermediacao", "radar", "embarque"]):
+            reply = (
+                "### 📈 [PODER ROOT ATIVO] 💼 DRE de Agência & Radar de Embarque\n\n"
+                "Na aba **DRE Agência & Radar Embarque**:\n"
+                "1. **Contabilidade Correta de Agência:** O sistema separa o **Repasse ao Fornecedor** (cia aérea/consolidadora) da **Receita Real de Intermediação (Fee/Markup)**, calculando o **ISS** apenas sobre a comissão e apurando o **Lucro Líquido**.\n"
+                "2. **Radar de Embarque (`D-7 / D-2 / D0 / D+2`):** Clique em **Executar Radar Embarque** para disparar lembretes automáticos de check-in (D-2), portão de embarque (D0) e pesquisa pós-viagem (D+2)."
+            )
+        else:
+            reply = (
+                "### ✈️ [PODER ROOT ATIVO] 🌍 Guia Completo do Módulo INHO Turismo (`/dashboard/turismo`)\n\n"
+                "Você está na **Central Operacional de Turismo & Milhas (Orbe INHO)**. Veja como operar cada uma das 5 abas:\n\n"
+                "1. **Cotador & Proposta Viva (`A/B/C`):**\n"
+                "   * Preencha Origem (`GRU`), Destino (`MIA`), **Tarifa Pagante (R$)**, **Milhas Exigidas**, **Custo do Milheiro (R$)** e **Taxas**.\n"
+                "   * Clique em **Gerar Proposta Viva A/B/C**: a IA calcula se vale mais emitir em **MILES** ou **CASH**, mostra a economia em R$ e cria o link público **`/proposta/[slug]`** para o cliente escolher a opção A, B ou C.\n"
+                "   * Use o **Smart Import PNR** logo abaixo para colar um localizador e preencher tudo sozinho.\n"
+                "2. **Cofre de Milhas & Semáforo CPF:** Cadastre titulares (sem senha) e controle o limite de 25 CPFs/ano com alerta **GREEN / YELLOW / RED**.\n"
+                "3. **DRE Agência & Radar Embarque:** Acompanhe Receita de Intermediação vs Repasse/ISS e acione a régua **D-7, D-2, D0 e D+2**.\n"
+                "4. **Grupos & INHO Club VIP:** Monte Rooming Lists de excursões e dispare alertas de passagens no Telegram VIP.\n"
+                "5. **Omnichannel AI-First (WA/IG/TG):** Conecte seus canais por **QR Code** e teste o atendimento autônomo (que só aciona humano em emissão final, exceção financeira ou crise de voo)."
+            )
         shortcuts = [
-            RootActionShortcut(label="Abrir Configurações de Maquininha", action_type="NAVIGATE", target="/dashboard/settings"),
-            RootActionShortcut(label="Ir para a Frente de Caixa (PDV)", action_type="NAVIGATE", target="/dashboard/pdv")
+            RootActionShortcut(label="Abrir INHO Turismo", action_type="NAVIGATE", target="/dashboard/turismo"),
+            RootActionShortcut(label="Conectar Canais QR Code", action_type="NAVIGATE", target="/dashboard/whatsapp"),
         ]
 
-    # 2. Balança, PLU e Código EAN-13
-    elif any(k in norm_query for k in ["balanca", "plu", "tomate", "banana", "etiqueta", "ean"]):
+    # 2. OrbeJobs (Carreira, Recrutamento ATS, Living CV & Envio Seguro)
+    elif (
+        any(k in norm_query for k in ["orbejobs", "living cv", "curriculo", "vaga", "candidatura", "greenhouse", "lever", "recrutamento"])
+        or ("orbejobs" in screen and is_screen_help)
+    ):
         reply = (
-            "### ⚖️ [PODER ROOT ATIVO] 🏷️ Balança Pesável & Consulta PLU\\n\\n"
-            "O INHO possui decodificador inteligente EAN-13 (padrão Filizola/Toledo) e catálogo rápido:\\n\\n"
-            "1. **Tabela PLU Rápida:**\\n"
-            "   * 🍅 **Tomate Italiano:** Código `01042` | Preço: **R$ 6,99 / kg**\\n"
-            "   * 🍌 **Banana Prata:** Código `01015` | Preço: **R$ 4,89 / kg**\\n"
-            "   * 🥩 **Picanha Bovina:** Código `02050` | Preço: **R$ 89,90 / kg**\\n\\n"
-            "2. **Leitura Direta de Balança:** Etiquetas iniciadas com dígito `2` são decodificadas automaticamente em milissegundos, extraindo produto e peso/preço total."
-        ).replace("\\n", "\n")
+            "### 🚀 [PODER ROOT ATIVO] 💼 Guia do Módulo OrbeJobs (`/dashboard/orbejobs`)\n\n"
+            "O **OrbeJobs** automatiza descoberta de vagas, adaptação de currículo pela **Orbe IA** e envio seguro:\n\n"
+            "1. **Living CV (JSON Resume + WhatsApp):** Atualize seu currículo no painel ou enviando `+xp`, `+skill` ou `+curso` no WhatsApp.\n"
+            "2. **Coleta Híbrida ATS:** Busca vagas reais em **Greenhouse, Lever e feeds RSS** sem custo de API.\n"
+            "3. **Match Vetorial (`pgvector`):** Ranqueia as vagas por similaridade semântica com seu perfil.\n"
+            "4. **Adaptação com Orbe IA & Human-in-the-Loop:** Gera carta de apresentação sob medida e aguarda sua aprovação humana antes do disparo.\n"
+            "5. **Fila Segura (DNS MX + Cofre OAuth2 AES-256):** Valida registros MX do domínio destinatário, aplica jitter anti-spam e registra hash SHA-256 LGPD."
+        )
         shortcuts = [
-            RootActionShortcut(label="Abrir Caixa (PDV)", action_type="NAVIGATE", target="/dashboard/pdv")
+            RootActionShortcut(label="Abrir Painel OrbeJobs", action_type="NAVIGATE", target="/dashboard/orbejobs"),
         ]
 
-    # 3. Alçada Dual-Control (> R$ 5.000)
-    elif any(k in norm_query for k in ["dual control", "dual-control", "5000", "alcada", "aprovacao", "despesa"]):
+    # 3. OrBrick Descentralizado por QR Code, PolicyEngine & RAG Multi-Tenant
+    elif (
+        any(k in norm_query for k in ["whatsapp", "orbrick", "qr code", "instagram", "telegram", "policy", "politica", "rag", "estatuto", "cobranca", "regua", "pix copia", "kill-switch", "handoff"])
+        or ("whatsapp" in screen and is_screen_help)
+        or ("crm" in screen and is_screen_help)
+    ):
         reply = (
-            "### 🛡️ [PODER ROOT ATIVO] 🔐 Governança Dual-Control (> R$ 5.000,00)\\n\\n"
-            "Conforme a diretriz do **Manual 06 & Manual 10**, despesas que ultrapassam o teto de **R$ 5.000,00** são travadas automaticamente por segurança:\\n\\n"
-            "* **Exigência:** Devem ser validadas por dois administradores distintos com assinatura criptográfica no painel.\\n"
-            "* **Onde Aprovar:** Acesse **/dashboard/payable** e localize os lançamentos sinalizados com a badge de *Aprovação Pendente*."
-        ).replace("\\n", "\n")
+            "### 💬 [PODER ROOT ATIVO] 🤖 Central OrBrick Descentralizada, QR Codes & PolicyEngine (`/dashboard/whatsapp`)\n\n"
+            "A Central OrBrick possui 4 abas operacionais para cada cliente (tenant):\n\n"
+            "1. **Canais & QR Code (`WA / IG / TG`):**\n"
+            "   * Cada empresa conecta **sua própria conta** de **WhatsApp** (sessão Baileys isolada `tenant_<id>`), **Instagram Direct** (`@usuario` + Meta API) e **Telegram Bot** (`@SeuBot`) escaneando o QR Code na tela.\n"
+            "2. **Base RAG (Treinamento) & PolicyEngine Determinístico:**\n"
+            "   * Anexe estatutos/regras em **`.PDF, .DOCX, .TXT ou .MD`**.\n"
+            "   * Clique em **Extrair do RAG** para a IA identificar limites de parcelas, desconto e prazo com os trechos de origem.\n"
+            "   * Clique em **Aprovar Política**: o **PolicyEngine em Python** trava a IA dentro das regras aprovadas e do **Teto Inviolável Orbe** (zero baixa `PAID` via chat, desconto máx. 50% e Dual-Control > R$ 5.000).\n"
+            "3. **Simulador Cyber Safety:** Teste prompts de clientes, negociações e bloqueio de Prompt Injection.\n"
+            "4. **Chat WhatsApp & Kill-Switch:** Acompanhe conversas em tempo real, assuma o Handoff Humano por 24h ou acione o **Botão de Pânico (Kill-Switch)**."
+        )
         shortcuts = [
-            RootActionShortcut(label="Acessar Contas a Pagar", action_type="NAVIGATE", target="/dashboard/payable")
+            RootActionShortcut(label="Abrir Central WhatsApp & QR Codes", action_type="NAVIGATE", target="/dashboard/whatsapp"),
+            RootActionShortcut(label="Treinar Base RAG & Políticas", action_type="NAVIGATE", target="/dashboard/crm"),
         ]
 
-    # 4. Módulo Cooperativas, Cotas e Retenções Fiscais
-    elif any(k in norm_query for k in ["cooperativa", "cooperado", "sobras", "inss", "fates", "irrf", "dirf", "irpf", "lei 5.764"]):
+    # 4. Autenticação Obrigatória com Authenticator App (2FA TOTP) & Troca de Senha
+    elif any(k in norm_query for k in ["authenticator", "2fa", "mfa", "totp", "trocar senha", "codigo de backup", "login"]):
         reply = (
-            "### 🌾 [PODER ROOT ATIVO] 📜 Módulo Cooperativismo & Retenções Fiscais\\n\\n"
-            "Em estrita observância à **Lei Federal nº 5.764/71**:\\n\\n"
-            "1. **Retenções Obrigatórias em Liquidações:**\\n"
-            "   * **INSS (Funrural):** 2,1% deduzido automaticamente.\\n"
-            "   * **FATES:** 10% provisionado no fundo de reserva.\\n"
-            "   * **IRRF:** Tabela progressiva apurada na fonte.\\n\\n"
-            "2. **Sobras e Cotas-Partes:** Acesse **/dashboard/cooperativa** para emitir o extrato do cooperado ou gerar os Informes de Rendimentos anuais (IRPF/DIRF)."
-        ).replace("\\n", "\n")
+            "### 🔐 [PODER ROOT ATIVO] 🛡️ Protocolo Authenticator App Obrigatório (TOTP 2FA)\n\n"
+            "Todo login no INHO exige verificação de segundo fator via **Authenticator App** (Google/Microsoft Authenticator ou Authy):\n\n"
+            "1. **Primeiro Acesso:** O sistema exibe o **QR Code exclusivo**, chave manual Base32 e **8 códigos de emergência (uso único)**.\n"
+            "2. **Troca Obrigatória de Senha:** Logo após validar o primeiro código de 6 dígitos, o usuário define sua nova senha pessoal (mínimo 8 caracteres).\n"
+            "3. **Rotação MultiFernet AES-256:** Todos os segredos TOTP ficam criptografados em banco e podem ser rotacionados em `/dashboard/settings`."
+        )
         shortcuts = [
-            RootActionShortcut(label="Painel de Cooperativismo", action_type="NAVIGATE", target="/dashboard/cooperativa")
+            RootActionShortcut(label="Segurança & Configurações", action_type="NAVIGATE", target="/dashboard/settings"),
         ]
 
-    # 5. WhatsApp, OrBrick-IA & Cobrança Automática
-    elif any(k in norm_query for k in ["whatsapp", "orbrick", "cobranca", "regua", "disparo", "pix copia"]):
+    # 5. Maquininhas Stripe Terminal & Smart POS
+    elif any(k in norm_query for k in ["maquininha", "terminal", "wisepos", "pos", "bbpos", "parear", "leitor"]):
         reply = (
-            "### 💬 [PODER ROOT ATIVO] 🤖 Central WhatsApp & OrBrick-IA\\n\\n"
-            "A régua de cobrança opera de forma assíncrona e preventiva:\\n\\n"
-            "* **Régua D-3:** Lembrete amigável com código Pix Copia e Cola.\\n"
-            "* **Régua D0:** Notificação de vencimento no dia com link de pagamento direto.\\n"
-            "* **Régua D+3:** Alerta de atraso com cálculo de juros/multa configurados.\\n"
-            "* **Simulador:** Acesse **/dashboard/whatsapp** para testar conversas e testar prompts contra ataques de injeção."
-        ).replace("\\n", "\n")
+            "### ⚡ [PODER ROOT ATIVO] 💳 Guia de Maquininhas Stripe Terminal\n\n"
+            "O ecossistema INHO opera com maquininhas físicas **Smart POS (BBPOS WisePOS E e Stripe Reader S700)** integradas diretamente à API oficial Stripe Terminal:\n\n"
+            "1. **Pareamento em 1 Minuto:**\n"
+            "   * Conecte a maquininha ao Wi-Fi da loja e gere o código de 3 palavras (ex: `sim-whistle-tree`).\n"
+            "   * Acesse **/dashboard/settings** na aba **Maquininha (Stripe Terminal)** e registre o leitor.\n"
+            "2. **Disparo no PDV:** Ao escolher Cartão no checkout do caixa (`/dashboard/pdv`), o valor aparece instantaneamente no visor físico.\n"
+            "3. **Cancelamento Imediato (F9):** Pressione **F9** ou clique em 'Cancelar Leitura' para liberar o leitor."
+        )
         shortcuts = [
-            RootActionShortcut(label="Abrir Central WhatsApp", action_type="NAVIGATE", target="/dashboard/whatsapp"),
-            RootActionShortcut(label="Ver Faturas e Cobranças", action_type="NAVIGATE", target="/dashboard/billing")
+            RootActionShortcut(label="Configurar Maquininha", action_type="NAVIGATE", target="/dashboard/settings"),
+            RootActionShortcut(label="Ir para Frente de Caixa (PDV)", action_type="NAVIGATE", target="/dashboard/pdv"),
         ]
 
-    # 6. Fechamento Cego de Caixa
+    # 6. Balança, PLU, Código EAN-13 & PDV
+    elif (
+        any(k in norm_query for k in ["balanca", "plu", "tomate", "banana", "etiqueta", "ean", "pdv", "caixa"])
+        and not any(k in norm_query for k in ["fechamento", "fechar caixa", "conferencia cega"])
+    ) or ("pdv" in screen and is_screen_help):
+        reply = (
+            "### ⚖️ [PODER ROOT ATIVO] 🛒 Frente de Caixa (PDV), Balança Pesável & Consulta PLU\n\n"
+            "No módulo de **Mercados, Varejo & PDV (`/dashboard/pdv`)**:\n\n"
+            "1. **Tabela PLU Rápida:**\n"
+            "   * 🍅 **Tomate Italiano:** Código `01042` | Preço: **R$ 6,99 / kg**\n"
+            "   * 🍌 **Banana Prata:** Código `01015` | Preço: **R$ 4,89 / kg**\n"
+            "   * 🥩 **Picanha Bovina:** Código `02050` | Preço: **R$ 89,90 / kg**\n"
+            "2. **Decodificador EAN-13 (Filizola/Toledo):** Etiquetas iniciadas pelo dígito `2` (13 dígitos) têm o código do item e o peso/valor extraídos automaticamente.\n"
+            "3. **Pagamento Integrado:** Finalize vendas em Dinheiro, PIX Dinâmico ou Maquininha Stripe Terminal."
+        )
+        shortcuts = [
+            RootActionShortcut(label="Abrir Frente de Caixa (PDV)", action_type="NAVIGATE", target="/dashboard/pdv"),
+        ]
+
+    # 7. Alçada Dual-Control (> R$ 5.000) & Contas a Pagar
+    elif any(k in norm_query for k in ["dual control", "dual-control", "5000", "alcada", "aprovacao", "despesa", "contas a pagar"]) or ("payable" in screen and is_screen_help):
+        reply = (
+            "### 🛡️ [PODER ROOT ATIVO] 🔐 Governança Dual-Control (> R$ 5.000,00)\n\n"
+            "Conforme os **Manuais 06, 10 e 36**, qualquer despesa ou negociação acima de **R$ 5.000,00** exige **Dual-Control**:\n\n"
+            "* **No Contas a Pagar (`/dashboard/payable`):** Lançamentos > R$ 5.000 ficam travados até receberem dupla aprovação administrativa.\n"
+            "* **Na OrBrick-IA (`PolicyEngine`):** Acordos ou parcelamentos acima de R$ 5.000 são automaticamente escalados para um especialista humano (`DUAL_CONTROL_OVER_5000`)."
+        )
+        shortcuts = [
+            RootActionShortcut(label="Acessar Contas a Pagar", action_type="NAVIGATE", target="/dashboard/payable"),
+        ]
+
+    # 8. Módulo Cooperativas, Cotas e Retenções Fiscais
+    elif any(k in norm_query for k in ["cooperativa", "cooperado", "sobras", "inss", "fates", "irrf", "dirf", "irpf", "lei 5.764", "cota"]) or ("cooperativa" in screen and is_screen_help):
+        reply = (
+            "### 🌾 [PODER ROOT ATIVO] 📜 Módulo Cooperativismo & Capital Social (`/dashboard/cooperativa`)\n\n"
+            "Em conformidade com a **Lei Federal nº 5.764/71**:\n\n"
+            "1. **Quadro Societário & Pipeline:** Gerencie cooperados desde a proposta e integralização de cotas-partes até o status Ativo.\n"
+            "2. **Retenções Automáticas:**\n"
+            "   * **INSS (Funrural):** 2,1% sobre produção rural.\n"
+            "   * **FATES:** Reserva obrigatória para assistência técnica e educacional.\n"
+            "   * **IRRF:** Tabela progressiva na fonte.\n"
+            "3. **Rateio AGO & Informes:** Apure sobras do exercício e emita informes de rendimentos em `/dashboard/cooperativa`."
+        )
+        shortcuts = [
+            RootActionShortcut(label="Painel de Cooperativismo", action_type="NAVIGATE", target="/dashboard/cooperativa"),
+        ]
+
+    # 9. Fechamento Cego de Caixa
     elif any(k in norm_query for k in ["fechamento", "fechar caixa", "conferencia cega", "divergencia", "quebra"]):
         reply = (
-            "### 📊 [PODER ROOT ATIVO] 🗄️ Fechamento Cego de Caixa com Auditoria IA\\n\\n"
-            "No encerramento de turno no PDV:\\n\\n"
-            "1. O operador realiza a **contagem física às cegas** dos valores em gaveta (Espécie, Cartões e Comprovantes PIX).\\n"
-            "2. O sistema compara com os lançamentos fiscais registrados.\\n"
-            "3. A IA emite automaticamente o **Parecer Pericial de Auditoria**, justificando eventuais sobras ou quebras para a contabilidade."
-        ).replace("\\n", "\n")
+            "### 📊 [PODER ROOT ATIVO] 🗄️ Fechamento Cego de Caixa com Auditoria IA\n\n"
+            "No encerramento de turno em `/dashboard/pdv`:\n"
+            "1. O operador informa a **contagem física às cegas** (Espécie, Cartões e PIX) sem ver o saldo esperado pelo sistema.\n"
+            "2. O motor reconcilia automaticamente todas as vendas do turno (`POST /api/v1/copilot/cash_reconcile`).\n"
+            "3. A IA emite o **Parecer Pericial de Auditoria** (`EXACT`, `SURPLUS` ou `DEFICIT`) gravado na trilha imutável."
+        )
         shortcuts = [
-            RootActionShortcut(label="Ir para Frente de Caixa (PDV)", action_type="NAVIGATE", target="/dashboard/pdv")
+            RootActionShortcut(label="Ir para Frente de Caixa (PDV)", action_type="NAVIGATE", target="/dashboard/pdv"),
         ]
 
-    # 7. Resposta Geral com Poder ROOT
-    else:
+    # 10. Faturamento, PIX, Boletos, NFS-e, Contabilidade e Open Finance
+    elif any(k in norm_query for k in ["fatura", "boleto", "nfse", "nota fiscal", "contabilidade", "balancete", "open finance", "extrato"]) or any(s in screen for s in ["billing", "accounting", "reports"]):
         reply = (
-            f"### ⚡ [ORBE ASSISTANT AI — PODER ROOT ATIVO]\\n\\n"
-            f"Comando recebido na tela **`{screen.upper()}`**: *\"{raw_query}\"*\\n\\n"
-            "Como **Assistente Root do INHO ERP**, estou conectado a todas as camadas do sistema (PDV, Vendas, Estoque, Cooperativismo, Financeiro e Maquininhas Stripe).\\n\\n"
-            "Posso te ajudar em qualquer uma dessas frentes:\\n"
-            "* **Operação de Caixa:** Tirar dúvidas sobre balanças, cancelamento de itens, desconto e maquininhas.\\n"
-            "* **Financeiro:** Consultar conciliação de extratos, faturas em aberto e trava Dual-Control.\\n"
-            "* **Cooperativa:** Explicar retenções de INSS/FATES e distribuição de sobras.\\n"
-            "* **Gestão de Equipe:** Adicionar operadores e limites do plano contratado.\\n\\n"
-            "Como deseja proceder?"
-        ).replace("\\n", "\n")
+            "### 💰 [PODER ROOT ATIVO] 🏦 Recebimentos, NFS-e, Contabilidade & Open Finance\n\n"
+            "* **Recebimentos (`/dashboard/billing`):** Emissão de cobranças com **PIX Dinâmico EMVCo**, Boletos registrados e **NFS-e** (`/dashboard/billing/nfse`).\n"
+            "* **Conciliação Open Finance BACEN:** Baixa atômica via webhook bancário oficial (a IA nunca marca faturas como `PAID` manualmente via chat).\n"
+            "* **Contabilidade & BI (`/dashboard/accounting` e `/dashboard/reports`):** Fechamento mensal, DRE executivo e exportação auditada."
+        )
         shortcuts = [
-            RootActionShortcut(label="Frente de Caixa", action_type="NAVIGATE", target="/dashboard/pdv"),
-            RootActionShortcut(label="Contas a Pagar", action_type="NAVIGATE", target="/dashboard/payable"),
-            RootActionShortcut(label="Gestão Cooperativa", action_type="NAVIGATE", target="/dashboard/cooperativa"),
-            RootActionShortcut(label="Configurações & Franquias", action_type="NAVIGATE", target="/dashboard/settings")
+            RootActionShortcut(label="Recebimentos & PIX", action_type="NAVIGATE", target="/dashboard/billing"),
+            RootActionShortcut(label="Contabilidade & DRE", action_type="NAVIGATE", target="/dashboard/accounting"),
+        ]
+
+    # 11. Resposta Inteligente Sensível à Tela + Cascata IMORTAL / Orbe IA
+    else:
+        from services.ai_agent import imortal_cascade_router
+
+        sys_prompt = (
+            "Você é o Orbe Assistant AI com Poder ROOT do sistema INHO ERP (Orbe Systems). "
+            "Responda sempre em português claro, técnico e direto, explicando passo a passo como usar a tela atual "
+            f"({screen}) e os módulos do INHO: Cooperativismo (/dashboard/cooperativa), Mercados & PDV (/dashboard/pdv), "
+            "INHO Turismo & Milhas (/dashboard/turismo: Cotador Híbrido Cash vs Milhas, Proposta Viva A/B/C, Smart Import PNR, "
+            "Cofre de Milhas & Semáforo CPF sem senhas, DRE Intermediação/ISS, Radar Embarque D-7/D-2/D0/D+2, Grupos & INHO Club VIP, "
+            "Omnichannel AI-First), OrbeJobs (/dashboard/orbejobs), Central OrBrick com QR Codes WA/IG/TG por cliente e PolicyEngine "
+            "(/dashboard/whatsapp). Nunca mencione marcas de IA de terceiros."
+        )
+        cascade_res = await imortal_cascade_router.generate(
+            task_type="orbe_root_assist",
+            prompt=f"[Tela atual: {screen}] Pergunta do operador: {raw_query}",
+            system_prompt=sys_prompt,
+            context_items=[{"title": f"Tela {screen}", "description_text": hist_text or raw_query}],
+        )
+        if cascade_res.get("provider") != "LOCAL_DETERMINISTIC_IMORTAL" and cascade_res.get("reply"):
+            reply = f"### ⚡ [ORBE ASSISTANT AI — PODER ROOT ATIVO]\n\n{cascade_res['reply']}"
+        else:
+            reply = (
+                f"### ⚡ [ORBE ASSISTANT AI — PODER ROOT ATIVO]\n\n"
+                f"Analisei sua solicitação na tela **`{screen.upper()}`**: *\"{raw_query}\"*\n\n"
+                "Aqui está o guia rápido dos módulos ativos do **INHO ERP (Orbe Systems)**:\n"
+                "* **✈️ INHO Turismo (`/dashboard/turismo`):** Cotador Híbrido Dinheiro vs Milhas, Proposta Viva (`/proposta/[slug]`), Smart Import PNR, Cofre de Milhas & Semáforo CPF, DRE Agência e Radar de Embarque.\n"
+                "* **💬 OrBrick QR Multi-Tenant & PolicyEngine (`/dashboard/whatsapp`):** Conecte WhatsApp, Instagram e Telegram por **QR Code próprio**, treine a Base RAG (`.pdf/.docx/.txt/.md`) e aprove limites no **PolicyEngine**.\n"
+                "* **🚀 OrbeJobs (`/dashboard/orbejobs`):** Living CV, busca ATS (Greenhouse/Lever/RSS), match `pgvector` e candidatura segura.\n"
+                "* **🛒 Mercados & PDV (`/dashboard/pdv`):** Caixa rápido, balanças EAN-13, fechamento cego e Maquininha Stripe Terminal.\n"
+                "* **🌾 Cooperativismo (`/dashboard/cooperativa`):** Cotas-partes, retenções Lei 5.764/71 (INSS/FATES/IRRF) e rateio AGO.\n\n"
+                "Clique em um dos atalhos abaixo ou pergunte sobre qualquer função específica!"
+            )
+        shortcuts = [
+            RootActionShortcut(label="INHO Turismo", action_type="NAVIGATE", target="/dashboard/turismo"),
+            RootActionShortcut(label="OrBrick & QR Codes", action_type="NAVIGATE", target="/dashboard/whatsapp"),
+            RootActionShortcut(label="OrbeJobs", action_type="NAVIGATE", target="/dashboard/orbejobs"),
+            RootActionShortcut(label="Frente de Caixa (PDV)", action_type="NAVIGATE", target="/dashboard/pdv"),
         ]
 
     return RootAssistResponse(

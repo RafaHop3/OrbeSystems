@@ -280,3 +280,15 @@ async def test_turismo_full_workflow_and_omnichannel(db_session: AsyncSession):
         )
         assert r_disc_ig.status_code == 200
         assert r_disc_ig.json()["instagram"]["connected"] is False
+
+        # 9. Orbe Assistant AI ROOT context-aware help on /dashboard/turismo
+        for q_txt in ("como uso o modulo turismo ?", "digo aqui no modulo turismo ..."):
+            r_root = await client.post(
+                "/api/v1/copilot/root_assist",
+                json={"query": q_txt, "context_screen": "/dashboard/turismo"},
+            )
+            assert r_root.status_code == 200
+            rep = r_root.json()["reply"]
+            assert "Guia Completo do Módulo INHO Turismo" in rep
+            assert "Cotador & Proposta Viva" in rep
+            assert "Cofre de Milhas & Semáforo CPF" in rep
