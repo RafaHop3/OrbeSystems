@@ -117,6 +117,26 @@ async def create_inho_user(
             "role": db_role,
             "now": now,
         })
+        # Provisiona ou vincula uma empresa (Business) para o novo usuário criado via Orbe Admin Panel
+        biz_id = str(uuid.uuid4())
+        if str(db_role).lower() == "operator":
+            existing_biz = db.execute(text("SELECT id FROM inho.businesses ORDER BY created_at DESC LIMIT 1")).fetchone()
+            if existing_biz:
+                biz_id = str(existing_biz[0])
+            else:
+                db.execute(
+                    text("INSERT INTO inho.businesses (id, user_id, name, category, cashflow_horizon_months, created_at, updated_at) VALUES (:bid, :uid, :bname, 'COOPERATIVA', 6, :now, :now)"),
+                    {"bid": biz_id, "uid": user_id, "bname": f"Empresa de {clean_name}", "now": now},
+                )
+        else:
+            db.execute(
+                text("INSERT INTO inho.businesses (id, user_id, name, category, cashflow_horizon_months, created_at, updated_at) VALUES (:bid, :uid, :bname, 'COOPERATIVA', 6, :now, :now)"),
+                {"bid": biz_id, "uid": user_id, "bname": f"Empresa de {clean_name}", "now": now},
+            )
+        db.execute(
+            text("INSERT INTO inho.business_operators (id, business_id, user_id, created_at) VALUES (:opid, :bid, :uid, :now)"),
+            {"opid": str(uuid.uuid4()), "bid": biz_id, "uid": user_id, "now": now},
+        )
         db.commit()
     except Exception as e:
         db.rollback()

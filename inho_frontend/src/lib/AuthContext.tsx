@@ -59,9 +59,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             const me = await usersApi.me();
             setUser(me);
-            // Auto inject business if operator
-            if (me.role === 'operator' && (me as any).business_id) {
-                setActiveBusinessId((me as any).business_id);
+            // Auto inject business from user profile if present or not yet selected
+            if ((me as any).business_id) {
+                const storedBiz = typeof window !== 'undefined' ? localStorage.getItem('@inho:biz') : null;
+                if (me.role === 'operator' || !storedBiz) {
+                    setActiveBusinessId(String((me as any).business_id));
+                }
             }
             return me;
         } catch {
@@ -134,7 +137,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const data = await authApi.login(payload);
         auth.setAccessToken(data.access_token);
         // Refresh cookie is set by the backend in the Set-Cookie response header
-        return await refreshUser();
+        const me = await refreshUser();
+        if (me) return me;
+        const parsed = auth.parsePayload();
+        const fallbackUser: UserMe = {
+            id: parsed?.sub || 'session-user',
+            email: (data as any).email || payload.email.trim().toLowerCase(),
+            full_name: (data as any).full_name || payload.email.split('@')[0],
+            role: (parsed?.role || 'admin').toLowerCase(),
+            is_active: true,
+            is_verified: true,
+        };
+        setUser(fallbackUser);
+        return fallbackUser;
     }, [refreshUser]);
 
     const logout = useCallback(async () => {

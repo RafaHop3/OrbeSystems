@@ -72,15 +72,7 @@ async def _get_user_business(db: AsyncSession, user: User) -> Business:
         _BIZ_CACHE[uid_str] = (now_ts, cloned)
         return cloned
 
-    # 3. Isolamento Multi-Tenant Estrito: Operador sem vínculo não pode herdar empresa de outro tenant
-    role_val = (user.role.value if hasattr(user.role, "value") else str(user.role or "")).strip().lower()
-    if role_val in ("operator", "viewer", "client"):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Operador não vinculado a nenhuma empresa/cooperativa ativa.",
-        )
-
-    # 4. Cria empresa padrao para o administrador
+    # 3. Cria empresa padrao para o usuario/operador caso ainda nao tenha vinculo (auto-cura para contas criadas via painel externo)
     business = Business(
         id=str(uuid.uuid4()),
         user_id=str(user.id),
@@ -98,7 +90,9 @@ async def _get_user_business(db: AsyncSession, user: User) -> Business:
 
     await db.commit()
     await db.refresh(business)
-    return business
+    cloned = _clone_biz(business)
+    _BIZ_CACHE[uid_str] = (now_ts, cloned)
+    return cloned
 
 def _generate_mock_pix_code(invoice_id: uuid.UUID, amount: Decimal, customer_name: str, provider_tag: str = "INHO_PAYMENTS", auth_crc: str = "6304") -> str:
     clean_id = str(invoice_id).replace('-', '')

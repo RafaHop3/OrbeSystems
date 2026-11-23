@@ -39,10 +39,8 @@ function LoginContent() {
     try {
       const loggedUser = await login(payload);
       await addLoginLog({ timestamp: new Date().toISOString(), payload, result: loggedUser });
-      if (loggedUser && (loggedUser.role === 'admin' || loggedUser.role === 'super_admin')) {
+      if (loggedUser && loggedUser.role === 'super_admin') {
         router.push('/admin');
-      } else if (loggedUser && loggedUser.role === 'operator') {
-        router.push('/dashboard');
       } else {
         router.push('/dashboard');
       }

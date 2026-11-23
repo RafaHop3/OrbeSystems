@@ -21,9 +21,12 @@ async def get_me(
     db: AsyncSession = Depends(get_db),
 ):
     from routers.billing import _get_user_business
-    biz = await _get_user_business(db, current_user)
-    if biz:
-        current_user.business_id = biz.id
+    try:
+        biz = await _get_user_business(db, current_user)
+        if biz:
+            current_user.business_id = biz.id
+    except HTTPException:
+        current_user.business_id = None
     return current_user
 
 

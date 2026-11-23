@@ -21,13 +21,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     async function checkAdmin() {
       try {
         const user = await authApi.me();
-        if (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN') {
+        const normRole = String(user.role || '').toLowerCase();
+        if (normRole === 'super_admin' || normRole === 'superadmin' || normRole === 'admin') {
           setIsAdmin(true);
         } else {
-          router.push('/dashboard');
+          router.replace('/dashboard');
         }
       } catch (error) {
-        router.push('/login');
+        router.replace('/login');
       }
     }
     checkAdmin();

@@ -57,9 +57,10 @@ export const auth = {
     this.clearAccessToken();
   },
 
-  /** True if we have a token in memory AND it's not expired */
+  /** True if we have a token in memory (or localStorage) AND it's not expired */
   isAuthenticated(): boolean {
-    if (!_accessToken) return false;
+    const tok = this.getAccessToken();
+    if (!tok) return false;
     return !this.isExpired();
   },
 
@@ -69,9 +70,10 @@ export const auth = {
    * We only need the claims (role, sub, exp) for UI rendering.
    */
   parsePayload(): { sub: string; email: string; role: string; exp: number } | null {
-    if (!_accessToken) return null;
+    const tok = this.getAccessToken();
+    if (!tok) return null;
     try {
-      const part = _accessToken.split('.')[1];
+      const part = tok.split('.')[1];
       // Convert Base64Url to Base64 and pad correctly
       let base64 = part.replace(/-/g, '+').replace(/_/g, '/');
       while (base64.length % 4) {

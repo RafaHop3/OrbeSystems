@@ -10,7 +10,7 @@ import Sidebar from '@/components/Sidebar';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, activeBusinessId, isLoading } = useAuth();
+  const { user, activeBusinessId, setActiveBusinessId, isLoading } = useAuth();
   const [canRender, setCanRender] = useState(false);
 
   useEffect(() => {
@@ -20,13 +20,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       auth.clear();
       router.replace('/login');
     } else {
-      if (['admin', 'super_admin'].includes(user.role) && !activeBusinessId) {
+      const userBizId = (user as any).business_id ? String((user as any).business_id) : null;
+      if (!activeBusinessId && userBizId) {
+        setActiveBusinessId(userBizId);
+        setCanRender(true);
+      } else if (['admin', 'super_admin'].includes(user.role) && !activeBusinessId) {
         router.replace('/onboarding');
       } else {
         setCanRender(true);
       }
     }
-  }, [router, user, activeBusinessId, isLoading]);
+  }, [router, user, activeBusinessId, setActiveBusinessId, isLoading]);
 
   if (!canRender) {
     return (
