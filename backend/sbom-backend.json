@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.4",
   "version": 1,
-  "serialNumber": "urn:uuid:1e507526-29a1-4fb1-be71-423808b0783e",
+  "serialNumber": "urn:uuid:2af48f55-e5c9-4465-80b0-7404b222931b",
   "metadata": {
-    "timestamp": "2026-11-19T03:00:15.434392+00:00",
+    "timestamp": "2026-11-23T18:34:25.999271+00:00",
     "component": {
       "type": "application",
       "name": "orbe-systems-api",
@@ -325,8 +325,8 @@
     {
       "type": "library",
       "name": "certifi",
-      "version": "2026.10.23",
-      "purl": "pkg:pypi/certifi@2026.10.23",
+      "version": "2026.11.20",
+      "purl": "pkg:pypi/certifi@2026.11.20",
       "licenses": [
         {
           "license": {
@@ -343,7 +343,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "9fa10479ad2f73d0afa65c80e6cb305effda7d43ef6d0605690fb9d782c90a2e"
+          "content": "7976ff08190fa8d8b910335fd6c784d48a3a686f70612237109a9e3d045a9ec8"
         }
       ]
     },
@@ -395,8 +395,8 @@
     {
       "type": "library",
       "name": "charset-normalizer",
-      "version": "3.5.2",
-      "purl": "pkg:pypi/charset-normalizer@3.5.2",
+      "version": "3.5.3",
+      "purl": "pkg:pypi/charset-normalizer@3.5.3",
       "licenses": [
         {
           "license": {
@@ -408,7 +408,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "50955d185ae6fa34280a440d8d58699d9ff85d03edd983498059ad05c2292e92"
+          "content": "efc84148b0732932f6de767c81433a1ed328aa0f57141db31dd770b20694dac9"
         }
       ]
     },
@@ -1480,8 +1480,8 @@
     {
       "type": "library",
       "name": "PyYAML",
-      "version": "6.0.3",
-      "purl": "pkg:pypi/pyyaml@6.0.3",
+      "version": "6.0.4",
+      "purl": "pkg:pypi/pyyaml@6.0.4",
       "licenses": [
         {
           "license": {
@@ -1498,15 +1498,15 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "475992191448d37ffe397dd001f845e0eed353c292e2599f8e36c6f5b95b63cb"
+          "content": "8f95f25166cd770b14d2843326cbf5fcd391c73dec8bc6c3ee3998dc228a1a87"
         }
       ]
     },
     {
       "type": "library",
       "name": "redis",
-      "version": "8.1.0",
-      "purl": "pkg:pypi/redis@8.1.0",
+      "version": "8.2.0",
+      "purl": "pkg:pypi/redis@8.2.0",
       "licenses": [
         {
           "license": {
@@ -1523,7 +1523,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "448c4fd2f1f0902b60d27d8c4323d393bd00ad5c2033195c30c522240ca76ac2"
+          "content": "23a9d92f1d331c7ebb9b31764b7e418f805e03434c6618702390c074c0bfe257"
         }
       ]
     },
@@ -1835,8 +1835,8 @@
     {
       "type": "library",
       "name": "stripe",
-      "version": "17.0.0",
-      "purl": "pkg:pypi/stripe@17.0.0",
+      "version": "17.1.0",
+      "purl": "pkg:pypi/stripe@17.1.0",
       "licenses": [
         {
           "license": {
@@ -1853,7 +1853,7 @@
       "hashes": [
         {
           "alg": "SHA-256",
-          "content": "703c837891bad4742a5d6985a1f5110290c1ff587710a6491de565c22c967f55"
+          "content": "24c6469ced733a0b8c322f4dab5cb9be051c4505d67ed3614161348f8960be45"
         }
       ]
     },
