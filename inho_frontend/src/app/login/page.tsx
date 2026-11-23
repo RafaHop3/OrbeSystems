@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ShieldCheck, ArrowRight, Users, Crown, MessageSquare, CreditCard, Sparkles } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Users, Crown, MessageSquare, CreditCard, Sparkles, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '@/lib/AuthContext';
 import { addLoginLog } from '@/lib/loginLog';
 
@@ -12,6 +12,7 @@ function LoginContent() {
   const { login } = useAuth();
 
   const [form, setForm] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [showMfa, setShowMfa] = useState(false);
   const [mfaCode, setMfaCode] = useState('');
   const [loginMode, setLoginMode] = useState<'selection' | 'colaborador' | 'proprietario'>('selection');
@@ -32,13 +33,9 @@ function LoginContent() {
       setError('Preencha e-mail e senha.');
       return;
     }
-    if (showMfa && (!mfaCode || mfaCode.length !== 6)) {
-      setError('Digite o código de 6 dígitos do seu Authenticator.');
-      return;
-    }
     setLoading(true);
     setError('');
-    const payload = { email: form.email, password: form.password, ...(showMfa && mfaCode ? { mfa_code: mfaCode } : {}) };
+    const payload = { email: form.email, password: form.password };
     try {
       const loggedUser = await login(payload);
       await addLoginLog({ timestamp: new Date().toISOString(), payload, result: loggedUser });
@@ -52,12 +49,7 @@ function LoginContent() {
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
       await addLoginLog({ timestamp: new Date().toISOString(), payload, error: err });
-      if (msg.includes('MFA_REQUIRED') || msg.includes('2FA')) {
-        setShowMfa(true);
-        setError('Autenticação de 2 fatores ativada! Digite o código do seu aplicativo Authenticator.');
-      } else {
-        setError(msg || 'Credenciais inválidas ou acesso não autorizado.');
-      }
+      setError(msg || 'Credenciais inválidas ou acesso não autorizado.');
     } finally {
       setLoading(false);
     }
@@ -171,14 +163,25 @@ function LoginContent() {
                 </div>
                 <div className="space-y-1.5 pt-1">
                   <label className="text-[#475569] text-[11px] font-extrabold uppercase tracking-wider pl-1">Senha de Segurança</label>
-                  <input
-                    type="password"
-                    name="password"
-                    value={form.password}
-                    onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                    placeholder="Sua senha secreta"
-                    className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl px-4 py-3.5 text-[#0F172A] text-sm focus:outline-none focus:border-[#B8860B] focus:bg-white transition-colors"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      value={form.password}
+                      onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                      placeholder="Sua senha secreta"
+                      className="w-full bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl pl-4 pr-11 py-3.5 text-[#0F172A] text-sm focus:outline-none focus:border-[#B8860B] focus:bg-white transition-colors"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(prev => !prev)}
+                      aria-label={showPassword ? 'Ocultar senha' : 'Ver senha'}
+                      title={showPassword ? 'Ocultar senha' : 'Ver senha'}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-[#64748B] hover:text-[#0F172A] transition-colors"
+                    >
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    </button>
+                  </div>
                 </div>
                 {showMfa && (
                   <div className="space-y-1.5 pt-1 animate-fade-in">

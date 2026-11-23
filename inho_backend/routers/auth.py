@@ -39,6 +39,13 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 _limiter = Limiter(key_func=get_remote_address)
 
 def _is_user_mfa_enabled(user: User) -> bool:
+    """
+    Verifica se o 2FA deve ser cobrado no login.
+    Em produção, o 2FA está temporariamente desativado por padrão (a menos que ENFORCE_MANDATORY_MFA=true),
+    permitindo login direto com e-mail e senha sem bloquear usuários cujo Authenticator esteja dessincronizado.
+    """
+    if not _is_mandatory_mfa_active():
+        return False
     val = getattr(user, "is_mfa_enabled", False)
     if isinstance(val, str):
         return val.strip().lower() in ("true", "1", "t", "yes")
@@ -46,10 +53,15 @@ def _is_user_mfa_enabled(user: User) -> bool:
 
 
 def _is_mandatory_mfa_active() -> bool:
-    """Exige Authenticator App em todo login em produção; em SQLite de teste só se ENFORCE_MANDATORY_MFA=true."""
+    """Exige Authenticator App somente quando ENFORCE_MANDATORY_MFA=true."""
+    env_val = os.environ.get("ENFORCE_MANDATORY_MFA", "").strip().lower()
+    if env_val in ("true", "1", "yes"):
+        return True
+    if env_val in ("false", "0", "no"):
+        return False
     if os.environ.get("DATABASE_URL", "").startswith("sqlite"):
-        return os.environ.get("ENFORCE_MANDATORY_MFA", "").strip().lower() == "true"
-    return bool(getattr(settings, "ENFORCE_MANDATORY_MFA", True))
+        return False
+    return bool(getattr(settings, "ENFORCE_MANDATORY_MFA", False))
 
 
 def _create_mfa_enrollment_token(user_id: str) -> str:

@@ -959,12 +959,15 @@ async def proxy_omnichannel_message(
         global_db_status = "SENT"
         
         delivered = False
+        tenant_session_key = f"tenant_{str(business.id).replace('-', '')[:16]}"
         async with httpx.AsyncClient() as client:
             for num in phones_to_try:
                 try:
                     wa_res = await client.post("http://orbe_whatsapp:3001/send", json={
                         "phone": num,
-                        "message": final_message
+                        "message": final_message,
+                        "business_id": str(business.id),
+                        "session_id": tenant_session_key,
                     }, timeout=10.0)
                     if wa_res.status_code == 200:
                         wa_status.append("DELIVERED:200")
@@ -1891,6 +1894,9 @@ class OrBrickAIReplyPayload(BaseModel):
     phone: str
     incoming_message: str
     contact_id: Optional[str] = None
+    business_id: Optional[str] = None
+    session_id: Optional[str] = None
+    push_name: Optional[str] = None
     simulate_ai_offline: bool = False
 
 
@@ -2171,7 +2177,7 @@ async def process_orbrick_ai_reply(
     try:
         inbound_log = OmnichannelLog(
             business_id=b_id,
-            sender_id=get_uuid(business.owner_id),
+            sender_id=get_uuid(getattr(business, "user_id", None) or getattr(business, "owner_id", None)),
             contact_id=get_uuid(contact.id) if contact else None,
             channel="WHATSAPP",
             recipient=payload.phone,
@@ -2231,7 +2237,8 @@ async def process_orbrick_ai_reply(
         contact.ai_attendance_enabled = False
         contact.ai_handoff_until = datetime.now(timezone.utc) + _timedelta(hours=24)
 
-    # 6. Despachar via container Baileys (tentando com e sem 9º dígito conforme Manual 06)
+    # 6. Despachar via container Baileys (tentando com e sem 9º dígito conforme Manual 06 e usando a sessão do próprio tenant)
+    tenant_session_key = f"tenant_{str(business.id).replace('-', '')[:16]}"
     if not os.environ.get("DATABASE_URL", "").startswith("sqlite"):
         try:
             async with httpx.AsyncClient(timeout=4.0) as client:
@@ -2239,7 +2246,12 @@ async def process_orbrick_ai_reply(
                     try:
                         wa_res = await client.post(
                             "http://orbe_whatsapp:3001/send",
-                            json={"phone": num, "message": ai_result["reply_text"]},
+                            json={
+                                "phone": num,
+                                "message": ai_result["reply_text"],
+                                "business_id": str(business.id),
+                                "session_id": tenant_session_key,
+                            },
                         )
                         if wa_res.status_code == 200:
                             break
@@ -2298,8 +2310,9 @@ async def process_baileys_inbound_webhook(
     """
     Webhook interno acionado pelo container Baileys (`orbe_whatsapp:3001`) ao receber
     uma mensagem (`messages.upsert` type=notify, !fromMe).
-    Valida assinatura HMAC, identifica o contato e seu respectivo tenant (`business_id`),
-    verifica Kill-Switch e Handoff Humano e responde de forma contextual e segura.
+    Valida assinatura HMAC, resolve o tenant pela sessão conectada via QR Code (`business_id` / `session_id`)
+    ou pelo contato existente, auto-cadastra novos clientes no CRM para triagem e filtragem prévia da IA
+    antes de chegar no operador humano, verifica Kill-Switch e Handoff Humano e responde de forma contextual e segura.
     """
     sig_header = request.headers.get("X-Orbe-Signature") or request.headers.get("X-Webhook-Signature")
     raw_body = await request.body()
@@ -2310,18 +2323,64 @@ async def process_baileys_inbound_webhook(
     if len(phone_digits) < 8:
         return {"status": "ignored", "reason": "Telefone inválido"}
 
-    c_res = await db.execute(
-        select(CRMContact, Business)
-        .join(Business, CRMContact.business_id == Business.id)
-        .where(CRMContact.phone.ilike(f"%{phone_digits[-8:]}%"))
-        .order_by(CRMContact.updated_at.desc())
-        .limit(1)
-    )
-    row = c_res.first()
-    if not row:
-        return {"status": "ignored", "reason": "Contato não localizado na base CRM"}
+    contact: Optional[CRMContact] = None
+    business: Optional[Business] = None
 
-    contact, business = row[0], row[1]
+    # 1. Resolver a empresa (Tenant) pela sessão WhatsApp própria conectada via QR Code (se enviada)
+    raw_biz_prefix = (payload.business_id or "").strip().replace("-", "")
+    if not raw_biz_prefix and payload.session_id and payload.session_id.startswith("tenant_"):
+        raw_biz_prefix = payload.session_id.replace("tenant_", "", 1).strip().replace("-", "")
+
+    if raw_biz_prefix and len(raw_biz_prefix) >= 8:
+        b_res = await db.execute(select(Business))
+        for cand_biz in b_res.scalars().all():
+            cand_hex = str(cand_biz.id).replace("-", "").lower()
+            if cand_hex.startswith(raw_biz_prefix.lower()):
+                business = cand_biz
+                break
+
+    # 2. Localizar o contato dentro do tenant resolvido (ou globalmente se veio da sessão default)
+    if business is not None:
+        b_id = get_uuid(business.id)
+        c_res = await db.execute(
+            select(CRMContact)
+            .where(
+                CRMContact.business_id == b_id,
+                CRMContact.phone.ilike(f"%{phone_digits[-8:]}%"),
+            )
+            .order_by(CRMContact.updated_at.desc())
+            .limit(1)
+        )
+        contact = c_res.scalars().first()
+
+        # Auto-cadastro de Lead/Cliente que mandou mensagem no WhatsApp próprio do tenant:
+        # permite que o OrBrick ative, converse e filtre qualquer cliente novo antes do atendimento humano!
+        if not contact:
+            lead_name = (payload.push_name or "").strip() or f"Cliente WhatsApp ({phone_digits[-4:]})"
+            contact = CRMContact(
+                business_id=b_id,
+                category=ContactCategory.CUSTOMER,
+                name=lead_name,
+                phone=phone_digits,
+                notes="Auto-cadastrado via triagem automática OrBrick-IA no WhatsApp próprio.",
+                ai_attendance_enabled=True,
+            )
+            db.add(contact)
+            await db.commit()
+            await db.refresh(contact)
+    else:
+        c_res = await db.execute(
+            select(CRMContact, Business)
+            .join(Business, CRMContact.business_id == Business.id)
+            .where(CRMContact.phone.ilike(f"%{phone_digits[-8:]}%"))
+            .order_by(CRMContact.updated_at.desc())
+            .limit(1)
+        )
+        row = c_res.first()
+        if not row:
+            return {"status": "ignored", "reason": "Contato não localizado na base CRM"}
+        contact, business = row[0], row[1]
+
     b_id = get_uuid(business.id)
     biz_name = (business.name or "Orbe Systems").strip()
 
@@ -2336,13 +2395,31 @@ async def process_baileys_inbound_webhook(
     if handoff_dt and handoff_dt.tzinfo is None:
         handoff_dt = handoff_dt.replace(tzinfo=timezone.utc)
     if not getattr(contact, "ai_attendance_enabled", True) or (handoff_dt and handoff_dt > now_utc):
-        return {"status": "HUMAN_HANDOFF_ACTIVE", "ai_responded": False}
+        # Mesmo com handoff ativo, grava a mensagem do cliente no histórico para o operador humano ver em tempo real
+        try:
+            inbound_log = OmnichannelLog(
+                business_id=b_id,
+                sender_id=get_uuid(getattr(business, "user_id", None) or getattr(business, "owner_id", None)),
+                contact_id=get_uuid(contact.id) if contact else None,
+                channel="WHATSAPP",
+                recipient=payload.phone,
+                message_content=f"[CLIENTE] {payload.incoming_message.strip()}",
+                status=OmnichannelStatus.SENT,
+            )
+            db.add(inbound_log)
+            await db.commit()
+        except Exception:
+            pass
+        return {"status": "HUMAN_HANDOFF_ACTIVE", "ai_responded": False, "contact_id": str(contact.id)}
 
     inv_res = await db.execute(
         select(BillingInvoice)
         .where(
             BillingInvoice.business_id == b_id,
-            BillingInvoice.crm_contact_id == contact.id,
+            or_(
+                BillingInvoice.crm_contact_id == contact.id,
+                BillingInvoice.customer_phone.ilike(f"%{phone_digits[-8:]}%"),
+            ),
             BillingInvoice.status.in_([BillingStatus.PENDING, BillingStatus.OVERDUE]),
         )
         .order_by(BillingInvoice.due_date.asc())
@@ -2359,11 +2436,10 @@ async def process_baileys_inbound_webhook(
         for inv in inv_res.scalars().all()
     ]
 
-
     try:
         inbound_log = OmnichannelLog(
             business_id=b_id,
-            sender_id=get_uuid(business.owner_id),
+            sender_id=get_uuid(getattr(business, "user_id", None) or getattr(business, "owner_id", None)),
             contact_id=get_uuid(contact.id) if contact else None,
             channel="WHATSAPP",
             recipient=payload.phone,
@@ -2382,6 +2458,15 @@ async def process_baileys_inbound_webhook(
         phone_digits=phone_digits,
     )
 
+    from services.policy_engine import parse_approved_rules_json as _parse_pol_json
+    pol_res = await db.execute(select(TenantAIPolicy).where(TenantAIPolicy.business_id == b_id))
+    tenant_pol = pol_res.scalar_one_or_none()
+    approved_pol_dict = (
+        _parse_pol_json(tenant_pol.approved_rules_json)
+        if tenant_pol and tenant_pol.status == "APPROVED"
+        else None
+    )
+
     ai_result = await classify_and_respond_orbrick(
         business_id=str(business.id),
         business_name=biz_name,
@@ -2393,6 +2478,9 @@ async def process_baileys_inbound_webhook(
         cbm_predictive_summary=rag_cbm_ctx.get("cbm_predictive_summary", ""),
         tenant_knowledge_chunks=rag_cbm_ctx.get("tenant_knowledge_chunks", []),
         recent_history=rag_cbm_ctx.get("recent_history", []),
+        approved_policy=approved_pol_dict,
+        policy_status=tenant_pol.status if tenant_pol else "DRAFT",
+        policy_has_conflict=bool(tenant_pol.has_conflict) if tenant_pol else False,
         simulate_ai_offline=payload.simulate_ai_offline,
     )
 
@@ -2404,12 +2492,18 @@ async def process_baileys_inbound_webhook(
     if len(digits) in (10, 11):
         digits = "55" + digits
 
+    tenant_session_key = payload.session_id or f"tenant_{str(business.id).replace('-', '')[:16]}"
     if not os.environ.get("DATABASE_URL", "").startswith("sqlite"):
         try:
             async with httpx.AsyncClient(timeout=4.0) as client:
                 await client.post(
                     "http://orbe_whatsapp:3001/send",
-                    json={"phone": digits, "message": ai_result["reply_text"]},
+                    json={
+                        "phone": digits,
+                        "message": ai_result["reply_text"],
+                        "business_id": str(business.id),
+                        "session_id": tenant_session_key,
+                    },
                 )
         except Exception:
             pass
@@ -2424,7 +2518,7 @@ async def process_baileys_inbound_webhook(
 
     db_log = OmnichannelLog(
         business_id=b_id,
-        sender_id=get_uuid(business.owner_id),
+        sender_id=get_uuid(getattr(business, "user_id", None) or getattr(business, "owner_id", None)),
         contact_id=get_uuid(contact.id),
         channel="WHATSAPP",
         recipient=digits,
@@ -2439,6 +2533,8 @@ async def process_baileys_inbound_webhook(
         "status": "success",
         "ai_responded": True,
         "intent": ai_result["intent"],
+        "contact_id": str(contact.id),
+        "requires_human_handoff": ai_result["requires_human_handoff"],
         "whatsapp_delivery_code": ["DELIVERED:200"],
         "message_id": str(db_log.id),
     }

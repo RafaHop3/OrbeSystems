@@ -117,13 +117,25 @@ async function connectToWhatsApp(rawSessionId = 'default') {
             sentMessagesStore[jid].push(m);
             if (sentMessagesStore[jid].length > 50) sentMessagesStore[jid].shift();
 
-            if (type === 'notify' && !m.key.fromMe && jid && !jid.endsWith('@g.us')) {
-                const incomingText = m.message.conversation || (m.message.extendedTextMessage && m.message.extendedTextMessage.text) || '';
+            if (type === 'notify' && !m.key.fromMe && jid && !jid.endsWith('@g.us') && !jid.endsWith('@broadcast')) {
+                const incomingText =
+                    m.message.conversation ||
+                    (m.message.extendedTextMessage && m.message.extendedTextMessage.text) ||
+                    (m.message.imageMessage && m.message.imageMessage.caption) ||
+                    (m.message.documentMessage && m.message.documentMessage.caption) ||
+                    '';
+                const senderPushName = (m.pushName || '').trim() || undefined;
                 if (incomingText && !incomingText.startsWith('*')) {
                     const phoneDigits = jid.split('@')[0].replace(/\D/g, '');
                     const webhookUrl = process.env.INHO_API_WEBHOOK_URL || 'http://inho_backend:8000/api/v1/crm/whatsapp/webhook-inbound';
                     const bizId = sessionId.startsWith('tenant_') ? sessionId.replace(/^tenant_/, '') : undefined;
-                    const bodyStr = JSON.stringify({ phone: phoneDigits, incoming_message: incomingText, business_id: bizId });
+                    const bodyStr = JSON.stringify({
+                        phone: phoneDigits,
+                        incoming_message: incomingText,
+                        business_id: bizId,
+                        session_id: sessionId,
+                        push_name: senderPushName,
+                    });
                     const headers = { 'Content-Type': 'application/json' };
                     if (process.env.WHATSAPP_WEBHOOK_SECRET) {
                         const crypto = require('crypto');
@@ -188,7 +200,8 @@ app.get('/qr', (req, res) => {
 });
 
 app.post('/send', async (req, res) => {
-    const reqSession = sanitizeSessionId(req.body.session_id || (req.body.business_id ? `tenant_${req.body.business_id}` : 'default'));
+    const cleanBiz = req.body.business_id ? String(req.body.business_id).replace(/-/g, '').slice(0, 16) : null;
+    const reqSession = sanitizeSessionId(req.body.session_id || (cleanBiz ? `tenant_${cleanBiz}` : 'default'));
     const activeSession = (sessions[reqSession] && sessions[reqSession].isConnected)
         ? sessions[reqSession]
         : sessions['default'];

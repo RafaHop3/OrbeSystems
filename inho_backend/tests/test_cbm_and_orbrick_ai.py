@@ -532,3 +532,23 @@ async def test_5_manual35_live_pdf_regressions_fixed(client: AsyncClient):
     )
     assert r_md.status_code == 201, r_md.text
     assert r_md.json()["chunks_created"] >= 2
+
+    # S9: Webhook inbound com WhatsApp próprio do tenant (business_id / session_id)
+    # Auto-cadastra um cliente novo e a OrBrick-IA conversa e filtra antes do humano
+    biz_sul_prefix = ctx["biz_sul"].replace("-", "")[:16]
+    r_wh = await client.post(
+        "/api/v1/crm/whatsapp/webhook-inbound",
+        json={
+            "phone": "5551987654321",
+            "incoming_message": "Olá, gostaria de um orçamento para contratar os serviços!",
+            "business_id": biz_sul_prefix,
+            "session_id": f"tenant_{biz_sul_prefix}",
+            "push_name": "Marina Lead WhatsApp",
+        },
+    )
+    assert r_wh.status_code == 200, r_wh.text
+    wh_data = r_wh.json()
+    assert wh_data["status"] == "success"
+    assert wh_data["ai_responded"] is True
+    assert wh_data["intent"] == "TRIAGEM_COMERCIAL"
+    assert wh_data["requires_human_handoff"] is False

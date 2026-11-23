@@ -302,6 +302,15 @@ def classify_intent_deterministic(
         for k in ("regulamento", "estatuto", "regra", "regras", "cota", "cotas", "sobras", "horario", "horário", "como funciona", "taxa", "multa", "assembleia")
     ):
         return {"intent": "REGULAMENTO_RAG", "confidence": 0.88, "sentiment": sentiment, "e2e_match": e2e_match}
+    if not any(fk in lower_msg for fk in ("dolar", "dólar", "euro", "bitcoin", "cripto", "bolsa", "selic")) and any(
+        k in lower_msg
+        for k in (
+            "orcamento", "orçamento", "quero cotacao", "quero cotação", "fazer cotacao", "fazer cotação",
+            "contratar", "proposta comercial", "valor do plano", "quero comprar", "quero me associar",
+            "ser cooperado", "aderir ao plano",
+        )
+    ):
+        return {"intent": "TRIAGEM_COMERCIAL", "confidence": 0.90, "sentiment": "POSITIVE", "e2e_match": e2e_match}
     if any(k in lower_msg for k in ("devendo", "fatura", "faturas", "saldo", "cadastro", "debito", "débito", "divida", "dívida", "pendente", "vencid", "oi", "olá", "ola", "bom dia", "boa tarde", "boa noite")):
         return {"intent": "DUVIDA_FATURA", "confidence": 0.86, "sentiment": sentiment, "e2e_match": e2e_match}
     return {"intent": "FORA_DE_ESCOPO", "confidence": 0.72, "sentiment": sentiment, "e2e_match": e2e_match}
@@ -843,6 +852,14 @@ async def classify_and_respond_orbrick(
             f"(*{top_doc.get('title', 'Diretriz Oficial')}*):\n\n"
             f"{top_doc.get('content', '')}{retention_tag}\n\n"
             "Se quiser tirar mais dúvidas ou falar com nossa equipe, digite *ATENDENTE*."
+        )
+    elif intent == "TRIAGEM_COMERCIAL":
+        body_text = (
+            f"Olá, {first_name}! Que excelente ter seu contato em *{business_name}*. "
+            "Sou o assistente OrBrick-IA e faço a triagem inicial para agilizar seu atendimento:\n"
+            "1. Qual serviço, cota ou produto você deseja contratar/consultar?\n"
+            "2. Você já é cliente/cooperado ativo ou é seu primeiro cadastro?\n\n"
+            "Me conte brevemente aqui que já organizo tudo ou, se preferir falar direto com nossa equipe comercial, digite *ATENDENTE*."
         )
     elif intent == "FORA_DE_ESCOPO":
         body_text = (

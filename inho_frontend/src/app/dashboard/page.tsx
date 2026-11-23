@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/AuthContext';
 import {
     Users2, Building, Store, Utensils,
-    PlusCircle, Lock, ArrowRight, ArrowUpRight, LayoutTemplate, Crown, ShieldCheck, Landmark
+    PlusCircle, Lock, ArrowRight, ArrowUpRight, LayoutTemplate, Crown, ShieldCheck, Landmark, QrCode, Smartphone, Bot
 } from 'lucide-react';
 
 export default function DashboardHub() {
@@ -143,6 +143,45 @@ export default function DashboardHub() {
                             </div>
                             <ArrowUpRight size={15} className="text-slate-400 group-hover:text-amber-700 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                         </Link>
+                    </div>
+                </div>
+
+                {/* Banner Informativo: Conecte seu Próprio WhatsApp + Triagem Inteligente OrBrick */}
+                <div className="bg-gradient-to-r from-emerald-900 via-[#0F172A] to-[#0F172A] rounded-3xl p-6 lg:p-7 border border-emerald-500/40 shadow-md relative overflow-hidden text-white">
+                    <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
+                        <div className="flex items-start gap-4">
+                            <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center shrink-0 text-emerald-300 shadow-sm">
+                                <QrCode size={28} />
+                            </div>
+                            <div>
+                                <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[10px] font-extrabold uppercase tracking-widest mb-2">
+                                    <Smartphone size={12} /> Novo • WhatsApp Próprio Conectado ao OrBrick-IA
+                                </div>
+                                <h2 className="text-xl lg:text-2xl font-black text-white tracking-tight mb-1">
+                                    Use o OrBrick pelo seu próprio celular e automatize a triagem de clientes!
+                                </h2>
+                                <p className="text-slate-300 text-xs lg:text-sm max-w-3xl leading-relaxed">
+                                    Você pode <strong className="text-emerald-300">escanear o QR Code do seu próprio WhatsApp</strong> para operar o OrBrick direto do seu aparelho. A <strong className="text-amber-300">OrBrick-IA</strong> se ativa automaticamente ao receber mensagens de clientes, conversa, responde dúvidas/PIX e <strong className="text-white">filtra o atendimento antes de transferir para o operador humano</strong>.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3 shrink-0 w-full lg:w-auto">
+                            <Link
+                                href="/dashboard/whatsapp?tab=CHANNELS"
+                                className="flex-1 lg:flex-initial inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg"
+                            >
+                                <QrCode size={16} />
+                                Conectar Meu WhatsApp (QR Code)
+                            </Link>
+                            <Link
+                                href="/dashboard/whatsapp"
+                                className="flex-1 lg:flex-initial inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/20 text-white font-bold text-xs uppercase tracking-wider transition-all"
+                            >
+                                <Bot size={15} className="text-amber-300" />
+                                Abrir Central OrBrick
+                            </Link>
+                        </div>
                     </div>
                 </div>
 
