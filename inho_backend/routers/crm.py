@@ -63,7 +63,9 @@ async def create_contact(
         # fix asyncpg datatype mismatch while preserving sqlite pytests compatibility
         b_id = get_uuid(business.id)
         
-        db_contact = CRMContact(**contact.model_dump(), business_id=b_id)
+        from schemas.crm_schemas import normalize_registration_payload
+        contact_data = normalize_registration_payload(contact.model_dump())
+        db_contact = CRMContact(**contact_data, business_id=b_id)
         db.add(db_contact)
         await db.commit()
         await db.refresh(db_contact)
@@ -103,6 +105,10 @@ async def list_contacts(
                 CRMContact.name.ilike(like),
                 CRMContact.document.ilike(like),
                 CRMContact.email.ilike(like),
+                CRMContact.phone.ilike(like),
+                CRMContact.filiation.ilike(like),
+                CRMContact.phones_json.ilike(like),
+                CRMContact.emails_json.ilike(like),
             )
         )
 
@@ -144,6 +150,7 @@ async def get_contact(
 
 
 @router.put("/contacts/{contact_id}", response_model=CRMContactOut)
+@router.patch("/contacts/{contact_id}", response_model=CRMContactOut)
 async def update_contact(
     contact_id: str,
     payload: CRMContactUpdate,
@@ -161,7 +168,12 @@ async def update_contact(
     if not contact:
         raise HTTPException(404, "Contato não encontrado")
 
-    for field, value in payload.model_dump(exclude_unset=True).items():
+    from schemas.crm_schemas import normalize_registration_payload
+    update_data = normalize_registration_payload(payload.model_dump(exclude_unset=True), existing_obj=contact)
+    for field, value in update_data.items():
+        if hasattr(contact, field):
+            setattr(contact, field, value)
+    if False:
         setattr(contact, field, value)
 
     await db.commit()

@@ -24,6 +24,7 @@ import { BookOpen, ShieldAlert } from 'lucide-react';
 import {
   businessesApi,
   settingsApi,
+  authApi,
   ApiTokenItem,
   BankIntegrationItem,
   BusinessOut,
@@ -62,6 +63,42 @@ export default function SettingsPage() {
   const [readerLabel, setReaderLabel] = useState('');
   const [registeringReader, setRegisteringReader] = useState(false);
   const [readerMsg, setReaderMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Trocar Minha Senha (Segurança da Conta)
+  const [currPwd, setCurrPwd] = useState('');
+  const [newPwd, setNewPwd] = useState('');
+  const [confPwd, setConfPwd] = useState('');
+  const [pwdSaving, setPwdSaving] = useState(false);
+  const [pwdFeedback, setPwdFeedback] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+
+  const handleSettingsChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwdFeedback(null);
+    if (!currPwd.trim() || !newPwd.trim()) {
+      setPwdFeedback({ type: 'err', text: 'Preencha sua senha atual e a nova senha.' });
+      return;
+    }
+    if (newPwd.trim().length < 8) {
+      setPwdFeedback({ type: 'err', text: 'A nova senha deve ter no mínimo 8 caracteres.' });
+      return;
+    }
+    if (newPwd.trim() !== confPwd.trim()) {
+      setPwdFeedback({ type: 'err', text: 'A confirmação da nova senha não confere.' });
+      return;
+    }
+    setPwdSaving(true);
+    try {
+      await authApi.changePassword(currPwd.trim(), newPwd.trim());
+      setPwdFeedback({ type: 'ok', text: 'Senha atualizada com sucesso!' });
+      setCurrPwd('');
+      setNewPwd('');
+      setConfPwd('');
+    } catch (err: any) {
+      setPwdFeedback({ type: 'err', text: err?.message || 'Não foi possível alterar a senha. Verifique a senha atual.' });
+    } finally {
+      setPwdSaving(false);
+    }
+  };
 
   const loadSettings = async () => {
     setLoading(true);
@@ -436,6 +473,85 @@ export default function SettingsPage() {
                       type="text"
                       readOnly
                       value={business?.id || 'Ativo'}
+                      className="w-full bg-inho-dark border border-inho-border rounded-lg p-2.5 text-xs text-[#64748B] font-mono outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Card: Segurança da Conta — Trocar Minha Senha */}
+                <div className="pt-4 border-t border-inho-border space-y-4">
+                  <div>
+                    <h3 className="text-base font-bold text-[#0F172A] flex items-center gap-2">
+                      <Key size={17} className="text-inho-teal" />
+                      Segurança da Conta — Trocar Minha Senha
+                    </h3>
+                    <p className="text-xs text-inho-muted mt-0.5">
+                      Altere sua senha de acesso à plataforma quando desejar.
+                    </p>
+                  </div>
+
+                  {pwdFeedback && (
+                    <div
+                      className={`p-3 rounded-xl text-xs font-bold border ${
+                        pwdFeedback.type === 'ok'
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                          : 'bg-red-50 text-red-700 border-red-200'
+                      }`}
+                    >
+                      {pwdFeedback.text}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleSettingsChangePassword} className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
+                    <div>
+                      <label className="text-[11px] font-mono uppercase text-inho-muted block mb-1">
+                        Senha Atual *
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        value={currPwd}
+                        onChange={(e) => setCurrPwd(e.target.value)}
+                        placeholder="Sua senha atual"
+                        className="w-full bg-inho-dark border border-inho-border rounded-lg p-2.5 text-xs text-[#0F172A] outline-none focus:border-inho-teal"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-mono uppercase text-inho-muted block mb-1">
+                        Nova Senha (mín. 8 caract.) *
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        value={newPwd}
+                        onChange={(e) => setNewPwd(e.target.value)}
+                        placeholder="Nova senha"
+                        className="w-full bg-inho-dark border border-inho-border rounded-lg p-2.5 text-xs text-[#0F172A] outline-none focus:border-inho-teal"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[11px] font-mono uppercase text-inho-muted block mb-1">
+                        Confirmar Nova Senha *
+                      </label>
+                      <input
+                        type="password"
+                        required
+                        value={confPwd}
+                        onChange={(e) => setConfPwd(e.target.value)}
+                        placeholder="Repita a nova senha"
+                        className="w-full bg-inho-dark border border-inho-border rounded-lg p-2.5 text-xs text-[#0F172A] outline-none focus:border-inho-teal"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={pwdSaving}
+                      className="bg-inho-teal hover:bg-[#9A6F0B] text-white font-extrabold px-4 py-2.5 rounded-lg text-xs uppercase tracking-wider transition-all"
+                    >
+                      {pwdSaving ? 'Atualizando...' : 'Trocar Senha'}
+                    </button>
+                  </form>
+                </div>
+                <div className="hidden"><div><input readOnly
                       className="w-full bg-inho-dark border border-inho-border rounded-lg p-2.5 text-xs text-[#64748B] font-mono outline-none"
                     />
                   </div>

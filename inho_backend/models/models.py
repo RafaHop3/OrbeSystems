@@ -435,6 +435,10 @@ class CRMContact(Base):
 
     # ── New Expansion Fields (B2B2C CRM) ── 
     person_type = Column(Enum(PersonType), default=PersonType.INDIVIDUAL, nullable=True)
+    birth_date = Column(String(20), nullable=True)
+    filiation = Column(String(255), nullable=True)
+    mother_name = Column(String(255), nullable=True)
+    father_name = Column(String(255), nullable=True)
     municipal_registration = Column(String(50), nullable=True)
     state_registration = Column(String(50), nullable=True)
     website = Column(String(255), nullable=True)
@@ -453,11 +457,16 @@ class CRMContact(Base):
     zip_code     = Column(String(20), nullable=True)
 
     # Banking properties for payouts / distribution
-    bank_code    = Column(String(10), nullable=True)
+    bank_code         = Column(String(20), nullable=True)
+    bank_name         = Column(String(120), nullable=True)
     bank_agency  = Column(String(20), nullable=True)
-    bank_account = Column(String(30), nullable=True)
+    bank_account      = Column(String(30), nullable=True)
+    bank_account_type = Column(String(40), nullable=True)
     pix_key_type = Column(String(20), nullable=True)
-    pix_key      = Column(String(150), nullable=True)
+    pix_key           = Column(String(150), nullable=True)
+    phones_json        = Column(Text, nullable=True, default="[]", server_default="[]")
+    emails_json        = Column(Text, nullable=True, default="[]", server_default="[]")
+    bank_accounts_json = Column(Text, nullable=True, default="[]", server_default="[]")
 
     # HR fields — only meaningful for EMPLOYEE category (spec §2.3)
     role_title          = Column(String(100), nullable=True)
@@ -479,6 +488,57 @@ class CRMContact(Base):
         Index("ix_crm_contacts_active", "is_active"),
     )
 
+    @property
+    def phones(self) -> list:
+        import json
+        try:
+            parsed = json.loads(self.phones_json or "[]")
+            if isinstance(parsed, list) and len(parsed) > 0:
+                return parsed
+        except Exception:
+            pass
+        if self.phone:
+            return [{"number": self.phone, "type": "PROPRIO", "label": "Telefone Principal", "is_whatsapp": True, "is_primary": True}]
+        return []
+
+    @property
+    def emails(self) -> list:
+        import json
+        try:
+            parsed = json.loads(self.emails_json or "[]")
+            if isinstance(parsed, list) and len(parsed) > 0:
+                return parsed
+        except Exception:
+            pass
+        if self.email:
+            return [{"email": self.email, "type": "PRINCIPAL", "label": "E-mail Principal", "is_primary": True}]
+        return []
+
+    @property
+    def bank_accounts(self) -> list:
+        import json
+        try:
+            parsed = json.loads(self.bank_accounts_json or "[]")
+            if isinstance(parsed, list) and len(parsed) > 0:
+                return parsed
+        except Exception:
+            pass
+        if any([self.bank_code, self.bank_name, self.bank_agency, self.bank_account, self.pix_key]):
+            return [{
+                "bank_code": self.bank_code or "",
+                "bank_name": self.bank_name or "",
+                "agency": self.bank_agency or "",
+                "account": self.bank_account or "",
+                "account_type": self.bank_account_type or "CONTA_CORRENTE",
+                "pix_key_type": self.pix_key_type or "",
+                "pix_key": self.pix_key or "",
+                "holder_name": self.name or "",
+                "is_primary": True,
+            }]
+        return []
+
+    # ── End CRMContact properties ──
+
 # ── B2B2C Domain: Cooperado Pipeline ──────────────────────────────
 class CooperadoStatus(str, enum.Enum):
     PROPOSTA_CADASTRADA       = "PROPOSTA_CADASTRADA"
@@ -496,6 +556,20 @@ class Cooperado(Base):
     business_id  = Column(DB_UUID, ForeignKey("businesses.id", ondelete="CASCADE"), nullable=False)
     name         = Column(String(255), nullable=False)
     document     = Column(String(50), nullable=False) # CPF or CNPJ
+    birth_date   = Column(String(20), nullable=True)
+    filiation    = Column(String(255), nullable=True)
+    mother_name  = Column(String(255), nullable=True)
+    father_name  = Column(String(255), nullable=True)
+    bank_code         = Column(String(20), nullable=True)
+    bank_name         = Column(String(120), nullable=True)
+    bank_agency       = Column(String(20), nullable=True)
+    bank_account      = Column(String(30), nullable=True)
+    bank_account_type = Column(String(40), nullable=True)
+    pix_key_type      = Column(String(20), nullable=True)
+    pix_key           = Column(String(150), nullable=True)
+    phones_json        = Column(Text, nullable=True, default="[]", server_default="[]")
+    emails_json        = Column(Text, nullable=True, default="[]", server_default="[]")
+    bank_accounts_json = Column(Text, nullable=True, default="[]", server_default="[]")
     email        = Column(String(255), nullable=True)
     phone        = Column(String(50), nullable=True)
     bank_details = Column(Text, nullable=True)
@@ -511,6 +585,57 @@ class Cooperado(Base):
         Index("ix_cooperados_status", "status"),
         Index("ix_cooperados_document", "document"),
     )
+
+    @property
+    def phones(self) -> list:
+        import json
+        try:
+            parsed = json.loads(self.phones_json or "[]")
+            if isinstance(parsed, list) and len(parsed) > 0:
+                return parsed
+        except Exception:
+            pass
+        if self.phone:
+            return [{"number": self.phone, "type": "PROPRIO", "label": "Telefone Principal", "is_whatsapp": True, "is_primary": True}]
+        return []
+
+    @property
+    def emails(self) -> list:
+        import json
+        try:
+            parsed = json.loads(self.emails_json or "[]")
+            if isinstance(parsed, list) and len(parsed) > 0:
+                return parsed
+        except Exception:
+            pass
+        if self.email:
+            return [{"email": self.email, "type": "PRINCIPAL", "label": "E-mail Principal", "is_primary": True}]
+        return []
+
+    @property
+    def bank_accounts(self) -> list:
+        import json
+        try:
+            parsed = json.loads(self.bank_accounts_json or "[]")
+            if isinstance(parsed, list) and len(parsed) > 0:
+                return parsed
+        except Exception:
+            pass
+        if any([self.bank_code, self.bank_name, self.bank_agency, self.bank_account, self.pix_key]):
+            return [{
+                "bank_code": self.bank_code or "",
+                "bank_name": self.bank_name or "",
+                "agency": self.bank_agency or "",
+                "account": self.bank_account or "",
+                "account_type": self.bank_account_type or "CONTA_CORRENTE",
+                "pix_key_type": self.pix_key_type or "",
+                "pix_key": self.pix_key or "",
+                "holder_name": self.name or "",
+                "is_primary": True,
+            }]
+        return []
+
+    # ── End Cooperado properties ──
 
 
 

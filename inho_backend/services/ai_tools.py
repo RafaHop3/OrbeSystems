@@ -249,6 +249,7 @@ async def get_cooperado_status(
         filters.append(Cooperado.document == doc_match)
     if last8:
         filters.append(Cooperado.phone.ilike(f"%{last8}%"))
+        filters.append(Cooperado.phones_json.ilike(f"%{last8}%"))
     if not filters:
         return {"tool": "get_cooperado_status", "found": False}
 

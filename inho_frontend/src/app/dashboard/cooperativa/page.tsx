@@ -3,12 +3,15 @@
 import { useState, useEffect } from 'react';
 import {
   Users, DollarSign, Search, UserPlus, CreditCard, Receipt,
-  Loader2, X, Briefcase, MapPin, Hash, ShieldCheck, CheckCircle2, Calculator
+  Loader2, X, Briefcase, MapPin, Hash, ShieldCheck, CheckCircle2, Calculator,
+  Plus, Trash2, Edit3, Phone, Mail, Landmark, Calendar, HeartHandshake
 } from 'lucide-react';
 import {
   cooperadosApi, CooperadoItem, CooperadoBalance,
   crmApi, AccountPayableOut, billingApi,
-  openFinanceApi, OpenFinanceBankMeta, OpenFinanceConsentItem
+  openFinanceApi, OpenFinanceBankMeta, OpenFinanceConsentItem,
+  ContactPhoneEntry, ContactEmailEntry, ContactBankAccountEntry,
+  BRAZILIAN_BANKS_CATALOG, resolveBankNameByCode
 } from '@/lib/api';
 
 type TabView = 'ASSOCIADOS' | 'COTAS_FISCAL' | 'FINANCE' | 'RATEIO_INFORMES' | 'OPEN_FINANCE';
@@ -29,14 +32,19 @@ export default function CooperativaInho() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
 
-  // Modal Novo Sócio (com Auto-Fill BrasilAPI CNPJ + CEP + NIS + Matrícula)
+  // Modal Novo / Editar Sócio (com Dados Pessoais, Filiação, Múltiplos Telefones, E-mails e Contas Bancárias)
   const [isNewSocioOpen, setIsNewSocioOpen] = useState(false);
+  const [editingSocioId, setEditingSocioId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [loadingCnpj, setLoadingCnpj] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
-  const [socioForm, setSocioForm] = useState({
+  const emptySocioForm = () => ({
     document: '',
     name: '',
+    birth_date: '',
+    filiation: '',
+    mother_name: '',
+    father_name: '',
     nomeFantasia: '',
     cnae: '',
     email: '',
@@ -50,7 +58,65 @@ export default function CooperativaInho() {
     nis: '',
     matricula: '',
     status: 'ATIVO',
+    phones: [{ number: '', type: 'PROPRIO', label: 'Telefone Próprio', is_whatsapp: true, is_primary: true }] as ContactPhoneEntry[],
+    emails: [{ email: '', type: 'PRINCIPAL', label: 'E-mail Principal', is_primary: true }] as ContactEmailEntry[],
+    bank_accounts: [{ bank_code: '756', bank_name: 'Sicoob', agency: '', account: '', account_type: 'CONTA_CAPITAL_COOP', pix_key: '', is_primary: true }] as ContactBankAccountEntry[],
   });
+  const [socioForm, setSocioForm] = useState(emptySocioForm);
+
+  function openNewSocioModal() {
+    setEditingSocioId(null);
+    setSocioForm(emptySocioForm());
+    setIsNewSocioOpen(true);
+  }
+
+  function openEditSocioModal(coop: CooperadoItem) {
+    setEditingSocioId(coop.id);
+    setSocioForm({
+      document: coop.document || '',
+      name: coop.name || '',
+      birth_date: coop.birth_date || '',
+      filiation: coop.filiation || '',
+      mother_name: coop.mother_name || '',
+      father_name: coop.father_name || '',
+      nomeFantasia: '',
+      cnae: '',
+      email: coop.email || '',
+      phone: coop.phone || '',
+      bank_details: coop.bank_details || '',
+      cep: '',
+      endereco: '',
+      bairro: '',
+      cidade: '',
+      uf: '',
+      nis: '',
+      matricula: '',
+      status: coop.status || 'ATIVO',
+      phones:
+        coop.phones && coop.phones.length > 0
+          ? coop.phones
+          : [{ number: coop.phone || '', type: 'PROPRIO', label: 'Telefone Próprio', is_whatsapp: true, is_primary: true }],
+      emails:
+        coop.emails && coop.emails.length > 0
+          ? coop.emails
+          : [{ email: coop.email || '', type: 'PRINCIPAL', label: 'E-mail Principal', is_primary: true }],
+      bank_accounts:
+        coop.bank_accounts && coop.bank_accounts.length > 0
+          ? coop.bank_accounts
+          : [
+              {
+                bank_code: coop.bank_code || '756',
+                bank_name: coop.bank_name || resolveBankNameByCode(coop.bank_code) || 'Sicoob',
+                agency: coop.bank_agency || '',
+                account: coop.bank_account || '',
+                account_type: coop.bank_account_type || 'CONTA_CAPITAL_COOP',
+                pix_key: coop.pix_key || '',
+                is_primary: true,
+              },
+            ],
+    });
+    setIsNewSocioOpen(true);
+  }
 
   // Modal Dossiê / Extrato de Cotas do Sócio
   const [selectedSocio, setSelectedSocio] = useState<CooperadoItem | null>(null);
@@ -328,6 +394,28 @@ export default function CooperativaInho() {
     }
     setSubmitting(true);
     try {
+      const validPhones = (socioForm.phones || []).filter((p) => (p.number || '').trim().length > 0);
+      const validEmails = (socioForm.emails || []).filter((em) => (em.email || '').trim().length > 0);
+      const validBanks = (socioForm.bank_accounts || []).filter((b) =>
+        Boolean(
+          (b.bank_code || '').trim() ||
+            (b.bank_name || '').trim() ||
+            (b.agency || '').trim() ||
+            (b.account || '').trim() ||
+            (b.pix_key || '').trim()
+        )
+      );
+      const primaryBank = validBanks[0];
+      const combinedFiliation =
+        (socioForm.filiation || '').trim() ||
+        [
+          socioForm.mother_name ? `Mãe: ${socioForm.mother_name.trim()}` : '',
+          socioForm.father_name ? `Pai: ${socioForm.father_name.trim()}` : '',
+        ]
+          .filter(Boolean)
+          .join(' | ') ||
+        undefined;
+
       const notesParts = [
         socioForm.nis ? `NIS: ${socioForm.nis}` : '',
         socioForm.matricula ? `Matrícula: ${socioForm.matricula}` : '',
@@ -335,23 +423,41 @@ export default function CooperativaInho() {
         socioForm.endereco ? `End: ${socioForm.endereco}, ${socioForm.bairro} - ${socioForm.cidade}/${socioForm.uf}` : '',
       ].filter(Boolean);
 
-      await cooperadosApi.create({
+      const payload = {
         name: socioForm.name,
         document: socioForm.document,
-        email: socioForm.email || undefined,
-        phone: socioForm.phone || undefined,
+        birth_date: socioForm.birth_date || undefined,
+        filiation: combinedFiliation,
+        mother_name: socioForm.mother_name || undefined,
+        father_name: socioForm.father_name || undefined,
+        email: validEmails[0]?.email || socioForm.email || undefined,
+        phone: validPhones[0]?.number || socioForm.phone || undefined,
+        bank_code: primaryBank?.bank_code || undefined,
+        bank_name: primaryBank?.bank_name || undefined,
+        bank_agency: primaryBank?.agency || undefined,
+        bank_account: primaryBank?.account || undefined,
+        bank_account_type: primaryBank?.account_type || undefined,
+        pix_key: primaryBank?.pix_key || undefined,
         bank_details: socioForm.bank_details || undefined,
+        phones: validPhones,
+        emails: validEmails,
+        bank_accounts: validBanks,
         notes: notesParts.join(' | ') || undefined,
-        status: socioForm.status,
-      });
+        status: socioForm.status as any,
+      };
+
+      if (editingSocioId) {
+        const updated = await cooperadosApi.update(editingSocioId, payload);
+        if (selectedSocio && selectedSocio.id === editingSocioId) {
+          setSelectedSocio(updated);
+        }
+      } else {
+        await cooperadosApi.create(payload);
+      }
 
       setIsNewSocioOpen(false);
-      setSocioForm({
-        document: '', name: '', nomeFantasia: '', cnae: '',
-        email: '', phone: '', bank_details: '', cep: '',
-        endereco: '', bairro: '', cidade: '', uf: '',
-        nis: '', matricula: '', status: 'ATIVO',
-      });
+      setEditingSocioId(null);
+      setSocioForm(emptySocioForm());
       await loadCooperados();
     } catch (err: any) {
       alert(err?.message || 'Erro ao registrar sócio no Master DB');
@@ -476,7 +582,7 @@ export default function CooperativaInho() {
           </div>
 
           <button
-            onClick={() => setIsNewSocioOpen(true)}
+            onClick={openNewSocioModal}
             className="flex items-center gap-2 px-4 py-2.5 bg-neon-cyan text-white font-extrabold text-xs uppercase tracking-wider rounded-xl hover:shadow-[0_0_20px_rgba(184,134,11,0.4)] transition-all"
           >
             <UserPlus size={16} /> Novo Sócio
@@ -566,14 +672,55 @@ export default function CooperativaInho() {
                             </div>
                             <div>
                               <div>{coop.name}</div>
-                              <div className="text-[10px] text-[#64748B]">PIX/Banco: {coop.bank_details || 'Não informado'}</div>
+                              <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] text-[#64748B]">
+                                {coop.birth_date && (
+                                  <span className="px-1.5 py-0.2 rounded bg-[#F1F5F9] border border-terminal-border">
+                                    Nasc: {coop.birth_date.includes('-') ? coop.birth_date.split('-').reverse().join('/') : coop.birth_date}
+                                  </span>
+                                )}
+                                {coop.filiation && (
+                                  <span className="px-1.5 py-0.2 rounded bg-[#F1F5F9] border border-terminal-border max-w-[200px] truncate">
+                                    Filiação: {coop.filiation}
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[10px] text-[#64748B] mt-0.5">
+                                {coop.bank_code || coop.bank_name
+                                  ? `Banco: ${coop.bank_code ? `${coop.bank_code} - ` : ''}${coop.bank_name || ''} | Ag: ${coop.bank_agency || '-'} | Cc: ${coop.bank_account || '-'}`
+                                  : `PIX/Banco: ${coop.bank_details || 'Não informado'}`}
+                                {coop.bank_accounts && coop.bank_accounts.length > 1 && (
+                                  <span className="ml-1.5 px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-800 border border-emerald-500/30 font-bold">
+                                    +{coop.bank_accounts.length - 1} conta(s)
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-[#64748B]">{coop.document}</td>
+                          <td className="px-6 py-4 text-[#64748B] font-mono">{coop.document}</td>
                           <td className="px-6 py-4 text-[#64748B] max-w-xs truncate">{coop.notes || '---'}</td>
                           <td className="px-6 py-4">
-                            <div>{coop.phone || '---'}</div>
-                            <div className="text-[10px] text-[#64748B]">{coop.email || ''}</div>
+                            <div className="flex items-center gap-1">
+                              <span>{(coop.phones && coop.phones[0]?.number) || coop.phone || '---'}</span>
+                              {coop.phones && coop.phones.length > 1 && (
+                                <span
+                                  className="px-1.5 py-0.2 rounded bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30 text-[10px] font-bold"
+                                  title={coop.phones.map((p) => `${p.number} (${p.label || p.type || 'Contato'})`).join(' • ')}
+                                >
+                                  +{coop.phones.length - 1} tel
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[10px] text-[#64748B] flex items-center gap-1 mt-0.5">
+                              <span>{(coop.emails && coop.emails[0]?.email) || coop.email || ''}</span>
+                              {coop.emails && coop.emails.length > 1 && (
+                                <span
+                                  className="px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-700 border border-amber-500/30 text-[10px] font-bold"
+                                  title={coop.emails.map((e) => e.email).join(' • ')}
+                                >
+                                  +{coop.emails.length - 1} e-mail
+                                </span>
+                              )}
+                            </div>
                           </td>
                           <td className="px-6 py-4">
                             <span className={`px-2.5 py-1 rounded border text-[10px] font-bold uppercase ${st.style}`}>
@@ -581,12 +728,20 @@ export default function CooperativaInho() {
                             </span>
                           </td>
                           <td className="px-6 py-4 text-right">
-                            <button
-                              onClick={() => openDossie(coop)}
-                              className="px-3 py-1.5 rounded-lg bg-neon-cyan/10 border border-neon-cyan/30 hover:bg-neon-cyan/20 text-neon-cyan font-bold text-[11px]"
-                            >
-                              Abrir Dossiê
-                            </button>
+                            <div className="inline-flex items-center gap-1.5">
+                              <button
+                                onClick={() => openEditSocioModal(coop)}
+                                className="px-2.5 py-1.5 rounded-lg bg-[#F1F5F9] border border-terminal-border hover:border-neon-cyan/40 text-[#0F172A] font-bold text-[11px] inline-flex items-center gap-1"
+                              >
+                                <Edit3 size={12} /> Editar
+                              </button>
+                              <button
+                                onClick={() => openDossie(coop)}
+                                className="px-3 py-1.5 rounded-lg bg-neon-cyan/10 border border-neon-cyan/30 hover:bg-neon-cyan/20 text-neon-cyan font-bold text-[11px]"
+                              >
+                                Abrir Dossiê
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -1268,29 +1423,38 @@ export default function CooperativaInho() {
         )}
       </main>
 
-      {/* ─── MODAL NOVO SÓCIO (AUTO-FILL BRASILAPI CNPJ/CEP + NIS + MATRÍCULA) ─── */}
+      {/* ─── MODAL NOVO / EDITAR SÓCIO (FICHA CADASTRAL COMPLETA + MULTIPLICIDADE) ─── */}
       {isNewSocioOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="bg-white shadow-sm border border-terminal-border rounded-2xl p-6 w-full max-w-2xl relative my-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white shadow-2xl border border-terminal-border rounded-2xl p-6 w-full max-w-4xl relative my-8 max-h-[92vh] overflow-y-auto">
             <button onClick={() => setIsNewSocioOpen(false)} className="absolute top-4 right-4 text-[#64748B] hover:text-[#0F172A]">
               <X size={20} />
             </button>
             <h2 className="text-lg font-extrabold text-[#0F172A] uppercase tracking-wider mb-1">
-              Dossiê de Novo <span className="text-neon-cyan">Sócio / Cooperado</span>
+              {editingSocioId ? 'Editar Ficha Cadastral de ' : 'Dossiê de Novo '}
+              <span className="text-neon-cyan">Sócio / Cooperado</span>
             </h2>
             <p className="text-xs text-[#64748B] mb-5">
-              Submissão ao Master DB com sincronização imediata no OrBrick WhatsApp.
+              Dados pessoais (data de nascimento e filiação), múltiplos telefones, múltiplos e-mails e múltiplas contas bancárias.
             </p>
 
+            <datalist id="coop-compe-banks">
+              {BRAZILIAN_BANKS_CATALOG.map((b) => (
+                <option key={b.code} value={b.code}>
+                  {b.code} - {b.name}
+                </option>
+              ))}
+            </datalist>
+
             <form onSubmit={handleCreateSocio} className="space-y-5 text-xs">
-              {/* Bloco 1: Identificação + BrasilAPI CNPJ */}
-              <div className="p-4 rounded-xl bg-white border border-terminal-border space-y-3">
+              {/* Bloco 1: Identificação & Dados Pessoais (Data de Nascimento + Filiação) */}
+              <div className="p-4 rounded-xl bg-[#F8FAFC] border border-terminal-border space-y-3">
                 <div className="text-neon-cyan font-bold uppercase tracking-wider flex items-center gap-2">
-                  <Briefcase size={14} /> 1. Identificação B2B/B2C (Auto-Fill Receita / BrasilAPI)
+                  <Briefcase size={14} /> 1. Dados Pessoais & Identificação (Data de Nascimento e Filiação)
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[#64748B] mb-1 uppercase">CPF ou CNPJ *</label>
+                    <label className="block text-[#64748B] mb-1 uppercase font-bold">CPF ou CNPJ *</label>
                     <div className="flex bg-white shadow-sm border border-terminal-border rounded-xl overflow-hidden">
                       <input
                         required
@@ -1311,7 +1475,7 @@ export default function CooperativaInho() {
                     </div>
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-[#64748B] mb-1 uppercase">Nome Completo / Razão Social *</label>
+                    <label className="block text-[#64748B] mb-1 uppercase font-bold">Nome Completo / Razão Social *</label>
                     <input
                       required
                       value={socioForm.name}
@@ -1321,131 +1485,435 @@ export default function CooperativaInho() {
                     />
                   </div>
                 </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                    <label className="block text-[#64748B] mb-1 uppercase">WhatsApp (OrBrick)</label>
+                    <label className="block text-[#64748B] mb-1 uppercase font-bold flex items-center gap-1">
+                      <Calendar size={12} className="text-neon-cyan" /> Data de Nascimento
+                    </label>
                     <input
-                      value={socioForm.phone}
-                      onChange={(e) => setSocioForm({ ...socioForm, phone: e.target.value })}
-                      placeholder="(51) 99999-9999"
+                      type="date"
+                      value={socioForm.birth_date}
+                      onChange={(e) => setSocioForm({ ...socioForm, birth_date: e.target.value })}
+                      className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-[#64748B] mb-1 uppercase font-bold flex items-center gap-1">
+                      <HeartHandshake size={12} className="text-neon-cyan" /> Filiação (Mãe / Pai)
+                    </label>
+                    <input
+                      value={socioForm.filiation}
+                      onChange={(e) => setSocioForm({ ...socioForm, filiation: e.target.value })}
+                      placeholder="Registro de filiação (nome da mãe e/ou pai)"
+                      className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[#64748B] mb-1 uppercase">Nome da Mãe (Filiação Materna)</label>
+                    <input
+                      value={socioForm.mother_name}
+                      onChange={(e) => setSocioForm({ ...socioForm, mother_name: e.target.value })}
+                      placeholder="Opcional"
                       className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
                     />
                   </div>
                   <div>
-                    <label className="block text-[#64748B] mb-1 uppercase">E-mail</label>
+                    <label className="block text-[#64748B] mb-1 uppercase">Nome do Pai (Filiação Paterna)</label>
                     <input
-                      type="email"
-                      value={socioForm.email}
-                      onChange={(e) => setSocioForm({ ...socioForm, email: e.target.value })}
-                      placeholder="socio@email.com"
-                      className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[#64748B] mb-1 uppercase">Chave PIX / Dados Bancários</label>
-                    <input
-                      value={socioForm.bank_details}
-                      onChange={(e) => setSocioForm({ ...socioForm, bank_details: e.target.value })}
-                      placeholder="PIX / Banco / Agência"
+                      value={socioForm.father_name}
+                      onChange={(e) => setSocioForm({ ...socioForm, father_name: e.target.value })}
+                      placeholder="Opcional"
                       className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
                     />
                   </div>
                 </div>
               </div>
 
-              {/* Bloco 2: Endereço + BrasilAPI CEP */}
-              <div className="p-4 rounded-xl bg-white border border-terminal-border space-y-3">
-                <div className="text-neon-green font-bold uppercase tracking-wider flex items-center gap-2">
-                  <MapPin size={14} /> 2. Localização (Auto-Fill CEP)
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                  <div>
-                    <label className="block text-[#64748B] mb-1 uppercase">CEP</label>
-                    <div className="flex bg-white shadow-sm border border-terminal-border rounded-xl overflow-hidden">
+              {/* Bloco 2: Múltiplos Telefones & Múltiplos E-mails */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* Múltiplos Telefones */}
+                <div className="p-4 rounded-xl bg-[#F8FAFC] border border-terminal-border space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="text-neon-cyan font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <Phone size={14} /> 2A. Múltiplos Telefones
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSocioForm({
+                          ...socioForm,
+                          phones: [...socioForm.phones, { number: '', type: 'RECADO', label: '', is_whatsapp: false }],
+                        })
+                      }
+                      className="px-2.5 py-1 rounded-lg bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30 font-bold text-[10px] inline-flex items-center gap-1"
+                    >
+                      <Plus size={12} /> + Telefone
+                    </button>
+                  </div>
+
+                  {socioForm.phones.map((ph, idx) => (
+                    <div key={idx} className="grid grid-cols-12 gap-1.5 items-center bg-white p-2 rounded-xl border border-terminal-border">
                       <input
-                        value={socioForm.cep}
-                        onChange={(e) => setSocioForm({ ...socioForm, cep: e.target.value })}
-                        placeholder="00000-000"
-                        className="bg-transparent flex-1 px-3 py-2 text-[#0F172A] outline-none"
+                        value={ph.number}
+                        onChange={(e) => {
+                          const next = [...socioForm.phones];
+                          next[idx] = { ...next[idx], number: e.target.value };
+                          setSocioForm({ ...socioForm, phones: next });
+                        }}
+                        placeholder="(51) 99999-9999"
+                        className="col-span-4 bg-[#F8FAFC] border border-terminal-border rounded-lg px-2 py-1.5 text-[#0F172A]"
+                      />
+                      <select
+                        value={ph.type || 'PROPRIO'}
+                        onChange={(e) => {
+                          const next = [...socioForm.phones];
+                          next[idx] = { ...next[idx], type: e.target.value };
+                          setSocioForm({ ...socioForm, phones: next });
+                        }}
+                        className="col-span-4 bg-[#F8FAFC] border border-terminal-border rounded-lg px-2 py-1.5 text-[#0F172A]"
+                      >
+                        <option value="PROPRIO">Próprio</option>
+                        <option value="MAE">Tel. da Mãe</option>
+                        <option value="PAI">Tel. do Pai</option>
+                        <option value="RECADO">Para Recado</option>
+                        <option value="WHATSAPP">WhatsApp</option>
+                        <option value="COMERCIAL">Comercial</option>
+                        <option value="RESIDENCIAL">Residencial</option>
+                      </select>
+                      <input
+                        value={ph.label || ''}
+                        onChange={(e) => {
+                          const next = [...socioForm.phones];
+                          next[idx] = { ...next[idx], label: e.target.value };
+                          setSocioForm({ ...socioForm, phones: next });
+                        }}
+                        placeholder="Contato/Obs"
+                        className="col-span-3 bg-[#F8FAFC] border border-terminal-border rounded-lg px-2 py-1.5 text-[#0F172A]"
                       />
                       <button
                         type="button"
-                        onClick={handleLookupCep}
-                        disabled={loadingCep}
-                        className="px-3 border-l border-terminal-border text-neon-green hover:bg-neon-green/10"
+                        onClick={() => {
+                          const next = socioForm.phones.filter((_, i) => i !== idx);
+                          setSocioForm({
+                            ...socioForm,
+                            phones: next.length ? next : [{ number: '', type: 'PROPRIO', label: '' }],
+                          });
+                        }}
+                        className="col-span-1 text-red-600 hover:bg-red-50 p-1 rounded flex justify-center"
                       >
-                        {loadingCep ? '...' : <Search size={14} />}
+                        <Trash2 size={13} />
                       </button>
                     </div>
-                  </div>
-                  <div className="md:col-span-3">
-                    <label className="block text-[#64748B] mb-1 uppercase">Logradouro / Endereço</label>
-                    <input
-                      value={socioForm.endereco}
-                      onChange={(e) => setSocioForm({ ...socioForm, endereco: e.target.value })}
-                      className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
-                    />
-                  </div>
+                  ))}
                 </div>
-                <div className="grid grid-cols-3 gap-3">
-                  <input
-                    value={socioForm.bairro}
-                    onChange={(e) => setSocioForm({ ...socioForm, bairro: e.target.value })}
-                    placeholder="Bairro"
-                    className="bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
-                  />
-                  <input
-                    value={socioForm.cidade}
-                    onChange={(e) => setSocioForm({ ...socioForm, cidade: e.target.value })}
-                    placeholder="Cidade"
-                    className="bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
-                  />
-                  <input
-                    value={socioForm.uf}
-                    onChange={(e) => setSocioForm({ ...socioForm, uf: e.target.value })}
-                    placeholder="UF"
-                    maxLength={2}
-                    className="bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A] uppercase"
-                  />
+
+                {/* Múltiplos E-mails */}
+                <div className="p-4 rounded-xl bg-[#F8FAFC] border border-terminal-border space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="text-neon-cyan font-bold uppercase tracking-wider flex items-center gap-1.5">
+                      <Mail size={14} /> 2B. Múltiplos E-mails
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setSocioForm({
+                          ...socioForm,
+                          emails: [...socioForm.emails, { email: '', type: 'SECUNDARIO', label: '' }],
+                        })
+                      }
+                      className="px-2.5 py-1 rounded-lg bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30 font-bold text-[10px] inline-flex items-center gap-1"
+                    >
+                      <Plus size={12} /> + E-mail
+                    </button>
+                  </div>
+
+                  {socioForm.emails.map((em, idx) => (
+                    <div key={idx} className="grid grid-cols-12 gap-1.5 items-center bg-white p-2 rounded-xl border border-terminal-border">
+                      <input
+                        type="email"
+                        value={em.email}
+                        onChange={(e) => {
+                          const next = [...socioForm.emails];
+                          next[idx] = { ...next[idx], email: e.target.value };
+                          setSocioForm({ ...socioForm, emails: next });
+                        }}
+                        placeholder="socio@email.com"
+                        className="col-span-7 bg-[#F8FAFC] border border-terminal-border rounded-lg px-2 py-1.5 text-[#0F172A]"
+                      />
+                      <select
+                        value={em.type || 'PRINCIPAL'}
+                        onChange={(e) => {
+                          const next = [...socioForm.emails];
+                          next[idx] = { ...next[idx], type: e.target.value };
+                          setSocioForm({ ...socioForm, emails: next });
+                        }}
+                        className="col-span-4 bg-[#F8FAFC] border border-terminal-border rounded-lg px-2 py-1.5 text-[#0F172A]"
+                      >
+                        <option value="PRINCIPAL">Principal</option>
+                        <option value="PESSOAL">Pessoal</option>
+                        <option value="FINANCEIRO">Financeiro</option>
+                        <option value="CORPORATIVO">Corporativo</option>
+                        <option value="SECUNDARIO">Secundário</option>
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = socioForm.emails.filter((_, i) => i !== idx);
+                          setSocioForm({
+                            ...socioForm,
+                            emails: next.length ? next : [{ email: '', type: 'PRINCIPAL' }],
+                          });
+                        }}
+                        className="col-span-1 text-red-600 hover:bg-red-50 p-1 rounded flex justify-center"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Bloco 3: Identificadores Cooperativa (NIS, Matrícula, Status Cota) */}
-              <div className="p-4 rounded-xl bg-white border border-terminal-border space-y-3">
-                <div className="text-amber-700 font-bold uppercase tracking-wider flex items-center gap-2">
-                  <Hash size={14} /> 3. Identificadores Cooperativistas & Status de Cota
+              {/* Bloco 3: Dados Bancários Estruturados & Múltiplas Contas Bancárias */}
+              <div className="p-4 rounded-xl bg-[#F8FAFC] border border-terminal-border space-y-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-neon-cyan font-bold uppercase tracking-wider flex items-center gap-2">
+                      <Landmark size={14} /> 3. Dados Bancários Estruturados (Suporte a Múltiplas Contas)
+                    </div>
+                    <p className="text-[11px] text-[#64748B]">
+                      Número do banco, nome da instituição, agência e conta em campos separados e organizados.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setSocioForm({
+                        ...socioForm,
+                        bank_accounts: [
+                          ...socioForm.bank_accounts,
+                          { bank_code: '', bank_name: '', agency: '', account: '', account_type: 'CONTA_CORRENTE', pix_key: '' },
+                        ],
+                      })
+                    }
+                    className="px-3 py-1.5 rounded-lg bg-neon-cyan/15 text-neon-cyan border border-neon-cyan/30 font-bold text-[11px] inline-flex items-center gap-1"
+                  >
+                    <Plus size={13} /> Adicionar Conta Bancária
+                  </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                  <div>
-                    <label className="block text-[#64748B] mb-1 uppercase">NIS / PIS</label>
+
+                {socioForm.bank_accounts.map((ba, idx) => (
+                  <div key={idx} className="p-3 rounded-xl bg-white border border-terminal-border space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-extrabold uppercase text-neon-cyan">
+                        Conta Bancária #{idx + 1} {idx === 0 ? '(Domicílio Principal)' : ''}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = socioForm.bank_accounts.filter((_, i) => i !== idx);
+                          setSocioForm({
+                            ...socioForm,
+                            bank_accounts: next.length
+                              ? next
+                              : [{ bank_code: '', bank_name: '', agency: '', account: '', account_type: 'CONTA_CORRENTE', pix_key: '' }],
+                          });
+                        }}
+                        className="text-red-600 hover:bg-red-50 px-2 py-0.5 rounded text-[10px] font-bold inline-flex items-center gap-1"
+                      >
+                        <Trash2 size={12} /> Remover
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5">
+                      <div className="md:col-span-2">
+                        <label className="block text-[10px] text-[#64748B] uppercase font-bold mb-0.5">Nº do Banco</label>
+                        <input
+                          list="coop-compe-banks"
+                          value={ba.bank_code || ''}
+                          onChange={(e) => {
+                            const code = e.target.value;
+                            const autoName = resolveBankNameByCode(code);
+                            const next = [...socioForm.bank_accounts];
+                            next[idx] = {
+                              ...next[idx],
+                              bank_code: code,
+                              bank_name: autoName || next[idx].bank_name,
+                            };
+                            setSocioForm({ ...socioForm, bank_accounts: next });
+                          }}
+                          placeholder="756, 001..."
+                          className="w-full bg-[#F8FAFC] border border-terminal-border rounded-lg px-2.5 py-2 text-[#0F172A] font-mono"
+                        />
+                      </div>
+                      <div className="md:col-span-3">
+                        <label className="block text-[10px] text-[#64748B] uppercase font-bold mb-0.5">Nome do Banco</label>
+                        <input
+                          value={ba.bank_name || ''}
+                          onChange={(e) => {
+                            const next = [...socioForm.bank_accounts];
+                            next[idx] = { ...next[idx], bank_name: e.target.value };
+                            setSocioForm({ ...socioForm, bank_accounts: next });
+                          }}
+                          placeholder="Sicoob, Sicredi, BB..."
+                          className="w-full bg-[#F8FAFC] border border-terminal-border rounded-lg px-2.5 py-2 text-[#0F172A]"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-[10px] text-[#64748B] uppercase font-bold mb-0.5">Agência</label>
+                        <input
+                          value={ba.agency || ''}
+                          onChange={(e) => {
+                            const next = [...socioForm.bank_accounts];
+                            next[idx] = { ...next[idx], agency: e.target.value };
+                            setSocioForm({ ...socioForm, bank_accounts: next });
+                          }}
+                          placeholder="0001"
+                          className="w-full bg-[#F8FAFC] border border-terminal-border rounded-lg px-2.5 py-2 text-[#0F172A] font-mono"
+                        />
+                      </div>
+                      <div className="md:col-span-2">
+                        <label className="block text-[10px] text-[#64748B] uppercase font-bold mb-0.5">Conta</label>
+                        <input
+                          value={ba.account || ''}
+                          onChange={(e) => {
+                            const next = [...socioForm.bank_accounts];
+                            next[idx] = { ...next[idx], account: e.target.value };
+                            setSocioForm({ ...socioForm, bank_accounts: next });
+                          }}
+                          placeholder="12345-6"
+                          className="w-full bg-[#F8FAFC] border border-terminal-border rounded-lg px-2.5 py-2 text-[#0F172A] font-mono"
+                        />
+                      </div>
+                      <div className="md:col-span-3">
+                        <label className="block text-[10px] text-[#64748B] uppercase font-bold mb-0.5">Tipo / Chave PIX</label>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          <select
+                            value={ba.account_type || 'CONTA_CAPITAL_COOP'}
+                            onChange={(e) => {
+                              const next = [...socioForm.bank_accounts];
+                              next[idx] = { ...next[idx], account_type: e.target.value };
+                              setSocioForm({ ...socioForm, bank_accounts: next });
+                            }}
+                            className="bg-[#F8FAFC] border border-terminal-border rounded-lg px-2 py-2 text-[11px] text-[#0F172A]"
+                          >
+                            <option value="CONTA_CAPITAL_COOP">Conta Capital</option>
+                            <option value="CONTA_CORRENTE">Corrente</option>
+                            <option value="CONTA_POUPANCA">Poupança</option>
+                            <option value="CONTA_SALARIO">Salário</option>
+                          </select>
+                          <input
+                            value={ba.pix_key || ''}
+                            onChange={(e) => {
+                              const next = [...socioForm.bank_accounts];
+                              next[idx] = { ...next[idx], pix_key: e.target.value };
+                              setSocioForm({ ...socioForm, bank_accounts: next });
+                            }}
+                            placeholder="Chave PIX"
+                            className="bg-[#F8FAFC] border border-terminal-border rounded-lg px-2 py-2 text-[11px] text-[#0F172A]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Bloco 4: Endereço + Identificadores Cooperativa */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-[#F8FAFC] border border-terminal-border space-y-3">
+                  <div className="text-neon-green font-bold uppercase tracking-wider flex items-center gap-2">
+                    <MapPin size={14} /> 4. Localização (Auto-Fill CEP)
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                    <div>
+                      <div className="flex bg-white shadow-sm border border-terminal-border rounded-xl overflow-hidden">
+                        <input
+                          value={socioForm.cep}
+                          onChange={(e) => setSocioForm({ ...socioForm, cep: e.target.value })}
+                          placeholder="CEP 00000-000"
+                          className="bg-transparent flex-1 px-2.5 py-2 text-[#0F172A] outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleLookupCep}
+                          disabled={loadingCep}
+                          className="px-2.5 border-l border-terminal-border text-neon-green hover:bg-neon-green/10"
+                        >
+                          {loadingCep ? '...' : <Search size={13} />}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="md:col-span-2">
+                      <input
+                        value={socioForm.endereco}
+                        onChange={(e) => setSocioForm({ ...socioForm, endereco: e.target.value })}
+                        placeholder="Logradouro / Endereço"
+                        className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2.5">
                     <input
-                      value={socioForm.nis}
-                      onChange={(e) => setSocioForm({ ...socioForm, nis: e.target.value })}
-                      placeholder="Número NIS"
-                      className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                      value={socioForm.bairro}
+                      onChange={(e) => setSocioForm({ ...socioForm, bairro: e.target.value })}
+                      placeholder="Bairro"
+                      className="bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                    />
+                    <input
+                      value={socioForm.cidade}
+                      onChange={(e) => setSocioForm({ ...socioForm, cidade: e.target.value })}
+                      placeholder="Cidade"
+                      className="bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                    />
+                    <input
+                      value={socioForm.uf}
+                      onChange={(e) => setSocioForm({ ...socioForm, uf: e.target.value })}
+                      placeholder="UF"
+                      maxLength={2}
+                      className="bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A] uppercase"
                     />
                   </div>
-                  <div>
-                    <label className="block text-[#64748B] mb-1 uppercase">Matrícula Cooperativa</label>
-                    <input
-                      value={socioForm.matricula}
-                      onChange={(e) => setSocioForm({ ...socioForm, matricula: e.target.value })}
-                      placeholder="Matrícula interna"
-                      className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
-                    />
+                </div>
+
+                <div className="p-4 rounded-xl bg-[#F8FAFC] border border-terminal-border space-y-3">
+                  <div className="text-amber-700 font-bold uppercase tracking-wider flex items-center gap-2">
+                    <Hash size={14} /> 5. Identificadores Cooperativistas & Status
                   </div>
-                  <div>
-                    <label className="block text-[#64748B] mb-1 uppercase">Status Inicial</label>
-                    <select
-                      value={socioForm.status}
-                      onChange={(e) => setSocioForm({ ...socioForm, status: e.target.value })}
-                      className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
-                    >
-                      <option value="ATIVO">Sócio Ativo</option>
-                      <option value="COTAS_LIQUIDADAS">Cotas Liquidadas</option>
-                      <option value="ANALISE_COMITE">Análise Comitê</option>
-                      <option value="PROPOSTA_CADASTRADA">Proposta Cadastrada</option>
-                    </select>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+                    <div>
+                      <label className="block text-[#64748B] mb-1 uppercase text-[10px]">NIS / PIS</label>
+                      <input
+                        value={socioForm.nis}
+                        onChange={(e) => setSocioForm({ ...socioForm, nis: e.target.value })}
+                        placeholder="Número NIS"
+                        className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#64748B] mb-1 uppercase text-[10px]">Matrícula</label>
+                      <input
+                        value={socioForm.matricula}
+                        onChange={(e) => setSocioForm({ ...socioForm, matricula: e.target.value })}
+                        placeholder="Matrícula interna"
+                        className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[#64748B] mb-1 uppercase text-[10px]">Status Societário</label>
+                      <select
+                        value={socioForm.status}
+                        onChange={(e) => setSocioForm({ ...socioForm, status: e.target.value })}
+                        className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                      >
+                        <option value="ATIVO">Sócio Ativo</option>
+                        <option value="COTAS_LIQUIDADAS">Cotas Liquidadas</option>
+                        <option value="ANALISE_COMITE">Análise Comitê</option>
+                        <option value="PROPOSTA_CADASTRADA">Proposta Cadastrada</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1455,7 +1923,11 @@ export default function CooperativaInho() {
                 disabled={submitting}
                 className="w-full py-3.5 rounded-xl bg-neon-cyan text-white font-extrabold uppercase tracking-widest hover:opacity-90"
               >
-                {submitting ? 'Submetendo ao Master DB...' : 'Registrar Sócio & Sincronizar OrBrick'}
+                {submitting
+                  ? 'Submetendo ao Master DB...'
+                  : editingSocioId
+                  ? 'Salvar Alterações da Ficha & Sincronizar OrBrick'
+                  : 'Registrar Sócio & Sincronizar OrBrick'}
               </button>
             </form>
           </div>
@@ -1464,15 +1936,101 @@ export default function CooperativaInho() {
 
       {/* ─── MODAL DOSSIÊ & EXTRATO DE COTAS DO SÓCIO ──────────────────────── */}
       {selectedSocio && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white backdrop-blur-sm p-4">
-          <div className="bg-white shadow-sm border border-terminal-border rounded-2xl p-6 w-full max-w-xl relative space-y-5 text-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white shadow-2xl border border-terminal-border rounded-2xl p-6 w-full max-w-2xl relative space-y-5 text-xs my-8">
             <button onClick={() => setSelectedSocio(null)} className="absolute top-4 right-4 text-[#64748B] hover:text-[#0F172A]">
               <X size={18} />
             </button>
-            <div>
-              <span className="text-[10px] text-neon-cyan uppercase font-bold tracking-widest">Dossiê Individual do Associado</span>
-              <h2 className="text-lg font-extrabold text-[#0F172A] mt-0.5">{selectedSocio.name}</h2>
-              <p className="text-[#64748B]">Doc: {selectedSocio.document} • {selectedSocio.notes || 'Sem observações'}</p>
+            <div className="flex items-start justify-between pr-8">
+              <div>
+                <span className="text-[10px] text-neon-cyan uppercase font-bold tracking-widest">Dossiê Individual do Associado</span>
+                <h2 className="text-lg font-extrabold text-[#0F172A] mt-0.5">{selectedSocio.name}</h2>
+                <p className="text-[#64748B]">Doc: {selectedSocio.document} • {selectedSocio.notes || 'Sem observações'}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  const coop = selectedSocio;
+                  setSelectedSocio(null);
+                  openEditSocioModal(coop);
+                }}
+                className="px-3 py-1.5 rounded-xl bg-neon-cyan/15 border border-neon-cyan/40 text-neon-cyan font-bold text-xs inline-flex items-center gap-1.5"
+              >
+                <Edit3 size={13} /> Editar Ficha Cadastral
+              </button>
+            </div>
+
+            {/* Resumo Cadastral Completo: Nascimento, Filiação, Múltiplos Telefones, E-mails e Contas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3.5 rounded-xl bg-[#F8FAFC] border border-terminal-border">
+              <div>
+                <div className="text-[10px] font-bold uppercase text-[#64748B]">Dados Pessoais</div>
+                <div className="mt-1 space-y-1 text-[#0F172A]">
+                  <div>
+                    <strong>Data de Nascimento:</strong>{' '}
+                    {selectedSocio.birth_date
+                      ? selectedSocio.birth_date.includes('-')
+                        ? selectedSocio.birth_date.split('-').reverse().join('/')
+                        : selectedSocio.birth_date
+                      : 'Não informada'}
+                  </div>
+                  <div>
+                    <strong>Filiação:</strong> {selectedSocio.filiation || 'Não informada'}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="text-[10px] font-bold uppercase text-[#64748B]">Telefones & E-mails Vinculados</div>
+                <div className="mt-1 space-y-1">
+                  {(selectedSocio.phones && selectedSocio.phones.length > 0
+                    ? selectedSocio.phones
+                    : selectedSocio.phone
+                    ? [{ number: selectedSocio.phone, type: 'PROPRIO', label: 'Principal' }]
+                    : []
+                  ).map((p, i) => (
+                    <div key={i} className="text-[#0F172A]">
+                      <Phone size={11} className="inline mr-1 text-neon-cyan" />
+                      {p.number}{' '}
+                      <span className="text-[10px] text-[#64748B]">({p.label || p.type || 'Contato'})</span>
+                    </div>
+                  ))}
+                  {(selectedSocio.emails && selectedSocio.emails.length > 0
+                    ? selectedSocio.emails
+                    : selectedSocio.email
+                    ? [{ email: selectedSocio.email, type: 'PRINCIPAL' }]
+                    : []
+                  ).map((em, i) => (
+                    <div key={i} className="text-[#0F172A]">
+                      <Mail size={11} className="inline mr-1 text-neon-cyan" />
+                      {em.email} <span className="text-[10px] text-[#64748B]">({em.type || 'Principal'})</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="md:col-span-2 border-t border-terminal-border pt-2.5">
+                <div className="text-[10px] font-bold uppercase text-[#64748B] mb-1">
+                  Contas Bancárias Vinculadas ({selectedSocio.bank_accounts?.length || (selectedSocio.bank_code ? 1 : 0)})
+                </div>
+                {selectedSocio.bank_accounts && selectedSocio.bank_accounts.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {selectedSocio.bank_accounts.map((ba, i) => (
+                      <div key={i} className="p-2 rounded-lg bg-white border border-terminal-border text-[11px]">
+                        <div className="font-bold text-[#0F172A]">
+                          <Landmark size={11} className="inline mr-1 text-neon-cyan" />
+                          Banco {ba.bank_code || '-'} — {ba.bank_name || resolveBankNameByCode(ba.bank_code) || 'Instituição'}
+                        </div>
+                        <div className="text-[#64748B] font-mono">
+                          Agência: {ba.agency || '-'} • Conta: {ba.account || '-'} ({ba.account_type || 'CORRENTE'})
+                        </div>
+                        {ba.pix_key && <div className="text-[10px] text-neon-cyan">PIX: {ba.pix_key}</div>}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-[#64748B]">{selectedSocio.bank_details || 'Nenhuma conta estruturada cadastrada.'}</div>
+                )}
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-2">

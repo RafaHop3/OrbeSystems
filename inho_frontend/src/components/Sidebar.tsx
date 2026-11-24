@@ -7,10 +7,11 @@ import {
   BarChart3, FileSignature, ShoppingCart, Monitor, ShieldCheck,
   ChevronDown, ChevronRight, LogOut, User, Users,
   X, Settings, BellRing, MessageSquare, Calendar,
-  Layers, Lock, TrendingUp, FileCheck, Wallet, Crown
+  Layers, Lock, TrendingUp, FileCheck, Wallet, Crown, Briefcase, KeyRound, Eye, EyeOff
 } from 'lucide-react';
 import OrbeLogo from './OrbeLogo';
 import { useAuth } from '@/lib/AuthContext';
+import { authApi } from '@/lib/api';
 
 interface SidebarProps {
   mobileOpen?: boolean;
@@ -29,6 +30,48 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
   const [accOpen, setAccOpen] = useState(true);
   const [sysOpen, setSysOpen] = useState(true);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  // Modal Trocar Senha
+  const [showPwdModal, setShowPwdModal] = useState(false);
+  const [currPwd, setCurrPwd] = useState('');
+  const [newPwd, setNewPwd] = useState('');
+  const [confPwd, setConfPwd] = useState('');
+  const [showPwds, setShowPwds] = useState(false);
+  const [pwdLoading, setPwdLoading] = useState(false);
+  const [pwdMsg, setPwdMsg] = useState<{ type: 'ok' | 'err'; text: string } | null>(null);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwdMsg(null);
+    if (!currPwd.trim() || !newPwd.trim()) {
+      setPwdMsg({ type: 'err', text: 'Preencha a senha atual e a nova senha.' });
+      return;
+    }
+    if (newPwd.trim().length < 8) {
+      setPwdMsg({ type: 'err', text: 'A nova senha deve ter no mínimo 8 caracteres.' });
+      return;
+    }
+    if (newPwd.trim() !== confPwd.trim()) {
+      setPwdMsg({ type: 'err', text: 'A confirmação da nova senha não confere.' });
+      return;
+    }
+    setPwdLoading(true);
+    try {
+      await authApi.changePassword(currPwd.trim(), newPwd.trim());
+      setPwdMsg({ type: 'ok', text: 'Senha alterada com sucesso!' });
+      setCurrPwd('');
+      setNewPwd('');
+      setConfPwd('');
+      setTimeout(() => {
+        setShowPwdModal(false);
+        setPwdMsg(null);
+      }, 1500);
+    } catch (err: any) {
+      setPwdMsg({ type: 'err', text: err?.message || 'Erro ao alterar a senha. Verifique sua senha atual.' });
+    } finally {
+      setPwdLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -121,10 +164,13 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
                 { label: 'FORNECEDORES', href: '/dashboard/contacts?category=SUPPLIER', cat: 'SUPPLIER' },
                 { label: 'FUNCIONÁRIOS', href: '/dashboard/contacts?category=EMPLOYEE', cat: 'EMPLOYEE' },
                 { label: 'SÓCIOS', href: '/dashboard/cooperativa', cat: 'COOPERADO' },
+                { label: 'INHO TURISMO', href: '/dashboard/turismo', cat: 'TURISMO' },
               ].map((item) => {
                 const isActive =
                   item.cat === 'COOPERADO'
                     ? pathname.startsWith('/dashboard/cooperativa')
+                    : item.cat === 'TURISMO'
+                    ? pathname.startsWith('/dashboard/turismo')
                     : pathname === '/dashboard/contacts' && activeCategory === item.cat;
                 return (
                   <Link
@@ -369,13 +415,25 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
               </div>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 bg-white border border-[#E2E8F0] hover:border-red-400 hover:bg-red-50 hover:text-red-700 text-[#475569] py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-wider shadow-sm"
-          >
-            <LogOut size={12} />
-            Sair da Conta
-          </button>
+          <div className="grid grid-cols-2 gap-1.5">
+            <button
+              onClick={() => {
+                setPwdMsg(null);
+                setShowPwdModal(true);
+              }}
+              className="w-full flex items-center justify-center gap-1.5 bg-white border border-[#E2E8F0] hover:border-[#B8860B] hover:bg-amber-50 hover:text-[#8B6508] text-[#475569] py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-wider shadow-sm"
+            >
+              <KeyRound size={12} />
+              Trocar Senha
+            </button>
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center justify-center gap-1.5 bg-white border border-[#E2E8F0] hover:border-red-400 hover:bg-red-50 hover:text-red-700 text-[#475569] py-2 rounded-xl transition-all font-bold text-[10px] uppercase tracking-wider shadow-sm"
+            >
+              <LogOut size={12} />
+              Sair
+            </button>
+          </div>
         </div>
       )}
     </div>
@@ -403,6 +461,112 @@ export default function Sidebar({ mobileOpen = false, setMobileOpen = () => {} }
               <X size={18} />
             </button>
             {navContent}
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Trocar Minha Senha */}
+      {showPwdModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl border border-[#E2E8F0] shadow-2xl w-full max-w-md p-6 relative animate-fade-in">
+            <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4 mb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-[#8B6508]">
+                  <KeyRound size={18} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-extrabold text-[#0F172A] uppercase tracking-wide">Trocar Minha Senha</h3>
+                  <p className="text-[11px] text-[#64748B]">{user?.email}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowPwdModal(false)}
+                className="p-1.5 rounded-lg text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleChangePassword} className="space-y-4">
+              {pwdMsg && (
+                <div
+                  className={`p-3 rounded-xl text-xs font-bold border ${
+                    pwdMsg.type === 'ok'
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      : 'bg-red-50 text-red-700 border-red-200'
+                  }`}
+                >
+                  {pwdMsg.text}
+                </div>
+              )}
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="text-[11px] font-extrabold text-[#475569] uppercase tracking-wider">
+                    Senha Atual
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowPwds(p => !p)}
+                    className="inline-flex items-center gap-1 text-[11px] font-bold text-[#8B6508] hover:underline"
+                  >
+                    {showPwds ? <EyeOff size={13} /> : <Eye size={13} />}
+                    {showPwds ? 'Ocultar senhas' : 'Ver senhas'}
+                  </button>
+                </div>
+                <input
+                  type={showPwds ? 'text' : 'password'}
+                  value={currPwd}
+                  onChange={e => setCurrPwd(e.target.value)}
+                  placeholder="Digite sua senha atual"
+                  className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-[#B8860B] focus:bg-white"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-extrabold text-[#475569] uppercase tracking-wider block">
+                  Nova Senha (mín. 8 caracteres)
+                </label>
+                <input
+                  type={showPwds ? 'text' : 'password'}
+                  value={newPwd}
+                  onChange={e => setNewPwd(e.target.value)}
+                  placeholder="Digite a nova senha"
+                  className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-[#B8860B] focus:bg-white"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-extrabold text-[#475569] uppercase tracking-wider block">
+                  Confirmar Nova Senha
+                </label>
+                <input
+                  type={showPwds ? 'text' : 'password'}
+                  value={confPwd}
+                  onChange={e => setConfPwd(e.target.value)}
+                  placeholder="Repita a nova senha"
+                  className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-[#B8860B] focus:bg-white"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowPwdModal(false)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-100"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={pwdLoading}
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#9A6F0B] via-[#C59B27] to-[#9A6F0B] text-white text-xs font-extrabold uppercase tracking-wider shadow-sm hover:brightness-105 disabled:opacity-50"
+                >
+                  {pwdLoading ? 'Salvando...' : 'Salvar Nova Senha'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

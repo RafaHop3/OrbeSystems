@@ -11,6 +11,29 @@ export default function UsersPage() {
     const [error, setError] = useState<string | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [pwdTargetUser, setPwdTargetUser] = useState<UserMe | null>(null);
+    const [newUserPwd, setNewUserPwd] = useState('');
+    const [savingPwd, setSavingPwd] = useState(false);
+
+    const handleResetUserPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!pwdTargetUser) return;
+        if (newUserPwd.trim().length < 8) {
+            alert('A nova senha deve ter no mínimo 8 caracteres.');
+            return;
+        }
+        try {
+            setSavingPwd(true);
+            await usersApi.update(pwdTargetUser.id, { password: newUserPwd.trim() });
+            alert(`Senha de "${pwdTargetUser.full_name}" alterada com sucesso!`);
+            setPwdTargetUser(null);
+            setNewUserPwd('');
+        } catch (err: any) {
+            alert(err?.message || 'Erro ao alterar a senha do usuário.');
+        } finally {
+            setSavingPwd(false);
+        }
+    };
 
     // Modal Form state
     const [fullName, setFullName] = useState('');
@@ -233,7 +256,16 @@ export default function UsersPage() {
                                         <td className="py-4 px-6 text-inho-muted text-xs">
                                             {u.created_at ? new Date(u.created_at).toLocaleDateString('pt-BR') : '-'}
                                         </td>
-                                        <td className="py-4 px-6 text-right">
+                                        <td className="py-4 px-6 text-right space-x-3">
+                                            <button
+                                                onClick={() => {
+                                                    setPwdTargetUser(u);
+                                                    setNewUserPwd('');
+                                                }}
+                                                className="text-xs font-bold text-inho-gold hover:underline transition-all"
+                                            >
+                                                Trocar Senha
+                                            </button>
                                             {u.id !== currentUser?.id && (
                                                 <button
                                                     onClick={() => handleDeleteUser(u)}
@@ -250,6 +282,58 @@ export default function UsersPage() {
                     </div>
                 )}
             </div>
+
+            {/* Modal: Trocar / Redefinir Senha */}
+            {pwdTargetUser && (
+                <div className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4">
+                    <div className="glassmorphism bg-white w-full max-w-md rounded-2xl border border-inho-gold/30 p-6 space-y-4 shadow-2xl animate-fade-in">
+                        <div className="flex items-center justify-between border-b border-inho-gold/10 pb-3">
+                            <div>
+                                <h2 className="text-base font-bold text-inho-text">Trocar Senha de Acesso</h2>
+                                <p className="text-xs text-inho-muted">{pwdTargetUser.full_name} ({pwdTargetUser.email})</p>
+                            </div>
+                            <button
+                                onClick={() => setPwdTargetUser(null)}
+                                className="text-inho-muted hover:text-inho-text text-xl font-bold"
+                            >
+                                ×
+                            </button>
+                        </div>
+                        <form onSubmit={handleResetUserPassword} className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-medium text-inho-muted mb-1">
+                                    Nova Senha (mínimo 8 caracteres) *
+                                </label>
+                                <input
+                                    type="password"
+                                    required
+                                    minLength={8}
+                                    value={newUserPwd}
+                                    onChange={(e) => setNewUserPwd(e.target.value)}
+                                    placeholder="Digite a nova senha"
+                                    className="w-full bg-inho-black/60 border border-inho-gold/20 rounded-xl px-4 py-2.5 text-inho-text text-sm focus:outline-none focus:border-inho-gold"
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setPwdTargetUser(null)}
+                                    className="px-4 py-2 text-xs font-bold text-inho-muted hover:text-inho-text"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={savingPwd}
+                                    className="bg-inho-gold text-white font-bold px-5 py-2 rounded-xl hover:bg-inho-gold/90 text-xs"
+                                >
+                                    {savingPwd ? 'Salvando...' : 'Salvar Nova Senha'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
             {/* Modal: Novo Colaborador */}
             {showModal && (

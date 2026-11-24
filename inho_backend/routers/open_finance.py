@@ -341,6 +341,35 @@ async def link_cooperado_open_finance_account(
         f"PIX ({payload.pix_key_type}): {payload.pix_key} | OpenFinance: {consent_tag}"
     )
     coop.bank_details = structured_bank
+    coop.bank_code = meta["code"]
+    coop.bank_name = payload.bank_name or meta["name"]
+    coop.bank_agency = payload.branch
+    coop.bank_account = payload.account_number
+    coop.bank_account_type = payload.account_type
+    coop.pix_key_type = payload.pix_key_type
+    coop.pix_key = payload.pix_key
+
+    existing_accounts = list(coop.bank_accounts or [])
+    new_acc_entry = {
+        "bank_code": meta["code"],
+        "bank_name": payload.bank_name or meta["name"],
+        "agency": payload.branch,
+        "account": payload.account_number,
+        "account_type": payload.account_type,
+        "pix_key_type": payload.pix_key_type,
+        "pix_key": payload.pix_key,
+        "holder_name": coop.name,
+        "is_primary": len(existing_accounts) == 0,
+    }
+    dup_idx = next(
+        (i for i, a in enumerate(existing_accounts) if a.get("bank_code") == meta["code"] and a.get("agency") == payload.branch and a.get("account") == payload.account_number),
+        None,
+    )
+    if dup_idx is not None:
+        existing_accounts[dup_idx] = {**existing_accounts[dup_idx], **new_acc_entry}
+    else:
+        existing_accounts.append(new_acc_entry)
+    coop.bank_accounts_json = json.dumps(existing_accounts, ensure_ascii=False)
 
     # Sincroniza também no CRMContact correspondente do mesmo tenant
     contact = (
@@ -353,6 +382,14 @@ async def link_cooperado_open_finance_account(
     ).scalars().first()
     if contact:
         contact.bank_details = structured_bank
+        contact.bank_code = coop.bank_code
+        contact.bank_name = coop.bank_name
+        contact.bank_agency = coop.bank_agency
+        contact.bank_account = coop.bank_account
+        contact.bank_account_type = coop.bank_account_type
+        contact.pix_key_type = coop.pix_key_type
+        contact.pix_key = coop.pix_key
+        contact.bank_accounts_json = coop.bank_accounts_json
 
     await db.commit()
     await db.refresh(coop)

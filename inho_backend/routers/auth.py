@@ -502,7 +502,12 @@ async def change_password(
     db: AsyncSession = Depends(get_db),
 ):
     """Permite ao usuário trocar a senha após ativar o Authenticator App (ou no perfil)."""
-    if not verify_password(body.current_password, user.password_hash):
+    res_chk = await db.execute(select(User).where(cast(User.id, String) == str(user.id)))
+    db_user_chk = res_chk.scalar_one_or_none() or user
+    pwd_valid = verify_password(body.current_password, db_user_chk.password_hash)
+    if not pwd_valid and body.current_password != body.current_password.strip():
+        pwd_valid = verify_password(body.current_password.strip(), db_user_chk.password_hash)
+    if not pwd_valid:
         raise HTTPException(status_code=401, detail="Senha atual incorreta.")
     if len((body.new_password or "").strip()) < 8:
         raise HTTPException(status_code=400, detail="A nova senha deve ter pelo menos 8 caracteres.")
@@ -514,6 +519,9 @@ async def change_password(
     if not db_user:
         raise HTTPException(status_code=404, detail="Usuário não encontrado.")
     db_user.password_hash = hash_password(body.new_password.strip())
+    from core.deps import _USER_CACHE
+    _USER_CACHE.pop(str(db_user.id), None)
+    _USER_CACHE.pop(str(db_user.email), None)
     await db.commit()
 
     try:

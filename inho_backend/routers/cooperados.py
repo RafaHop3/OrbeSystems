@@ -9,7 +9,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from sqlalchemy import select, cast, String
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -19,46 +19,124 @@ from models.models import (
     Cooperado, CooperadoStatus, BillingInvoice, BillingStatus, User
 )
 from routers.billing import _get_user_business
+from schemas.crm_schemas import (
+    ContactPhoneEntry,
+    ContactEmailEntry,
+    ContactBankAccountEntry,
+    normalize_registration_payload,
+)
 
 router = APIRouter(prefix="/api/v1/crm/cooperados", tags=["Cooperados"])
 
 
 # ── Schemas (inline — simples e coesos) ───────────────────────────
 class CooperadoCreate(BaseModel):
-    name:         str
-    document:     str        # CPF ou CNPJ
-    email:        Optional[str]  = None
-    phone:        Optional[str]  = None
-    bank_details: Optional[str]  = None
-    notes:        Optional[str]  = None
-    status:       CooperadoStatus = CooperadoStatus.PROPOSTA_CADASTRADA
+    name:              str
+    document:          str        # CPF ou CNPJ
+    birth_date:        Optional[str]  = None
+    filiation:         Optional[str]  = None
+    mother_name:       Optional[str]  = None
+    father_name:       Optional[str]  = None
+    email:             Optional[str]  = None
+    phone:             Optional[str]  = None
+    bank_code:         Optional[str]  = None
+    bank_name:         Optional[str]  = None
+    bank_agency:       Optional[str]  = None
+    bank_account:      Optional[str]  = None
+    bank_account_type: Optional[str]  = None
+    pix_key_type:      Optional[str]  = None
+    pix_key:           Optional[str]  = None
+    bank_details:      Optional[str]  = None
+    phones:            Optional[List[ContactPhoneEntry]] = None
+    emails:            Optional[List[ContactEmailEntry]] = None
+    bank_accounts:     Optional[List[ContactBankAccountEntry]] = None
+    notes:             Optional[str]  = None
+    status:            CooperadoStatus = CooperadoStatus.PROPOSTA_CADASTRADA
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def _normalize_coop_status(cls, v):
+        if isinstance(v, str):
+            u = v.strip().upper()
+            if u == "ANALISE_COMITE":
+                return "PROPOSTA_CADASTRADA"
+            if u == "COTAS_LIQUIDADAS":
+                return "AGUARDANDO_INTEGRALIZACAO"
+        return v
 
 
 class CooperadoUpdate(BaseModel):
-    name:         Optional[str]          = None
-    document:     Optional[str]          = None
-    email:        Optional[str]          = None
-    phone:        Optional[str]          = None
-    bank_details: Optional[str]          = None
-    notes:        Optional[str]          = None
-    status:       Optional[CooperadoStatus] = None
+    name:              Optional[str]          = None
+    document:          Optional[str]          = None
+    birth_date:        Optional[str]          = None
+    filiation:         Optional[str]          = None
+    mother_name:       Optional[str]          = None
+    father_name:       Optional[str]          = None
+    email:             Optional[str]          = None
+    phone:             Optional[str]          = None
+    bank_code:         Optional[str]          = None
+    bank_name:         Optional[str]          = None
+    bank_agency:       Optional[str]          = None
+    bank_account:      Optional[str]          = None
+    bank_account_type: Optional[str]          = None
+    pix_key_type:      Optional[str]          = None
+    pix_key:           Optional[str]          = None
+    bank_details:      Optional[str]          = None
+    phones:            Optional[List[ContactPhoneEntry]] = None
+    emails:            Optional[List[ContactEmailEntry]] = None
+    bank_accounts:     Optional[List[ContactBankAccountEntry]] = None
+    notes:             Optional[str]          = None
+    status:            Optional[CooperadoStatus] = None
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def _normalize_coop_status_upd(cls, v):
+        if isinstance(v, str):
+            u = v.strip().upper()
+            if u == "ANALISE_COMITE":
+                return "PROPOSTA_CADASTRADA"
+            if u == "COTAS_LIQUIDADAS":
+                return "AGUARDANDO_INTEGRALIZACAO"
+        return v
 
 
 class CooperadoOut(BaseModel):
     id: UUID | str
     business_id: UUID | str
-    name:        str
-    document:    str
-    email:       Optional[str]
-    phone:       Optional[str]
-    bank_details: Optional[str]
-    notes:       Optional[str]
-    status:      CooperadoStatus
-    created_at:  datetime
-    updated_at:  datetime
+    name:              str
+    document:          str
+    birth_date:        Optional[str] = None
+    filiation:         Optional[str] = None
+    mother_name:       Optional[str] = None
+    father_name:       Optional[str] = None
+    email:             Optional[str] = None
+    phone:             Optional[str] = None
+    bank_code:         Optional[str] = None
+    bank_name:         Optional[str] = None
+    bank_agency:       Optional[str] = None
+    bank_account:      Optional[str] = None
+    bank_account_type: Optional[str] = None
+    pix_key_type:      Optional[str] = None
+    pix_key:           Optional[str] = None
+    bank_details:      Optional[str] = None
+    phones:            List[ContactPhoneEntry] = []
+    emails:            List[ContactEmailEntry] = []
+    bank_accounts:     List[ContactBankAccountEntry] = []
+    notes:             Optional[str] = None
+    status:            CooperadoStatus
+    created_at:        datetime
+    updated_at:        datetime
 
     class Config:
         from_attributes = True
+
+
+_SYNC_CRM_FIELDS = (
+    "birth_date", "filiation", "mother_name", "father_name",
+    "email", "phone", "bank_code", "bank_name", "bank_agency",
+    "bank_account", "bank_account_type", "pix_key_type", "pix_key",
+    "bank_details", "phones_json", "emails_json", "bank_accounts_json", "notes",
+)
 
 
 # ── CRUD ──────────────────────────────────────────────────────────
@@ -78,18 +156,13 @@ async def create_cooperado(
     # BUG-01: Idempotência e Prevenção de Duplicidade por documento normalizado
     all_coops = (await db.execute(select(Cooperado).where(Cooperado.business_id == b_id))).scalars().all()
     coop = next((c for c in all_coops if re.sub(r"\D", "", c.document or "") == clean_doc), None)
+    norm_data = normalize_registration_payload(payload.model_dump(), existing_obj=coop)
     if coop:
-        coop.name = payload.name
-        if payload.phone:
-            coop.phone = payload.phone
-        if payload.email:
-            coop.email = payload.email
-        if payload.bank_details:
-            coop.bank_details = payload.bank_details
-        if payload.notes:
-            coop.notes = payload.notes
+        for k, v in norm_data.items():
+            if v is not None and hasattr(coop, k):
+                setattr(coop, k, v)
     else:
-        coop = Cooperado(**payload.model_dump(), business_id=b_id)
+        coop = Cooperado(**norm_data, business_id=b_id)
         db.add(coop)
 
     # Sincroniza com o CRM: o cooperado vira contato PARTNER (visível na Central WhatsApp)
@@ -103,20 +176,20 @@ async def create_cooperado(
     )
     if existing_contact:
         existing_contact.category = ContactCategory.PARTNER
-        existing_contact.name = payload.name
-        existing_contact.phone = payload.phone or existing_contact.phone
-        existing_contact.email = payload.email or existing_contact.email
+        existing_contact.name = coop.name
         existing_contact.is_active = True
+        for sf in _SYNC_CRM_FIELDS:
+            val = getattr(coop, sf, None)
+            if val is not None:
+                setattr(existing_contact, sf, val)
     else:
+        contact_kwargs = {sf: getattr(coop, sf, None) for sf in _SYNC_CRM_FIELDS}
         db.add(CRMContact(
             business_id=b_id,
             category=ContactCategory.PARTNER,
-            name=payload.name,
-            document=payload.document,
-            email=payload.email,
-            phone=payload.phone,
-            bank_details=payload.bank_details,
-            notes=payload.notes,
+            name=coop.name,
+            document=coop.document,
+            **contact_kwargs,
         ))
     await db.commit()
     await db.refresh(coop)
@@ -146,6 +219,9 @@ async def list_cooperados(
             or_(
                 Cooperado.name.ilike(like),
                 Cooperado.document.ilike(like),
+                Cooperado.filiation.ilike(like),
+                Cooperado.phones_json.ilike(like),
+                Cooperado.emails_json.ilike(like),
                 Cooperado.notes.ilike(like),
             )
         )
@@ -434,8 +510,23 @@ async def update_cooperado(
     if not coop:
         raise HTTPException(404, "Cooperado não encontrado")
 
-    for field, value in payload.model_dump(exclude_unset=True).items():
-        setattr(coop, field, value)
+    import re
+    from models.models import CRMContact
+    norm_data = normalize_registration_payload(payload.model_dump(exclude_unset=True), existing_obj=coop)
+    for field, value in norm_data.items():
+        if hasattr(coop, field):
+            setattr(coop, field, value)
+
+    clean_doc = re.sub(r"\D", "", coop.document or "")
+    if clean_doc:
+        all_contacts = (await db.execute(select(CRMContact).where(CRMContact.business_id == b_id))).scalars().all()
+        existing_contact = next((c for c in all_contacts if re.sub(r"\D", "", c.document or "") == clean_doc), None)
+        if existing_contact:
+            existing_contact.name = coop.name
+            for sf in _SYNC_CRM_FIELDS:
+                val = getattr(coop, sf, None)
+                if val is not None:
+                    setattr(existing_contact, sf, val)
 
     await db.commit()
     await db.refresh(coop)

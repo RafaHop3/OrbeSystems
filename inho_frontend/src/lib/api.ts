@@ -182,6 +182,18 @@ export const authApi = {
   /** Clears the HttpOnly refresh cookie server-side */
   logout: () =>
     apiFetch<void>('/api/v1/auth/logout', { method: 'POST' }),
+
+  changePassword: (current_password: string, new_password: string) =>
+    apiFetch<{ status: string; message: string }>('/api/v1/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ current_password, new_password }),
+    }),
+
+  enrollConfirmMfa: (mfa_enrollment_token: string, code: string) =>
+    apiFetch<TokenResponse & { requires_password_change?: boolean }>('/api/v1/auth/mfa/enroll-confirm', {
+      method: 'POST',
+      body: JSON.stringify({ mfa_enrollment_token, code: code.trim() }),
+    }),
 };
 
 // ── Users endpoints ────────────────────────────────────────────────
@@ -487,9 +499,91 @@ export const accountsApi = {
 };
 
 // ── CRM Cooperativa (Orbe Inho) ───────────────────────────────────────
+export interface ContactPhoneEntry {
+  number: string;
+  type?: string; // PROPRIO | MAE | PAI | RECADO | WHATSAPP | COMERCIAL | RESIDENCIAL | OUTRO
+  label?: string;
+  is_whatsapp?: boolean;
+  is_primary?: boolean;
+}
+
+export interface ContactEmailEntry {
+  email: string;
+  type?: string; // PRINCIPAL | PESSOAL | CORPORATIVO | FINANCEIRO | SECUNDARIO | OUTRO
+  label?: string;
+  is_primary?: boolean;
+}
+
+export interface ContactBankAccountEntry {
+  bank_code?: string;
+  bank_name?: string;
+  agency?: string;
+  account?: string;
+  account_type?: string; // CONTA_CORRENTE | CONTA_POUPANCA | CONTA_CAPITAL_COOP | CONTA_SALARIO | CONTA_PAGAMENTO
+  pix_key_type?: string;
+  pix_key?: string;
+  holder_name?: string;
+  is_primary?: boolean;
+}
+
+export const BRAZILIAN_BANKS_CATALOG: { code: string; name: string }[] = [
+  { code: '001', name: 'Banco do Brasil' },
+  { code: '756', name: 'Sicoob' },
+  { code: '748', name: 'Sicredi' },
+  { code: '341', name: 'Itaú Unibanco' },
+  { code: '237', name: 'Bradesco' },
+  { code: '104', name: 'Caixa Econômica Federal' },
+  { code: '033', name: 'Santander' },
+  { code: '260', name: 'Nubank' },
+  { code: '077', name: 'Banco Inter' },
+  { code: '136', name: 'Unicred' },
+  { code: '133', name: 'Cresol' },
+  { code: '085', name: 'Ailos / Viacredi' },
+  { code: '041', name: 'Banrisul' },
+  { code: '336', name: 'C6 Bank' },
+  { code: '403', name: 'Cora' },
+  { code: '208', name: 'BTG Pactual' },
+  { code: '422', name: 'Banco Safra' },
+  { code: '290', name: 'PagBank' },
+  { code: '323', name: 'Mercado Pago' },
+];
+
+export function resolveBankNameByCode(code?: string): string {
+  if (!code) return '';
+  const clean = code.trim().padStart(3, '0');
+  const found = BRAZILIAN_BANKS_CATALOG.find((b) => b.code === clean || b.code === code.trim());
+  return found ? found.name : '';
+}
 export interface CRMContactCreate {
   name: string;
-  category: 'COOPERADO' | 'EMPLOYEE' | 'SUPPLIER' | 'CUSTOMER';
+  category: 'COOPERADO' | 'EMPLOYEE' | 'SUPPLIER' | 'CUSTOMER' | 'PARTNER';
+  birth_date?: string;
+  filiation?: string;
+  mother_name?: string;
+  father_name?: string;
+  bank_code?: string;
+  bank_name?: string;
+  bank_agency?: string;
+  bank_account?: string;
+  bank_account_type?: string;
+  pix_key_type?: string;
+  pix_key?: string;
+  phones?: ContactPhoneEntry[];
+  emails?: ContactEmailEntry[];
+  bank_accounts?: ContactBankAccountEntry[];
+  nis?: string;
+  correios_matricula?: string;
+  address?: string;
+  street?: string;
+  number?: string;
+  complement?: string;
+  neighborhood?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  role_title?: string;
+  created_at?: string;
+  updated_at?: string;
   document?: string;
   email?: string;
   phone?: string;
@@ -537,6 +631,36 @@ export interface AccountPayableOut {
 
 export const crmApi = {
   getContacts: (category?: string) => {
+    const cat = category === 'COOPERADO' ? 'PARTNER' : category;
+    return apiFetch<CRMContactOut[]>(`/api/v1/crm/contacts/${cat ? `?category=${cat}` : ''}`);
+  },
+
+  getContact: (id: string) =>
+    apiFetch<CRMContactOut>(`/api/v1/crm/contacts/${encodeURIComponent(id)}`),
+
+  updateContact: (id: string, payload: Partial<CRMContactCreate>) =>
+    apiFetch<CRMContactOut>(`/api/v1/crm/contacts/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      body: JSON.stringify({
+        ...payload,
+        category: payload.category === 'COOPERADO' ? 'PARTNER' : payload.category,
+      }),
+    }),
+
+  deleteContact: (id: string) =>
+    apiFetch<void>(`/api/v1/crm/contacts/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+    }),
+
+  getContactTimeline: (id: string) =>
+    apiFetch<{
+      contact_id: string;
+      upcoming_receivables: { id: string; amount: number; due_date: string; status: string; description?: string }[];
+      last_received: { id: string; amount: number; due_date: string; status: string; description?: string }[];
+      open_balance: number;
+    }>(`/api/v1/crm/contacts/${encodeURIComponent(id)}/timeline`),
+
+  _legacyGetContacts: (category?: string) => {
     const cat = category === 'COOPERADO' ? 'PARTNER' : category;
     return apiFetch<CRMContactOut[]>(`/api/v1/crm/contacts/${cat ? `?category=${cat}` : ''}`);
   },
@@ -859,10 +983,80 @@ export const crmApi = {
     apiFetch<{ status: string; id: string }>(`/api/v1/crm/cbm/ai-knowledge/${encodeURIComponent(chunkId)}`, {
       method: 'DELETE',
     }),
+
+  getOrbrickChannelsQrHub: () =>
+    apiFetch<any>('/api/v1/crm/orbrick/channels/qr-hub'),
+
+  connectOrbrickChannel: (payload: {
+    channel: 'WHATSAPP' | 'INSTAGRAM' | 'TELEGRAM';
+    handle_or_id?: string;
+    access_token?: string;
+  }) =>
+    apiFetch<any>('/api/v1/crm/orbrick/channels/connect', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  disconnectOrbrickChannel: (channel: 'WHATSAPP' | 'INSTAGRAM' | 'TELEGRAM') =>
+    apiFetch<any>('/api/v1/crm/orbrick/channels/disconnect', {
+      method: 'POST',
+      body: JSON.stringify({ channel }),
+    }),
+
+  getAiPolicy: () =>
+    apiFetch<{
+      exists: boolean;
+      status: string;
+      draft_rules: {
+        max_installments?: number | null;
+        max_discount_pct?: number | null;
+        max_extension_days?: number | null;
+        tone_of_voice?: string;
+      };
+      approved_rules: {
+        max_installments?: number | null;
+        max_discount_pct?: number | null;
+        max_extension_days?: number | null;
+        tone_of_voice?: string;
+      };
+      source_excerpts: { rule: string; value: string; title: string; excerpt: string }[];
+      has_conflict: boolean;
+      conflict_notes?: string | null;
+      approved_by_name?: string | null;
+      approved_at?: string | null;
+    }>('/api/v1/crm/cbm/ai-policy'),
+
+  extractAiPolicy: () =>
+    apiFetch<any>('/api/v1/crm/cbm/ai-policy/extract', { method: 'POST' }),
+
+  approveAiPolicy: (payload: {
+    max_installments?: number | null;
+    max_discount_pct?: number | null;
+    max_extension_days?: number | null;
+    tone_of_voice?: string;
+  }) =>
+    apiFetch<any>('/api/v1/crm/cbm/ai-policy/approve', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
 };
 
 // ── Cooperados (Módulo Cooperativismo) ───────────────────────────────
 export interface CooperadoItem {
+  birth_date?: string;
+  filiation?: string;
+  mother_name?: string;
+  father_name?: string;
+  bank_code?: string;
+  bank_name?: string;
+  bank_agency?: string;
+  bank_account?: string;
+  bank_account_type?: string;
+  pix_key_type?: string;
+  pix_key?: string;
+  phones?: ContactPhoneEntry[];
+  emails?: ContactEmailEntry[];
+  bank_accounts?: ContactBankAccountEntry[];
   id: string;
   business_id: string;
   name: string;
@@ -906,9 +1100,23 @@ export const cooperadosApi = {
   create: (payload: {
     name: string;
     document: string;
+    birth_date?: string;
+    filiation?: string;
+    mother_name?: string;
+    father_name?: string;
     email?: string;
     phone?: string;
+    bank_code?: string;
+    bank_name?: string;
+    bank_agency?: string;
+    bank_account?: string;
+    bank_account_type?: string;
+    pix_key_type?: string;
+    pix_key?: string;
     bank_details?: string;
+    phones?: ContactPhoneEntry[];
+    emails?: ContactEmailEntry[];
+    bank_accounts?: ContactBankAccountEntry[];
     notes?: string;
     status?: string;
   }) =>
@@ -1426,4 +1634,263 @@ export const copilotApi = {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
+};
+
+
+export interface OrbeJobsLivingCV {
+  id: string;
+  business_id: string;
+  user_id: string;
+  full_name: string;
+  headline?: string;
+  target_roles: string[];
+  json_resume: {
+    basics: { name: string; label: string; email: string; summary: string };
+    work: Array<{ name: string; position: string; startDate?: string; summary?: string }>;
+    education: Array<Record<string, any>>;
+    certificates: Array<{ name: string; issuer: string; date?: string }>;
+    skills: Array<{ name: string; keywords: string[] }>;
+    languages: Array<{ language: string; fluency: string }>;
+  };
+  human_in_the_loop: boolean;
+  daily_send_limit: number;
+  kill_switch_active: boolean;
+  whatsapp_source_phone?: string;
+  last_pdf_sha256?: string;
+  updated_at?: string;
+}
+
+export interface OrbeJobsApplication {
+  id: string;
+  job_url_hash: string;
+  company_name: string;
+  job_title: string;
+  job_url: string;
+  recipient_email?: string;
+  stage: string;
+  match_score: number;
+  tailored_cover_letter?: string;
+  ai_provider_used?: string;
+  requires_approval: boolean;
+  approved_by_human: boolean;
+  applied_at?: string;
+  updated_at?: string;
+}
+
+export const orbejobsApi = {
+  getDashboard: () =>
+    apiFetch<{
+      business_id: string;
+      profile: OrbeJobsLivingCV;
+      daily_quota: { sent_today: number; daily_send_limit: number; hard_cap: number; remaining_today: number };
+      oauth_vault: { connected: boolean; provider: string; account_email?: string; scopes?: string; cipher_algorithm: string };
+      listings_count: number;
+      stage_counts: Record<string, number>;
+      applications: OrbeJobsApplication[];
+      queue: Array<{
+        id: string;
+        application_id: string;
+        recipient_email: string;
+        subject: string;
+        mx_valid: boolean;
+        status: string;
+        jitter_seconds: number;
+        error_message?: string;
+        sent_at?: string;
+      }>;
+    }>('/api/v1/orbejobs/dashboard'),
+
+  updateLivingCv: (payload: {
+    full_name?: string;
+    headline?: string;
+    target_roles?: string[];
+    json_resume?: Record<string, any>;
+    human_in_the_loop?: boolean;
+    daily_send_limit?: number;
+  }) =>
+    apiFetch<OrbeJobsLivingCV>('/api/v1/orbejobs/living-cv', {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+
+  whatsappUpdate: (payload: { message: string; phone?: string }) =>
+    apiFetch<{ actions: string[]; profile: OrbeJobsLivingCV }>('/api/v1/orbejobs/living-cv/whatsapp-update', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  uploadPdf: (file: File) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return apiFetch<{ filename: string; pdf_sha256: string; extracted_chars: number; profile: OrbeJobsLivingCV }>(
+      '/api/v1/orbejobs/living-cv/upload-pdf',
+      { method: 'POST', body: fd }
+    );
+  },
+
+  triggerScrape: (payload: {
+    greenhouse_boards?: string[];
+    lever_companies?: string[];
+    rss_feeds?: string[];
+    manual_jobs?: Array<{
+      company_name: string;
+      title: string;
+      job_url: string;
+      recipient_email?: string;
+      description_text?: string;
+    }>;
+  }) =>
+    apiFetch<{ scraped_total: number; inserted_listings: number; created_kanban_cards: number }>(
+      '/api/v1/orbejobs/scrape',
+      { method: 'POST', body: JSON.stringify(payload) }
+    ),
+
+  createApplication: (payload: {
+    company_name: string;
+    job_title: string;
+    job_url: string;
+    recipient_email?: string;
+    description_text?: string;
+  }) =>
+    apiFetch<OrbeJobsApplication>('/api/v1/orbejobs/applications', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+
+  updateApplicationStage: (
+    appId: string,
+    payload: { stage?: string; approved_by_human?: boolean; recipient_email?: string }
+  ) =>
+    apiFetch<OrbeJobsApplication>(`/api/v1/orbejobs/applications/${appId}/stage`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    }),
+
+  tailorApplication: (appId: string) =>
+    apiFetch<{ application: OrbeJobsApplication; ai_provider: string; cache_hit: boolean; pgvector_score: number }>(
+      `/api/v1/orbejobs/applications/${appId}/tailor`,
+      { method: 'POST', body: JSON.stringify({ simulate_offline: false }) }
+    ),
+
+  saveGmailVault: (payload: { account_email: string; access_token: string; refresh_token?: string }) =>
+    apiFetch<{ connected: boolean; provider: string; account_email: string; cipher_algorithm: string }>(
+      '/api/v1/orbejobs/oauth/gmail/vault',
+      { method: 'POST', body: JSON.stringify(payload) }
+    ),
+
+  checkDnsMx: (email: string) =>
+    apiFetch<{ email: string; mx_valid: boolean; mx_hosts: string[]; error?: string }>(
+      '/api/v1/orbejobs/dns-mx/check',
+      { method: 'POST', body: JSON.stringify({ email }) }
+    ),
+
+  enqueueSend: (payload: { application_id: string; recipient_email?: string; auto_dispatch?: boolean }) =>
+    apiFetch<{ queue_id: string; status: string; mx_valid: boolean; jitter_seconds: number }>(
+      '/api/v1/orbejobs/queue/enqueue',
+      { method: 'POST', body: JSON.stringify(payload) }
+    ),
+
+  dispatchQueueItem: (queueId: string) =>
+    apiFetch<{ status: string; gmail_message_id?: string; detail?: string }>(
+      `/api/v1/orbejobs/queue/${queueId}/dispatch`,
+      { method: 'POST' }
+    ),
+
+  toggleKillSwitch: (active: boolean, reason?: string) =>
+    apiFetch<{ kill_switch_active: boolean; reason: string }>('/api/v1/orbejobs/kill-switch', {
+      method: 'POST',
+      body: JSON.stringify({ active, reason }),
+    }),
+
+  getLgpdAudit: () =>
+    apiFetch<{
+      send_logs: Array<{
+        id: string;
+        recipient_email: string;
+        gmail_message_id?: string;
+        mx_host?: string;
+        status: string;
+        latency_ms: number;
+        lgpd_audit_hash: string;
+        detail?: string;
+        created_at: string;
+      }>;
+      audit_events: Array<{ id: string; entity: string; action: string; detail?: string; timestamp: string }>;
+    }>('/api/v1/orbejobs/lgpd/audit'),
+
+  purgeLgpdData: () =>
+    apiFetch<{ status: string; lgpd_art_18: boolean }>('/api/v1/orbejobs/lgpd/purge', {
+      method: 'DELETE',
+    }),
+};
+
+
+// ── INHO Turismo Vertical (AI-First / Human-Last · Orbe Systems) ──────
+export const turismoApi = {
+  getOverview: () => apiFetch<any>('/api/v1/turismo/overview'),
+  listQuotes: () => apiFetch<any[]>('/api/v1/turismo/quotes'),
+  createQuote: (payload: {
+    client_name: string;
+    origin: string;
+    destination: string;
+    departure_date?: string;
+    return_date?: string;
+    passengers?: number;
+    airline_program?: string;
+    cash_price_brl: number;
+    miles_required?: number;
+    mile_cost_per_k_brl?: number;
+    tax_fees_brl?: number;
+    is_public_offer?: boolean;
+  }) =>
+    apiFetch<any>('/api/v1/turismo/quotes', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  importPnr: (payload: { pnr_raw_text: string; client_name?: string; cash_price_brl?: number; miles_required?: number }) =>
+    apiFetch<any>('/api/v1/turismo/quotes/import-pnr', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  getPublicProposta: (slug: string) =>
+    apiFetch<any>(`/api/v1/turismo/public/proposta/${encodeURIComponent(slug)}`),
+  selectPublicProposta: (slug: string, selected_option: 'A' | 'B' | 'C') =>
+    apiFetch<any>(`/api/v1/turismo/public/proposta/${encodeURIComponent(slug)}/select`, {
+      method: 'POST',
+      body: JSON.stringify({ selected_option }),
+    }),
+  listMiles: () => apiFetch<any[]>('/api/v1/turismo/miles'),
+  createMiles: (payload: {
+    program_name: string;
+    holder_name: string;
+    holder_document: string;
+    miles_balance: number;
+    cpfs_used_year: number;
+    cpfs_limit_year?: number;
+  }) =>
+    apiFetch<any>('/api/v1/turismo/miles', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  useMilesCpf: (id: string) =>
+    apiFetch<any>(`/api/v1/turismo/miles/${encodeURIComponent(id)}/use-cpf`, { method: 'PATCH' }),
+  getDre: () => apiFetch<any>('/api/v1/turismo/dre'),
+  runBoardingRadar: () => apiFetch<any>('/api/v1/turismo/boarding-radar/run', { method: 'POST' }),
+  listGroups: () => apiFetch<any[]>('/api/v1/turismo/groups'),
+  createGroup: (payload: { group_name: string; destination: string; price_per_person_brl: number }) =>
+    apiFetch<any>('/api/v1/turismo/groups', { method: 'POST', body: JSON.stringify(payload) }),
+  listClub: () => apiFetch<any[]>('/api/v1/turismo/club'),
+  createClubMember: (payload: { member_name: string; member_email: string; telegram_chat_id?: string }) =>
+    apiFetch<any>('/api/v1/turismo/club', { method: 'POST', body: JSON.stringify(payload) }),
+  broadcastClub: (payload: { title: string; message: string }) =>
+    apiFetch<any>('/api/v1/turismo/club/broadcast', { method: 'POST', body: JSON.stringify(payload) }),
+  getChannels: () => apiFetch<any>('/api/v1/turismo/channels'),
+  saveChannels: (payload: any) =>
+    apiFetch<any>('/api/v1/turismo/channels', { method: 'POST', body: JSON.stringify(payload) }),
+  testOmnichannelInbound: (payload: {
+    channel: 'WHATSAPP' | 'INSTAGRAM' | 'TELEGRAM';
+    sender_ref: string;
+    message_text: string;
+  }) =>
+    apiFetch<any>('/api/v1/turismo/omnichannel/inbound', { method: 'POST', body: JSON.stringify(payload) }),
 };
