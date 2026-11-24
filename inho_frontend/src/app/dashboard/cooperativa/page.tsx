@@ -11,7 +11,7 @@ import {
   crmApi, AccountPayableOut, billingApi,
   openFinanceApi, OpenFinanceBankMeta, OpenFinanceConsentItem,
   ContactPhoneEntry, ContactEmailEntry, ContactBankAccountEntry,
-  BRAZILIAN_BANKS_CATALOG, resolveBankNameByCode
+  BRAZILIAN_BANKS_CATALOG, resolveBankNameByCode, searchCepByAddress, CepSearchResult
 } from '@/lib/api';
 
 type TabView = 'ASSOCIADOS' | 'COTAS_FISCAL' | 'FINANCE' | 'RATEIO_INFORMES' | 'OPEN_FINANCE';
@@ -38,10 +38,13 @@ export default function CooperativaInho() {
   const [submitting, setSubmitting] = useState(false);
   const [loadingCnpj, setLoadingCnpj] = useState(false);
   const [loadingCep, setLoadingCep] = useState(false);
+  const [cepOptions, setCepOptions] = useState<CepSearchResult[]>([]);
   const emptySocioForm = () => ({
     document: '',
     name: '',
     birth_date: '',
+    identity_number: '',
+    identity_issuer: '',
     filiation: '',
     mother_name: '',
     father_name: '',
@@ -76,6 +79,8 @@ export default function CooperativaInho() {
       document: coop.document || '',
       name: coop.name || '',
       birth_date: coop.birth_date || '',
+      identity_number: coop.identity_number || '',
+      identity_issuer: coop.identity_issuer || '',
       filiation: coop.filiation || '',
       mother_name: coop.mother_name || '',
       father_name: coop.father_name || '',
@@ -358,6 +363,35 @@ export default function CooperativaInho() {
     }
   }
 
+  // Busca reversa: UF + cidade + logradouro -> CEP
+  async function handleSearchCepByAddress() {
+    setLoadingCep(true);
+    try {
+      const list = await searchCepByAddress(socioForm.uf, socioForm.cidade, socioForm.endereco);
+      if (list.length === 1) {
+        applyCepOption(list[0]);
+      } else {
+        setCepOptions(list);
+      }
+    } catch (err: any) {
+      alert(err?.message || 'Erro ao buscar CEP pelo endereço');
+    } finally {
+      setLoadingCep(false);
+    }
+  }
+
+  function applyCepOption(o: CepSearchResult) {
+    setSocioForm((prev) => ({
+      ...prev,
+      cep: (o.cep || '').replace(/\D/g, ''),
+      endereco: o.logradouro || prev.endereco,
+      bairro: o.bairro || prev.bairro,
+      cidade: o.localidade || prev.cidade,
+      uf: o.uf || prev.uf,
+    }));
+    setCepOptions([]);
+  }
+
   // Auto-Fill CEP via Backend Cache + Fallback (BrasilAPI -> ViaCEP)
   async function handleLookupCep() {
     const clean = socioForm.cep.replace(/\D/g, '');
@@ -427,6 +461,8 @@ export default function CooperativaInho() {
         name: socioForm.name,
         document: socioForm.document,
         birth_date: socioForm.birth_date || undefined,
+        identity_number: socioForm.identity_number || undefined,
+        identity_issuer: socioForm.identity_issuer || undefined,
         filiation: combinedFiliation,
         mother_name: socioForm.mother_name || undefined,
         father_name: socioForm.father_name || undefined,
@@ -1425,7 +1461,7 @@ export default function CooperativaInho() {
 
       {/* ─── MODAL NOVO / EDITAR SÓCIO (FICHA CADASTRAL COMPLETA + MULTIPLICIDADE) ─── */}
       {isNewSocioOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
           <div className="bg-white shadow-2xl border border-terminal-border rounded-2xl p-6 w-full max-w-4xl relative my-8 max-h-[92vh] overflow-y-auto">
             <button onClick={() => setIsNewSocioOpen(false)} className="absolute top-4 right-4 text-[#64748B] hover:text-[#0F172A]">
               <X size={20} />
@@ -1498,14 +1534,23 @@ export default function CooperativaInho() {
                       className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
                     />
                   </div>
-                  <div className="md:col-span-2">
-                    <label className="block text-[#64748B] mb-1 uppercase font-bold flex items-center gap-1">
-                      <HeartHandshake size={12} className="text-neon-cyan" /> Filiação (Mãe / Pai)
-                    </label>
+                  <div>
+                    <label className="block text-[#64748B] mb-1 uppercase font-bold">Nº da Identidade (RG)</label>
                     <input
-                      value={socioForm.filiation}
-                      onChange={(e) => setSocioForm({ ...socioForm, filiation: e.target.value })}
-                      placeholder="Registro de filiação (nome da mãe e/ou pai)"
+                      type="text"
+                      value={socioForm.identity_number || ''}
+                      onChange={(e) => setSocioForm({ ...socioForm, identity_number: e.target.value })}
+                      placeholder="Ex.: 1234567890"
+                      className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[#64748B] mb-1 uppercase font-bold">Órgão Emissor / UF</label>
+                    <input
+                      type="text"
+                      value={socioForm.identity_issuer || ''}
+                      onChange={(e) => setSocioForm({ ...socioForm, identity_issuer: e.target.value })}
+                      placeholder="Ex.: SSP/RS"
                       className="w-full bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A]"
                     />
                   </div>
@@ -1876,6 +1921,28 @@ export default function CooperativaInho() {
                       className="bg-white shadow-sm border border-terminal-border rounded-xl px-3 py-2 text-[#0F172A] uppercase"
                     />
                   </div>
+                  <button
+                    type="button"
+                    onClick={handleSearchCepByAddress}
+                    disabled={loadingCep}
+                    className="w-full px-3 py-2 rounded-xl bg-neon-green/15 text-neon-green border border-neon-green/40 font-bold text-[11px] inline-flex items-center justify-center gap-1.5"
+                  >
+                    <Search size={13} /> Não sei o CEP — buscar pelo endereço (UF + Cidade + Logradouro)
+                  </button>
+                  {cepOptions.length > 0 && (
+                    <div className="max-h-40 overflow-y-auto rounded-xl border border-terminal-border bg-white divide-y divide-terminal-border">
+                      {cepOptions.map((o) => (
+                        <button
+                          type="button"
+                          key={o.cep + o.logradouro}
+                          onClick={() => applyCepOption(o)}
+                          className="w-full text-left px-3 py-2 hover:bg-neon-green/10 text-[11px] text-[#0F172A]"
+                        >
+                          <strong>{o.cep}</strong> — {o.logradouro}, {o.bairro} ({o.localidade}/{o.uf})
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-4 rounded-xl bg-[#F8FAFC] border border-terminal-border space-y-3">
@@ -1921,7 +1988,7 @@ export default function CooperativaInho() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 rounded-xl bg-neon-cyan text-white font-extrabold uppercase tracking-widest hover:opacity-90"
+                className="sticky bottom-0 z-10 w-full py-3.5 rounded-xl bg-neon-cyan text-white font-extrabold uppercase tracking-widest hover:opacity-90 shadow-[0_-8px_16px_rgba(255,255,255,0.9)]"
               >
                 {submitting
                   ? 'Submetendo ao Master DB...'

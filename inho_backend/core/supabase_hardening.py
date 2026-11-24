@@ -69,6 +69,8 @@ SUPABASE_HARDENING_SQL_STATEMENTS = [
         ) THEN
             ALTER TABLE inho.crm_contacts
                 ADD COLUMN IF NOT EXISTS birth_date VARCHAR(20),
+                ADD COLUMN IF NOT EXISTS identity_number VARCHAR(40),
+                ADD COLUMN IF NOT EXISTS identity_issuer VARCHAR(60),
                 ADD COLUMN IF NOT EXISTS filiation VARCHAR(255),
                 ADD COLUMN IF NOT EXISTS mother_name VARCHAR(255),
                 ADD COLUMN IF NOT EXISTS father_name VARCHAR(255),
@@ -90,6 +92,8 @@ SUPABASE_HARDENING_SQL_STATEMENTS = [
         ) THEN
             ALTER TABLE inho.cooperados
                 ADD COLUMN IF NOT EXISTS birth_date VARCHAR(20),
+                ADD COLUMN IF NOT EXISTS identity_number VARCHAR(40),
+                ADD COLUMN IF NOT EXISTS identity_issuer VARCHAR(60),
                 ADD COLUMN IF NOT EXISTS filiation VARCHAR(255),
                 ADD COLUMN IF NOT EXISTS mother_name VARCHAR(255),
                 ADD COLUMN IF NOT EXISTS father_name VARCHAR(255),

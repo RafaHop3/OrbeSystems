@@ -260,7 +260,7 @@ class CRMContactBase(BaseModel):
         # Alias do frontend: COOPERADO == PARTNER (sócio/cooperado)
         return "PARTNER" if isinstance(v, str) and v.upper() == "COOPERADO" else v
 
-    @field_validator("email", "document", "phone", "bank_details", "notes", "birth_date", "filiation", "mother_name", "father_name", "bank_code", "bank_name", "bank_agency", "bank_account", "bank_account_type", "pix_key_type", "pix_key", mode="before")
+    @field_validator("email", "document", "phone", "bank_details", "notes", "birth_date", "identity_number", "identity_issuer", "filiation", "mother_name", "father_name", "bank_code", "bank_name", "bank_agency", "bank_account", "bank_account_type", "pix_key_type", "pix_key", mode="before")
     @classmethod
     def _empty_to_none(cls, v):
         return None if isinstance(v, str) and not v.strip() else v
@@ -268,6 +268,8 @@ class CRMContactBase(BaseModel):
     # ---- B2B2C Corporate/Entity Extensions ----
     person_type:            Optional[str] = None
     birth_date:             Optional[str] = None
+    identity_number:        Optional[str] = None
+    identity_issuer:        Optional[str] = None
     filiation:              Optional[str] = None
     mother_name:            Optional[str] = None
     father_name:            Optional[str] = None
@@ -341,6 +343,8 @@ class CRMContactCreate(CRMContactBase):
 
 class CRMContactUpdate(BaseModel):
     birth_date:   Optional[str] = None
+    identity_number: Optional[str] = None
+    identity_issuer: Optional[str] = None
     filiation:    Optional[str] = None
     mother_name:  Optional[str] = None
     father_name:  Optional[str] = None
@@ -371,7 +375,7 @@ class CRMContactUpdate(BaseModel):
     def _upd_category_alias(cls, v):
         return "PARTNER" if isinstance(v, str) and v.upper() == "COOPERADO" else v
 
-    @field_validator("email", "document", "phone", "bank_details", "notes", "birth_date", "filiation", "mother_name", "father_name", "bank_code", "bank_name", "bank_agency", "bank_account", "bank_account_type", "pix_key_type", "pix_key", mode="before")
+    @field_validator("email", "document", "phone", "bank_details", "notes", "birth_date", "identity_number", "identity_issuer", "filiation", "mother_name", "father_name", "bank_code", "bank_name", "bank_agency", "bank_account", "bank_account_type", "pix_key_type", "pix_key", mode="before")
     @classmethod
     def _upd_empty_to_none(cls, v):
         return None if isinstance(v, str) and not v.strip() else v

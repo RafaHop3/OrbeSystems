@@ -558,6 +558,8 @@ export interface CRMContactCreate {
   name: string;
   category: 'COOPERADO' | 'EMPLOYEE' | 'SUPPLIER' | 'CUSTOMER' | 'PARTNER';
   birth_date?: string;
+  identity_number?: string;
+  identity_issuer?: string;
   filiation?: string;
   mother_name?: string;
   father_name?: string;
@@ -1044,6 +1046,8 @@ export const crmApi = {
 // ── Cooperados (Módulo Cooperativismo) ───────────────────────────────
 export interface CooperadoItem {
   birth_date?: string;
+  identity_number?: string;
+  identity_issuer?: string;
   filiation?: string;
   mother_name?: string;
   father_name?: string;
@@ -1101,6 +1105,8 @@ export const cooperadosApi = {
     name: string;
     document: string;
     birth_date?: string;
+    identity_number?: string;
+    identity_issuer?: string;
     filiation?: string;
     mother_name?: string;
     father_name?: string;
@@ -1894,3 +1900,29 @@ export const turismoApi = {
   }) =>
     apiFetch<any>('/api/v1/turismo/omnichannel/inbound', { method: 'POST', body: JSON.stringify(payload) }),
 };
+
+export interface CepSearchResult {
+  cep: string;
+  logradouro: string;
+  complemento?: string;
+  bairro: string;
+  localidade: string;
+  uf: string;
+}
+
+/** Busca reversa: UF + cidade + logradouro -> lista de CEPs (ViaCEP). */
+export async function searchCepByAddress(uf: string, city: string, street: string): Promise<CepSearchResult[]> {
+  const u = (uf || '').trim().toUpperCase();
+  const c = (city || '').trim();
+  const s = (street || '').trim();
+  if (u.length !== 2 || c.length < 3 || s.length < 3) {
+    throw new Error('Informe UF, cidade e ao menos 3 letras do logradouro para buscar o CEP.');
+  }
+  const res = await fetch(
+    `https://viacep.com.br/ws/${encodeURIComponent(u)}/${encodeURIComponent(c)}/${encodeURIComponent(s)}/json/`
+  );
+  if (!res.ok) throw new Error('Não foi possível consultar o CEP pelo endereço.');
+  const data = await res.json();
+  if (!Array.isArray(data) || data.length === 0) throw new Error('Nenhum CEP encontrado para esse endereço.');
+  return data.slice(0, 20) as CepSearchResult[];
+}

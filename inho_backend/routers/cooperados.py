@@ -34,6 +34,8 @@ class CooperadoCreate(BaseModel):
     name:              str
     document:          str        # CPF ou CNPJ
     birth_date:        Optional[str]  = None
+    identity_number:   Optional[str] = None
+    identity_issuer:   Optional[str] = None
     filiation:         Optional[str]  = None
     mother_name:       Optional[str]  = None
     father_name:       Optional[str]  = None
@@ -69,6 +71,8 @@ class CooperadoUpdate(BaseModel):
     name:              Optional[str]          = None
     document:          Optional[str]          = None
     birth_date:        Optional[str]          = None
+    identity_number:   Optional[str] = None
+    identity_issuer:   Optional[str] = None
     filiation:         Optional[str]          = None
     mother_name:       Optional[str]          = None
     father_name:       Optional[str]          = None
@@ -106,6 +110,8 @@ class CooperadoOut(BaseModel):
     name:              str
     document:          str
     birth_date:        Optional[str] = None
+    identity_number:   Optional[str] = None
+    identity_issuer:   Optional[str] = None
     filiation:         Optional[str] = None
     mother_name:       Optional[str] = None
     father_name:       Optional[str] = None
@@ -132,7 +138,7 @@ class CooperadoOut(BaseModel):
 
 
 _SYNC_CRM_FIELDS = (
-    "birth_date", "filiation", "mother_name", "father_name",
+    "birth_date", "identity_number", "identity_issuer", "filiation", "mother_name", "father_name",
     "email", "phone", "bank_code", "bank_name", "bank_agency",
     "bank_account", "bank_account_type", "pix_key_type", "pix_key",
     "bank_details", "phones_json", "emails_json", "bank_accounts_json", "notes",

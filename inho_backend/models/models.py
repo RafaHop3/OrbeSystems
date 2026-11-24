@@ -436,6 +436,8 @@ class CRMContact(Base):
     # ── New Expansion Fields (B2B2C CRM) ── 
     person_type = Column(Enum(PersonType), default=PersonType.INDIVIDUAL, nullable=True)
     birth_date = Column(String(20), nullable=True)
+    identity_number = Column(String(40), nullable=True)
+    identity_issuer = Column(String(60), nullable=True)
     filiation = Column(String(255), nullable=True)
     mother_name = Column(String(255), nullable=True)
     father_name = Column(String(255), nullable=True)
@@ -557,6 +559,8 @@ class Cooperado(Base):
     name         = Column(String(255), nullable=False)
     document     = Column(String(50), nullable=False) # CPF or CNPJ
     birth_date   = Column(String(20), nullable=True)
+    identity_number = Column(String(40), nullable=True)
+    identity_issuer = Column(String(60), nullable=True)
     filiation    = Column(String(255), nullable=True)
     mother_name  = Column(String(255), nullable=True)
     father_name  = Column(String(255), nullable=True)

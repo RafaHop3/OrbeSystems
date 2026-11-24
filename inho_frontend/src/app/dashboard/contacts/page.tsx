@@ -16,6 +16,8 @@ import {
     ContactBankAccountEntry,
     BRAZILIAN_BANKS_CATALOG,
     resolveBankNameByCode,
+    searchCepByAddress,
+    CepSearchResult,
 } from '@/lib/api';
 
 const TABS = [
@@ -69,6 +71,8 @@ function emptyContactForm(defaultCategory: CRMContactCreate['category'] = 'CUSTO
         category: defaultCategory,
         document: '',
         birth_date: '',
+        identity_number: '',
+        identity_issuer: '',
         filiation: '',
         mother_name: '',
         father_name: '',
@@ -115,6 +119,7 @@ function ContactsContent() {
     const [editingId, setEditingId] = useState<string | null>(null);
     const [submitting, setSubmitting] = useState(false);
     const [loadingCep, setLoadingCep] = useState(false);
+    const [cepOptions, setCepOptions] = useState<CepSearchResult[]>([]);
     const [loadingCnpj, setLoadingCnpj] = useState(false);
     const [formData, setFormData] = useState<CRMContactCreate>(() => emptyContactForm('CUSTOMER'));
 
@@ -183,6 +188,8 @@ function ContactsContent() {
             category: (c.category as any) || 'CUSTOMER',
             document: c.document || '',
             birth_date: c.birth_date || '',
+            identity_number: c.identity_number || '',
+            identity_issuer: c.identity_issuer || '',
             filiation: c.filiation || '',
             mother_name: c.mother_name || '',
             father_name: c.father_name || '',
@@ -355,6 +362,30 @@ function ContactsContent() {
         }
     };
 
+    const applyCepOption = (o: CepSearchResult) => {
+        setFormData((prev) => ({
+            ...prev,
+            zip_code: o.cep || prev.zip_code,
+            address: [o.logradouro, o.bairro].filter(Boolean).join(', ') || prev.address,
+            city: o.localidade || prev.city,
+            state: o.uf || prev.state,
+        }));
+        setCepOptions([]);
+    };
+
+    const handleSearchCepByAddress = async () => {
+        setLoadingCep(true);
+        try {
+            const list = await searchCepByAddress(formData.state || '', formData.city || '', formData.address || '');
+            if (list.length === 1) applyCepOption(list[0]);
+            else setCepOptions(list);
+        } catch (err: any) {
+            alert(err?.message || 'Não foi possível buscar o CEP pelo endereço.');
+        } finally {
+            setLoadingCep(false);
+        }
+    };
+
     const handleLookupCep = async () => {
         const clean = (formData.zip_code || '').replace(/\D/g, '');
         if (clean.length !== 8) {
@@ -410,6 +441,8 @@ function ContactsContent() {
             const payload: CRMContactCreate = {
                 ...formData,
                 birth_date: formData.birth_date || undefined,
+                identity_number: formData.identity_number || undefined,
+                identity_issuer: formData.identity_issuer || undefined,
                 filiation: combinedFiliation,
                 mother_name: formData.mother_name || undefined,
                 father_name: formData.father_name || undefined,
@@ -793,19 +826,27 @@ function ContactsContent() {
                                             className="w-full bg-white border border-inho-border rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-neon-cyan"
                                         />
                                     </div>
-
                                     <div>
-                                        <label className="block text-[11px] font-bold text-inho-muted uppercase tracking-wider mb-1">
-                                            Filiação (Mãe / Pai)
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={formData.filiation || ''}
-                                            onChange={(e) => setFormData({ ...formData, filiation: e.target.value })}
-                                            className="w-full bg-white border border-inho-border rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-neon-cyan"
-                                            placeholder="Nome da mãe e/ou pai"
-                                        />
+                                      <label className="block text-[11px] font-bold text-inho-muted uppercase tracking-wider mb-1">Nº da Identidade (RG)</label>
+                                      <input
+                                        type="text"
+                                        value={formData.identity_number || ''}
+                                        onChange={(e) => setFormData({ ...formData, identity_number: e.target.value })}
+                                        placeholder="Ex.: 1234567890"
+                                        className="w-full bg-white border border-inho-border rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-neon-cyan"
+                                      />
                                     </div>
+                                    <div>
+                                      <label className="block text-[11px] font-bold text-inho-muted uppercase tracking-wider mb-1">Órgão Emissor / UF</label>
+                                      <input
+                                        type="text"
+                                        value={formData.identity_issuer || ''}
+                                        onChange={(e) => setFormData({ ...formData, identity_issuer: e.target.value })}
+                                        placeholder="Ex.: SSP/RS"
+                                        className="w-full bg-white border border-inho-border rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-neon-cyan"
+                                      />
+                                    </div>
+
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1173,6 +1214,28 @@ function ContactsContent() {
                                             />
                                         </div>
                                     </div>
+                                <button
+                                    type="button"
+                                    onClick={handleSearchCepByAddress}
+                                    disabled={loadingCep}
+                                    className="w-full px-3 py-2 rounded-lg bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/30 font-bold text-[11px] inline-flex items-center justify-center gap-1.5"
+                                >
+                                    <Search size={13} /> Não sei o CEP — buscar pelo endereço (UF + Cidade + Logradouro)
+                                </button>
+                                {cepOptions.length > 0 && (
+                                    <div className="max-h-40 overflow-y-auto rounded-lg border border-inho-border bg-white divide-y divide-inho-border">
+                                        {cepOptions.map((o) => (
+                                            <button
+                                                type="button"
+                                                key={o.cep + o.logradouro}
+                                                onClick={() => applyCepOption(o)}
+                                                className="w-full text-left px-3 py-2 hover:bg-neon-cyan/10 text-[11px] text-[#0F172A]"
+                                            >
+                                                <strong>{o.cep}</strong> — {o.logradouro}, {o.bairro} ({o.localidade}/{o.uf})
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
                                 </div>
                                 <div>
                                     <label className="block text-[10px] text-inho-muted uppercase font-bold mb-0.5">
