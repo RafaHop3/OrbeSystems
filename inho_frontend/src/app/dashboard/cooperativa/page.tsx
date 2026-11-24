@@ -707,7 +707,14 @@ export default function CooperativaInho() {
                               {coop.name.substring(0, 2).toUpperCase()}
                             </div>
                             <div>
-                              <div>{coop.name}</div>
+                              <button
+                                type="button"
+                                onClick={() => openEditSocioModal(coop)}
+                                title="Abrir cadastro completo"
+                                className="text-left font-bold text-[#0F172A] hover:text-neon-cyan hover:underline cursor-pointer"
+                              >
+                                {coop.name}
+                              </button>
                               <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-[10px] text-[#64748B]">
                                 {coop.birth_date && (
                                   <span className="px-1.5 py-0.2 rounded bg-[#F1F5F9] border border-terminal-border">

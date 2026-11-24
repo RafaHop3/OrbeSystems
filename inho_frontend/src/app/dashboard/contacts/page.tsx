@@ -600,7 +600,7 @@ function ContactsContent() {
                                         return (
                                             <tr key={c.id} className="hover:bg-inho-dark/40 transition-colors group">
                                                 <td className="px-5 py-4">
-                                                    <p className="font-bold text-[#0F172A] text-sm">{c.name}</p>
+                                                    <p className="font-bold text-[#0F172A] text-sm"><Link href={`/dashboard/contacts/${c.id}`} className="hover:text-neon-cyan hover:underline" title="Abrir cadastro completo">{c.name}</Link></p>
                                                     <div className="flex flex-wrap items-center gap-2 mt-1 text-[11px] text-inho-muted">
                                                         {c.birth_date && (
                                                             <span className="inline-flex items-center gap-1 bg-[#F1F5F9] px-2 py-0.5 rounded border border-[#E2E8F0]">
