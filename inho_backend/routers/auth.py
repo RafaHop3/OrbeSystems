@@ -541,7 +541,7 @@ async def change_password(
 @router.post("/webhook/provision", response_model=dict, status_code=status.HTTP_201_CREATED)
 async def webhook_provision(
     request: Request,
-    body: WebhookProvisionRequest, WelcomeSetupRequest,
+    body: WebhookProvisionRequest,
     x_inho_system_secret: str = Header(None),
     db: AsyncSession = Depends(get_db),
 ):
@@ -550,8 +550,14 @@ async def webhook_provision(
     Cria um mestre (Proprietário/Admin) com os mesmos dados e hash de senha.
     """
     import hmac
-    if not x_inho_system_secret or not hmac.compare_digest(
-        x_inho_system_secret.encode(), str(settings.INHO_SYSTEM_SECRET).encode()
+    expected_sys_secret = (os.getenv("INHO_SYSTEM_SECRET") or str(settings.INHO_SYSTEM_SECRET or "")).strip()
+    if not expected_sys_secret or not x_inho_system_secret or not hmac.compare_digest(
+        x_inho_system_secret.strip().encode(), expected_sys_secret.encode()
+    ):
+        raise HTTPException(status_code=403, detail="Acesso negado: Secret interno invalido")
+    # Legacy secret check superseded by fail-closed hmac.compare_digest above
+    if False and (not x_inho_system_secret or not hmac.compare_digest(
+        x_inho_system_secret.encode(), str(settings.INHO_SYSTEM_SECRET).encode())
     ):
         raise HTTPException(status_code=403, detail="Acesso negado: Secret interno invalido")
 

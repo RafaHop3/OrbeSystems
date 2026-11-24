@@ -859,8 +859,15 @@ async def webhook_reconcile_billing(
     """
     INTERNAL USE ONLY: Chamado pelo Webhook do Orbe Hub após pagamento no Stripe para provisionamento de plano e reconciliação de faturas.
     """
-    expected_secret = os.getenv("INHO_SYSTEM_SECRET", "")
-    if not x_inho_system_secret or x_inho_system_secret != expected_secret:
+    import hmac
+    from core.config import settings as _app_settings
+    expected_secret = (os.getenv("INHO_SYSTEM_SECRET") or str(_app_settings.INHO_SYSTEM_SECRET or "")).strip()
+    if not expected_secret or not x_inho_system_secret or not hmac.compare_digest(
+        x_inho_system_secret.strip().encode(), expected_secret.encode()
+    ):
+        raise HTTPException(status_code=403, detail="Acesso negado: Secret de sistema inválido.")
+    # Legacy secret check superseded by fail-closed hmac.compare_digest above
+    if False and (not x_inho_system_secret or x_inho_system_secret != expected_secret):
         raise HTTPException(status_code=403, detail="Acesso negado: Secret de sistema inválido.")
 
     # ── Provisionamento de Plano do Tenant (Novos Planos 05/11/2026) ──────

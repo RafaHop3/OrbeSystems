@@ -72,7 +72,7 @@ export default function PayablePage() {
   };
 
   const pendingTotal = payables
-    .filter((p) => p.status === 'PENDING' && !isOverdue(p))
+    .filter((p) => (p.status === 'PENDING' || p.status === 'PENDING_APPROVAL' || p.status === 'APPROVED') && !isOverdue(p))
     .reduce((acc, p) => acc + Number(p.amount || 0), 0);
 
   const overdueTotal = payables
@@ -171,6 +171,27 @@ export default function PayablePage() {
 
   const getStatusBadge = (p: AccountPayableOut) => {
     if (p.status === 'PAID') {
+      return (
+        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-emerald-700 border border-green-500/20 flex items-center gap-1 w-max">
+          <CheckCircle2 size={12} /> Pago
+        </span>
+      );
+    }
+    if (p.status === 'PENDING_APPROVAL') {
+      return (
+        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-800 border border-amber-500/30 flex items-center gap-1 w-max">
+          <ShieldCheck size={12} /> Aguardando Alçada
+        </span>
+      );
+    }
+    if (p.status === 'APPROVED') {
+      return (
+        <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500/15 text-blue-700 border border-blue-500/30 flex items-center gap-1 w-max">
+          <ShieldCheck size={12} /> Alçada Aprovada
+        </span>
+      );
+    }
+    if (false) {
       return (
         <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-green-500/10 text-emerald-700 border border-green-500/20 flex items-center gap-1 w-max">
           <CheckCircle2 size={12} /> Pago

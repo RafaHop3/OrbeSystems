@@ -256,3 +256,107 @@ async def test_client_self_service_change_password(db_session: AsyncSession):
         )
         assert r_login.status_code == 200, r_login.text
         assert "access_token" in r_login.json()
+
+
+@pytest.mark.asyncio
+async def test_p0_webhook_provision_and_unified_cognitive_and_backup_failover(db_session: AsyncSession, monkeypatch):
+    monkeypatch.setenv("INHO_SYSTEM_SECRET", "test_super_secret_inho_token_2026")
+    tenant = await _seed_tenant(db_session, "Coop Unificada & Backup")
+    headers = {"Authorization": f"Bearer {tenant['token']}"}
+    transport = ASGITransport(app=app)
+
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        # 1. Test fixed P0 webhook_provision signature & fail-closed secret validation
+        r_prov_denied = await client.post(
+            "/api/v1/auth/webhook/provision",
+            headers={"X-INHO-SYSTEM-SECRET": "wrong_secret"},
+            json={
+                "email": "novo.admin.stripe@orbesystems.com.br",
+                "full_name": "Admin Stripe",
+                "hashed_password": hash_password("StripePass123!"),
+            },
+        )
+        assert r_prov_denied.status_code == 403
+
+        r_prov_ok = await client.post(
+            "/api/v1/auth/webhook/provision",
+            headers={"X-INHO-SYSTEM-SECRET": "test_super_secret_inho_token_2026"},
+            json={
+                "email": "novo.admin.stripe@orbesystems.com.br",
+                "full_name": "Admin Stripe",
+                "hashed_password": hash_password("StripePass123!"),
+            },
+        )
+        assert r_prov_ok.status_code == 201, r_prov_ok.text
+        assert "user_id" in r_prov_ok.json()
+
+        # 2. Test Dual-Control (> R$ 5.000,00) + Unified Cognitive Core (Orbe IA + OrBrick Hybrid RAG RRF + PolicyEngine)
+        r_rag = await client.post(
+            "/api/v1/crm/cbm/ai-knowledge",
+            headers=headers,
+            json={
+                "title": "Estatuto Art. 42 - Parcelamento e Alçada",
+                "category": "REGULAMENTO_INTERNO",
+                "content": "O estatuto permite parcelamento em até 6x e desconto máximo de 10% para quitação à vista. Despesas acima de R$ 5.000,00 exigem aprovação Dual-Control.",
+                "keywords": "estatuto, parcelamento, desconto, alcada",
+            },
+        )
+        assert r_rag.status_code in (200, 201), r_rag.text
+
+        r_pay = await client.post(
+            "/api/v1/crm/payable/",
+            headers=headers,
+            json={
+                "description": "Compra de Trator Cooperativa (> 5k)",
+                "amount": 12500.00,
+                "due_date": "2026-12-15T12:00:00Z",
+            },
+        )
+        assert r_pay.status_code == 201, r_pay.text
+        pay_data = r_pay.json()
+        assert pay_data["status"] == "PENDING_APPROVAL"
+
+        # Query Orbe Assistant ROOT (Alt+A) and verify unified RAG + Dual-Control telemetry
+        r_root = await client.post(
+            "/api/v1/copilot/root_assist",
+            headers=headers,
+            json={
+                "query": "Qual a regra do estatuto para parcelamento e desconto?",
+                "context_screen": "payable",
+            },
+        )
+        assert r_root.status_code == 200, r_root.text
+        root_data = r_root.json()
+        assert root_data["cognitive_layer"] == "UNIFIED_ORBE_ORBRICK_V2"
+        assert root_data["pending_dual_control_count"] >= 1
+        assert len(root_data["rag_matches"]) >= 1
+        assert "Estatuto Art. 42" in root_data["rag_matches"][0]["title"]
+
+        # 3. Test Deep Health-Check for Cloudflare Failover
+        r_deep = await client.get("/api/v1/health/deep")
+        assert r_deep.status_code == 200
+        deep_data = r_deep.json()
+        assert deep_data["cloudflare_probe"] == "PASS"
+        assert deep_data["cognitive_core"] == "UNIFIED_ORBE_ORBRICK_V2"
+        assert deep_data["dual_control_threshold_brl"] == 5000.0
+
+        # 4. Test Multi-Cloud Encrypted Backup Snapshot (AES-256 + SHA-256) & Verify Restore
+        r_bkp = await client.post("/api/v1/settings/backup/snapshot", headers=headers)
+        assert r_bkp.status_code == 200, r_bkp.text
+        bkp_data = r_bkp.json()
+        assert bkp_data["status"] == "snapshot_created"
+        assert bkp_data["encryption"] == "MultiFernet_AES256"
+        assert bkp_data["table_counts"]["accounts_payable"] >= 1
+
+        r_ver = await client.post(
+            "/api/v1/settings/backup/verify-restore",
+            headers=headers,
+            json={
+                "encrypted_bundle": bkp_data["encrypted_bundle"],
+                "expected_sha256": bkp_data["sha256_checksum"],
+            },
+        )
+        assert r_ver.status_code == 200, r_ver.text
+        ver_data = r_ver.json()
+        assert ver_data["integrity_verified"] is True
+        assert ver_data["restored_table_counts"]["accounts_payable"] >= 1

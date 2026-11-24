@@ -62,6 +62,48 @@ SUPABASE_HARDENING_SQL_STATEMENTS = [
             ALTER TABLE public.business_operators
                 ADD COLUMN IF NOT EXISTS role VARCHAR(50) NOT NULL DEFAULT 'operator';
         END IF;
+
+        IF EXISTS (
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = 'inho' AND table_name = 'crm_contacts'
+        ) THEN
+            ALTER TABLE inho.crm_contacts
+                ADD COLUMN IF NOT EXISTS birth_date VARCHAR(20),
+                ADD COLUMN IF NOT EXISTS filiation VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS mother_name VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS father_name VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS bank_code VARCHAR(20),
+                ADD COLUMN IF NOT EXISTS bank_name VARCHAR(120),
+                ADD COLUMN IF NOT EXISTS bank_agency VARCHAR(20),
+                ADD COLUMN IF NOT EXISTS bank_account VARCHAR(30),
+                ADD COLUMN IF NOT EXISTS bank_account_type VARCHAR(40),
+                ADD COLUMN IF NOT EXISTS pix_key_type VARCHAR(20),
+                ADD COLUMN IF NOT EXISTS pix_key VARCHAR(150),
+                ADD COLUMN IF NOT EXISTS phones_json TEXT DEFAULT '[]',
+                ADD COLUMN IF NOT EXISTS emails_json TEXT DEFAULT '[]',
+                ADD COLUMN IF NOT EXISTS bank_accounts_json TEXT DEFAULT '[]';
+        END IF;
+
+        IF EXISTS (
+            SELECT 1 FROM information_schema.tables
+            WHERE table_schema = 'inho' AND table_name = 'cooperados'
+        ) THEN
+            ALTER TABLE inho.cooperados
+                ADD COLUMN IF NOT EXISTS birth_date VARCHAR(20),
+                ADD COLUMN IF NOT EXISTS filiation VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS mother_name VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS father_name VARCHAR(255),
+                ADD COLUMN IF NOT EXISTS bank_code VARCHAR(20),
+                ADD COLUMN IF NOT EXISTS bank_name VARCHAR(120),
+                ADD COLUMN IF NOT EXISTS bank_agency VARCHAR(20),
+                ADD COLUMN IF NOT EXISTS bank_account VARCHAR(30),
+                ADD COLUMN IF NOT EXISTS bank_account_type VARCHAR(40),
+                ADD COLUMN IF NOT EXISTS pix_key_type VARCHAR(20),
+                ADD COLUMN IF NOT EXISTS pix_key VARCHAR(150),
+                ADD COLUMN IF NOT EXISTS phones_json TEXT DEFAULT '[]',
+                ADD COLUMN IF NOT EXISTS emails_json TEXT DEFAULT '[]',
+                ADD COLUMN IF NOT EXISTS bank_accounts_json TEXT DEFAULT '[]';
+        END IF;
     END $$;
     """,
 

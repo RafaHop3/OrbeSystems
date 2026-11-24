@@ -363,12 +363,19 @@ class RootAssistResponse(BaseModel):
     root_status: str
     context_screen: str
     suggested_actions: List[RootActionShortcut] = []
+    cognitive_layer: str = "UNIFIED_ORBE_ORBRICK_V2"
+    rag_matches: List[Dict[str, Any]] = []
+    active_policy: Optional[Dict[str, Any]] = None
+    pending_dual_control_count: int = 0
     timestamp: str
 
+
+from fastapi import Request
 
 @router.post("/root_assist", response_model=RootAssistResponse, status_code=status.HTTP_200_OK)
 async def orbe_assistant_root_assist(
     payload: RootAssistRequest,
+    request: Request,
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -627,10 +634,113 @@ async def orbe_assistant_root_assist(
             RootActionShortcut(label="Frente de Caixa (PDV)", action_type="NAVIGATE", target="/dashboard/pdv"),
         ]
 
+    # ── Unificação Cognitiva em Camadas (Orbe IA + OrBrick Hybrid RAG RRF + PolicyEngine) ──
+    rag_matches_out: List[Dict[str, Any]] = []
+    active_policy_out: Optional[Dict[str, Any]] = None
+    pending_dc_count: int = 0
+
+    try:
+        import json as _json
+        from sqlalchemy import func as _func
+        from models.models import AIKnowledgeChunk, TenantAIPolicy, AccountPayable, PayableStatus
+        from services.ai_agent import rank_tenant_rag_hybrid_rrf, sanitize_pii_text
+        from core.security import decode_token
+        from routers.crm import get_uuid
+        from routers.billing import _get_user_business
+
+        target_biz = None
+        auth_hdr = (request.headers.get("Authorization") or "") if request else ""
+        if auth_hdr.startswith("Bearer "):
+            tok = auth_hdr.split(" ", 1)[1].strip()
+            dec = decode_token(tok)
+            if dec and dec.get("sub"):
+                u_obj = (await db.execute(select(User).where(User.id == str(dec["sub"])))).scalar_one_or_none()
+                if u_obj:
+                    try:
+                        target_biz = await _get_user_business(db, u_obj)
+                    except Exception:
+                        target_biz = None
+
+        if not target_biz:
+            target_biz = (await db.execute(select(Business).order_by(Business.created_at.asc()).limit(1))).scalar_one_or_none()
+
+        if target_biz:
+            b_uuid = get_uuid(target_biz.id)
+
+            # 1. Contagem em tempo real de títulos > R$ 5.000 aguardando aprovação Dual-Control
+            dc_res = await db.execute(
+                select(_func.count(AccountPayable.id)).where(
+                    AccountPayable.business_id == b_uuid,
+                    AccountPayable.amount > 5000,
+                    AccountPayable.status.in_([PayableStatus.PENDING_APPROVAL, PayableStatus.PENDING]),
+                )
+            )
+            pending_dc_count = int(dc_res.scalar() or 0)
+
+            # 2. PolicyEngine ativo do tenant
+            pol_obj = (
+                await db.execute(select(TenantAIPolicy).where(TenantAIPolicy.business_id == b_uuid))
+            ).scalar_one_or_none()
+            if pol_obj:
+                rules_raw = pol_obj.approved_rules_json if pol_obj.status == "APPROVED" else pol_obj.draft_rules_json
+                try:
+                    parsed_rules = _json.loads(rules_raw or "{}")
+                except Exception:
+                    parsed_rules = {}
+                active_policy_out = {
+                    "status": pol_obj.status,
+                    "rules": parsed_rules,
+                    "dual_control_threshold_brl": 5000.0,
+                }
+
+            # 3. RAG Híbrido (Vetorial + Lexical RRF Top-3) compartilhado com o OrBrick
+            chunks_rows = (
+                await db.execute(
+                    select(AIKnowledgeChunk).where(
+                        AIKnowledgeChunk.business_id == b_uuid,
+                        AIKnowledgeChunk.is_active.is_(True),
+                    )
+                )
+            ).scalars().all()
+            if chunks_rows and raw_query:
+                raw_dicts = [
+                    {
+                        "id": str(c.id),
+                        "title": c.title,
+                        "category": c.category,
+                        "content": sanitize_pii_text(c.content or ""),
+                        "keywords": c.keywords or "",
+                    }
+                    for c in chunks_rows
+                ]
+                ranked = rank_tenant_rag_hybrid_rrf(sanitize_pii_text(raw_query), raw_dicts, top_k=3)
+                rag_matches_out = [
+                    {
+                        "title": r["title"],
+                        "category": r["category"],
+                        "excerpt": (r["content"] or "")[:220],
+                        "rrf_score": round(float(r.get("rrf_score") or r.get("rag_score") or 0.0), 4),
+                    }
+                    for r in ranked
+                    if float(r.get("rrf_score") or r.get("rag_score") or 0.0) > 0
+                ]
+                if rag_matches_out and any(k in norm_query for k in ["estatuto", "regra", "parcela", "desconto", "multa", "politica", "rag"]):
+                    top_hit = rag_matches_out[0]
+                    reply += (
+                        f"\n\n---\n📚 **Conhecimento Institucional Recuperado (RAG Híbrido RRF — {top_hit['title']}):**\n"
+                        f"> *{top_hit['excerpt']}*"
+                    )
+    except Exception:
+        pass
+
     return RootAssistResponse(
         reply=reply,
         root_status="ROOT_PRIVILEGE_ACTIVE",
         context_screen=screen,
         suggested_actions=shortcuts,
+        cognitive_layer="UNIFIED_ORBE_ORBRICK_V2",
+        rag_matches=rag_matches_out,
+        active_policy=active_policy_out,
+        pending_dual_control_count=pending_dc_count,
         timestamp=now_iso
     )

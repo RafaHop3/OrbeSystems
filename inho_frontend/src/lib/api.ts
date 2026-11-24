@@ -624,7 +624,7 @@ export interface AccountPayableOut {
   payment_method?: string;
   payment_account?: string;
   notes?: string;
-  status: 'PENDING' | 'PAID' | 'CANCELLED' | 'OVERDUE';
+  status: 'PENDING' | 'PENDING_APPROVAL' | 'APPROVED' | 'PAID' | 'CANCELLED' | 'OVERDUE';
   created_at?: string;
   updated_at?: string;
 }
