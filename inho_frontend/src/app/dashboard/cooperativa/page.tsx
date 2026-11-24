@@ -686,7 +686,7 @@ export default function CooperativaInho() {
                   </p>
                 </div>
               ) : (
-                <table className="w-full text-left text-xs">
+                <div className="w-full overflow-x-auto"><table className="w-full min-w-[980px] text-left text-xs">
                   <thead className="bg-[#F1F5F9] border-b border-terminal-border text-[#64748B] uppercase tracking-wider">
                     <tr>
                       <th className="px-6 py-4">Associado / Sócio Cooperado</th>
@@ -694,7 +694,7 @@ export default function CooperativaInho() {
                       <th className="px-6 py-4">NIS / Matrícula / Notas</th>
                       <th className="px-6 py-4">Contato (OrBrick)</th>
                       <th className="px-6 py-4">Status Societário</th>
-                      <th className="px-6 py-4 text-right">Dossiê & Cotas</th>
+                      <th className="px-6 py-4 text-right sticky right-0 z-10 bg-[#F1F5F9] shadow-[-6px_0_8px_-6px_rgba(0,0,0,0.15)]">Ações</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-terminal-border">
@@ -702,7 +702,8 @@ export default function CooperativaInho() {
                       const st = STATUS_META[coop.status] || { label: coop.status, style: 'bg-[#F1F5F9] text-[#0F172A]' };
                       return (
                         <tr key={coop.id} className="hover:bg-[#F1F5F9] transition-colors">
-                          <td className="px-6 py-4 font-bold text-[#0F172A] flex items-center gap-3">
+                          <td className="px-6 py-4 font-bold text-[#0F172A]">
+                            <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-neon-cyan/10 border border-neon-cyan/30 flex items-center justify-center text-neon-cyan font-extrabold">
                               {coop.name.substring(0, 2).toUpperCase()}
                             </div>
@@ -738,6 +739,7 @@ export default function CooperativaInho() {
                                 )}
                               </div>
                             </div>
+                            </div>
                           </td>
                           <td className="px-6 py-4 text-[#64748B] font-mono">{coop.document}</td>
                           <td className="px-6 py-4 text-[#64748B] max-w-xs truncate">{coop.notes || '---'}</td>
@@ -770,8 +772,8 @@ export default function CooperativaInho() {
                               {st.label}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="inline-flex items-center gap-1.5">
+                          <td className="px-4 py-4 text-right sticky right-0 z-10 bg-white shadow-[-6px_0_8px_-6px_rgba(0,0,0,0.15)]">
+                            <div className="inline-flex items-center gap-1.5 whitespace-nowrap">
                               <button
                                 onClick={() => openEditSocioModal(coop)}
                                 className="px-2.5 py-1.5 rounded-lg bg-[#F1F5F9] border border-terminal-border hover:border-neon-cyan/40 text-[#0F172A] font-bold text-[11px] inline-flex items-center gap-1"
@@ -790,7 +792,7 @@ export default function CooperativaInho() {
                       );
                     })}
                   </tbody>
-                </table>
+                </table></div>
               )}
             </div>
           </div>
